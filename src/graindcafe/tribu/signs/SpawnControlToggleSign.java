@@ -10,7 +10,6 @@ public class SpawnControlToggleSign extends SpawnControlSign {
 	public SpawnControlToggleSign(Tribu plugin, Location pos, String[] Lines) {
 		super(plugin, pos, Lines);
 		state = Lines[2].equalsIgnoreCase("on") || Lines[2].equals("1");
-		raiseEvent(); // Because the first was not correct, the variable "state" was not set
 	}
 
 	@Override

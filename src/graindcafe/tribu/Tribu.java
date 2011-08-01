@@ -20,6 +20,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Wolf;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -320,7 +321,7 @@ public class Tribu extends JavaPlugin {
 			if (dedicatedServer)
 				for (LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
 
-					if (!(e instanceof Player))
+					if (!(e instanceof Player) && !(e instanceof Wolf))
 						e.damage(100000);
 
 				}
@@ -331,7 +332,7 @@ public class Tribu extends JavaPlugin {
 			} else {
 				LogInfo(Language.get("Info.LevelSaved"));
 			}
-
+			getLevel().initSigns();
 			Set<Entry<Player, PlayerStats>> stats = players.entrySet();
 			for (Entry<Player, PlayerStats> stat : stats) {
 				stat.getValue().resetPoints();

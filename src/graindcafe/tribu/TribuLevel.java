@@ -87,7 +87,15 @@ public class TribuLevel {
 		}
 	
 	}
-
+	public void initSigns()
+	{
+		for (SpawnControlSign scs : scSigns) {
+			scs.raiseEvent();
+		}
+		for (HighscoreSign hs : highscoreSigns) {
+			hs.raiseEvent();
+		}
+	}
 	public Location getDeathSpawn() {
 		return deathSpawn;
 	}

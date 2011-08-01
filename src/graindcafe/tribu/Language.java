@@ -55,7 +55,7 @@ public class Language {
 	}
 	public byte getVersion()
 	{
-		return (byte) File.getInt("Version", Default.getVersion());
+		return (byte) File.getInt("Version", Default instanceof DefaultLanguage ? 0 : Default.getVersion());
 	}
 
 	public String parseColor(String s) {

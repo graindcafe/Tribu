@@ -16,7 +16,6 @@ public class SpawnControlSign extends TribuSign {
 	public SpawnControlSign(Tribu plugin, Location pos, String[] Lines) {
 		super(plugin, pos);
 		ZombieSpawn = Lines[1];
-		raiseEvent();
 	}
 
 	@Override
