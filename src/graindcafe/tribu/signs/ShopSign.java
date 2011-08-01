@@ -1,4 +1,7 @@
-package graindcafe.tribu;
+package graindcafe.tribu.signs;
+
+import graindcafe.tribu.PlayerStats;
+import graindcafe.tribu.Tribu;
 
 import java.util.HashMap;
 
@@ -59,17 +62,17 @@ public class ShopSign extends TribuSign {
 				p.updateInventory();
 				if (failed.size() > 0) {
 					// maybe the inventory is full
-					p.sendMessage(Constants.MessageUnableToGiveYouThatItem);
+					p.sendMessage(plugin.getLocale("Message.UnableToGiveYouThatItem"));
 					stats.addMoney(Cost);
 				} else {
 					// Alright
-					p.sendMessage(String.format(Constants.MessagePurchaseSuccessfulMoney, String.valueOf(stats.getMoney())));
+					p.sendMessage(String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));
 				}
 			} else
-				p.sendMessage(Constants.MessageUnknownItem);
+				p.sendMessage(plugin.getLocale("Message.UnknownItem"));
 
 		} else {
-			p.sendMessage(Constants.MessageYouDontHaveEnoughMoney);
+			p.sendMessage(plugin.getLocale("Message.YouDontHaveEnoughMoney"));
 		}
 
 	}

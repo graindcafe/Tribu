@@ -1,6 +1,8 @@
-package graindcafe.tribu;
+package graindcafe.tribu.signs;
 
-import java.io.DataInputStream;	
+import graindcafe.tribu.Tribu;
+
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
@@ -17,15 +19,15 @@ public abstract class TribuSign {
 	public static TribuSign getObject(Tribu plugin, Location pos, String[] lines) {
 		
 		TribuSign ret = null;
-		if (lines[0].equalsIgnoreCase(Constants.SignBuy))
+		if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Buy")))
 			ret = new ShopSign(plugin, pos,lines);
-		else if (lines[0].equalsIgnoreCase(Constants.SignHighscoreNames))
+		else if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.HighscoreNames")))
 			ret = new TopNamesSign(plugin, pos);
-		else if (lines[0].equalsIgnoreCase(Constants.SignHighscorePoints))
+		else if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.HighscorePoints")))
 			ret = new TopPointsSign(plugin, pos);
-		else if (lines[0].equalsIgnoreCase(Constants.SignSpawner))
+		else if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Spawner")))
 			ret = new SpawnControlSign(plugin, pos,lines);
-		else if (lines[0].equalsIgnoreCase(Constants.SignToggleSpawner))
+		else if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.ToggleSpawner")))
 			ret = new SpawnControlToggleSign(plugin, pos,lines);
 		
 		return ret;

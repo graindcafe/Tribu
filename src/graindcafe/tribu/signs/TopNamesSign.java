@@ -1,4 +1,7 @@
-package graindcafe.tribu;
+package graindcafe.tribu.signs;
+
+import graindcafe.tribu.PlayerStats;
+import graindcafe.tribu.Tribu;
 
 import java.util.LinkedList;
 
@@ -15,10 +18,11 @@ public class TopNamesSign extends HighscoreSign {
 			super(plugin,pos);
 			
 		}
+		@Override
 		public void raiseEvent()
 		{
 			Sign s = ((Sign) pos.getBlock().getState());
-			s.setLine(0, Constants.SignHighscoreNames);
+			s.setLine(0, plugin.getLocale("Sign.HighscoreNames"));
 			s.setLine(1, "");
 			s.setLine(2, "");
 			s.setLine(3, "");

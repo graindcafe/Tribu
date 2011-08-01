@@ -54,8 +54,8 @@ public class TribuPlayerListener extends PlayerListener {
 
 	@Override
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
-		plugin.setDead(event.getPlayer());
 		if (plugin.getLevel() != null) {
+			plugin.setDead(event.getPlayer());
 			event.setRespawnLocation(plugin.getLevel().getDeathSpawn());
 		}
 	}

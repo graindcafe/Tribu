@@ -1,6 +1,5 @@
 package graindcafe.tribu.executors;
 
-import graindcafe.tribu.Constants;
 import graindcafe.tribu.Tribu;
 
 import org.bukkit.Location;
@@ -17,6 +16,7 @@ public class CmdZspawn implements CommandExecutor {
 		plugin = instance;
 	}
 
+	@Override
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
 		if (!sender.isOp()) {
@@ -24,15 +24,15 @@ public class CmdZspawn implements CommandExecutor {
 		}
 
 		if (!(sender instanceof Player)) {
-			plugin.LogWarning(Constants.WarningThisCommandCannotBeUsedFromTheConsole);
+			plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 			return true;
 		}
 		Player player = (Player) sender;
 
 		// Make sure a level is loaded
 		if (plugin.getLevel() == null) {
-			sender.sendMessage(Constants.MessageNoLevelLoaded);
-			sender.sendMessage(Constants.MessageNoLevelLoaded2);
+			sender.sendMessage(plugin.getLocale("Message.NoLevelLoaded"));
+			sender.sendMessage(plugin.getLocale("Message.NoLevelLoaded2"));
 			return true;
 		}
 		
@@ -41,13 +41,13 @@ public class CmdZspawn implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("set") ) {
 
 				plugin.getLevel().addZombieSpawn(player.getLocation(), args[1]);
-				player.sendMessage(Constants.MessageSpawnpointAdded);
+				player.sendMessage(plugin.getLocale("Message.SpawnpointAdded"));
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("remove")) {
 
 				plugin.getLevel().removeZombieSpawn(args[1]);
-				player.sendMessage(Constants.MessageSpawnpointRemoved);
+				player.sendMessage(plugin.getLocale("Message.SpawnpointRemoved"));
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("jump")) {
@@ -55,9 +55,9 @@ public class CmdZspawn implements CommandExecutor {
 				Location zspawn = plugin.getLevel().getZombieSpawn(args[1]);
 				if (zspawn != null) {
 					player.teleport(zspawn);
-					player.sendMessage(String.format(Constants.MessageTeleportedToZombieSpawn,args[1]));
+					player.sendMessage(String.format(plugin.getLocale("Message.TeleportedToZombieSpawn"),args[1]));
 				} else {
-					player.sendMessage(Constants.MessageInvalidSpawnName);
+					player.sendMessage(plugin.getLocale("Message.InvalidSpawnName"));
 				}
 				return true;
 

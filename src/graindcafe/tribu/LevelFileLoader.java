@@ -1,5 +1,7 @@
 package graindcafe.tribu;
 
+import graindcafe.tribu.signs.TribuSign;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -25,8 +27,8 @@ public class LevelFileLoader {
 		// File dir = new File(Constants.levelFolder);
 		File dir = new File(Constants.levelFolder);
 		if (!dir.exists()) {
-			plugin.LogInfo(Constants.InfoLevelFolderDoesntExist);
-			String[] levelFolders = Constants.levelFolder.split("/");
+			plugin.LogInfo(plugin.getLocale("Info.LevelFolderDoesntExist"));
+			String[] levelFolders =Constants.levelFolder.split("/");
 			String tmplevelFolder = "";
 			for (byte i = 0; i < levelFolders.length; i++) {
 				tmplevelFolder = tmplevelFolder.concat(levelFolders[i] + File.separatorChar);
@@ -36,7 +38,7 @@ public class LevelFileLoader {
 			}
 		}
 		File[] files = dir.listFiles();
-		plugin.LogInfo(String.format(Constants.InfoLevelFound, String.valueOf(files.length)));
+		plugin.LogInfo(String.format(plugin.getLocale("Info.LevelFound"), String.valueOf(files.length)));
 		if (files != null) {
 			for (File file : files) {
 				levels.add(file.getName().substring(0, file.getName().lastIndexOf(".")));
@@ -50,7 +52,7 @@ public class LevelFileLoader {
 		if (file.exists()) {
 			boolean result = file.delete();
 			if (!result) {
-				plugin.LogWarning(Constants.WarningIOErrorOnFileDelete);
+				plugin.LogWarning(plugin.getLocale("Warning.IOErrorOnFileDelete"));
 			} else {
 				levels.remove(name);
 			}
@@ -61,14 +63,6 @@ public class LevelFileLoader {
 
 	public Set<String> getLevelList() {
 		return levels;
-	}
-
-	public TribuLevel loadLevelIgnoreCase(String name) {
-		for (String level : levels) {
-			if (level.equalsIgnoreCase(name))
-				name = level;
-		}
-		return loadLevel(name);
 	}
 
 	public TribuLevel loadLevel(String name) {
@@ -95,13 +89,13 @@ public class LevelFileLoader {
 
 			if (version != Constants.LevelFileVersion) {
 				fstream.close();
-				plugin.LogSevere(Constants.SevereWorldInvalidFileVersion);
+				plugin.LogSevere(plugin.getLocale("Severe.WorldInvalidFileVersion"));
 				return null;
 			}
 			World world = plugin.getServer().getWorld(in.readUTF());
 			if (world == null) {
 				fstream.close();
-				plugin.LogSevere(Constants.SevereWorldDoesntExist);
+				plugin.LogSevere(plugin.getLocale("Severe.WorldDoesntExist"));
 				return null;
 			}
 			double sx, sy, sz; // spawn coords
@@ -139,15 +133,26 @@ public class LevelFileLoader {
 			}
 			int signCount = in.readInt();
 			for (int i = 0; i < signCount; i++) {
-				level.addSign(TribuSign.LoadFromStream(plugin, world, in));
+				if(!level.addSign(TribuSign.LoadFromStream(plugin, world, in)))
+				{
+					plugin.LogWarning(plugin.getLocale("Warning.UnableToAddSign"));
+				}
 			}
 
 		} catch (Exception e) {
-			plugin.LogSevere(String.format(Constants.SevereErrorDuringLevelLoading, Tribu.getExceptionMessage(e)));
+			plugin.LogSevere(String.format(plugin.getLocale("Severe.ErrorDuringLevelLoading"), Tribu.getExceptionMessage(e)));
 			level = null;
 		}
 
 		return level;
+	}
+
+	public TribuLevel loadLevelIgnoreCase(String name) {
+		for (String level : levels) {
+			if (level.equalsIgnoreCase(name))
+				name = level;
+		}
+		return loadLevel(name);
 	}
 
 	public TribuLevel newLevel(String name, Location spawn) {
@@ -209,7 +214,7 @@ public class LevelFileLoader {
 			o.close();
 			out.close();
 		} catch (Exception e) {
-			plugin.LogSevere(String.format(Constants.SevereErrorDuringLevelSaving, Tribu.getExceptionMessage(e)));
+			plugin.LogSevere(String.format(plugin.getLocale("Severe.ErrorDuringLevelSaving"), Tribu.getExceptionMessage(e)));
 			return false;
 		}
 		levels.add(level.getName());

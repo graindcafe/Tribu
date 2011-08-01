@@ -1,6 +1,6 @@
 package graindcafe.tribu.executors;
 
-import graindcafe.tribu.Constants;
+
 import graindcafe.tribu.Tribu;
 
 import java.util.Set;
@@ -22,6 +22,7 @@ public class CmdTribu implements CommandExecutor {
 
 	// usage: /tribu ((create | load | delete) <name>) | enter | leave |
 	// list | start [<name>] | stop | save
+	@Override
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
 		if (args.length == 0) {
@@ -31,7 +32,7 @@ public class CmdTribu implements CommandExecutor {
 		args[0] = args[0].toLowerCase();
 		if (args[0].equalsIgnoreCase("enter") || args[0].equalsIgnoreCase("join")) {
 			if (!(sender instanceof Player)) {
-				plugin.LogWarning(Constants.WarningThisCommandCannotBeUsedFromTheConsole);
+				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 
 			} else
 				plugin.addPlayer((Player) sender);
@@ -39,7 +40,7 @@ public class CmdTribu implements CommandExecutor {
 		} else if (args[0].equals("leave")) {
 			if (!plugin.isDedicatedServer() || sender.isOp())
 				if (!(sender instanceof Player)) {
-					plugin.LogWarning(Constants.WarningThisCommandCannotBeUsedFromTheConsole);
+					plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 
 				} else {
 					plugin.removePlayer((Player) sender);
@@ -51,19 +52,19 @@ public class CmdTribu implements CommandExecutor {
 			}
 
 			if (!(sender instanceof Player)) {
-				plugin.LogWarning(Constants.WarningThisCommandCannotBeUsedFromTheConsole);
+				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 				return true;
 			}
 			Player player = (Player) sender;
 
 			if (!plugin.getLevelLoader().saveLevel(plugin.getLevel())) {
-				player.sendMessage(Constants.MessageUnableToSaveCurrentLevel);
+				player.sendMessage(plugin.getLocale("Message.UnableToSaveCurrentLevel"));
 				return true;
 			}
 
 			plugin.setLevel(plugin.getLevelLoader().newLevel(args[1],
 					player.getLocation()));
-			player.sendMessage(String.format(Constants.MessageLevelCreated,
+			player.sendMessage(String.format(plugin.getLocale("Message.LevelCreated"),
 					args[1]));
 
 			return true;
@@ -74,15 +75,15 @@ public class CmdTribu implements CommandExecutor {
 			if (!deletedLevel.equals(args[1])) {
 				deletedLevel = args[1];
 				plugin.Message(sender, String.format(
-						Constants.MessageConfirmDeletion, args[1]));
+						plugin.getLocale("Message.ConfirmDeletion"), args[1]));
 				plugin.Message(sender,
-						Constants.MessageThisOperationIsNotCancellable);
+						plugin.getLocale("Message.ThisOperationIsNotCancellable"));
 				return true;
 			} else {
 				if (!plugin.getLevelLoader().deleteLevel(args[1])) {
-					plugin.Message(sender, Constants.MessageUnableToDeleteLevel);
+					plugin.Message(sender, plugin.getLocale("Message.UnableToDeleteLevel"));
 				} else {
-					plugin.Message(sender, Constants.MessageLevelDeleted);
+					plugin.Message(sender, plugin.getLocale("Message.LevelDeleted"));
 				}
 				return true;
 			}
@@ -92,9 +93,9 @@ public class CmdTribu implements CommandExecutor {
 
 			if (!plugin.getLevelLoader().saveLevel(plugin.getLevel())) {
 				plugin.Message(sender,
-						Constants.MessageUnableToSaveCurrentLevel);
+						plugin.getLocale("Message.UnableToSaveCurrentLevel"));
 			} else {
-				plugin.Message(sender, Constants.MessageLevelSaveSuccessful);
+				plugin.Message(sender, plugin.getLocale("Message.LevelSaveSuccessful"));
 			}
 			return true;
 
@@ -110,7 +111,7 @@ public class CmdTribu implements CommandExecutor {
 			if (!sender.isOp())
 				return false;
 			plugin.setLevel(null);
-			plugin.Message(sender, Constants.MessageLevelUnloaded);
+			plugin.Message(sender, plugin.getLocale("Message.LevelUnloaded"));
 			return true;
 
 		} else if (args[0].equals("list")) {
@@ -121,7 +122,7 @@ public class CmdTribu implements CommandExecutor {
 				msg += separator + level;
 				separator = ", ";
 			}
-			plugin.Message(sender, String.format(Constants.MessageLevels, msg));
+			plugin.Message(sender, String.format(plugin.getLocale("Message.Levels"), msg));
 
 			return true;
 		} else if (args[0].equals("start")) {
@@ -133,18 +134,18 @@ public class CmdTribu implements CommandExecutor {
 				plugin.getLevelSelector().ChangeLevel(args[1],
 						sender instanceof Player ? (Player) sender : null);
 			} else if (plugin.getLevel() == null) {
-				plugin.Message(sender, Constants.MessageNoLevelLoaded);
-				plugin.Message(sender, Constants.MessageNoLevelLoaded2);
+				plugin.Message(sender, plugin.getLocale("Message.NoLevelLoaded"));
+				plugin.Message(sender, plugin.getLocale("Message.NoLevelLoaded2"));
 				return true;
 			}
-			plugin.Message(sender, Constants.MessageZombieModeEnabled);
+			plugin.Message(sender, plugin.getLocale("Message.ZombieModeEnabled"));
 			plugin.startRunning();
 			return true;
 		} else if (args[0].equals("stop")) {
 			if (!sender.isOp())
 				return false;
 			plugin.stopRunning();
-			plugin.Message(sender, Constants.MessageZombieModeDisabled);
+			plugin.Message(sender, plugin.getLocale("Message.ZombieModeDisabled"));
 			return true;
 
 		} else if (args[0].equals("tpfz")) {
@@ -158,7 +159,7 @@ public class CmdTribu implements CommandExecutor {
 
 		} else if (args[0].equals("vote")) {
 			if (!(sender instanceof Player)) {
-				plugin.LogWarning(Constants.WarningThisCommandCannotBeUsedFromTheConsole);
+				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 				return true;
 			}
 			Player player = (Player) sender;
@@ -169,7 +170,7 @@ public class CmdTribu implements CommandExecutor {
 			}
 		} else if (args[0].equals("vote1")) {
 			if (!(sender instanceof Player)) {
-				plugin.LogWarning(Constants.WarningThisCommandCannotBeUsedFromTheConsole);
+				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 				return true;
 			}
 
@@ -178,7 +179,7 @@ public class CmdTribu implements CommandExecutor {
 
 		} else if (args[0].equals("vote2")) {
 			if (!(sender instanceof Player)) {
-				plugin.LogWarning(Constants.WarningThisCommandCannotBeUsedFromTheConsole);
+				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 				return true;
 			}
 

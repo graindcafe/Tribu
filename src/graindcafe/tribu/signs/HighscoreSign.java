@@ -1,5 +1,7 @@
-package graindcafe.tribu;
+package graindcafe.tribu.signs;
 
+
+import graindcafe.tribu.Tribu;
 
 import org.bukkit.Location;
 import org.bukkit.event.Event;

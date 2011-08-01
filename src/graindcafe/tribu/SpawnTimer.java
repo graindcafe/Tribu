@@ -33,6 +33,7 @@ public class SpawnTimer implements Runnable {
 			plugin.LogInfo("is NOT queued");
 
 	}
+	@Override
 	public void run() {
 		if (plugin.isRunning() && plugin.getSpawner().haveZombieToSpawn()
 				&& plugin.getAliveCount() > 0) {

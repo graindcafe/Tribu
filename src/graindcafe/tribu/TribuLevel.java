@@ -1,5 +1,10 @@
 package graindcafe.tribu;
 
+import graindcafe.tribu.signs.HighscoreSign;
+import graindcafe.tribu.signs.ShopSign;
+import graindcafe.tribu.signs.SpawnControlSign;
+import graindcafe.tribu.signs.TribuSign;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
@@ -50,7 +55,9 @@ public class TribuLevel {
 		}
 	}
 
-	public void addSign(TribuSign sign) {
+	public boolean addSign(TribuSign sign) {
+		if(sign==null)
+			return false;
 		Signs.put(sign.getLocation(), sign);
 		if (sign instanceof SpawnControlSign)
 			scSigns.add((SpawnControlSign) sign);
@@ -58,6 +65,8 @@ public class TribuLevel {
 			highscoreSigns.add((HighscoreSign) sign);
 		else if (sign instanceof ShopSign)
 			shopSigns.add((ShopSign) sign);
+		else return false;
+		return true;
 
 	}
 

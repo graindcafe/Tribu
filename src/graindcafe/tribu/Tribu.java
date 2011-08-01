@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
@@ -25,38 +24,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Tribu extends JavaPlugin {
-	private TribuPlayerListener playerListener;
-	private TribuEntityListener entityListener;
-	private TribuBlockListener blockListener;
-	private TribuWorldListener worldListener;
-	private LinkedList<PlayerStats> sortedStats;
-	private LevelFileLoader levelLoader;
-	private LevelSelector levelSelector;
-	private TribuLevel level;
-
-	private TribuSpawner spawner;
-	private SpawnTimer spawnTimer;
-	private WaveStarter waveStarter;
-
-	private Logger log;
-	private boolean isRunning;
-	private int aliveCount;
-
-	private boolean dedicatedServer = false;
-	private HashMap<Player, PlayerStats> players;
-	
-
-	public void addPlayer(Player player) {
-		if (!players.containsKey(player)) {
-			PlayerStats stats = new PlayerStats(player);
-			players.put(player, stats);
-			sortedStats.add(stats);
-			if (getLevel() != null && isRunning) {
-				player.teleport(level.getDeathSpawn());
-				player.sendMessage(Constants.MessageGameInProgress);
-			}
-		}
-	}
 	public static String getExceptionMessage(Exception e)
 	{
 		String message = e.getLocalizedMessage() + "\n";
@@ -64,16 +31,48 @@ public class Tribu extends JavaPlugin {
 			message += "[" + st.getFileName() + ":" + st.getLineNumber() + "] " + st.getClassName() + "->" + st.getMethodName() + "\n";
 		return message;
 	}
+	private TribuPlayerListener playerListener;
+	private TribuEntityListener entityListener;
+	private TribuBlockListener blockListener;
+	private TribuWorldListener worldListener;
+	private LinkedList<PlayerStats> sortedStats;
+	private LevelFileLoader levelLoader;
+	private LevelSelector levelSelector;
+
+	private TribuLevel level;
+	private TribuSpawner spawner;
+	private SpawnTimer spawnTimer;
+
+	private WaveStarter waveStarter;
+	private Logger log;
+	private boolean isRunning;
+	private int aliveCount;
+
+	private Language Language;
+	private boolean dedicatedServer = false;
+	
+
+	private HashMap<Player, PlayerStats> players;
+	public void addPlayer(Player player) {
+		if (!players.containsKey(player)) {
+			PlayerStats stats = new PlayerStats(player);
+			players.put(player, stats);
+			sortedStats.add(stats);
+			if (getLevel() != null && isRunning) {
+				player.teleport(level.getDeathSpawn());
+				player.sendMessage(Language.get("Message.GameInProgress"));
+			}
+		}
+	}
 	public void checkAliveCount() {
 		if (aliveCount == 0 && isRunning) {
 			stopRunning();
-			getServer().broadcastMessage(Constants.MessageZombieHavePrevailed);
-			getServer().broadcastMessage(String.format(Constants.MessageYouHaveReachedWave, String.valueOf(getWaveStarter().getWaveNumber())));
+			getServer().broadcastMessage(Language.get("Message.ZombieHavePrevailed"));
+			getServer().broadcastMessage(String.format(Language.get("Message.YouHaveReachedWave"), String.valueOf(getWaveStarter().getWaveNumber())));
 			if (getPlayersCount() != 0)
 				getLevelSelector().startVote(Constants.VoteDelay);
 		}
 	}
-
 	public int getAliveCount() {
 		return aliveCount;
 	}
@@ -90,9 +89,12 @@ public class Tribu extends JavaPlugin {
 		return levelSelector;
 	}
 
-	public LinkedList<PlayerStats> getSortedStats() {
-		Collections.sort(this.sortedStats);
-		return this.sortedStats;
+	public String getLocale(String key)
+	{
+		String r=Language.get(key);
+		if(r==null)
+			LogWarning(key + " not found");
+		return r;
 	}
 
 	public Set<Player> getPlayers() {
@@ -101,6 +103,11 @@ public class Tribu extends JavaPlugin {
 
 	public int getPlayersCount() {
 		return this.players.size();
+	}
+
+	public LinkedList<PlayerStats> getSortedStats() {
+		Collections.sort(this.sortedStats);
+		return this.sortedStats;
 	}
 
 	public TribuSpawner getSpawner() {
@@ -150,18 +157,20 @@ public class Tribu extends JavaPlugin {
 			sender.sendMessage(ChatColor.stripColor(message));
 	}
 
+	@Override
 	public void onDisable() {
 		players.clear();
 		sortedStats.clear();
 		stopRunning();
-		LogInfo(Constants.InfoDisable);
+		LogInfo(Language.get("Info.Disable"));
 	}
 
+	@Override
 	public void onEnable() {
 		log = Logger.getLogger("Minecraft");
 		
-		getConfiguration().setHeader("# Tribu Config File Version 1.1 \n"
-				+ "# Here is the default settings :\n"
+		getConfiguration().setHeader("# Tribu Config File Version "+Constants.ConfigFileVersion+" \n"
+				+"# Here is the default settings :\n"
 				+"# PluginMode:\n"
 				+"#      ServerExclusive: true\n"
 				+"# WaveStart:\n"
@@ -179,9 +188,26 @@ public class Tribu extends JavaPlugin {
 				+"#    OnPlayerDeath:\n"
 				+"#       Money:10000\n"
 				+"#       Points:50\n");
+		// Create the file if it doesn't exist
 		getConfiguration().save();
+		if(getConfiguration().getString("PluginMode.Language",null)!=null)
+		{
+			//LogInfo("#"+getConfiguration().getString("PluginMode.Language",null)+"#");
+			Language=new Language(getConfiguration().getString("PluginMode.Language"));
+		}else
+		{
+			Language=new DefaultLanguage();
+		}
+		if(Language.getVersion() != Constants.LanguageFileVersion)
+			LogWarning(Language.get("Warning.LanguageFileOutdated"));
+		Constants.MessageMoneyPoints=Language.get("Message.MoneyPoints");
+		Constants.MessageZombieSpawnList=Language.get("Message.ZombieSpawnList");
 		dedicatedServer = getConfiguration().getBoolean("PluginMode.ServerExclusive", true);
-		/*
+		/*if(dedicatedServer)
+			LogInfo("dedicated");
+			else
+				LogInfo("not dedicated");
+		
 		for(Entry<String, Object> cur : getConfiguration().getAll().entrySet())
 		{
 			LogInfo(cur.getKey()+" = "+cur.getValue().toString());
@@ -229,7 +255,7 @@ public class Tribu extends JavaPlugin {
 				i++;
 			}
 		}
-		LogInfo(Constants.InfoEnable);
+		LogInfo(Language.get("Info.Enable"));
 	}
 
 	public void removePlayer(Player player) {
@@ -301,9 +327,9 @@ public class Tribu extends JavaPlugin {
 			// Make sure no data is lost if server decides to die
 			// during a game and player forgot to /level save
 			if (!getLevelLoader().saveLevel(getLevel())) {
-				LogWarning(Constants.WarningUnableToSaveLevel);
+				LogWarning(Language.get("Warning.UnableToSaveLevel"));
 			} else {
-				LogInfo(Constants.InfoLevelSaved);
+				LogInfo(Language.get("Info.LevelSaved"));
 			}
 
 			Set<Entry<Player, PlayerStats>> stats = players.entrySet();

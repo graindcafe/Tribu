@@ -1,4 +1,6 @@
-package graindcafe.tribu;
+package graindcafe.tribu.signs;
+
+import graindcafe.tribu.Tribu;
 
 import org.bukkit.Location;
 import org.bukkit.event.Event;
@@ -14,7 +16,7 @@ public class SpawnControlSign extends TribuSign {
 	public SpawnControlSign(Tribu plugin, Location pos, String[] Lines) {
 		super(plugin, pos);
 		ZombieSpawn = Lines[1];
-		
+		raiseEvent();
 	}
 
 	@Override
@@ -24,6 +26,10 @@ public class SpawnControlSign extends TribuSign {
 
 	@Override
 	public void raiseEvent(Event e) {
+		raiseEvent();
+	}
+	public void raiseEvent()
+	{
 		if(pos.getBlock().isBlockPowered())
 		{
 			plugin.getLevel().activateZombieSpawn(ZombieSpawn);

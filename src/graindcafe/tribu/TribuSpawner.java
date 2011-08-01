@@ -23,6 +23,7 @@ class MoveZombieTo implements Runnable {
 		// this.run();
 	}
 
+	@Override
 	public void run() {
 
 		// if(subject.getTarget() == null)
@@ -114,7 +115,7 @@ public class TribuSpawner {
 			drops.clear();
 			if (zombies.size() == 0 && finished == true) {
 				plugin.getServer().broadcastMessage(
-						Constants.BroadcastWaveComplete);
+						plugin.getLocale("Broadcast.WaveComplete"));
 				plugin.getWaveStarter().incrementWave();
 				plugin.getWaveStarter().scheduleWave(Constants.TicksBySecond*plugin.getConfiguration().getInt("WaveStart.Delay", 10));
 			}
@@ -157,7 +158,7 @@ public class TribuSpawner {
 				return curPos;
 			}
 		}
-		plugin.LogInfo(Constants.WarningAllSpawnsCurrentlyUnloaded);
+		plugin.LogInfo(plugin.getLocale("Warning.AllSpawnsCurrentlyUnloaded"));
 		return null;
 
 	}

@@ -1,8 +1,7 @@
 package graindcafe.tribu.listeners;
 
-import graindcafe.tribu.Constants;
 import graindcafe.tribu.Tribu;
-import graindcafe.tribu.TribuSign;
+import graindcafe.tribu.signs.TribuSign;
 
 import org.bukkit.Material;
 import org.bukkit.event.Event;
@@ -33,9 +32,10 @@ public class TribuBlockListener extends BlockListener {
 	}
 
 	@Override
-	public void onBlockPlace(BlockPlaceEvent event) {
+	public void onBlockPlace(BlockPlaceEvent event) {		
 		if(!event.getPlayer().isOp() && (plugin.isDedicatedServer()))
 			event.setCancelled(true);
+		
 	}
 
 	@Override
@@ -60,9 +60,9 @@ public class TribuBlockListener extends BlockListener {
 				else {
 					
 					event.getPlayer().sendMessage(
-							Constants.MessageNoLevelLoaded);
+							plugin.getLocale("Message.NoLevelLoaded"));
 					event.getPlayer().sendMessage(
-							Constants.MessageNoLevelLoaded2);
+							plugin.getLocale("Message.NoLevelLoaded2"));
 					event.setCancelled(true);
 				}
 			

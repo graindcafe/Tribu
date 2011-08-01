@@ -60,6 +60,7 @@ public class WaveStarter implements Runnable {
 		waveNumber = 1;
 	}
 	
+	@Override
 	public void run() {
 		if (plugin.isRunning()) {
 			if(plugin.getConfiguration().getBoolean("WaveStart.TeleportPlayers", false))
@@ -77,7 +78,7 @@ public class WaveStarter implements Runnable {
 			int max = calcPolynomialFunction(waveNumber,plugin.getConfiguration().getDoubleList("Zombies.Quantity", Arrays.asList(0.5,1.0,1.0)));
 			int health = calcPolynomialFunction(waveNumber,plugin.getConfiguration().getDoubleList("Zombies.Health", Arrays.asList(.5,4.0)));
 			plugin.getSpawnTimer().StartWave( max, health);
-			plugin.getServer().broadcastMessage(String.format(Constants.BroadcastStartingWave,String.valueOf(waveNumber) , String.valueOf(max),String.valueOf(health)));
+			plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.StartingWave"),String.valueOf(waveNumber) , String.valueOf(max),String.valueOf(health)));
 			
 		}
 	}
@@ -87,7 +88,7 @@ public class WaveStarter implements Runnable {
 			taskID = plugin.getServer().getScheduler()
 					.scheduleSyncDelayedTask(plugin, this, delay);
 			scheduled = true;
-			plugin.getServer().broadcastMessage(String.format(Constants.BroadcastWave, String.valueOf(plugin.getWaveStarter().getWaveNumber()),String.valueOf(delay / 20)));
+			plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.Wave"), String.valueOf(plugin.getWaveStarter().getWaveNumber()),String.valueOf(delay / 20)));
 		}
 	}
 

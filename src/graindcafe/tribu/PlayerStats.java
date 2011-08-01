@@ -22,6 +22,7 @@ public class PlayerStats implements Comparable<PlayerStats>{
 		points += amount;
 	}
 
+	@Override
 	public int compareTo(PlayerStats o) {
 		if(o.getPoints() == points)
 			return 0;

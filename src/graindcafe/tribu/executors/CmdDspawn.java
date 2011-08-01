@@ -1,7 +1,6 @@
 package graindcafe.tribu.executors;
 
 
-import graindcafe.tribu.Constants;
 import graindcafe.tribu.Tribu;
 
 import org.bukkit.command.Command;
@@ -17,6 +16,7 @@ public class CmdDspawn implements CommandExecutor {
 		plugin = instance;
 	}
 
+	@Override
 	public boolean onCommand(CommandSender sender, Command command,
 			String label, String[] args) {
 		if (!sender.isOp()) {
@@ -24,7 +24,7 @@ public class CmdDspawn implements CommandExecutor {
 		}
 
 		if (!(sender instanceof Player)) {
-			plugin.LogWarning(Constants.WarningThisCommandCannotBeUsedFromTheConsole);
+			plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 			return true;
 		}
 		Player player = (Player) sender;
@@ -32,8 +32,8 @@ public class CmdDspawn implements CommandExecutor {
 		// Make sure a level is loaded
 		if (plugin.getLevel() == null) {
 			
-			player.sendMessage(Constants.MessageNoLevelLoaded);
-			player.sendMessage(Constants.MessageNoLevelLoaded2);
+			player.sendMessage(plugin.getLocale("Message.NoLevelLoaded"));
+			player.sendMessage(plugin.getLocale("Message.NoLevelLoaded2"));
 			return true;
 		}
 
@@ -41,14 +41,14 @@ public class CmdDspawn implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("jump")) {
 
 				player.teleport(plugin.getLevel().getDeathSpawn());
-				player.sendMessage(Constants.MessageTeleportedToDeathSpawn);
+				player.sendMessage(plugin.getLocale("Message.TeleportedToDeathSpawn"));
 				return true;
 
 			}
 		} else {
 
 			plugin.getLevel().setDeathSpawn(player.getLocation());
-			player.sendMessage(Constants.MessageDeathSpawnSet);
+			player.sendMessage(plugin.getLocale("Message.DeathSpawnSet"));
 			return true;
 
 		}
