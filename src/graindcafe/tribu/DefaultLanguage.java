@@ -40,7 +40,9 @@ public class DefaultLanguage extends Language
 			put("Message.LevelCreated",ChatColor.GREEN + "Level " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN + " created");
 			put("Message.UnableToDeleteLevel",ChatColor.RED	+ "Unable to delete current level.");
 			put("Message.LevelDeleted",ChatColor.GREEN	+ "Level deleted successfully.");
-			put("Message.Levels",ChatColor.GREEN + "Levels : %s");
+			put("Message.Levels",ChatColor.GREEN + "Levels: %s");
+			put("Message.UnknownLevel", ChatColor.RED + "Unknown level: %s");
+			put("Message.MaybeNotSaved", ChatColor.YELLOW + "Maybe you have not saved this level or you have not set anything in.");
 			put("Message.ZombieModeEnabled","Zombie Mode enabled!");
 			put("Message.ZombieModeDisabled","Zombie Mode disabled!");
 			put("Message.SpawnpointAdded",ChatColor.GREEN + "Spawnpoint added");
@@ -54,6 +56,8 @@ public class DefaultLanguage extends Language
 			put("Message.GameInProgress",ChatColor.YELLOW+ "Game in progress, you will spawn next round");
 			put("Message.ZombieHavePrevailed",	ChatColor.GREEN + "Zombies have prevailed!");
 			put("Message.YouHaveReachedWave",	ChatColor.GREEN + "You have reached wave "+ ChatColor.LIGHT_PURPLE+ "%s");
+			put("Message.YouJoined",	ChatColor.GREEN + "You joined the human strengths against zombies.");
+			put("Message.YouLeft",	ChatColor.GREEN + "You left the fight against zombies.");
 			put("Broadcast.MapChosen",ChatColor.GREEN + "Map " + ChatColor.LIGHT_PURPLE +"%s" + ChatColor.GREEN + " has been chosen");
 			put("Broadcast.MapVoteStarting",ChatColor.GREEN + "Map vote starting,");
 			put("Broadcast.Type",ChatColor.GREEN + "Type ");
@@ -66,13 +70,16 @@ public class DefaultLanguage extends Language
 			put("Info.Enable","Starting Tribu by Graindcafe, original author : samp20");
 			put("Info.Disable","Stopping Tribu");
 			put("Info.LevelSaved","Level saved");
+			put("Info.ChosenLanguage", "Chosen language : %s (default). Provided by : %s.");
 			put("Info.LevelFolderDoesntExist","Level folder doesn't exist");
 			put("Warning.AllSpawnsCurrentlyUnloaded","All zombies spawns are currently unloaded.");
 			put("Warning.UnableToSaveLevel","Unable to save level");
 			put("Warning.ThisCommandCannotBeUsedFromTheConsole","This command cannot be used from the console");
 			put("Warning.IOErrorOnFileDelete","IO error on file delete");
 			put("Warning.LanguageFileOutdated","Your current language file is outdated");
+			put("Warning.LanguageFileMissing","The chosen language file is missing");
 			put("Warning.UnableToAddSign","Unable to add sign, maybe you've changed your locales, or signs' tags.");
+			put("Warning.UnknownFocus", "The string given for the configuration Zombies.Focus is not recognized : %s . It could be 'None','Nearest','Random','DeathSpawn','InitialSpawn'.");
 			put("Severe.WorldInvalidFileVersion","World invalid file version");
 			put("Severe.WorldDoesntExist","World doesn't exist");
 			put("Severe.ErrorDuringLevelLoading","Error during level loading : %s");
@@ -89,5 +96,10 @@ public class DefaultLanguage extends Language
 	public byte getVersion()
 	{
 		return Constants.LanguageFileVersion;
+	}
+	@Override
+	public String getAuthor()
+	{
+		return "Graindcafe";
 	}
 }

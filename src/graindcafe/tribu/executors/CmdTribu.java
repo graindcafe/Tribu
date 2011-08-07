@@ -23,11 +23,9 @@ public class CmdTribu implements CommandExecutor {
 	// usage: /tribu ((create | load | delete) <name>) | enter | leave |
 	// list | start [<name>] | stop | save
 	@Override
-	public boolean onCommand(CommandSender sender, Command command,
-			String label, String[] args) {
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (args.length == 0) {
-			plugin.LogWarning("PAS D'ARGUMENTS");
-			return false;
+			return usage(sender);
 		}
 		args[0] = args[0].toLowerCase();
 		if (args[0].equalsIgnoreCase("enter") || args[0].equalsIgnoreCase("join")) {
@@ -35,7 +33,10 @@ public class CmdTribu implements CommandExecutor {
 				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 
 			} else
+			{
+				sender.sendMessage(plugin.getLocale("Message.YouJoined"));
 				plugin.addPlayer((Player) sender);
+			}
 			return true;
 		} else if (args[0].equals("leave")) {
 			if (!plugin.isDedicatedServer() || sender.isOp())
@@ -43,12 +44,13 @@ public class CmdTribu implements CommandExecutor {
 					plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 
 				} else {
+					sender.sendMessage(plugin.getLocale("Message.YouLeaved"));
 					plugin.removePlayer((Player) sender);
 				}
 			return true;
 		} else if (args[0].equals("new") || args[0].equals("create")) {
 			if (args.length == 1 || !sender.isOp()) {
-				return false;
+				return usage(sender);
 			}
 
 			if (!(sender instanceof Player)) {
@@ -70,8 +72,15 @@ public class CmdTribu implements CommandExecutor {
 			return true;
 		} else if (args[0].equals("delete")) {
 			if (args.length == 1 || !sender.isOp()) {
-				return false;
+				return usage(sender);
 			}
+			else
+			if(!plugin.getLevelLoader().exists(args[1]))
+			{
+				sender.sendMessage(String.format(plugin.getLocale("Message.UnknownLevel"),args[1]));
+				sender.sendMessage(plugin.getLocale("Message.MaybeNotSaved"));
+				return true;
+			}else
 			if (!deletedLevel.equals(args[1])) {
 				deletedLevel = args[1];
 				plugin.Message(sender, String.format(
@@ -89,7 +98,7 @@ public class CmdTribu implements CommandExecutor {
 			}
 		} else if (args[0].equals("save")) {
 			if (!sender.isOp())
-				return false;
+				return usage(sender);
 
 			if (!plugin.getLevelLoader().saveLevel(plugin.getLevel())) {
 				plugin.Message(sender,
@@ -101,7 +110,7 @@ public class CmdTribu implements CommandExecutor {
 
 		} else if (args[0].equals("load")) {
 			if (args.length == 1 || !sender.isOp()) {
-				return false;
+				return usage(sender);
 			} else {
 				plugin.getLevelSelector().ChangeLevel(args[1],
 						sender instanceof Player ? (Player) sender : null);
@@ -109,7 +118,7 @@ public class CmdTribu implements CommandExecutor {
 			}
 		} else if (args[0].equals("unload")) {
 			if (!sender.isOp())
-				return false;
+				return usage(sender);
 			plugin.setLevel(null);
 			plugin.Message(sender, plugin.getLocale("Message.LevelUnloaded"));
 			return true;
@@ -127,10 +136,10 @@ public class CmdTribu implements CommandExecutor {
 			return true;
 		} else if (args[0].equals("start")) {
 			if (!sender.isOp())
-				return false;
+				return usage(sender);
 			// if a level is given, load it before start
 			if (args.length > 1
-					&& plugin.getLevelLoader().getLevelList().contains(args[1])) {
+					&& plugin.getLevelLoader().exists(args[1])) {
 				plugin.getLevelSelector().ChangeLevel(args[1],
 						sender instanceof Player ? (Player) sender : null);
 			} else if (plugin.getLevel() == null) {
@@ -143,7 +152,7 @@ public class CmdTribu implements CommandExecutor {
 			return true;
 		} else if (args[0].equals("stop")) {
 			if (!sender.isOp())
-				return false;
+				return usage(sender);
 			plugin.stopRunning();
 			plugin.Message(sender, plugin.getLocale("Message.ZombieModeDisabled"));
 			return true;
@@ -162,10 +171,14 @@ public class CmdTribu implements CommandExecutor {
 				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 				return true;
 			}
-			Player player = (Player) sender;
-
+			
 			if (args.length == 2) {
-				plugin.getLevelSelector().castVote(player, args[1]);
+				try{
+					plugin.getLevelSelector().castVote((Player) sender, Integer.parseInt(args[1]));
+				}catch(NumberFormatException e)
+				{
+					sender.sendMessage(plugin.getLocale("Message.InvalidVote"));
+				}
 				return true;
 			}
 		} else if (args[0].equals("vote1")) {
@@ -174,7 +187,7 @@ public class CmdTribu implements CommandExecutor {
 				return true;
 			}
 
-			plugin.getLevelSelector().castVote((Player) sender, "1");
+			plugin.getLevelSelector().castVote((Player) sender, 1);
 			return true;
 
 		} else if (args[0].equals("vote2")) {
@@ -183,14 +196,22 @@ public class CmdTribu implements CommandExecutor {
 				return true;
 			}
 
-			plugin.getLevelSelector().castVote((Player) sender, "2");
+			plugin.getLevelSelector().castVote((Player) sender, 2);
 			return true;
 
-		} else {
-			plugin.LogWarning("Argument inconnu : " + args[0]);
 		}
+		return usage(sender);
 
-		return false;
 	}
-
+	private boolean usage(CommandSender sender)
+	{
+		if(sender.isOp())
+		{
+			sender.sendMessage("Ops commands :");
+			sender.sendMessage("/tribu ((create | load | delete) <name>) | enter | leave | list | start [<name>] | stop | save");
+			sender.sendMessage("Players commands :");
+		}
+		return false;
+	
+	}
 }

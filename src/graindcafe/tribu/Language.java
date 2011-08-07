@@ -22,7 +22,7 @@ public class Language {
 		if (f.exists()) {
 			File = new Configuration(f);
 			File.load();
-			
+
 			if (File.getString("Default", null) != null) {
 				Default = new Language(File.getString("Default"));
 			} else {
@@ -35,27 +35,36 @@ public class Language {
 		finalStrings = new HashMap<String, String>();
 
 	}
+
 	public String get(String key) {
 		if (finalStrings.containsKey(key)) {
 			return finalStrings.get(key);
 		} else {
 			String finalString;
-			if (File != null){
-				finalString = File.getString(key,null);
-				if(finalString != null)
+			if (File != null) {
+				finalString = File.getString(key, null);
+				if (finalString != null)
 					finalString = parseColor(finalString);
 				else
-					finalString=Default.get(key);
-			}
-			else
+					finalString = Default.get(key);
+			} else
 				finalString = Default.get(key);
 			finalStrings.put(key, finalString);
 			return finalString;
 		}
 	}
-	public byte getVersion()
+	public String getAuthor()
 	{
-		return (byte) File.getInt("Version", Default instanceof DefaultLanguage ? 0 : Default.getVersion());
+		if (File != null)
+			return File.getString("Author","Anonymous") + (Default instanceof DefaultLanguage ? "" : ", "+ Default.getAuthor()); 
+		else
+			return Default.getAuthor();
+	}
+	public byte getVersion() {
+		if (File != null)
+			return (byte) File.getInt("Version", Default instanceof DefaultLanguage ? 0 : Default.getVersion());
+		else
+			return (byte) 255;
 	}
 
 	public String parseColor(String s) {
