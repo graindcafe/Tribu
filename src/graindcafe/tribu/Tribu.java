@@ -11,8 +11,10 @@ import graindcafe.tribu.listeners.TribuWorldListener;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -25,13 +27,13 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Tribu extends JavaPlugin {
-	public static String getExceptionMessage(Exception e)
-	{
+	public static String getExceptionMessage(Exception e) {
 		String message = e.getLocalizedMessage() + "\n";
 		for (StackTraceElement st : e.getStackTrace())
 			message += "[" + st.getFileName() + ":" + st.getLineNumber() + "] " + st.getClassName() + "->" + st.getMethodName() + "\n";
 		return message;
 	}
+
 	private TribuPlayerListener playerListener;
 	private TribuEntityListener entityListener;
 	private TribuBlockListener blockListener;
@@ -39,6 +41,7 @@ public class Tribu extends JavaPlugin {
 	private LinkedList<PlayerStats> sortedStats;
 	private LevelFileLoader levelLoader;
 	private LevelSelector levelSelector;
+	private Random rnd;
 
 	private TribuLevel level;
 	private TribuSpawner spawner;
@@ -51,9 +54,9 @@ public class Tribu extends JavaPlugin {
 
 	private Language Language;
 	private boolean dedicatedServer = false;
-	
 
 	private HashMap<Player, PlayerStats> players;
+
 	public void addPlayer(Player player) {
 		if (!players.containsKey(player)) {
 			PlayerStats stats = new PlayerStats(player);
@@ -65,6 +68,7 @@ public class Tribu extends JavaPlugin {
 			}
 		}
 	}
+
 	public void checkAliveCount() {
 		if (aliveCount == 0 && isRunning) {
 			stopRunning();
@@ -74,6 +78,7 @@ public class Tribu extends JavaPlugin {
 				getLevelSelector().startVote(Constants.VoteDelay);
 		}
 	}
+
 	public int getAliveCount() {
 		return aliveCount;
 	}
@@ -90,10 +95,9 @@ public class Tribu extends JavaPlugin {
 		return levelSelector;
 	}
 
-	public String getLocale(String key)
-	{
-		String r=Language.get(key);
-		if(r==null)
+	public String getLocale(String key) {
+		String r = Language.get(key);
+		if (r == null)
 			LogWarning(key + " not found");
 		return r;
 	}
@@ -102,12 +106,28 @@ public class Tribu extends JavaPlugin {
 		return this.players.keySet();
 	}
 
+	public Player getRandomPlayer() {
+		int n = rnd.nextInt(players.size());
+		Iterator<Player> i = players.keySet().iterator();
+		while (n > 0) {
+			i.next();
+			n++;
+		}
+		return i.next();
+	}
+
 	public int getPlayersCount() {
 		return this.players.size();
 	}
 
 	public LinkedList<PlayerStats> getSortedStats() {
 		Collections.sort(this.sortedStats);
+		int c = this.sortedStats.size();
+		int i = 0;
+		while (i < c) {
+			LogInfo(this.sortedStats.get(i).getPlayer().getDisplayName() + this.sortedStats.get(i).getPoints());
+			i++;
+		}
 		return this.sortedStats;
 	}
 
@@ -154,8 +174,10 @@ public class Tribu extends JavaPlugin {
 	public void Message(CommandSender sender, String message) {
 		if (sender instanceof Player)
 			sender.sendMessage(message);
+		else if (sender == null)
+			log.info(ChatColor.stripColor(message));
 		else
-			sender.sendMessage(ChatColor.stripColor(message));
+			sender.sendMessage(message);
 	}
 
 	@Override
@@ -169,50 +191,40 @@ public class Tribu extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		log = Logger.getLogger("Minecraft");
-		
-		getConfiguration().setHeader("# Tribu Config File Version "+Constants.ConfigFileVersion+" \n"
-				+"# Here is the default settings :\n"
-				+"# PluginMode:\n"
-				+"#      ServerExclusive: true\n"
-				+"# WaveStart:\n"
-				+"#      SetTime: true\n"
-				+"#      SetTimeTo: 37000\n"
-				+"#      Delay: 10\n"
-				+"#      TeleportPlayers:false\n"
-				+"# Zombies:\n"
-				+"#      Health: [0.5,4.0]\n"
-				+"#      Quantity: [0.5,1.0,1.0]\n"
-				+"# Stats:\n"
-				+"#    OnZombieKill:\n"
-				+"#       Money: 15\n"
-				+"#       Points: 10\n"
-				+"#    OnPlayerDeath:\n"
-				+"#       Money:10000\n"
-				+"#       Points:50\n");
+		rnd = new Random();
+		getConfiguration().setHeader(
+				"# Tribu Config File Version " + Constants.ConfigFileVersion + " \n" + "# Here is the default settings :\n" + "# PluginMode:\n"
+						+ "#      ServerExclusive: true\n" + "#      Language: english\n" + "# WaveStart:\n" + "#      SetTime: true\n"
+						+ "#      SetTimeTo: 37000\n" + "#      Delay: 10\n" + "#      TeleportPlayers:false\n" + "# Zombies:\n"
+						+ "#      Health: [0.5,4.0]\n" + "#      Quantity: [0.5,1.0,1.0]\n" + "#      LightResistant: false\n"
+						+ "#      # Could be None,Nearest,Random,DeathSpawn,InitialSpawn\n" + "#      Focus: None\n" + "# Stats:\n"
+						+ "#    OnZombieKill:\n" + "#       Money: 15\n" + "#       Points: 10\n" + "#    OnPlayerDeath:\n" + "#       Money:10000\n"
+						+ "#       Points:50\n" + "# Players:\n" + "#    DontLooseItem: false\n");
 		// Create the file if it doesn't exist
 		getConfiguration().save();
-		if(getConfiguration().getString("PluginMode.Language",null)!=null)
-		{
-			//LogInfo("#"+getConfiguration().getString("PluginMode.Language",null)+"#");
-			Language=new Language(getConfiguration().getString("PluginMode.Language"));
-		}else
-		{
-			Language=new DefaultLanguage();
+		if (getConfiguration().getString("PluginMode.Language", null) != null) {
+			// LogInfo("#"+getConfiguration().getString("PluginMode.Language",null)+"#");
+			Language = new Language(getConfiguration().getString("PluginMode.Language"));
+		} else {
+			Language = new DefaultLanguage();
 		}
-		if(Language.getVersion() != Constants.LanguageFileVersion)
-			LogWarning(Language.get("Warning.LanguageFileOutdated"));
-		Constants.MessageMoneyPoints=Language.get("Message.MoneyPoints");
-		Constants.MessageZombieSpawnList=Language.get("Message.ZombieSpawnList");
-		dedicatedServer = getConfiguration().getBoolean("PluginMode.ServerExclusive", true);
-		/*if(dedicatedServer)
-			LogInfo("dedicated");
+		LogInfo(String.format(Language.get("Info.ChosenLanguage"), getConfiguration().getString("PluginMode.Language"), Language.getAuthor()));
+		if (Language.getVersion() != Constants.LanguageFileVersion)
+			if (Language.getVersion() == 255)
+				LogWarning(Language.get("Warning.LanguageFileMissing"));
 			else
-				LogInfo("not dedicated");
-		
-		for(Entry<String, Object> cur : getConfiguration().getAll().entrySet())
-		{
-			LogInfo(cur.getKey()+" = "+cur.getValue().toString());
-		}*/
+				LogWarning(Language.get("Warning.LanguageFileOutdated"));
+		Constants.MessageMoneyPoints = Language.get("Message.MoneyPoints");
+		Constants.MessageZombieSpawnList = Language.get("Message.ZombieSpawnList");
+		dedicatedServer = getConfiguration().getBoolean("PluginMode.ServerExclusive", true);
+		/*
+		 * if(dedicatedServer) LogInfo("dedicated"); else
+		 * LogInfo("not dedicated");
+		 * 
+		 * for(Entry<String, Object> cur :
+		 * getConfiguration().getAll().entrySet()) {
+		 * LogInfo(cur.getKey()+" = "+cur.getValue().toString()); }
+		 */
 		isRunning = false;
 		aliveCount = 0;
 		level = null;
@@ -267,7 +279,7 @@ public class Tribu extends JavaPlugin {
 			checkAliveCount();
 			sortedStats.remove(players.get(player));
 			players.remove(player);
-			
+
 		}
 	}
 
@@ -289,7 +301,7 @@ public class Tribu extends JavaPlugin {
 
 		}
 	}
-		
+
 	public void setDead(Player player) {
 		if (isAlive(player)) {
 			aliveCount--;
@@ -341,7 +353,7 @@ public class Tribu extends JavaPlugin {
 
 			getWaveStarter().resetWave();
 			revivePlayers(true);
-			getWaveStarter().scheduleWave(Constants.TicksBySecond*getConfiguration().getInt("WaveStart.Delay", 10));
+			getWaveStarter().scheduleWave(Constants.TicksBySecond * getConfiguration().getInt("WaveStart.Delay", 10));
 		}
 	}
 

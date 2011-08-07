@@ -68,8 +68,7 @@ public class ShopSign extends TribuSign {
 					// Alright
 					p.sendMessage(String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));
 				}
-			} else
-			{
+			} else {
 				p.sendMessage(plugin.getLocale("Message.UnknownItem"));
 				stats.addMoney(Cost);
 			}

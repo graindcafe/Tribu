@@ -1,13 +1,11 @@
 package graindcafe.tribu.executors;
 
-
 import graindcafe.tribu.Tribu;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 
 public class CmdDspawn implements CommandExecutor {
 	private Tribu plugin;
@@ -17,8 +15,7 @@ public class CmdDspawn implements CommandExecutor {
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command,
-			String label, String[] args) {
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (!sender.isOp()) {
 			return true;
 		}
@@ -31,7 +28,7 @@ public class CmdDspawn implements CommandExecutor {
 
 		// Make sure a level is loaded
 		if (plugin.getLevel() == null) {
-			
+
 			player.sendMessage(plugin.getLocale("Message.NoLevelLoaded"));
 			player.sendMessage(plugin.getLocale("Message.NoLevelLoaded2"));
 			return true;

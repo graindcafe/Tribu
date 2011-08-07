@@ -5,7 +5,7 @@ import graindcafe.tribu.Tribu;
 import org.bukkit.Location;
 
 public class SpawnControlToggleSign extends SpawnControlSign {
-	protected boolean state=true;
+	protected boolean state = true;
 
 	public SpawnControlToggleSign(Tribu plugin, Location pos, String[] Lines) {
 		super(plugin, pos, Lines);

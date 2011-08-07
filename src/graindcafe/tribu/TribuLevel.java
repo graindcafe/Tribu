@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-
 public class TribuLevel {
 	private String name;
 	private Location initialSpawn;
@@ -49,14 +48,14 @@ public class TribuLevel {
 				Location spawn = zombieSpawns.get(sname);
 				if (!this.activeZombieSpawns.contains(spawn))
 					this.activeZombieSpawns.add(spawn);
-				
+
 				return;
 			}
 		}
 	}
 
 	public boolean addSign(TribuSign sign) {
-		if(sign==null)
+		if (sign == null)
 			return false;
 		Signs.put(sign.getLocation(), sign);
 		if (sign instanceof SpawnControlSign)
@@ -65,7 +64,8 @@ public class TribuLevel {
 			highscoreSigns.add((HighscoreSign) sign);
 		else if (sign instanceof ShopSign)
 			shopSigns.add((ShopSign) sign);
-		else return false;
+		else
+			return false;
 		return true;
 
 	}
@@ -85,10 +85,10 @@ public class TribuLevel {
 				return;
 			}
 		}
-	
+
 	}
-	public void initSigns()
-	{
+
+	public void initSigns() {
 		for (SpawnControlSign scs : scSigns) {
 			scs.raiseEvent();
 		}
@@ -96,6 +96,7 @@ public class TribuLevel {
 			hs.raiseEvent();
 		}
 	}
+
 	public Location getDeathSpawn() {
 		return deathSpawn;
 	}

@@ -1,6 +1,5 @@
 package graindcafe.tribu.executors;
 
-
 import graindcafe.tribu.Tribu;
 
 import java.util.Set;
@@ -32,8 +31,7 @@ public class CmdTribu implements CommandExecutor {
 			if (!(sender instanceof Player)) {
 				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 
-			} else
-			{
+			} else {
 				sender.sendMessage(plugin.getLocale("Message.YouJoined"));
 				plugin.addPlayer((Player) sender);
 			}
@@ -64,29 +62,21 @@ public class CmdTribu implements CommandExecutor {
 				return true;
 			}
 
-			plugin.setLevel(plugin.getLevelLoader().newLevel(args[1],
-					player.getLocation()));
-			player.sendMessage(String.format(plugin.getLocale("Message.LevelCreated"),
-					args[1]));
+			plugin.setLevel(plugin.getLevelLoader().newLevel(args[1], player.getLocation()));
+			player.sendMessage(String.format(plugin.getLocale("Message.LevelCreated"), args[1]));
 
 			return true;
 		} else if (args[0].equals("delete")) {
 			if (args.length == 1 || !sender.isOp()) {
 				return usage(sender);
-			}
-			else
-			if(!plugin.getLevelLoader().exists(args[1]))
-			{
-				sender.sendMessage(String.format(plugin.getLocale("Message.UnknownLevel"),args[1]));
+			} else if (!plugin.getLevelLoader().exists(args[1])) {
+				sender.sendMessage(String.format(plugin.getLocale("Message.UnknownLevel"), args[1]));
 				sender.sendMessage(plugin.getLocale("Message.MaybeNotSaved"));
 				return true;
-			}else
-			if (!deletedLevel.equals(args[1])) {
+			} else if (!deletedLevel.equals(args[1])) {
 				deletedLevel = args[1];
-				plugin.Message(sender, String.format(
-						plugin.getLocale("Message.ConfirmDeletion"), args[1]));
-				plugin.Message(sender,
-						plugin.getLocale("Message.ThisOperationIsNotCancellable"));
+				plugin.Message(sender, String.format(plugin.getLocale("Message.ConfirmDeletion"), args[1]));
+				plugin.Message(sender, plugin.getLocale("Message.ThisOperationIsNotCancellable"));
 				return true;
 			} else {
 				if (!plugin.getLevelLoader().deleteLevel(args[1])) {
@@ -101,8 +91,7 @@ public class CmdTribu implements CommandExecutor {
 				return usage(sender);
 
 			if (!plugin.getLevelLoader().saveLevel(plugin.getLevel())) {
-				plugin.Message(sender,
-						plugin.getLocale("Message.UnableToSaveCurrentLevel"));
+				plugin.Message(sender, plugin.getLocale("Message.UnableToSaveCurrentLevel"));
 			} else {
 				plugin.Message(sender, plugin.getLocale("Message.LevelSaveSuccessful"));
 			}
@@ -112,8 +101,7 @@ public class CmdTribu implements CommandExecutor {
 			if (args.length == 1 || !sender.isOp()) {
 				return usage(sender);
 			} else {
-				plugin.getLevelSelector().ChangeLevel(args[1],
-						sender instanceof Player ? (Player) sender : null);
+				plugin.getLevelSelector().ChangeLevel(args[1], sender instanceof Player ? (Player) sender : null);
 				return true;
 			}
 		} else if (args[0].equals("unload")) {
@@ -138,10 +126,8 @@ public class CmdTribu implements CommandExecutor {
 			if (!sender.isOp())
 				return usage(sender);
 			// if a level is given, load it before start
-			if (args.length > 1
-					&& plugin.getLevelLoader().exists(args[1])) {
-				plugin.getLevelSelector().ChangeLevel(args[1],
-						sender instanceof Player ? (Player) sender : null);
+			if (args.length > 1 && plugin.getLevelLoader().exists(args[1])) {
+				plugin.getLevelSelector().ChangeLevel(args[1], sender instanceof Player ? (Player) sender : null);
 			} else if (plugin.getLevel() == null) {
 				plugin.Message(sender, plugin.getLocale("Message.NoLevelLoaded"));
 				plugin.Message(sender, plugin.getLocale("Message.NoLevelLoaded2"));
@@ -171,12 +157,11 @@ public class CmdTribu implements CommandExecutor {
 				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 				return true;
 			}
-			
+
 			if (args.length == 2) {
-				try{
+				try {
 					plugin.getLevelSelector().castVote((Player) sender, Integer.parseInt(args[1]));
-				}catch(NumberFormatException e)
-				{
+				} catch (NumberFormatException e) {
 					sender.sendMessage(plugin.getLocale("Message.InvalidVote"));
 				}
 				return true;
@@ -203,15 +188,14 @@ public class CmdTribu implements CommandExecutor {
 		return usage(sender);
 
 	}
-	private boolean usage(CommandSender sender)
-	{
-		if(sender.isOp())
-		{
+
+	private boolean usage(CommandSender sender) {
+		if (sender.isOp()) {
 			sender.sendMessage("Ops commands :");
 			sender.sendMessage("/tribu ((create | load | delete) <name>) | enter | leave | list | start [<name>] | stop | save");
 			sender.sendMessage("Players commands :");
 		}
 		return false;
-	
+
 	}
 }

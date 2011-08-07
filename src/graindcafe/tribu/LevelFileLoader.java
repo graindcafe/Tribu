@@ -28,7 +28,7 @@ public class LevelFileLoader {
 		File dir = new File(Constants.levelFolder);
 		if (!dir.exists()) {
 			plugin.LogInfo(plugin.getLocale("Info.LevelFolderDoesntExist"));
-			String[] levelFolders =Constants.levelFolder.split("/");
+			String[] levelFolders = Constants.levelFolder.split("/");
 			String tmplevelFolder = "";
 			for (byte i = 0; i < levelFolders.length; i++) {
 				tmplevelFolder = tmplevelFolder.concat(levelFolders[i] + File.separatorChar);
@@ -45,6 +45,11 @@ public class LevelFileLoader {
 			}
 		}
 
+	}
+
+	public boolean exists(String name) {
+		File file = new File(Constants.levelFolder + "/" + name + ".lvl");
+		return (file.exists());
 	}
 
 	public boolean deleteLevel(String name) {
@@ -133,8 +138,7 @@ public class LevelFileLoader {
 			}
 			int signCount = in.readInt();
 			for (int i = 0; i < signCount; i++) {
-				if(!level.addSign(TribuSign.LoadFromStream(plugin, world, in)))
-				{
+				if (!level.addSign(TribuSign.LoadFromStream(plugin, world, in))) {
 					plugin.LogWarning(plugin.getLocale("Warning.UnableToAddSign"));
 				}
 			}

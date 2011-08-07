@@ -9,10 +9,11 @@ import org.bukkit.event.block.BlockRedstoneEvent;
 public class SpawnControlSign extends TribuSign {
 
 	String ZombieSpawn;
-	public SpawnControlSign(Tribu plugin)
-	{
+
+	public SpawnControlSign(Tribu plugin) {
 		super(plugin);
 	}
+
 	public SpawnControlSign(Tribu plugin, Location pos, String[] Lines) {
 		super(plugin, pos);
 		ZombieSpawn = Lines[1];
@@ -27,15 +28,14 @@ public class SpawnControlSign extends TribuSign {
 	public void raiseEvent(Event e) {
 		raiseEvent();
 	}
-	public void raiseEvent()
-	{
-		if(pos.getBlock().isBlockPowered())
-		{
+
+	public void raiseEvent() {
+		if (pos.getBlock().isBlockPowered()) {
 			plugin.getLevel().activateZombieSpawn(ZombieSpawn);
-			
-		} else{
+
+		} else {
 			plugin.getLevel().desactivateZombieSpawn(ZombieSpawn);
-			
+
 		}
 	}
 }

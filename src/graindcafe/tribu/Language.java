@@ -53,13 +53,14 @@ public class Language {
 			return finalString;
 		}
 	}
-	public String getAuthor()
-	{
+
+	public String getAuthor() {
 		if (File != null)
-			return File.getString("Author","Anonymous") + (Default instanceof DefaultLanguage ? "" : ", "+ Default.getAuthor()); 
+			return File.getString("Author", "Anonymous") + (Default instanceof DefaultLanguage ? "" : ", " + Default.getAuthor());
 		else
 			return Default.getAuthor();
 	}
+
 	public byte getVersion() {
 		if (File != null)
 			return (byte) File.getInt("Version", Default instanceof DefaultLanguage ? 0 : Default.getVersion());

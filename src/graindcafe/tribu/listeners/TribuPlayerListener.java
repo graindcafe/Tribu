@@ -24,15 +24,12 @@ public class TribuPlayerListener extends PlayerListener {
 	@Override
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		// TODO:Delete all this
-		if (!event.isCancelled()
-				&& event.getAction() == Action.RIGHT_CLICK_BLOCK
-				&& plugin.isRunning()) {
+		if (!event.isCancelled() && event.getAction() == Action.RIGHT_CLICK_BLOCK && plugin.isRunning()) {
 
 			Block block = event.getClickedBlock();
 			if (block != null) {
 
-				if (block.getType() == Material.SIGN_POST
-						|| block.getType() == Material.WALL_SIGN && plugin.getLevel() != null) {
+				if (block.getType() == Material.SIGN_POST || block.getType() == Material.WALL_SIGN && plugin.getLevel() != null) {
 					// Get the sign
 					plugin.getLevel().updateSigns(event);
 				}
@@ -42,7 +39,7 @@ public class TribuPlayerListener extends PlayerListener {
 
 	@Override
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		
+
 		plugin.addPlayer(event.getPlayer());
 	}
 
@@ -62,14 +59,10 @@ public class TribuPlayerListener extends PlayerListener {
 
 	public void registerEvents(PluginManager pm) {
 		if (plugin.isDedicatedServer()) {
-			pm.registerEvent(Event.Type.PLAYER_JOIN, this, Priority.Normal,
-					plugin);
-			pm.registerEvent(Event.Type.PLAYER_QUIT, this, Priority.Normal,
-					plugin);
+			pm.registerEvent(Event.Type.PLAYER_JOIN, this, Priority.Normal, plugin);
+			pm.registerEvent(Event.Type.PLAYER_QUIT, this, Priority.Normal, plugin);
 		}
-		pm.registerEvent(Event.Type.PLAYER_INTERACT, this, Priority.Normal,
-				plugin);
-		pm.registerEvent(Event.Type.PLAYER_RESPAWN, this, Priority.Normal,
-				plugin);
+		pm.registerEvent(Event.Type.PLAYER_INTERACT, this, Priority.Normal, plugin);
+		pm.registerEvent(Event.Type.PLAYER_RESPAWN, this, Priority.Normal, plugin);
 	}
 }

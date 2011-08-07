@@ -22,7 +22,8 @@ public class TribuBlockListener extends BlockListener {
 
 	@Override
 	public void onBlockBreak(BlockBreakEvent event) {
-		if ((event.getBlock().getType() == Material.SIGN_POST || event.getBlock().getType() == Material.WALL_SIGN) && plugin.getLevel() != null && plugin.getLevel().isSpecialSign(event.getBlock().getLocation())) {
+		if ((event.getBlock().getType() == Material.SIGN_POST || event.getBlock().getType() == Material.WALL_SIGN) && plugin.getLevel() != null
+				&& plugin.getLevel().isSpecialSign(event.getBlock().getLocation())) {
 			if (event.getPlayer().isOp()) {
 				plugin.getLevel().removeSign(event.getBlock().getLocation());
 			} else if (plugin.isDedicatedServer())
@@ -32,51 +33,47 @@ public class TribuBlockListener extends BlockListener {
 	}
 
 	@Override
-	public void onBlockPlace(BlockPlaceEvent event) {		
-		if(!event.getPlayer().isOp() && (plugin.isDedicatedServer()))
+	public void onBlockPlace(BlockPlaceEvent event) {
+		if (!event.getPlayer().isOp() && (plugin.isDedicatedServer()))
 			event.setCancelled(true);
-		
+
 	}
 
 	@Override
 	public void onBlockRedstoneChange(BlockRedstoneEvent event) {
-		if(plugin.getLevel() != null)
+		if (plugin.getLevel() != null)
 			plugin.getLevel().updateSigns(event);
 
 	}
+
 	@Override
-	public void onSignChange(SignChangeEvent event)
-	{
-		
-		
+	public void onSignChange(SignChangeEvent event) {
+
 		if (event.getPlayer().isOp()) {
-			TribuSign sign = TribuSign.getObject(plugin,event.getBlock().getLocation(),event.getLines());
-			
+			TribuSign sign = TribuSign.getObject(plugin, event.getBlock().getLocation(), event.getLines());
+
 			if (sign != null)
-				if (plugin.getLevel() != null)
-				{
+				if (plugin.getLevel() != null) {
 					plugin.getLevel().addSign(sign);
-				}
-				else {
-					
-					event.getPlayer().sendMessage(
-							plugin.getLocale("Message.NoLevelLoaded"));
-					event.getPlayer().sendMessage(
-							plugin.getLocale("Message.NoLevelLoaded2"));
+				} else {
+
+					event.getPlayer().sendMessage(plugin.getLocale("Message.NoLevelLoaded"));
+					event.getPlayer().sendMessage(plugin.getLocale("Message.NoLevelLoaded2"));
 					event.setCancelled(true);
 				}
-			
-		} 
+
+		}
 		// Impossible case (onBlockPlace is cancelled before)
-		/*else if (plugin.isDedicatedServer())
-			event.setCancelled(true);*/
-		
+		/*
+		 * else if (plugin.isDedicatedServer()) event.setCancelled(true);
+		 */
+
 	}
+
 	public void registerEvents(PluginManager pm) {
 		pm.registerEvent(Event.Type.BLOCK_BREAK, this, Priority.Low, plugin);
 		pm.registerEvent(Event.Type.BLOCK_PLACE, this, Priority.Low, plugin);
-		pm.registerEvent(Event.Type.REDSTONE_CHANGE, this, Priority.Normal,
-				plugin);
+		pm.registerEvent(Event.Type.REDSTONE_CHANGE, this, Priority.Normal, plugin);
 		pm.registerEvent(Event.Type.SIGN_CHANGE, this, Priority.Normal, plugin);
 
 	}

@@ -15,6 +15,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityListener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 
 public class TribuEntityListener extends EntityListener {
@@ -26,8 +27,7 @@ public class TribuEntityListener extends EntityListener {
 
 	@Override
 	public void onCreatureSpawn(CreatureSpawnEvent event) {
-		if ((plugin.isDedicatedServer() || plugin.isRunning())
-				&& !plugin.getSpawner().justSpawned()) {
+		if ((plugin.isDedicatedServer() || plugin.isRunning()) && !plugin.getSpawner().justSpawned()) {
 			event.setCancelled(true);
 		}
 
@@ -38,20 +38,21 @@ public class TribuEntityListener extends EntityListener {
 		if (dam.isCancelled()) {
 			return;
 		}
+		if (dam.getCause().equals(DamageCause.FIRE_TICK) && plugin.getConfiguration().getBoolean("Zombies.FireResistant", false)) {
+			dam.setCancelled(true);
+			dam.getEntity().setFireTicks(0);
+			return;
+		}
 		if (plugin.isRunning() && dam.getCause() == DamageCause.ENTITY_ATTACK) {
 			EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) dam;
 			if (event.getEntity() instanceof LivingEntity) {
 
-				if (plugin.getSpawner().isSpawned(
-						(LivingEntity) event.getEntity())) {
+				if (plugin.getSpawner().isSpawned((LivingEntity) event.getEntity())) {
 
 					if (event.getDamager() instanceof Player) {
-						/* CleverMob mob = */plugin
-								.getSpawner()
-								.getCleverMob((LivingEntity) event.getEntity())
-								/* ; */
-								/* mob */.setAttacker(
-										(Player) event.getDamager());
+						/* CleverMob mob = */plugin.getSpawner().getCleverMob((LivingEntity) event.getEntity())
+						/* ; */
+						/* mob */.setAttacker((Player) event.getDamager());
 					}
 
 				}
@@ -60,14 +61,19 @@ public class TribuEntityListener extends EntityListener {
 		}
 	}
 
-
 	@Override
 	public void onEntityDeath(EntityDeathEvent event) {
 		if (plugin.isRunning() && event.getEntity() instanceof LivingEntity) {
 			if (event.getEntity() instanceof Player) {
 				Player player = (Player) event.getEntity();
 				plugin.setDead(player);
-				event.getDrops().clear();
+
+				if (plugin.getConfiguration().getBoolean("Players.DontLooseItem", false))
+					for (ItemStack item : event.getDrops())
+						player.getInventory().addItem(item);
+				else
+					event.getDrops().clear();
+
 			} else if (event.getEntity() instanceof Zombie) {
 				Zombie zombie = (Zombie) event.getEntity();
 				CleverMob mob = plugin.getSpawner().getCleverMob(zombie);
@@ -91,12 +97,10 @@ public class TribuEntityListener extends EntityListener {
 	}
 
 	public void registerEvents(PluginManager pm) {
-		pm.registerEvent(Event.Type.ENTITY_DEATH, this, Priority.Monitor,
-				plugin);
-		pm.registerEvent(Event.Type.CREATURE_SPAWN, this, Priority.Lowest,
-				plugin);
+		pm.registerEvent(Event.Type.ENTITY_DEATH, this, Priority.Monitor, plugin);
+		pm.registerEvent(Event.Type.CREATURE_SPAWN, this, Priority.Lowest, plugin);
 		pm.registerEvent(Event.Type.ENTITY_DAMAGE, this, Priority.High, plugin);
-			
+
 	}
 
 }

@@ -30,25 +30,18 @@ public class LevelSelector implements Runnable {
 		}
 	}
 
-	public void castVote(Player player, String vote) {
+	public void castVote(Player player, int v) {
 		if (votingEnabled) {
-			int v = 0;
-
-			try {
-				v = Integer.parseInt(vote);
-			} catch (Exception e) {
-			}
 
 			if (v > 2 || v < 1) {
 				player.sendMessage(plugin.getLocale("Message.InvalidVote"));
 				return;
 			}
-			if(!votes.containsKey(player))
-				votes.put(player, v);
+
+			votes.put(player, v);
 			player.sendMessage(plugin.getLocale("Message.ThankyouForYourVote"));
 			// if all players have voted
-			if(votes.size() == plugin.getPlayersCount())
-			{
+			if (votes.size() == plugin.getPlayersCount()) {
 				cancelVote();
 				run();
 			}
@@ -60,7 +53,7 @@ public class LevelSelector implements Runnable {
 	public void ChangeLevel(String name, Player player) {
 		if (plugin.getLevel() != null) {
 			if (plugin.getLevel().getName().equalsIgnoreCase(name)) {
-				plugin.Message(player, String.format(plugin.getLocale("Message.LevelIsAlreadyTheCurrentLevel"),name));
+				plugin.Message(player, String.format(plugin.getLocale("Message.LevelIsAlreadyTheCurrentLevel"), name));
 				return;
 			}
 		}
@@ -118,24 +111,22 @@ public class LevelSelector implements Runnable {
 		votes.clear();
 		if (voteCounts[0] >= voteCounts[1]) {
 			ChangeLevel(randomLevel1, null);
-			plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.MapChosen"),randomLevel1));
+			plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.MapChosen"), randomLevel1));
 		} else {
 			ChangeLevel(randomLevel2, null);
-			plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.MapChosen"),randomLevel2));
+			plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.MapChosen"), randomLevel2));
 		}
 		plugin.startRunning();
 	}
 
 	public void startVote(int duration) {
-		String[] levels = plugin.getLevelLoader().getLevelList()
-				.toArray(new String[0]);
+		String[] levels = plugin.getLevelLoader().getLevelList().toArray(new String[0]);
 
 		if (levels.length < 2) { // Skip voting since there's only one option
 			plugin.startRunning();
 			return;
 		}
-		taskID = plugin.getServer().getScheduler()
-				.scheduleSyncDelayedTask(plugin, this, duration);
+		taskID = plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, this, duration);
 		votingEnabled = true;
 		plugin.getServer().broadcastMessage(plugin.getLocale("Broadcast.MapVoteStarting"));
 		plugin.getServer().broadcastMessage(plugin.getLocale("Broadcast.Type"));
@@ -147,16 +138,15 @@ public class LevelSelector implements Runnable {
 		if (levels.length >= 3) {
 			do {
 				randomLevel2 = levels[rnd.nextInt(levels.length)];
-			} while (randomLevel2 == plugin.getLevel().getName()
-					|| randomLevel2 == randomLevel1);
+			} while (randomLevel2 == plugin.getLevel().getName() || randomLevel2 == randomLevel1);
 		} else {
 			randomLevel2 = plugin.getLevel().getName();
 		}
-		plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.SlashVoteForMap"),'1',randomLevel1));
-		plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.SlashVoteForMap"),'2',randomLevel2));
-		
+		plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.SlashVoteForMap"), '1', randomLevel1));
+		plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.SlashVoteForMap"), '2', randomLevel2));
+
 		plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.VoteClosingInSeconds"), String.valueOf(duration / 20)));
-				
+
 	}
 
 }

@@ -6,10 +6,14 @@ import org.bukkit.entity.Player;
 public class CleverMob {
 	private LivingEntity ent;
 	private Player lastAttacker;
+	private MoveTo Destination;
 
-	public CleverMob(LivingEntity entity) {
+	public CleverMob(LivingEntity entity, MoveTo Destination) {
 		ent = entity;
 		lastAttacker = null;
+		this.Destination = Destination;
+		if (this.Destination != null)
+			this.Destination.run();
 	}
 
 	public LivingEntity getEntity() {

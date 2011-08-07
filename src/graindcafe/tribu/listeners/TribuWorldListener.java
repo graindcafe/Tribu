@@ -12,7 +12,7 @@ import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.PluginManager;
 
-public class TribuWorldListener extends WorldListener{
+public class TribuWorldListener extends WorldListener {
 	private Tribu plugin;
 
 	public TribuWorldListener(Tribu instance) {
@@ -21,20 +21,19 @@ public class TribuWorldListener extends WorldListener{
 
 	@Override
 	public void onChunkUnload(ChunkUnloadEvent event) {
-		
-		
-		for(Entity e : event.getChunk().getEntities())
-		{
-			if(e instanceof Zombie && plugin.getSpawner().isSpawned((LivingEntity) e))
-				plugin.getSpawner().removedZombieCallback((LivingEntity)e);
+
+		for (Entity e : event.getChunk().getEntities()) {
+			if (e instanceof Zombie && plugin.getSpawner().isSpawned((LivingEntity) e))
+				plugin.getSpawner().removedZombieCallback((LivingEntity) e);
 		}
 
 	}
+
 	@Override
-	public void onWorldUnload(WorldUnloadEvent event)
-	{
+	public void onWorldUnload(WorldUnloadEvent event) {
 		plugin.stopRunning();
 	}
+
 	public void registerEvents(PluginManager pm) {
 		pm.registerEvent(Event.Type.CHUNK_UNLOAD, this, Priority.High, plugin);
 		pm.registerEvent(Event.Type.WORLD_UNLOAD, this, Priority.Low, plugin);
