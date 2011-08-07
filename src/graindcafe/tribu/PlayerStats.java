@@ -21,15 +21,23 @@ public class PlayerStats implements Comparable<PlayerStats> {
 		points += amount;
 	}
 
+	// Order reversed to sort list desc
 	@Override
 	public int compareTo(PlayerStats o) {
 		if (o.getPoints() == points)
 			return 0;
 		else if (o.getPoints() > points)
-			return -1;
-		else
 			return 1;
+		else
+			return -1;
 	}
+
+	public boolean equals(Object o) {
+		if(!(o instanceof PlayerStats))
+			return false;
+		PlayerStats ps=(PlayerStats) o;
+		return ps.getPlayer().equals(player) && ps.getMoney() == money && ps.getPoints() == points;
+	}	
 
 	public int getMoney() {
 		return money;

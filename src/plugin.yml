@@ -4,7 +4,7 @@ version: 0.4.1.1000
 commands:
     tribu:
         description: start,stop, join, leave, the game, create, save, load, levels. 
-        usage: /tribu enter | leave | vote <1|2>
+        usage: /tribu enter | leave | vote <1|2> | stats
     zspawn:
         description: creates a zombie spawnpoint at the current location. Use [jump] <name> to jump to the spawn
         usage: /zspawn (( set | remove | jump ) <name> ) | list

@@ -122,12 +122,11 @@ public class Tribu extends JavaPlugin {
 
 	public LinkedList<PlayerStats> getSortedStats() {
 		Collections.sort(this.sortedStats);
-		int c = this.sortedStats.size();
-		int i = 0;
-		while (i < c) {
-			LogInfo(this.sortedStats.get(i).getPlayer().getDisplayName() + this.sortedStats.get(i).getPoints());
-			i++;
-		}
+		/*Iterator<PlayerStats> i=this.sortedStats.iterator();
+		while (i.hasNext()) {
+			PlayerStats ps = i.next();
+			LogInfo(ps.getPlayer().getDisplayName() +" "+ ps.getPoints());			
+		}*/
 		return this.sortedStats;
 	}
 

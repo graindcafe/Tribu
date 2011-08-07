@@ -1,8 +1,11 @@
 package graindcafe.tribu.executors;
 
+import graindcafe.tribu.PlayerStats;
 import graindcafe.tribu.Tribu;
 
+import java.util.LinkedList;
 import java.util.Set;
+import java.util.Iterator;
 
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -20,13 +23,18 @@ public class CmdTribu implements CommandExecutor {
 	}
 
 	// usage: /tribu ((create | load | delete) <name>) | enter | leave |
-	// list | start [<name>] | stop | save
+	// list | start [<name>] | stop | save | stats
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if (args.length == 0) {
 			return usage(sender);
 		}
 		args[0] = args[0].toLowerCase();
+
+		/*
+		 * Players commands
+		 */
+
 		if (args[0].equalsIgnoreCase("enter") || args[0].equalsIgnoreCase("join")) {
 			if (!(sender instanceof Player)) {
 				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
@@ -46,7 +54,59 @@ public class CmdTribu implements CommandExecutor {
 					plugin.removePlayer((Player) sender);
 				}
 			return true;
-		} else if (args[0].equals("new") || args[0].equals("create")) {
+		} else if (args[0].equals("stats")) {
+			LinkedList<PlayerStats> stats = plugin.getSortedStats();
+			Iterator<PlayerStats> i = stats.iterator();
+			String s;
+			while (i.hasNext()) {
+				s = null;
+				for (byte j = 0; i.hasNext() && j < 5; j++)
+					s += ", " + i.next().getPlayer().getDisplayName();
+				
+				sender.sendMessage(s.substring(2));
+			}
+
+			return true;
+		} else if (args[0].equals("vote")) {
+			if (!(sender instanceof Player)) {
+				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
+				return true;
+			}
+
+			if (args.length == 2) {
+				try {
+					plugin.getLevelSelector().castVote((Player) sender, Integer.parseInt(args[1]));
+				} catch (NumberFormatException e) {
+					sender.sendMessage(plugin.getLocale("Message.InvalidVote"));
+				}
+				return true;
+			}
+		} else if (args[0].equals("vote1")) {
+			if (!(sender instanceof Player)) {
+				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
+				return true;
+			}
+
+			plugin.getLevelSelector().castVote((Player) sender, 1);
+			return true;
+
+		} else if (args[0].equals("vote2")) {
+			if (!(sender instanceof Player)) {
+				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
+				return true;
+			}
+
+			plugin.getLevelSelector().castVote((Player) sender, 2);
+			return true;
+
+		}
+		/*
+		 * Ops commands
+		 */
+		/*
+		 * Level management
+		 */
+		else if (args[0].equals("new") || args[0].equals("create")) {
 			if (args.length == 1 || !sender.isOp()) {
 				return usage(sender);
 			}
@@ -114,15 +174,16 @@ public class CmdTribu implements CommandExecutor {
 		} else if (args[0].equals("list")) {
 			Set<String> levels = plugin.getLevelLoader().getLevelList();
 			String msg = "";
-			String separator = "";
 			for (String level : levels) {
-				msg += separator + level;
-				separator = ", ";
+				msg += ", " + level;
 			}
-			plugin.Message(sender, String.format(plugin.getLocale("Message.Levels"), msg));
-
+			plugin.Message(sender, String.format(plugin.getLocale("Message.Levels"), msg.substring(2)));
 			return true;
-		} else if (args[0].equals("start")) {
+		}
+		/*
+		 * Game management
+		 */
+		else if (args[0].equals("start")) {
 			if (!sender.isOp())
 				return usage(sender);
 			// if a level is given, load it before start
@@ -150,38 +211,6 @@ public class CmdTribu implements CommandExecutor {
 					((Player) sender).teleport(loc);
 				else if (args.length > 1)
 					plugin.getServer().getPlayer(args[1]).teleport(loc);
-			return true;
-
-		} else if (args[0].equals("vote")) {
-			if (!(sender instanceof Player)) {
-				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
-				return true;
-			}
-
-			if (args.length == 2) {
-				try {
-					plugin.getLevelSelector().castVote((Player) sender, Integer.parseInt(args[1]));
-				} catch (NumberFormatException e) {
-					sender.sendMessage(plugin.getLocale("Message.InvalidVote"));
-				}
-				return true;
-			}
-		} else if (args[0].equals("vote1")) {
-			if (!(sender instanceof Player)) {
-				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
-				return true;
-			}
-
-			plugin.getLevelSelector().castVote((Player) sender, 1);
-			return true;
-
-		} else if (args[0].equals("vote2")) {
-			if (!(sender instanceof Player)) {
-				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
-				return true;
-			}
-
-			plugin.getLevelSelector().castVote((Player) sender, 2);
 			return true;
 
 		}
