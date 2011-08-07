@@ -7,7 +7,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.event.Event;
 
@@ -33,7 +35,16 @@ public abstract class TribuSign {
 
 		return ret;
 	}
-
+	public static boolean isIt(Tribu plugin,Block b)
+	{
+		if(b.getType().equals(Material.WALL_SIGN) || b.getType().equals(Material.SIGN_POST))
+			return isIt(plugin,((Sign) b.getState()).getLines());
+		return false;
+	}
+	public static boolean isIt(Tribu plugin, String[] lines)
+	{
+		return lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Buy")) || lines[0].equalsIgnoreCase(plugin.getLocale("Sign.HighscoreNames")) || lines[0].equalsIgnoreCase(plugin.getLocale("Sign.HighscorePoints")) || lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Spawner")) || lines[0].equalsIgnoreCase(plugin.getLocale("Sign.ToggleSpawner"));
+	}
 	public static TribuSign getObject(Tribu plugin, Sign sign) {
 		return getObject(plugin, sign.getBlock().getLocation(), sign.getLines());
 	}

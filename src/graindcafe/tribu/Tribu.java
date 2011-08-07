@@ -11,8 +11,8 @@ import graindcafe.tribu.listeners.TribuWorldListener;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Stack;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
@@ -54,7 +54,9 @@ public class Tribu extends JavaPlugin {
 
 	private Language Language;
 	private boolean dedicatedServer = false;
-
+	private boolean waitingForPlayers=false;
+	private Stack<MyBlock> StackTrace;
+	
 	private HashMap<Player, PlayerStats> players;
 
 	public void addPlayer(Player player) {
@@ -62,13 +64,25 @@ public class Tribu extends JavaPlugin {
 			PlayerStats stats = new PlayerStats(player);
 			players.put(player, stats);
 			sortedStats.add(stats);
+			if(waitingForPlayers)
+				startRunning();
+			else
 			if (getLevel() != null && isRunning) {
 				player.teleport(level.getDeathSpawn());
 				player.sendMessage(Language.get("Message.GameInProgress"));
 			}
 		}
 	}
-
+	public void pushBlock(MyBlock b)
+	{
+		StackTrace.push(b);
+	}
+	public void reverseBlocks()
+	{
+		if(StackTrace != null)
+			while(!StackTrace.isEmpty())
+				StackTrace.pop().Reverse();
+	}
 	public void checkAliveCount() {
 		if (aliveCount == 0 && isRunning) {
 			stopRunning();
@@ -97,8 +111,10 @@ public class Tribu extends JavaPlugin {
 
 	public String getLocale(String key) {
 		String r = Language.get(key);
-		if (r == null)
+		if (r == null){
 			LogWarning(key + " not found");
+			r=ChatColor.RED+"An error occured while getting this message";
+		}
 		return r;
 	}
 
@@ -107,13 +123,7 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public Player getRandomPlayer() {
-		int n = rnd.nextInt(players.size());
-		Iterator<Player> i = players.keySet().iterator();
-		while (n > 0) {
-			i.next();
-			n++;
-		}
-		return i.next();
+		return sortedStats.get(rnd.nextInt(sortedStats.size())).getPlayer();
 	}
 
 	public int getPlayersCount() {
@@ -224,6 +234,7 @@ public class Tribu extends JavaPlugin {
 		 * getConfiguration().getAll().entrySet()) {
 		 * LogInfo(cur.getKey()+" = "+cur.getValue().toString()); }
 		 */
+		StackTrace = new Stack<MyBlock>();
 		isRunning = false;
 		aliveCount = 0;
 		level = null;
@@ -327,7 +338,12 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public void startRunning() {
-		if (!isRunning && getLevel() != null && !players.isEmpty()) {
+		if (!isRunning && getLevel() != null) {
+			if(players.isEmpty())
+			{
+				waitingForPlayers=true;
+			}else
+			{
 			isRunning = true;
 			if (dedicatedServer)
 				for (LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
@@ -353,6 +369,7 @@ public class Tribu extends JavaPlugin {
 			getWaveStarter().resetWave();
 			revivePlayers(true);
 			getWaveStarter().scheduleWave(Constants.TicksBySecond * getConfiguration().getInt("WaveStart.Delay", 10));
+			}
 		}
 	}
 
@@ -363,6 +380,7 @@ public class Tribu extends JavaPlugin {
 			getWaveStarter().cancelWave();
 			getSpawner().clearZombies();
 			getLevelSelector().cancelVote();
+			reverseBlocks();
 			if (!dedicatedServer)
 				players.clear();
 		}

@@ -36,6 +36,7 @@ public class CmdTribu implements CommandExecutor {
 		 */
 
 		if (args[0].equalsIgnoreCase("enter") || args[0].equalsIgnoreCase("join")) {
+			if (!plugin.isDedicatedServer() || sender.isOp())
 			if (!(sender instanceof Player)) {
 				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 
@@ -50,7 +51,7 @@ public class CmdTribu implements CommandExecutor {
 					plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 
 				} else {
-					sender.sendMessage(plugin.getLocale("Message.YouLeaved"));
+					sender.sendMessage(plugin.getLocale("Message.YouLeft"));
 					plugin.removePlayer((Player) sender);
 				}
 			return true;
@@ -194,6 +195,7 @@ public class CmdTribu implements CommandExecutor {
 				plugin.Message(sender, plugin.getLocale("Message.NoLevelLoaded2"));
 				return true;
 			}
+			plugin.getLevelSelector().cancelVote();
 			plugin.Message(sender, plugin.getLocale("Message.ZombieModeEnabled"));
 			plugin.startRunning();
 			return true;

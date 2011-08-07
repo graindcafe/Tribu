@@ -79,6 +79,8 @@ public class TribuEntityListener extends EntityListener {
 				CleverMob mob = plugin.getSpawner().getCleverMob(zombie);
 				if (mob != null) {
 					Player player = mob.getLastAttacker();
+					if(player == null && zombie.getTarget() instanceof Player)
+						player = (Player) zombie.getTarget();
 					if (player != null && player.isOnline()) {
 						PlayerStats stats = plugin.getStats(player);
 						if (stats != null) {

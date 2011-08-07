@@ -1,9 +1,10 @@
 package graindcafe.tribu.listeners;
 
+
+import graindcafe.tribu.MyBlock;
 import graindcafe.tribu.Tribu;
 import graindcafe.tribu.signs.TribuSign;
 
-import org.bukkit.Material;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -15,28 +16,30 @@ import org.bukkit.plugin.PluginManager;
 
 public class TribuBlockListener extends BlockListener {
 	private Tribu plugin;
+	
 
 	public TribuBlockListener(Tribu instance) {
 		plugin = instance;
+		
 	}
 
 	@Override
 	public void onBlockBreak(BlockBreakEvent event) {
-		if ((event.getBlock().getType() == Material.SIGN_POST || event.getBlock().getType() == Material.WALL_SIGN) && plugin.getLevel() != null
-				&& plugin.getLevel().isSpecialSign(event.getBlock().getLocation())) {
+
+		if (TribuSign.isIt(plugin, event.getBlock())) {
 			if (event.getPlayer().isOp()) {
 				plugin.getLevel().removeSign(event.getBlock().getLocation());
-			} else if (plugin.isDedicatedServer())
+			} else
 				event.setCancelled(true);
-		} else if (plugin.isDedicatedServer() && !event.getPlayer().isOp())
-			event.setCancelled(true);
+		} else if (plugin.isDedicatedServer() && plugin.isRunning())
+			plugin.pushBlock(new MyBlock(event.getBlock().getTypeId(), event.getBlock().getLocation()));
 	}
 
 	@Override
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if (!event.getPlayer().isOp() && (plugin.isDedicatedServer()))
-			event.setCancelled(true);
-
+		
+		if (plugin.isDedicatedServer() && plugin.isRunning())
+			plugin.pushBlock(new MyBlock(event.getBlockReplacedState().getTypeId(),event.getBlock().getLocation()));
 	}
 
 	@Override
@@ -49,24 +52,19 @@ public class TribuBlockListener extends BlockListener {
 	@Override
 	public void onSignChange(SignChangeEvent event) {
 
-		if (event.getPlayer().isOp()) {
+		if (TribuSign.isIt(plugin, event.getLines()) && event.getPlayer().isOp()) {
 			TribuSign sign = TribuSign.getObject(plugin, event.getBlock().getLocation(), event.getLines());
 
 			if (sign != null)
 				if (plugin.getLevel() != null) {
 					plugin.getLevel().addSign(sign);
 				} else {
-
 					event.getPlayer().sendMessage(plugin.getLocale("Message.NoLevelLoaded"));
 					event.getPlayer().sendMessage(plugin.getLocale("Message.NoLevelLoaded2"));
 					event.setCancelled(true);
 				}
 
 		}
-		// Impossible case (onBlockPlace is cancelled before)
-		/*
-		 * else if (plugin.isDedicatedServer()) event.setCancelled(true);
-		 */
 
 	}
 
