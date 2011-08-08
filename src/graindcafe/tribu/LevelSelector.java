@@ -128,8 +128,7 @@ public class LevelSelector implements Runnable {
 		}
 		taskID = plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, this, duration);
 		votingEnabled = true;
-		plugin.getServer().broadcastMessage(plugin.getLocale("Broadcast.MapVoteStarting"));
-		plugin.getServer().broadcastMessage(plugin.getLocale("Broadcast.Type"));
+		
 
 		do {
 			randomLevel1 = levels[rnd.nextInt(levels.length)];
@@ -142,9 +141,10 @@ public class LevelSelector implements Runnable {
 		} else {
 			randomLevel2 = plugin.getLevel().getName();
 		}
+		plugin.getServer().broadcastMessage(plugin.getLocale("Broadcast.MapVoteStarting"));
+		plugin.getServer().broadcastMessage(plugin.getLocale("Broadcast.Type"));
 		plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.SlashVoteForMap"), '1', randomLevel1));
 		plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.SlashVoteForMap"), '2', randomLevel2));
-
 		plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.VoteClosingInSeconds"), String.valueOf(duration / 20)));
 
 	}

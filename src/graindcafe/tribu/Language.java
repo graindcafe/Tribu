@@ -14,6 +14,8 @@ public class Language {
 	}
 
 	public Language(String LanguageName) {
+
+		
 		java.io.File f = new java.io.File(Constants.languagesFolder + LanguageName);
 		if (!f.exists()) {
 			f = new java.io.File(Constants.languagesFolder + LanguageName + ".yml");
@@ -35,7 +37,11 @@ public class Language {
 		finalStrings = new HashMap<String, String>();
 
 	}
-
+	protected Configuration getFile()
+	{
+		return File;
+	}
+	
 	public String get(String key) {
 		if (finalStrings.containsKey(key)) {
 			return finalStrings.get(key);
@@ -53,7 +59,14 @@ public class Language {
 			return finalString;
 		}
 	}
-
+	protected boolean isDefault()
+	{
+		return Default instanceof DefaultLanguage;
+	}
+	protected Language getDefault()
+	{
+		return Default;
+	}
 	public String getAuthor() {
 		if (File != null)
 			return File.getString("Author", "Anonymous") + (Default instanceof DefaultLanguage ? "" : ", " + Default.getAuthor());
@@ -69,6 +82,6 @@ public class Language {
 	}
 
 	public String parseColor(String s) {
-		return s.replaceAll("&(\\w{1})", "\u00A7$1");
+		return s.replaceAll("[&§](\\w{1})", "\u00A7$1");
 	}
 }

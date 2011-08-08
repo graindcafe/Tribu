@@ -1,9 +1,10 @@
 package graindcafe.tribu.listeners;
 
 import graindcafe.tribu.Tribu;
+import graindcafe.tribu.signs.TribuSign;
 
-import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.event.Event;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.block.Action;
@@ -23,15 +24,23 @@ public class TribuPlayerListener extends PlayerListener {
 
 	@Override
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		// TODO:Delete all this
-		if (!event.isCancelled() && event.getAction() == Action.RIGHT_CLICK_BLOCK && plugin.isRunning()) {
+		if (!event.isCancelled()) {
 
 			Block block = event.getClickedBlock();
 			if (block != null) {
 
-				if (block.getType() == Material.SIGN_POST || block.getType() == Material.WALL_SIGN && plugin.getLevel() != null) {
+				if (Sign.class.isInstance(block.getState()) && plugin.getLevel() != null) {
 					// Get the sign
-					plugin.getLevel().updateSigns(event);
+
+					if (plugin.isRunning()) {
+						if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
+							plugin.getLevel().updateSigns(event);
+					} else if (event.getPlayer().isOp()) {
+						if (plugin.getLevel().removeSign(block.getLocation()))
+							event.getPlayer().sendMessage(plugin.getLocale("Message.TribuSignRemoved"));
+						else if (plugin.getLevel().addSign(TribuSign.getObject(plugin, block.getLocation())))
+							event.getPlayer().sendMessage(plugin.getLocale("Message.TribuSignAdded"));
+					}
 				}
 			}
 		}

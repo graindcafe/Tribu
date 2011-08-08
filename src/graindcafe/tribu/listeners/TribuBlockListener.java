@@ -31,14 +31,13 @@ public class TribuBlockListener extends BlockListener {
 				plugin.getLevel().removeSign(event.getBlock().getLocation());
 			} else
 				event.setCancelled(true);
-		} else if (plugin.isDedicatedServer() && plugin.isRunning())
+		} else if (plugin.isRunning() && plugin.isPlaying(event.getPlayer()))
 			plugin.pushBlock(new MyBlock(event.getBlock().getTypeId(), event.getBlock().getLocation()));
 	}
 
 	@Override
 	public void onBlockPlace(BlockPlaceEvent event) {
-		
-		if (plugin.isDedicatedServer() && plugin.isRunning())
+		if (plugin.isRunning() && plugin.isPlaying(event.getPlayer()))
 			plugin.pushBlock(new MyBlock(event.getBlockReplacedState().getTypeId(),event.getBlock().getLocation()));
 	}
 

@@ -1,16 +1,23 @@
 package graindcafe.tribu;
 
+import java.io.File;
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Stack;
+
+
 
 import org.bukkit.ChatColor;
+import org.bukkit.util.config.Configuration;
 
 public class DefaultLanguage extends Language {
-	private HashMap<String, String> Strings = new HashMap<String, String>() {
+	private static HashMap<String, String> Strings = new HashMap<String, String>() {
 		/**
 				 * 
 				 */
 		private static final long serialVersionUID = 9166935722459443352L;
 		{
+			put("File.DefaultLanguageFile","# This is your default language file \n# You should not edit it !\n# Create another language file (custom.yml) \n# and put 'Default: english' if your default language is english\n");
 			put("Sign.Buy", "Buy");
 			put("Sign.ToggleSpawner", "Spawn's switch");
 			put("Sign.Spawner", "Zombie Spawner");
@@ -58,6 +65,8 @@ public class DefaultLanguage extends Language {
 			put("Message.YouHaveReachedWave", ChatColor.GREEN + "You have reached wave " + ChatColor.LIGHT_PURPLE + "%s");
 			put("Message.YouJoined", ChatColor.GREEN + "You joined the human strengths against zombies.");
 			put("Message.YouLeft", ChatColor.GREEN + "You left the fight against zombies.");
+			put("Message.TribuSignAdded", ChatColor.GREEN+"Tribu sign successfully added.");
+			put("Message.TribuSignRemoved", ChatColor.GREEN+"Tribu sign successfully removed.");
 			put("Broadcast.MapChosen", ChatColor.GREEN + "Map " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN + " has been chosen");
 			put("Broadcast.MapVoteStarting", ChatColor.GREEN + "Map vote starting,");
 			put("Broadcast.Type", ChatColor.GREEN + "Type ");
@@ -90,6 +99,61 @@ public class DefaultLanguage extends Language {
 			put("Severe.Exception", "Exception: %s");
 		}
 	};
+	public static void  saveDefaultLanguage(String fileName)
+	{
+		File dir = new File(Constants.languagesFolder);
+		if (!dir.exists()) {
+			String[] languageFolders = Constants.languagesFolder.split("/");
+			String tmplevelFolder = "";
+			for (byte i = 0; i < languageFolders.length; i++) {
+				tmplevelFolder = tmplevelFolder.concat(languageFolders[i] + java.io.File.separatorChar);
+				dir = new File(tmplevelFolder);
+				dir.mkdir();
+			}
+		}
+		if(fileName.substring(fileName.length()-3) != "yml")
+			fileName+=".yml";
+		Configuration f=new Configuration(new File(Constants.languagesFolder+fileName));
+		f.setProperty("Author","Graindcafe");
+		f.setProperty("Version", Constants.LanguageFileVersion);
+		for(Entry<String, String> e : Strings.entrySet())
+		{
+			f.setProperty(e.getKey(), e.getValue());
+		}
+		
+		f.setHeader("# This is the plugin default language file \n# You should not edit it ! All changes will be undone !\n# Create another language file (custom.yml) \n# and put 'Default: english' if your default language is english\n");
+		f.save();
+	}
+	public static boolean checkLanguage(Language l) {
+		while(!l.isDefault())
+			l=l.getDefault();
+		boolean retour = true;
+		Configuration lFile = l.getFile();
+		String value;
+		Stack<String> todo = new Stack<String>();
+		for (String key : Strings.keySet()) {
+			value = lFile.getString(key, null);
+			if (value == null) {
+				todo.push(key);
+			}
+		}
+		String header = l.get("File.DefaultLanguageFile"); 
+		if (lFile.getInt("Version", 0) != Constants.LanguageFileVersion) {
+			retour = false;
+			header += "# " + Strings.get("Warning.LanguageFileOutdated") + "\n";
+		}
+		if (todo.isEmpty())
+			header += "# Your language file is complete\n";
+		else {
+			retour = false;
+			header += "# Translations to do in this language file\n";
+		}
+		while (!todo.isEmpty())
+			header += "# - " + todo.peek()+": "+Strings.get(todo.pop()) + "\n";
+		lFile.setHeader(header);
+		lFile.save();
+		return retour;
+	}
 
 	@Override
 	public String get(String key) {

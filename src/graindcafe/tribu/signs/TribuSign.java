@@ -7,7 +7,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -16,7 +15,11 @@ import org.bukkit.event.Event;
 public abstract class TribuSign {
 
 	public static TribuSign getObject(Tribu plugin, Location pos) {
-		return getObject(plugin, pos, ((Sign) pos.getBlock()).getLines());
+		if(Sign.class.isInstance(pos.getBlock().getState()))
+			return getObject(plugin, pos, ((Sign) pos.getBlock().getState()).getLines());
+		else
+			return null;
+		
 	}
 
 	public static TribuSign getObject(Tribu plugin, Location pos, String[] lines) {
@@ -35,16 +38,19 @@ public abstract class TribuSign {
 
 		return ret;
 	}
-	public static boolean isIt(Tribu plugin,Block b)
-	{
-		if(b.getType().equals(Material.WALL_SIGN) || b.getType().equals(Material.SIGN_POST))
-			return isIt(plugin,((Sign) b.getState()).getLines());
+
+	public static boolean isIt(Tribu plugin, Block b) {
+		if(Sign.class.isInstance(b.getState()))
+			return isIt(plugin, ((Sign) b.getState()).getLines());
 		return false;
 	}
-	public static boolean isIt(Tribu plugin, String[] lines)
-	{
-		return lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Buy")) || lines[0].equalsIgnoreCase(plugin.getLocale("Sign.HighscoreNames")) || lines[0].equalsIgnoreCase(plugin.getLocale("Sign.HighscorePoints")) || lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Spawner")) || lines[0].equalsIgnoreCase(plugin.getLocale("Sign.ToggleSpawner"));
+
+	public static boolean isIt(Tribu plugin, String[] lines) {
+		return lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Buy")) || lines[0].equalsIgnoreCase(plugin.getLocale("Sign.HighscoreNames"))
+				|| lines[0].equalsIgnoreCase(plugin.getLocale("Sign.HighscorePoints")) || lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Spawner"))
+				|| lines[0].equalsIgnoreCase(plugin.getLocale("Sign.ToggleSpawner"));
 	}
+
 	public static TribuSign getObject(Tribu plugin, Sign sign) {
 		return getObject(plugin, sign.getBlock().getLocation(), sign.getLines());
 	}
@@ -52,7 +58,8 @@ public abstract class TribuSign {
 	public static TribuSign LoadFromStream(Tribu plugin, World world, DataInputStream stream) {
 		try {
 			Location pos = new Location(world, stream.readDouble(), stream.readDouble(), stream.readDouble());
-			return getObject(plugin, (Sign) pos.getBlock().getState());
+			return getObject(plugin, pos);
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;

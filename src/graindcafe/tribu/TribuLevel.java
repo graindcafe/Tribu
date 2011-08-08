@@ -147,9 +147,13 @@ public class TribuLevel {
 		player.sendMessage(String.format(Constants.MessageZombieSpawnList, nameList));
 	}
 
-	public void removeSign(Location pos) {
+	public boolean removeSign(Location pos) {
 		if (Signs.containsKey(pos))
+		{
 			removeSign(Signs.get(pos));
+			return true;
+		}
+		return false;
 	}
 
 	public void removeSign(TribuSign sign) {
