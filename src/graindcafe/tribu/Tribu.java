@@ -9,6 +9,7 @@ import graindcafe.tribu.listeners.TribuEntityListener;
 import graindcafe.tribu.listeners.TribuPlayerListener;
 import graindcafe.tribu.listeners.TribuWorldListener;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -17,6 +18,9 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import me.graindcafe.gls.DefaultLanguage;
+import me.graindcafe.gls.Language;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -52,7 +56,7 @@ public class Tribu extends JavaPlugin {
 	private boolean isRunning;
 	private int aliveCount;
 
-	private Language Language;
+	private Language language;
 	private boolean dedicatedServer = false;
 	private boolean waitingForPlayers = false;
 	private Stack<MyBlock> StackTrace;
@@ -68,7 +72,7 @@ public class Tribu extends JavaPlugin {
 				startRunning();
 			else if (getLevel() != null && isRunning) {
 				player.teleport(level.getDeathSpawn());
-				player.sendMessage(Language.get("Message.GameInProgress"));
+				player.sendMessage(language.get("Message.GameInProgress"));
 			}
 		}
 	}
@@ -86,16 +90,17 @@ public class Tribu extends JavaPlugin {
 	public void checkAliveCount() {
 		if (aliveCount == 0 && isRunning) {
 			stopRunning();
-			getServer().broadcastMessage(Language.get("Message.ZombieHavePrevailed"));
-			getServer().broadcastMessage(String.format(Language.get("Message.YouHaveReachedWave"), String.valueOf(getWaveStarter().getWaveNumber())));
+			getServer().broadcastMessage(language.get("Message.ZombieHavePrevailed"));
+			getServer().broadcastMessage(String.format(language.get("Message.YouHaveReachedWave"), String.valueOf(getWaveStarter().getWaveNumber())));
 			if (getPlayersCount() != 0)
 				getLevelSelector().startVote(Constants.VoteDelay);
 		}
 	}
-	public boolean isPlaying(Player p)
-	{
+
+	public boolean isPlaying(Player p) {
 		return players.containsKey(p);
 	}
+
 	public int getAliveCount() {
 		return aliveCount;
 	}
@@ -113,7 +118,7 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public String getLocale(String key) {
-		String r = Language.get(key);
+		String r = language.get(key);
 		if (r == null) {
 			LogWarning(key + " not found");
 			r = ChatColor.RED + "An error occured while getting this message";
@@ -191,51 +196,179 @@ public class Tribu extends JavaPlugin {
 		else
 			sender.sendMessage(message);
 	}
-	private void initLanguage()
-	{
 
-		if (getConfiguration().getString("PluginMode.Language", null) != null) {
-			// LogInfo("#"+getConfiguration().getString("PluginMode.Language",null)+"#");
-			Language = new Language(getConfiguration().getString("PluginMode.Language"));
-		} else {
-			Language = new DefaultLanguage();
-		}
-		LogInfo(String.format(Language.get("Info.ChosenLanguage"), getConfiguration().getString("PluginMode.Language"), Language.getAuthor()));
-		if (Language.getVersion() != Constants.LanguageFileVersion)
-			if (Language.getVersion() == 255)
-				LogWarning(Language.get("Warning.LanguageFileMissing"));
-			else
+	private void initLanguage() {
+		DefaultLanguage.setAuthor("Graindcafe");
+		DefaultLanguage.setName("English");
+		DefaultLanguage.setVersion(Constants.LanguageFileVersion);
+		DefaultLanguage.setLanguagesFolder(getDataFolder().getPath()+"/languages/");
+		DefaultLanguage.setLocales(new HashMap<String, String>() {
+			private static final long serialVersionUID = 9166935722459443352L;
 			{
-				DefaultLanguage.checkLanguage(Language);
-				LogWarning(Language.get("Warning.LanguageFileOutdated"));
+				put("File.DefaultLanguageFile",
+						"# This is your default language file \n# You should not edit it !\n# Create another language file (custom.yml) \n# and put 'Default: english' if your default language is english\n");
+				put("File.LanguageFileComplete", "# Your language file is complete\n");
+				put("File.TranslationsToDo", "# Translations to do in this language file\n");
+				put("Sign.Buy", "Buy");
+				put("Sign.ToggleSpawner", "Spawn's switch");
+				put("Sign.Spawner", "Zombie Spawner");
+				put("Sign.HighscoreNames", "Top Names");
+				put("Sign.HighscorePoints", "Top Points");
+				put("Message.UnknownItem", ChatColor.YELLOW + "Sorry, unknown item");
+				put("Message.ZombieSpawnList", ChatColor.GREEN + "%s");
+				put("Message.ConfirmDeletion", ChatColor.YELLOW + "Please confirm the deletion of the %s level by redoing the command");
+				put("Message.ThisOperationIsNotCancellable", ChatColor.RED + "This operation is not cancellable!");
+				put("Message.LevelUnloaded", ChatColor.GREEN + "Level successfully unloaded");
+				put("Message.InvalidVote", ChatColor.RED + "Invalid vote");
+				put("Message.ThankyouForYourVote", ChatColor.GREEN + "Thankyou for your vote");
+				put("Message.YouCannotVoteAtThisTime", ChatColor.RED + "You cannot vote at this time");
+				put("Message.LevelLoadedSuccessfully", ChatColor.GREEN + "Level loaded successfully");
+				put("Message.LevelIsAlreadyTheCurrentLevel", ChatColor.RED + "Level %s is already the current level");
+				put("Message.UnableToSaveLevel", ChatColor.RED + "Unable to save level, try again later");
+				put("Message.UnableToLoadLevel", ChatColor.RED + "Unable to load level");
+				put("Message.NoLevelLoaded", "No level loaded, type '/tribu load' to load one,");
+				put("Message.NoLevelLoaded2", "or '/tribu create' to create a new one,");
+				put("Message.TeleportedToDeathSpawn", ChatColor.GREEN + "Teleported to death spawn");
+				put("Message.DeathSpawnSet", ChatColor.GREEN + "Death spawn set.");
+				put("Message.TeleportedToInitialSpawn", ChatColor.GREEN + "Teleported to initial spawn");
+				put("Message.InitialSpawnSet", ChatColor.GREEN + "Initial spawn set.");
+				put("Message.UnableToSaveCurrentLevel", ChatColor.RED + "Unable to save current level.");
+				put("Message.LevelSaveSuccessful", ChatColor.GREEN + "Level save successful");
+				put("Message.LevelCreated", ChatColor.GREEN + "Level " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN + " created");
+				put("Message.UnableToDeleteLevel", ChatColor.RED + "Unable to delete current level.");
+				put("Message.LevelDeleted", ChatColor.GREEN + "Level deleted successfully.");
+				put("Message.Levels", ChatColor.GREEN + "Levels: %s");
+				put("Message.UnknownLevel", ChatColor.RED + "Unknown level: %s");
+				put("Message.MaybeNotSaved", ChatColor.YELLOW + "Maybe you have not saved this level or you have not set anything in.");
+				put("Message.ZombieModeEnabled", "Zombie Mode enabled!");
+				put("Message.ZombieModeDisabled", "Zombie Mode disabled!");
+				put("Message.SpawnpointAdded", ChatColor.GREEN + "Spawnpoint added");
+				put("Message.SpawnpointRemoved", ChatColor.GREEN + "Spawnpoint removed");
+				put("Message.InvalidSpawnName", ChatColor.RED + "Invalid spawn name");
+				put("Message.TeleportedToZombieSpawn", ChatColor.GREEN + "Teleported to zombie spawn " + ChatColor.LIGHT_PURPLE + "%s");
+				put("Message.UnableToGiveYouThatItem", "Unable to give you that item...");
+				put("Message.PurchaseSuccessfulMoney", ChatColor.GREEN + "Purchase successful. Money: " + ChatColor.DARK_PURPLE + "%s $");
+				put("Message.YouDontHaveEnoughMoney", ChatColor.DARK_RED + "You don't have enough money for that!");
+				put("Message.MoneyPoints", ChatColor.GREEN + "Money: " + ChatColor.DARK_PURPLE + "%s $" + ChatColor.GREEN + " Points: "
+						+ ChatColor.RED + "%s");
+				put("Message.GameInProgress", ChatColor.YELLOW + "Game in progress, you will spawn next round");
+				put("Message.ZombieHavePrevailed", ChatColor.GREEN + "Zombies have prevailed!");
+				put("Message.YouHaveReachedWave", ChatColor.GREEN + "You have reached wave " + ChatColor.LIGHT_PURPLE + "%s");
+				put("Message.YouJoined", ChatColor.GREEN + "You joined the human strengths against zombies.");
+				put("Message.YouLeft", ChatColor.GREEN + "You left the fight against zombies.");
+				put("Message.TribuSignAdded", ChatColor.GREEN + "Tribu sign successfully added.");
+				put("Message.TribuSignRemoved", ChatColor.GREEN + "Tribu sign successfully removed.");
+				put("Broadcast.MapChosen", ChatColor.GREEN + "Map " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN + " has been chosen");
+				put("Broadcast.MapVoteStarting", ChatColor.GREEN + "Map vote starting,");
+				put("Broadcast.Type", ChatColor.GREEN + "Type ");
+				put("Broadcast.SlashVoteForMap", ChatColor.GOLD + "'/tribu vote %s'" + ChatColor.GREEN + " for map " + ChatColor.LIGHT_PURPLE + "%s");
+				put("Broadcast.VoteClosingInSeconds", ChatColor.GREEN + "Vote closing in " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN
+						+ " seconds");
+				put("Broadcast.StartingWave", ChatColor.GREEN + "Starting wave " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN + ", "
+						+ ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN + " Zombies @ " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN
+						+ " health");
+				put("Broadcast.Wave", ChatColor.GREEN + "Wave " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN + " starting in "
+						+ ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN + " seconds.");
+				put("Broadcast.WaveComplete", ChatColor.GREEN + "Wave Complete");
+				put("Info.LevelFound", "%s levels found");
+				put("Info.Enable", "Starting Tribu by Graindcafe, original author : samp20");
+				put("Info.Disable", "Stopping Tribu");
+				put("Info.LevelSaved", "Level saved");
+				put("Info.ChosenLanguage", "Chosen language : %s (default). Provided by : %s.");
+				put("Info.LevelFolderDoesntExist", "Level folder doesn't exist");
+				put("Warning.AllSpawnsCurrentlyUnloaded", "All zombies spawns are currently unloaded.");
+				put("Warning.UnableToSaveLevel", "Unable to save level");
+				put("Warning.ThisCommandCannotBeUsedFromTheConsole", "This command cannot be used from the console");
+				put("Warning.IOErrorOnFileDelete", "IO error on file delete");
+				put("Warning.LanguageFileOutdated", "Your current language file is outdated");
+				put("Warning.LanguageFileMissing", "The chosen language file is missing");
+				put("Warning.UnableToAddSign", "Unable to add sign, maybe you've changed your locales, or signs' tags.");
+				put("Warning.UnknownFocus",
+						"The string given for the configuration Zombies.Focus is not recognized : %s . It could be 'None','Nearest','Random','DeathSpawn','InitialSpawn'.");
+				put("Severe.WorldInvalidFileVersion", "World invalid file version");
+				put("Severe.WorldDoesntExist", "World doesn't exist");
+				put("Severe.ErrorDuringLevelLoading", "Error during level loading : %s");
+				put("Severe.ErrorDuringLevelSaving", "Error during level saving : %s");
+				put("Severe.Exception", "Exception: %s");
 			}
-		else
-			if(!DefaultLanguage.checkLanguage(Language))
-				LogWarning(Language.get("Warning.LanguageFileOutdated"));
-		
-		DefaultLanguage.saveDefaultLanguage("english");
-		Constants.MessageMoneyPoints = Language.get("Message.MoneyPoints");
-		Constants.MessageZombieSpawnList = Language.get("Message.ZombieSpawnList");
+		});
+		language = Language.init(log, getConfiguration().getString("PluginMode.Language", "english"));
+		Constants.MessageMoneyPoints = language.get("Message.MoneyPoints");
+		Constants.MessageZombieSpawnList = language.get("Message.ZombieSpawnList");
 	}
-	private void initConfig()
-	{
-		getConfiguration().setHeader(
-				"# Tribu Config File Version " + Constants.ConfigFileVersion + " \n" + "# Here is the default settings :\n" + "# PluginMode:\n"
-						+ "#      ServerExclusive: true\n" + "#      Language: english\n" + "# WaveStart:\n" + "#      SetTime: true\n"
-						+ "#      SetTimeTo: 37000\n" + "#      Delay: 10\n" + "#      TeleportPlayers:false\n" + "# Zombies:\n"
-						+ "#      Health: [0.5,4.0]\n" + "#      Quantity: [0.5,1.0,1.0]\n" + "#      LightResistant: false\n"
-						+ "#      # Could be None,Nearest,Random,DeathSpawn,InitialSpawn\n" + "#      Focus: None\n" + "# Stats:\n"
-						+ "#    OnZombieKill:\n" + "#       Money: 15\n" + "#       Points: 10\n" + "#    OnPlayerDeath:\n" + "#       Money:10000\n"
-						+ "#       Points:50\n" + "# Players:\n" + "#    DontLooseItem: false\n");
+
+	private void initConfig() {
+		getConfiguration().setHeader(//
+						"# Tribu Config File Version " + Constants.ConfigFileVersion + " \n" /*+ //
+						"# Here is the default settings :\n" + //
+						"# PluginMode:\n" + //
+						"#      ServerExclusive: false\n" + //
+						"#      Language: english\n" + //
+						"# WaveStart:\n" + //
+						"#      SetTime: true\n" + //
+						"#      SetTimeTo: 37000\n" + //
+						"#      Delay: 10\n" + //
+						"#      TeleportPlayers:false\n" + //
+						"# Zombies:\n" + //
+						"#      Health: [0.5,4.0]\n" + //
+						"#      Quantity: [0.5,1.0,1.0]\n" + //
+						"#      # Useful for making zombie light resistant" + //
+						"#      FireResistant: false\n" + //
+						"#      # Could be None,Nearest,Random,DeathSpawn,InitialSpawn\n" + //
+						"#      Focus: None\n" + //
+						"# Stats:\n" + //
+						"#    OnZombieKill:\n" + //
+						"#       Money: 15\n" + //
+						"#       Points: 10\n" + //
+						"#    OnPlayerDeath:\n" + //
+						"#       Money:10000\n" + //
+						"#       Points:50\n" + //
+						"# Players:\n" + //
+						"#    DontLooseItem: false\n"*/);
+		HashMap<String,Object> DefaultConfiguration = new HashMap<String, Object>(){
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			{
+				put("PluginMode.ServerExclusive",false);
+				put("PluginMode.Language","english");
+				put("WaveStart.SetTime",true);
+				put("WaveStart.SetTimeTo",37000);
+				put("WaveStart.Delay",10);
+				put("WaveStart.TeleportPlayers",false);
+				put("Zombies.Health",Arrays.asList(0.5, 1.0, 1.0));
+				put("Zombies.Quantity", Arrays.asList(.5, 4.0));
+				put("Zombies.FireResistant",false);
+				put("Zombies.Focus","None");
+				put("Stats.OnZombieKill.Money",15);
+				put("Stats.OnZombieKill.Points", 10);
+				put("Stats.OnPlayerDeath.Money",10000);
+				put("Stats.OnPlayerDeath.Points",50);
+				put("Players.DontLooseItem",false);
+				
+			}
+		};
+		for(String key : getConfiguration().getAll().keySet())
+		{
+			DefaultConfiguration.remove(key);
+		}
+		// Add missings keys
+		for(Entry<String,Object> e : DefaultConfiguration.entrySet())
+		{
+			getConfiguration().setProperty(e.getKey(), e.getValue());
+		}
 		// Create the file if it doesn't exist
 		getConfiguration().save();
 	}
+
 	@Override
 	public void onDisable() {
 		players.clear();
 		sortedStats.clear();
 		stopRunning();
-		LogInfo(Language.get("Info.Disable"));
+		LogInfo(language.get("Info.Disable"));
 	}
 
 	@Override
@@ -244,7 +377,7 @@ public class Tribu extends JavaPlugin {
 		rnd = new Random();
 		initConfig();
 		initLanguage();
-		dedicatedServer = getConfiguration().getBoolean("PluginMode.ServerExclusive", true);
+		dedicatedServer = getConfiguration().getBoolean("PluginMode.ServerExclusive", false);
 		/*
 		 * if(dedicatedServer) LogInfo("dedicated"); else
 		 * LogInfo("not dedicated");
@@ -297,7 +430,7 @@ public class Tribu extends JavaPlugin {
 				i++;
 			}
 		}
-		LogInfo(Language.get("Info.Enable"));
+		LogInfo(language.get("Info.Enable"));
 	}
 
 	public void removePlayer(Player player) {
@@ -374,9 +507,9 @@ public class Tribu extends JavaPlugin {
 				// Make sure no data is lost if server decides to die
 				// during a game and player forgot to /level save
 				if (!getLevelLoader().saveLevel(getLevel())) {
-					LogWarning(Language.get("Warning.UnableToSaveLevel"));
+					LogWarning(language.get("Warning.UnableToSaveLevel"));
 				} else {
-					LogInfo(Language.get("Info.LevelSaved"));
+					LogInfo(language.get("Info.LevelSaved"));
 				}
 				getLevel().initSigns();
 				Set<Entry<Player, PlayerStats>> stats = players.entrySet();

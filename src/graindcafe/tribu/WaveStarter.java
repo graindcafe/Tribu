@@ -1,6 +1,5 @@
 package graindcafe.tribu;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.entity.Player;
@@ -70,8 +69,8 @@ public class WaveStarter implements Runnable {
 			scheduled = false;
 			plugin.revivePlayers(false);
 			plugin.getLevel().updateSigns();
-			int max = calcPolynomialFunction(waveNumber, plugin.getConfiguration().getDoubleList("Zombies.Quantity", Arrays.asList(0.5, 1.0, 1.0)));
-			int health = calcPolynomialFunction(waveNumber, plugin.getConfiguration().getDoubleList("Zombies.Health", Arrays.asList(.5, 4.0)));
+			int max = calcPolynomialFunction(waveNumber, plugin.getConfiguration().getDoubleList("Zombies.Quantity", null));
+			int health = calcPolynomialFunction(waveNumber, plugin.getConfiguration().getDoubleList("Zombies.Health", null));
 			plugin.getSpawnTimer().StartWave(max, health);
 			plugin.getServer()
 					.broadcastMessage(
