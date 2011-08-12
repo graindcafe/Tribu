@@ -4,9 +4,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 public class CleverMob {
+	private MoveTo Destination;
 	private LivingEntity ent;
 	private Player lastAttacker;
-	private MoveTo Destination;
 
 	public CleverMob(LivingEntity entity, MoveTo Destination) {
 		ent = entity;

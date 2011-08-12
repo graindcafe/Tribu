@@ -30,17 +30,17 @@ public class TribuPlayerListener extends PlayerListener {
 			if (block != null) {
 
 				if (Sign.class.isInstance(block.getState()) && plugin.getLevel() != null) {
-					// Get the sign
-
 					if (plugin.isRunning()) {
 						if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
-							plugin.getLevel().updateSigns(event);
+							plugin.getLevel().onSignClicked(event);
 					} else if (event.getPlayer().isOp()) {
 						if (plugin.getLevel().removeSign(block.getLocation()))
 							event.getPlayer().sendMessage(plugin.getLocale("Message.TribuSignRemoved"));
 						else if (plugin.getLevel().addSign(TribuSign.getObject(plugin, block.getLocation())))
 							event.getPlayer().sendMessage(plugin.getLocale("Message.TribuSignAdded"));
 					}
+				} else if (plugin.isRunning()) {
+					plugin.getLevel().onClick(event);
 				}
 			}
 		}
@@ -63,14 +63,17 @@ public class TribuPlayerListener extends PlayerListener {
 		if (plugin.getLevel() != null) {
 			plugin.setDead(event.getPlayer());
 			event.setRespawnLocation(plugin.getLevel().getDeathSpawn());
+			plugin.restoreTempInv(event.getPlayer());
+			if (!plugin.isPlaying(event.getPlayer()))
+				plugin.restoreInventory(event.getPlayer());
 		}
 	}
 
 	public void registerEvents(PluginManager pm) {
 		if (plugin.isDedicatedServer()) {
 			pm.registerEvent(Event.Type.PLAYER_JOIN, this, Priority.Normal, plugin);
-			pm.registerEvent(Event.Type.PLAYER_QUIT, this, Priority.Normal, plugin);
 		}
+		pm.registerEvent(Event.Type.PLAYER_QUIT, this, Priority.Normal, plugin);
 		pm.registerEvent(Event.Type.PLAYER_INTERACT, this, Priority.Normal, plugin);
 		pm.registerEvent(Event.Type.PLAYER_RESPAWN, this, Priority.Normal, plugin);
 	}

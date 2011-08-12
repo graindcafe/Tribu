@@ -3,9 +3,9 @@ package graindcafe.tribu.executors;
 import graindcafe.tribu.PlayerStats;
 import graindcafe.tribu.Tribu;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.Iterator;
 
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -14,9 +14,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CmdTribu implements CommandExecutor {
-	private Tribu plugin;
 	// use to confirm deletion of a level
 	private String deletedLevel = "";
+	private Tribu plugin;
 
 	public CmdTribu(Tribu instance) {
 		plugin = instance;
@@ -37,13 +37,13 @@ public class CmdTribu implements CommandExecutor {
 
 		if (args[0].equalsIgnoreCase("enter") || args[0].equalsIgnoreCase("join")) {
 			if (!plugin.isDedicatedServer() || sender.isOp())
-			if (!(sender instanceof Player)) {
-				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
+				if (!(sender instanceof Player)) {
+					plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 
-			} else {
-				sender.sendMessage(plugin.getLocale("Message.YouJoined"));
-				plugin.addPlayer((Player) sender);
-			}
+				} else {
+					sender.sendMessage(plugin.getLocale("Message.YouJoined"));
+					plugin.addPlayer((Player) sender);
+				}
 			return true;
 		} else if (args[0].equals("leave")) {
 			if (!plugin.isDedicatedServer() || sender.isOp())
@@ -57,14 +57,34 @@ public class CmdTribu implements CommandExecutor {
 			return true;
 		} else if (args[0].equals("stats")) {
 			LinkedList<PlayerStats> stats = plugin.getSortedStats();
+			plugin.Message(sender, plugin.getLocale("Message.Stats"));
 			Iterator<PlayerStats> i = stats.iterator();
 			String s;
+			PlayerStats cur;
 			while (i.hasNext()) {
-				s = null;
-				for (byte j = 0; i.hasNext() && j < 5; j++)
-					s += ", " + i.next().getPlayer().getDisplayName();
-				
-				sender.sendMessage(s.substring(2));
+				s = "";
+				for (byte j = 0; i.hasNext() && j < 3; j++) {
+					cur = i.next();
+					s += ", " + cur.getPlayer().getDisplayName() + " (" + String.valueOf(cur.getPoints()) + ")";
+				}
+
+				plugin.Message(sender, s.substring(2));
+			}
+
+			return true;
+		} else if (args[0].equals("list")) {
+
+			Iterator<Player> i = plugin.getPlayers().iterator();
+			String s;
+			Player cur;
+			while (i.hasNext()) {
+				s = "";
+				for (byte j = 0; i.hasNext() && j < 3; j++) {
+					cur = i.next();
+					s += ", " + cur.getDisplayName();
+				}
+
+				plugin.Message(sender, s.substring(2));
 			}
 
 			return true;

@@ -69,17 +69,15 @@ public class TribuEntityListener extends EntityListener {
 				plugin.setDead(player);
 
 				if (plugin.getConfiguration().getBoolean("Players.DontLooseItem", false))
-					for (ItemStack item : event.getDrops())
-						player.getInventory().addItem(item);
-				else
-					event.getDrops().clear();
+					plugin.keepTempInv((Player) event.getEntity(), event.getDrops().toArray(new ItemStack[] {}));
+				event.getDrops().clear();
 
 			} else if (event.getEntity() instanceof Zombie) {
 				Zombie zombie = (Zombie) event.getEntity();
 				CleverMob mob = plugin.getSpawner().getCleverMob(zombie);
 				if (mob != null) {
 					Player player = mob.getLastAttacker();
-					if(player == null && zombie.getTarget() instanceof Player)
+					if (player == null && zombie.getTarget() instanceof Player)
 						player = (Player) zombie.getTarget();
 					if (player != null && player.isOnline()) {
 						PlayerStats stats = plugin.getStats(player);
@@ -87,7 +85,7 @@ public class TribuEntityListener extends EntityListener {
 							stats.addMoney(plugin.getConfiguration().getInt("Stats.OnZombieKill.Money", 10));
 							stats.addPoints(plugin.getConfiguration().getInt("Stats.OnZombieKill.Points", 15));
 							stats.msgStats();
-							plugin.getLevel().updateSigns();
+							plugin.getLevel().onWaveStart();
 						} else {
 							mob.setAttacker(null);
 						}

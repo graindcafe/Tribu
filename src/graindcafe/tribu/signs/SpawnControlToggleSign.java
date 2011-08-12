@@ -13,6 +13,14 @@ public class SpawnControlToggleSign extends SpawnControlSign {
 	}
 
 	@Override
+	protected String[] getSpecificLines() {
+		String[] lines = new String[4];
+		lines[1] = ZombieSpawn;
+		lines[2] = state ? "ON" : "OFF";
+		return lines;
+	}
+
+	@Override
 	public void raiseEvent() {
 		if (pos.getBlock().isBlockPowered()) {
 			if (state) {

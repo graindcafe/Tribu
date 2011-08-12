@@ -3,10 +3,10 @@ package graindcafe.tribu;
 import org.bukkit.entity.Player;
 
 public class PlayerStats implements Comparable<PlayerStats> {
-	private Player player;
-	private int money;
-	private int points;
 	private boolean alive;
+	private int money;
+	private Player player;
+	private int points;
 
 	public PlayerStats(Player player) {
 		this.player = player;
@@ -32,12 +32,13 @@ public class PlayerStats implements Comparable<PlayerStats> {
 			return -1;
 	}
 
+	@Override
 	public boolean equals(Object o) {
-		if(!(o instanceof PlayerStats))
+		if (!(o instanceof PlayerStats))
 			return false;
-		PlayerStats ps=(PlayerStats) o;
+		PlayerStats ps = (PlayerStats) o;
 		return ps.getPlayer().equals(player) && ps.getMoney() == money && ps.getPoints() == points;
-	}	
+	}
 
 	public int getMoney() {
 		return money;

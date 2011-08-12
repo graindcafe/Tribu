@@ -9,10 +9,10 @@ import org.bukkit.entity.Player;
 
 public class LevelSelector implements Runnable {
 	private Tribu plugin;
-	private int taskID;
-	private Random rnd;
 	private String randomLevel1;
 	private String randomLevel2;
+	private Random rnd;
+	private int taskID;
 	private HashMap<Player, Integer> votes;
 	private boolean votingEnabled;
 
@@ -128,7 +128,6 @@ public class LevelSelector implements Runnable {
 		}
 		taskID = plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, this, duration);
 		votingEnabled = true;
-		
 
 		do {
 			randomLevel1 = levels[rnd.nextInt(levels.length)];

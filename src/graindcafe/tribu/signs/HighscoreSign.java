@@ -17,6 +17,11 @@ public abstract class HighscoreSign extends TribuSign {
 	}
 
 	@Override
+	public void init() {
+		raiseEvent();
+	}
+
+	@Override
 	public boolean isUsedEvent(Event e) {
 		return true;
 	}

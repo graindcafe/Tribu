@@ -20,13 +20,20 @@ public class SpawnControlSign extends TribuSign {
 	}
 
 	@Override
-	public boolean isUsedEvent(Event e) {
-		return e instanceof BlockRedstoneEvent;
+	protected String[] getSpecificLines() {
+		String[] lines = new String[4];
+		lines[1] = ZombieSpawn;
+		return lines;
 	}
 
 	@Override
-	public void raiseEvent(Event e) {
+	public void init() {
 		raiseEvent();
+	}
+
+	@Override
+	public boolean isUsedEvent(Event e) {
+		return e instanceof BlockRedstoneEvent;
 	}
 
 	public void raiseEvent() {
@@ -37,5 +44,10 @@ public class SpawnControlSign extends TribuSign {
 			plugin.getLevel().desactivateZombieSpawn(ZombieSpawn);
 
 		}
+	}
+
+	@Override
+	public void raiseEvent(Event e) {
+		raiseEvent();
 	}
 }

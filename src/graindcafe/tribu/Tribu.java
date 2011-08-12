@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Stack;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
@@ -27,6 +26,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -38,33 +38,41 @@ public class Tribu extends JavaPlugin {
 		return message;
 	}
 
-	private TribuPlayerListener playerListener;
-	private TribuEntityListener entityListener;
+	private int aliveCount;
 	private TribuBlockListener blockListener;
-	private TribuWorldListener worldListener;
-	private LinkedList<PlayerStats> sortedStats;
-	private LevelFileLoader levelLoader;
-	private LevelSelector levelSelector;
-	private Random rnd;
+	private BlockTrace blockTrace;
+	private boolean dedicatedServer = false;
+	private TribuEntityListener entityListener;
+	private HashMap<Player, TribuInventory> inventories;
+	private boolean isRunning;
+	private Language language;
 
 	private TribuLevel level;
+	private LevelFileLoader levelLoader;
+	private LevelSelector levelSelector;
+
+	private Logger log;
+	private TribuPlayerListener playerListener;
+	private HashMap<Player, PlayerStats> players;
+	private Random rnd;
+
+	private LinkedList<PlayerStats> sortedStats;
 	private TribuSpawner spawner;
 	private SpawnTimer spawnTimer;
+	private HashMap<Player, TribuInventory> tempInventories;
 
-	private WaveStarter waveStarter;
-	private Logger log;
-	private boolean isRunning;
-	private int aliveCount;
-
-	private Language language;
-	private boolean dedicatedServer = false;
 	private boolean waitingForPlayers = false;
-	private Stack<MyBlock> StackTrace;
-
-	private HashMap<Player, PlayerStats> players;
+	private WaveStarter waveStarter;
+	private TribuWorldListener worldListener;
 
 	public void addPlayer(Player player) {
-		if (!players.containsKey(player)) {
+		if (player != null && !players.containsKey(player)) {
+
+			if (getConfiguration().getBoolean("Players.StoreInventory", false)) {
+				inventories.put(player, new TribuInventory(player, true));
+				if (player.getInventory() != null)
+					player.getInventory().clear();
+			}
 			PlayerStats stats = new PlayerStats(player);
 			players.put(player, stats);
 			sortedStats.add(stats);
@@ -77,16 +85,6 @@ public class Tribu extends JavaPlugin {
 		}
 	}
 
-	public void pushBlock(MyBlock b) {
-		StackTrace.push(b);
-	}
-
-	public void reverseBlocks() {
-		if (StackTrace != null)
-			while (!StackTrace.isEmpty())
-				StackTrace.pop().Reverse();
-	}
-
 	public void checkAliveCount() {
 		if (aliveCount == 0 && isRunning) {
 			stopRunning();
@@ -97,12 +95,12 @@ public class Tribu extends JavaPlugin {
 		}
 	}
 
-	public boolean isPlaying(Player p) {
-		return players.containsKey(p);
-	}
-
 	public int getAliveCount() {
 		return aliveCount;
+	}
+
+	public BlockTrace getBlockTrace() {
+		return blockTrace;
 	}
 
 	public TribuLevel getLevel() {
@@ -118,27 +116,28 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public String getLocale(String key) {
-		String r = language.get(key);
-		if (r == null) {
-			LogWarning(key + " not found");
-			r = ChatColor.RED + "An error occured while getting this message";
-		}
-		return r;
+		/*
+		 * String r = language.get(key); if (r == null) { LogWarning(key +
+		 * " not found"); r = ChatColor.RED +
+		 * "An error occured while getting this message"; } return r;
+		 */
+		return language.get(key);
 	}
 
 	public Set<Player> getPlayers() {
 		return this.players.keySet();
 	}
 
-	public Player getRandomPlayer() {
-		return sortedStats.get(rnd.nextInt(sortedStats.size())).getPlayer();
-	}
-
 	public int getPlayersCount() {
 		return this.players.size();
 	}
 
+	public Player getRandomPlayer() {
+		return sortedStats.get(rnd.nextInt(sortedStats.size())).getPlayer();
+	}
+
 	public LinkedList<PlayerStats> getSortedStats() {
+
 		Collections.sort(this.sortedStats);
 		/*
 		 * Iterator<PlayerStats> i=this.sortedStats.iterator(); while
@@ -164,44 +163,50 @@ public class Tribu extends JavaPlugin {
 		return waveStarter;
 	}
 
-	public boolean isAlive(Player player) {
-		return players.get(player).isalive();
-	}
+	private void initConfig() {
+		getConfiguration().setHeader("# Tribu Config File Version " + Constants.ConfigFileVersion + " \n");
+		HashMap<String, Object> DefaultConfiguration = new HashMap<String, Object>() {
+			private static final long serialVersionUID = 1L;
 
-	public boolean isDedicatedServer() {
-		return dedicatedServer;
-	}
-
-	public boolean isRunning() {
-		return isRunning;
-	}
-
-	public void LogInfo(String message) {
-		log.info(message);
-	}
-
-	public void LogSevere(String message) {
-		log.severe(message);
-	}
-
-	public void LogWarning(String message) {
-		log.warning(message);
-	}
-
-	public void Message(CommandSender sender, String message) {
-		if (sender instanceof Player)
-			sender.sendMessage(message);
-		else if (sender == null)
-			log.info(ChatColor.stripColor(message));
-		else
-			sender.sendMessage(message);
+			{
+				put("PluginMode.ServerExclusive", false);
+				put("PluginMode.Language", "english");
+				put("PluginMode.AutoStart", false);
+				put("PluginMode.DefaultLevel", "");
+				put("WaveStart.SetTime", true);
+				put("WaveStart.SetTimeTo", 37000);
+				put("WaveStart.Delay", 10);
+				put("WaveStart.TeleportPlayers", false);
+				put("WaveStart.HealPlayers", true);
+				put("Zombies.Health", Arrays.asList(0.5, 1.0, 1.0));
+				put("Zombies.Quantity", Arrays.asList(.5, 4.0));
+				put("Zombies.FireResistant", false);
+				put("Zombies.Focus", "None");
+				put("Stats.OnZombieKill.Money", 15);
+				put("Stats.OnZombieKill.Points", 10);
+				put("Stats.OnPlayerDeath.Money", 10000);
+				put("Stats.OnPlayerDeath.Points", 50);
+				put("Players.DontLooseItem", false);
+				put("Players.StoreInventory", false);
+				put("Players.RevertBlocksChanges", true);
+			}
+		};
+		for (String key : getConfiguration().getAll().keySet()) {
+			DefaultConfiguration.remove(key);
+		}
+		// Add missings keys
+		for (Entry<String, Object> e : DefaultConfiguration.entrySet()) {
+			getConfiguration().setProperty(e.getKey(), e.getValue());
+		}
+		// Create the file if it doesn't exist
+		getConfiguration().save();
 	}
 
 	private void initLanguage() {
 		DefaultLanguage.setAuthor("Graindcafe");
 		DefaultLanguage.setName("English");
 		DefaultLanguage.setVersion(Constants.LanguageFileVersion);
-		DefaultLanguage.setLanguagesFolder(getDataFolder().getPath()+"/languages/");
+		DefaultLanguage.setLanguagesFolder(getDataFolder().getPath() + "/languages/");
 		DefaultLanguage.setLocales(new HashMap<String, String>() {
 			private static final long serialVersionUID = 9166935722459443352L;
 			{
@@ -214,6 +219,8 @@ public class Tribu extends JavaPlugin {
 				put("Sign.Spawner", "Zombie Spawner");
 				put("Sign.HighscoreNames", "Top Names");
 				put("Sign.HighscorePoints", "Top Points");
+				put("Sign.TollSign", "Pay");
+				put("Message.Stats", ChatColor.GREEN + "Ranking of  best zombies killers : ");
 				put("Message.UnknownItem", ChatColor.YELLOW + "Sorry, unknown item");
 				put("Message.ZombieSpawnList", ChatColor.GREEN + "%s");
 				put("Message.ConfirmDeletion", ChatColor.YELLOW + "Please confirm the deletion of the %s level by redoing the command");
@@ -258,6 +265,8 @@ public class Tribu extends JavaPlugin {
 				put("Message.YouLeft", ChatColor.GREEN + "You left the fight against zombies.");
 				put("Message.TribuSignAdded", ChatColor.GREEN + "Tribu sign successfully added.");
 				put("Message.TribuSignRemoved", ChatColor.GREEN + "Tribu sign successfully removed.");
+				put("Message.ProtectedBlock", ChatColor.YELLOW + "Sorry, this sign is protected, please ask an operator to remove it.");
+				put("Message.CannotPlaceASpecialSign", ChatColor.YELLOW + "Sorry, you cannot place a special signs, please ask an operator to do it.");
 				put("Broadcast.MapChosen", ChatColor.GREEN + "Map " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN + " has been chosen");
 				put("Broadcast.MapVoteStarting", ChatColor.GREEN + "Map vote starting,");
 				put("Broadcast.Type", ChatColor.GREEN + "Type ");
@@ -289,6 +298,7 @@ public class Tribu extends JavaPlugin {
 				put("Severe.WorldDoesntExist", "World doesn't exist");
 				put("Severe.ErrorDuringLevelLoading", "Error during level loading : %s");
 				put("Severe.ErrorDuringLevelSaving", "Error during level saving : %s");
+				put("Severe.PlayerHaveNotRetrivedHisItems", "The player %s have not retrieved his items, they will be deleted ! Items list : %s");
 				put("Severe.Exception", "Exception: %s");
 			}
 		});
@@ -297,74 +307,57 @@ public class Tribu extends JavaPlugin {
 		Constants.MessageZombieSpawnList = language.get("Message.ZombieSpawnList");
 	}
 
-	private void initConfig() {
-		getConfiguration().setHeader(//
-						"# Tribu Config File Version " + Constants.ConfigFileVersion + " \n" /*+ //
-						"# Here is the default settings :\n" + //
-						"# PluginMode:\n" + //
-						"#      ServerExclusive: false\n" + //
-						"#      Language: english\n" + //
-						"# WaveStart:\n" + //
-						"#      SetTime: true\n" + //
-						"#      SetTimeTo: 37000\n" + //
-						"#      Delay: 10\n" + //
-						"#      TeleportPlayers:false\n" + //
-						"# Zombies:\n" + //
-						"#      Health: [0.5,4.0]\n" + //
-						"#      Quantity: [0.5,1.0,1.0]\n" + //
-						"#      # Useful for making zombie light resistant" + //
-						"#      FireResistant: false\n" + //
-						"#      # Could be None,Nearest,Random,DeathSpawn,InitialSpawn\n" + //
-						"#      Focus: None\n" + //
-						"# Stats:\n" + //
-						"#    OnZombieKill:\n" + //
-						"#       Money: 15\n" + //
-						"#       Points: 10\n" + //
-						"#    OnPlayerDeath:\n" + //
-						"#       Money:10000\n" + //
-						"#       Points:50\n" + //
-						"# Players:\n" + //
-						"#    DontLooseItem: false\n"*/);
-		HashMap<String,Object> DefaultConfiguration = new HashMap<String, Object>(){
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
+	public boolean isAlive(Player player) {
+		return players.get(player).isalive();
+	}
 
-			{
-				put("PluginMode.ServerExclusive",false);
-				put("PluginMode.Language","english");
-				put("WaveStart.SetTime",true);
-				put("WaveStart.SetTimeTo",37000);
-				put("WaveStart.Delay",10);
-				put("WaveStart.TeleportPlayers",false);
-				put("Zombies.Health",Arrays.asList(0.5, 1.0, 1.0));
-				put("Zombies.Quantity", Arrays.asList(.5, 4.0));
-				put("Zombies.FireResistant",false);
-				put("Zombies.Focus","None");
-				put("Stats.OnZombieKill.Money",15);
-				put("Stats.OnZombieKill.Points", 10);
-				put("Stats.OnPlayerDeath.Money",10000);
-				put("Stats.OnPlayerDeath.Points",50);
-				put("Players.DontLooseItem",false);
-				
-			}
-		};
-		for(String key : getConfiguration().getAll().keySet())
-		{
-			DefaultConfiguration.remove(key);
-		}
-		// Add missings keys
-		for(Entry<String,Object> e : DefaultConfiguration.entrySet())
-		{
-			getConfiguration().setProperty(e.getKey(), e.getValue());
-		}
-		// Create the file if it doesn't exist
-		getConfiguration().save();
+	public boolean isDedicatedServer() {
+		return dedicatedServer;
+	}
+
+	public boolean isPlaying(Player p) {
+		return players.containsKey(p);
+	}
+
+	public boolean isRunning() {
+		return isRunning;
+	}
+
+	public void keepTempInv(Player p, ItemStack[] items) {
+		//log.info("Keep " + items.length + " items for " + p.getDisplayName());
+		tempInventories.put(p, new TribuInventory(p, items));
+	}
+
+	public void LogInfo(String message) {
+		log.info(message);
+	}
+
+	public void LogSevere(String message) {
+		log.severe(message);
+	}
+
+	public void LogWarning(String message) {
+		log.warning(message);
+	}
+
+	public void Message(CommandSender sender, String message) {
+		if (sender == null)
+			log.info(ChatColor.stripColor(message));
+		else
+			sender.sendMessage(message);
 	}
 
 	@Override
 	public void onDisable() {
+		for (Entry<Player, TribuInventory> e : inventories.entrySet()) {
+			if (e.getKey().isOnline() && !e.getKey().isDead())
+				e.getValue().restore();
+			else if (level != null)
+				e.getValue().drop(level.getInitialSpawn());
+			else
+				// We have a BIG problem
+				log.severe(String.format(getLocale("Severe.PlayerHaveNotRetrivedHisItems"), e.getKey().getDisplayName(), e.getValue().toString()));
+		}
 		players.clear();
 		sortedStats.clear();
 		stopRunning();
@@ -386,10 +379,12 @@ public class Tribu extends JavaPlugin {
 		 * getConfiguration().getAll().entrySet()) {
 		 * LogInfo(cur.getKey()+" = "+cur.getValue().toString()); }
 		 */
-		StackTrace = new Stack<MyBlock>();
+		blockTrace = new BlockTrace(log);
 		isRunning = false;
 		aliveCount = 0;
 		level = null;
+		tempInventories = new HashMap<Player, TribuInventory>();
+		inventories = new HashMap<Player, TribuInventory>();
 		players = new HashMap<Player, PlayerStats>();
 		sortedStats = new LinkedList<PlayerStats>();
 		levelLoader = new LevelFileLoader(this);
@@ -430,6 +425,10 @@ public class Tribu extends JavaPlugin {
 				i++;
 			}
 		}
+		if (getConfiguration().getString("PluginMode.DefaultLevel", "") != "")
+			setLevel(levelLoader.loadLevel(getConfiguration().getString("PluginMode.DefaultLevel", "")));
+		if (getConfiguration().getBoolean("PluginMode.AutoStart", false))
+			startRunning();
 		LogInfo(language.get("Info.Enable"));
 	}
 
@@ -441,21 +440,38 @@ public class Tribu extends JavaPlugin {
 			checkAliveCount();
 			sortedStats.remove(players.get(player));
 			players.remove(player);
-
+			if (!player.isDead())
+				if (inventories.containsKey(player))
+					inventories.remove(player).restore();
 		}
+	}
+
+	public void restoreInventory(Player p) {
+		//log.info("Restore items for " + p.getDisplayName());
+		if (inventories.containsKey(p))
+			inventories.remove(p).restore();
+	}
+
+	public void restoreTempInv(Player p) {
+		log.info("Restore items for " + p.getDisplayName());
+		if (tempInventories.containsKey(p))
+			tempInventories.remove(p).restore();
 	}
 
 	public void revivePlayer(Player player) {
 
 		players.get(player).revive();
-		player.setHealth(20);
+		if (getConfiguration().getBoolean("WaveStart.HealPlayers", true))
+			player.setHealth(20);
+		restoreTempInv(player);
 		aliveCount++;
+
 	}
 
 	public void revivePlayers(boolean teleportAll) {
-		Player[] players = getServer().getOnlinePlayers();
+
 		aliveCount = 0;
-		for (Player player : players) {
+		for (Player player : players.keySet()) {
 			revivePlayer(player);
 			if (isRunning && level != null && (teleportAll || !isAlive(player))) {
 				player.teleport(level.getInitialSpawn());
@@ -496,10 +512,11 @@ public class Tribu extends JavaPlugin {
 			if (players.isEmpty()) {
 				waitingForPlayers = true;
 			} else {
+				if (!getConfiguration().getBoolean("PluginMode.AutoStart", false))
+					waitingForPlayers = false;
 				isRunning = true;
 				if (dedicatedServer)
 					for (LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
-
 						if (!(e instanceof Player) && !(e instanceof Wolf))
 							e.damage(100000);
 
@@ -532,9 +549,14 @@ public class Tribu extends JavaPlugin {
 			getWaveStarter().cancelWave();
 			getSpawner().clearZombies();
 			getLevelSelector().cancelVote();
-			reverseBlocks();
-			if (!dedicatedServer)
+			blockTrace.reverse();
+			for (TribuInventory ti : inventories.values())
+				ti.restore();
+			inventories.clear();
+			if (!dedicatedServer) {
 				players.clear();
+
+			}
 		}
 
 	}

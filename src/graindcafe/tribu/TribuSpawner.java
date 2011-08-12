@@ -11,18 +11,71 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
 
-public class TribuSpawner {
-	private final Tribu plugin;
-	private HashMap<LivingEntity, CleverMob> zombies = new HashMap<LivingEntity, CleverMob>();
+class Attack extends MoveTo {
 
-	// spawned zombies
-	private int totalSpawned;
+	LivingEntity entity;
+
+	public Attack(Tribu Plugin, Creature Subject, LivingEntity entity) {
+		super(Plugin, Subject, entity.getLocation());
+		this.entity = entity;
+	}
+
+	@Override
+	public void run() {
+		if (subject.getTarget() == null && !subject.isDead() && !entity.isDead() && !subject.getLocation().getBlock().equals(target.getBlock())) {
+
+			target = entity.getLocation();
+			((org.bukkit.craftbukkit.entity.CraftCreature) subject).getHandle().setPathEntity(
+					new net.minecraft.server.PathEntity(new net.minecraft.server.PathPoint[] { new net.minecraft.server.PathPoint(target.getBlockX(),
+							target.getBlockY(), target.getBlockZ()) }));
+			// subject.setTarget(entity);
+
+			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, this, 20);
+		}
+	}
+}
+
+class MoveTo implements Runnable {
+	Tribu plugin;
+	Creature subject;
+	Location target;
+
+	public MoveTo(Tribu Plugin, Creature Subject) {
+		plugin = Plugin;
+		subject = Subject;
+	}
+
+	public MoveTo(Tribu Plugin, Creature Subject, Location Target) {
+		plugin = Plugin;
+		subject = Subject;
+		target = Target;
+
+	}
+
+	@Override
+	public void run() {
+		if (!subject.isDead() && !subject.getLocation().getBlock().equals(target.getBlock())) {
+
+			((org.bukkit.craftbukkit.entity.CraftCreature) subject).getHandle().setPathEntity(
+					new net.minecraft.server.PathEntity(new net.minecraft.server.PathPoint[] { new net.minecraft.server.PathPoint(target.getBlockX(),
+							target.getBlockY(), target.getBlockZ()) }));
+			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, this, 20);
+		}
+	}
+}
+
+public class TribuSpawner {
+	private boolean finished;
+	private int health;
+
+	private boolean justspawned;
 	// number of zombies to spawn
 	private int maxSpawn;
-	private boolean finished;
+	private final Tribu plugin;
 	private boolean starting;
-	private int health;
-	private boolean justspawned;
+	// spawned zombies
+	private int totalSpawned;
+	private HashMap<LivingEntity, CleverMob> zombies = new HashMap<LivingEntity, CleverMob>();
 
 	public TribuSpawner(Tribu instance) {
 		plugin = instance;
@@ -65,23 +118,8 @@ public class TribuSpawner {
 		}
 	}
 
-	// Try to start the next wave if possible and return if it's starting
-	public boolean tryStartNextWave() {
-		if (zombies.isEmpty() && finished && !starting) {
-			starting = true;
-			plugin.getServer().broadcastMessage(plugin.getLocale("Broadcast.WaveComplete"));
-			plugin.getWaveStarter().incrementWave();
-			plugin.getWaveStarter().scheduleWave(Constants.TicksBySecond * plugin.getConfiguration().getInt("WaveStart.Delay", 10));
-		}
-		return starting;
-	}
-
 	public void finishCallback() {
 		finished = true;
-	}
-
-	public void startingCallback() {
-		starting = false;
 	}
 
 	public CleverMob getCleverMob(LivingEntity mob) {
@@ -127,12 +165,12 @@ public class TribuSpawner {
 		return totalSpawned != maxSpawn;
 	}
 
-	public boolean isWaveCompleted() {
-		return !haveZombieToSpawn() && zombies.isEmpty();
-	}
-
 	public boolean isSpawned(LivingEntity ent) {
 		return zombies.containsKey(ent);
+	}
+
+	public boolean isWaveCompleted() {
+		return !haveZombieToSpawn() && zombies.isEmpty();
 	}
 
 	public boolean justSpawned() {
@@ -219,59 +257,19 @@ public class TribuSpawner {
 
 	}
 
-}
-
-class Attack extends MoveTo {
-
-	LivingEntity entity;
-
-	public Attack(Tribu Plugin, Creature Subject, LivingEntity entity) {
-		super(Plugin, Subject, entity.getLocation());
-		this.entity = entity;
-		Subject.setTarget(entity);
-		((Player) entity).sendMessage("Tu es ciblé");
+	public void startingCallback() {
+		starting = false;
 	}
 
-	@Override
-	public void run() {
-		if (subject.getTarget().equals(entity) && !subject.isDead() && !entity.isDead() && !subject.getLocation().getBlock().equals(target.getBlock())) {
-
-			target = entity.getLocation();
-			((org.bukkit.craftbukkit.entity.CraftCreature) subject).getHandle().setPathEntity(
-					new net.minecraft.server.PathEntity(new net.minecraft.server.PathPoint[] { new net.minecraft.server.PathPoint(target.getBlockX(),
-							target.getBlockY(), target.getBlockZ()) }));
-			//subject.setTarget(entity);
-
-			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, this, 20);
+	// Try to start the next wave if possible and return if it's starting
+	public boolean tryStartNextWave() {
+		if (zombies.isEmpty() && finished && !starting) {
+			starting = true;
+			plugin.getServer().broadcastMessage(plugin.getLocale("Broadcast.WaveComplete"));
+			plugin.getWaveStarter().incrementWave();
+			plugin.getWaveStarter().scheduleWave(Constants.TicksBySecond * plugin.getConfiguration().getInt("WaveStart.Delay", 10));
 		}
-	}
-}
-
-class MoveTo implements Runnable {
-	Creature subject;
-	Location target;
-	Tribu plugin;
-
-	public MoveTo(Tribu Plugin, Creature Subject, Location Target) {
-		plugin = Plugin;
-		subject = Subject;
-		target = Target;
-
+		return starting;
 	}
 
-	public MoveTo(Tribu Plugin, Creature Subject) {
-		plugin = Plugin;
-		subject = Subject;
-	}
-
-	@Override
-	public void run() {
-		if (!subject.isDead() && !subject.getLocation().getBlock().equals(target.getBlock())) {
-
-			((org.bukkit.craftbukkit.entity.CraftCreature) subject).getHandle().setPathEntity(
-					new net.minecraft.server.PathEntity(new net.minecraft.server.PathPoint[] { new net.minecraft.server.PathPoint(target.getBlockX(),
-							target.getBlockY(), target.getBlockZ()) }));
-			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, this, 20);
-		}
-	}
 }

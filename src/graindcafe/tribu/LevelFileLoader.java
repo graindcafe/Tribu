@@ -17,8 +17,8 @@ import org.bukkit.World;
 
 public class LevelFileLoader {
 
-	private Tribu plugin;
 	private Set<String> levels;
+	private Tribu plugin;
 
 	public LevelFileLoader(Tribu instance) {
 		plugin = instance;
@@ -47,11 +47,6 @@ public class LevelFileLoader {
 
 	}
 
-	public boolean exists(String name) {
-		File file = new File(Constants.levelFolder + "/" + name + ".lvl");
-		return (file.exists());
-	}
-
 	public boolean deleteLevel(String name) {
 		File file = new File(Constants.levelFolder + "/" + name + ".lvl");
 		if (file.exists()) {
@@ -64,6 +59,11 @@ public class LevelFileLoader {
 			return result;
 		}
 		return false;
+	}
+
+	public boolean exists(String name) {
+		File file = new File(Constants.levelFolder + "/" + name + ".lvl");
+		return (file.exists());
 	}
 
 	public Set<String> getLevelList() {

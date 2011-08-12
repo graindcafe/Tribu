@@ -6,9 +6,9 @@ import org.bukkit.entity.Player;
 
 public class WaveStarter implements Runnable {
 	private Tribu plugin;
-	private int waveNumber;
-	private int taskID;
 	private boolean scheduled;
+	private int taskID;
+	private int waveNumber;
 
 	public WaveStarter(Tribu instance) {
 		plugin = instance;
@@ -68,7 +68,7 @@ public class WaveStarter implements Runnable {
 				plugin.getLevel().getInitialSpawn().getWorld().setTime(plugin.getConfiguration().getInt("WaveStart.SetTimeTo", 37000));
 			scheduled = false;
 			plugin.revivePlayers(false);
-			plugin.getLevel().updateSigns();
+			plugin.getLevel().onWaveStart();
 			int max = calcPolynomialFunction(waveNumber, plugin.getConfiguration().getDoubleList("Zombies.Quantity", null));
 			int health = calcPolynomialFunction(waveNumber, plugin.getConfiguration().getDoubleList("Zombies.Health", null));
 			plugin.getSpawnTimer().StartWave(max, health);

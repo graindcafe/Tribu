@@ -21,21 +21,24 @@ public class TopPointsSign extends HighscoreSign {
 	}
 
 	@Override
-	public void raiseEvent() {
-		Sign s = ((Sign) pos.getBlock().getState());
-		s.setLine(0, plugin.getLocale("Sign.HighscorePoints"));
-		s.setLine(1, "");
-		s.setLine(2, "");
-		s.setLine(3, "");
+	protected String[] getSpecificLines() {
+		String[] lines = new String[4];
 		LinkedList<PlayerStats> stats = plugin.getSortedStats();
 		Iterator<PlayerStats> i = stats.iterator();
 		int count = plugin.getPlayersCount();
-		if (count > 0)
-			s.setLine(1, String.valueOf(i.next().getPoints()));
-		if (count > 1)
-			s.setLine(2, String.valueOf(i.next().getPoints()));
-		if (count > 2)
-			s.setLine(3, String.valueOf(i.next().getPoints()));
+		for (byte j = 1; j <= count; j++)
+			lines[j] = String.valueOf(i.next().getPoints());
+		return lines;
+	}
+
+	@Override
+	public void raiseEvent() {
+		Sign s = ((Sign) pos.getBlock().getState());
+		String[] lines = getSpecificLines();
+		// s.setLine(0, plugin.getLocale("Sign.HighscorePoints"));
+		s.setLine(1, lines[1]);
+		s.setLine(2, lines[2]);
+		s.setLine(3, lines[3]);
 		s.update();
 	}
 }
