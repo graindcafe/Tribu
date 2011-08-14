@@ -16,6 +16,7 @@ public class TollSign extends TribuSign {
 	private int cost;
 	// private boolean clicked = false;
 	private Block linkedButton;
+	
 
 	public TollSign(Tribu plugin, Location pos, String[] lines) {
 		super(plugin, pos);
@@ -26,7 +27,10 @@ public class TollSign extends TribuSign {
 	@Override
 	protected String[] getSpecificLines() {
 		String[] lines = new String[4];
+		lines[0] = "";
 		lines[1] = String.valueOf(cost);
+		lines[2] = "";
+		lines[3] = "";
 		return lines;
 	}
 

@@ -34,6 +34,7 @@ public class TribuBlockListener extends BlockListener {
 					event.getPlayer().sendMessage(plugin.getLocale("Message.ProtectedBlock"));
 				TribuSign.update((Sign) event.getBlock().getState());
 				event.setCancelled(true);
+				
 			}
 		} else if (plugin.isRunning() && plugin.isPlaying(event.getPlayer()))
 			plugin.getBlockTrace().push(event.getBlock(), true);
@@ -82,6 +83,7 @@ public class TribuBlockListener extends BlockListener {
 	}
 
 	public void registerEvents(PluginManager pm) {
+		
 		pm.registerEvent(Event.Type.BLOCK_BREAK, this, Priority.Low, plugin);
 		pm.registerEvent(Event.Type.BLOCK_PLACE, this, Priority.Low, plugin);
 		pm.registerEvent(Event.Type.REDSTONE_CHANGE, this, Priority.Normal, plugin);

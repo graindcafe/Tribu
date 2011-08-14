@@ -178,8 +178,8 @@ public class Tribu extends JavaPlugin {
 				put("WaveStart.Delay", 10);
 				put("WaveStart.TeleportPlayers", false);
 				put("WaveStart.HealPlayers", true);
-				put("Zombies.Health", Arrays.asList(0.5, 1.0, 1.0));
-				put("Zombies.Quantity", Arrays.asList(.5, 4.0));
+				put("Zombies.Quantity", Arrays.asList(0.5, 1.0, 1.0));
+				put("Zombies.Health", Arrays.asList(.5, 4.0));
 				put("Zombies.FireResistant", false);
 				put("Zombies.Focus", "None");
 				put("Stats.OnZombieKill.Money", 15);
@@ -189,6 +189,8 @@ public class Tribu extends JavaPlugin {
 				put("Players.DontLooseItem", false);
 				put("Players.StoreInventory", false);
 				put("Players.RevertBlocksChanges", true);
+				put("Signs.ShopSign.DropItem", true);
+				
 			}
 		};
 		for (String key : getConfiguration().getAll().keySet()) {
@@ -227,7 +229,7 @@ public class Tribu extends JavaPlugin {
 				put("Message.ThisOperationIsNotCancellable", ChatColor.RED + "This operation is not cancellable!");
 				put("Message.LevelUnloaded", ChatColor.GREEN + "Level successfully unloaded");
 				put("Message.InvalidVote", ChatColor.RED + "Invalid vote");
-				put("Message.ThankyouForYourVote", ChatColor.GREEN + "Thankyou for your vote");
+				put("Message.ThankyouForYourVote", ChatColor.GREEN + "Thank you for your vote");
 				put("Message.YouCannotVoteAtThisTime", ChatColor.RED + "You cannot vote at this time");
 				put("Message.LevelLoadedSuccessfully", ChatColor.GREEN + "Level loaded successfully");
 				put("Message.LevelIsAlreadyTheCurrentLevel", ChatColor.RED + "Level %s is already the current level");
@@ -254,33 +256,32 @@ public class Tribu extends JavaPlugin {
 				put("Message.InvalidSpawnName", ChatColor.RED + "Invalid spawn name");
 				put("Message.TeleportedToZombieSpawn", ChatColor.GREEN + "Teleported to zombie spawn " + ChatColor.LIGHT_PURPLE + "%s");
 				put("Message.UnableToGiveYouThatItem", "Unable to give you that item...");
-				put("Message.PurchaseSuccessfulMoney", ChatColor.GREEN + "Purchase successful. Money: " + ChatColor.DARK_PURPLE + "%s $");
+				put("Message.PurchaseSuccessfulMoney", ChatColor.GREEN + "Purchase successful."+ChatColor.DARK_GRAY+" Money: " + ChatColor.GRAY + "%s $");
 				put("Message.YouDontHaveEnoughMoney", ChatColor.DARK_RED + "You don't have enough money for that!");
-				put("Message.MoneyPoints", ChatColor.GREEN + "Money: " + ChatColor.DARK_PURPLE + "%s $" + ChatColor.GREEN + " Points: "
-						+ ChatColor.RED + "%s");
+				put("Message.MoneyPoints", ChatColor.DARK_GRAY + "Money: " + ChatColor.GRAY + "%s $" + ChatColor.DARK_GRAY + " Points: "
+						+ ChatColor.GRAY + "%s");
 				put("Message.GameInProgress", ChatColor.YELLOW + "Game in progress, you will spawn next round");
-				put("Message.ZombieHavePrevailed", ChatColor.GREEN + "Zombies have prevailed!");
-				put("Message.YouHaveReachedWave", ChatColor.GREEN + "You have reached wave " + ChatColor.LIGHT_PURPLE + "%s");
-				put("Message.YouJoined", ChatColor.GREEN + "You joined the human strengths against zombies.");
-				put("Message.YouLeft", ChatColor.GREEN + "You left the fight against zombies.");
+				put("Message.ZombieHavePrevailed", ChatColor.DARK_RED + "Zombies have prevailed!");
+				put("Message.YouHaveReachedWave", ChatColor.RED + "You have reached wave " + ChatColor.YELLOW + "%s");
+				put("Message.YouJoined", ChatColor.GOLD + "You joined the human strengths against zombies.");
+				put("Message.YouLeft", ChatColor.GOLD + "You left the fight against zombies.");
 				put("Message.TribuSignAdded", ChatColor.GREEN + "Tribu sign successfully added.");
 				put("Message.TribuSignRemoved", ChatColor.GREEN + "Tribu sign successfully removed.");
 				put("Message.ProtectedBlock", ChatColor.YELLOW + "Sorry, this sign is protected, please ask an operator to remove it.");
 				put("Message.CannotPlaceASpecialSign", ChatColor.YELLOW + "Sorry, you cannot place a special signs, please ask an operator to do it.");
-				put("Broadcast.MapChosen", ChatColor.GREEN + "Map " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN + " has been chosen");
-				put("Broadcast.MapVoteStarting", ChatColor.GREEN + "Map vote starting,");
-				put("Broadcast.Type", ChatColor.GREEN + "Type ");
-				put("Broadcast.SlashVoteForMap", ChatColor.GOLD + "'/tribu vote %s'" + ChatColor.GREEN + " for map " + ChatColor.LIGHT_PURPLE + "%s");
-				put("Broadcast.VoteClosingInSeconds", ChatColor.GREEN + "Vote closing in " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN
-						+ " seconds");
-				put("Broadcast.StartingWave", ChatColor.GREEN + "Starting wave " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN + ", "
-						+ ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN + " Zombies @ " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN
+				put("Broadcast.MapChosen", ChatColor.DARK_BLUE + "Level " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.DARK_BLUE + " has been chosen");
+				put("Broadcast.MapVoteStarting", ChatColor.DARK_AQUA + "Level vote starting,");
+				put("Broadcast.Type", ChatColor.DARK_AQUA + "Type ");
+				put("Broadcast.SlashVoteForMap", ChatColor.GOLD + "'/tribu vote %s'" + ChatColor.DARK_AQUA + " for map " + ChatColor.BLUE + "%s");
+				put("Broadcast.VoteClosingInSeconds", ChatColor.DARK_AQUA + "Vote closing in %s seconds");
+				put("Broadcast.StartingWave", ChatColor.GRAY + "Starting wave " + ChatColor.DARK_RED + "%s" + ChatColor.GRAY + ", "
+						+ ChatColor.DARK_RED + "%s" + ChatColor.GRAY + " Zombies @ " + ChatColor.DARK_RED + "%s" + ChatColor.GRAY
 						+ " health");
-				put("Broadcast.Wave", ChatColor.GREEN + "Wave " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN + " starting in "
-						+ ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN + " seconds.");
-				put("Broadcast.WaveComplete", ChatColor.GREEN + "Wave Complete");
+				put("Broadcast.Wave", ChatColor.DARK_GRAY + "Wave " + ChatColor.DARK_RED + "%s" + ChatColor.DARK_GRAY + " starting in "
+						+ ChatColor.DARK_RED + "%s" + ChatColor.DARK_GRAY + " seconds.");
+				put("Broadcast.WaveComplete", ChatColor.GOLD + "Wave Complete");
 				put("Info.LevelFound", "%s levels found");
-				put("Info.Enable", "Starting Tribu by Graindcafe, original author : samp20");
+				put("Info.Enable", ChatColor.WHITE+"Starting "+ChatColor.DARK_RED+"Tribu"+ChatColor.WHITE+" by Graindcafe, original author : samp20");
 				put("Info.Disable", "Stopping Tribu");
 				put("Info.LevelSaved", "Level saved");
 				put("Info.ChosenLanguage", "Chosen language : %s (default). Provided by : %s.");
@@ -294,6 +295,7 @@ public class Tribu extends JavaPlugin {
 				put("Warning.UnableToAddSign", "Unable to add sign, maybe you've changed your locales, or signs' tags.");
 				put("Warning.UnknownFocus",
 						"The string given for the configuration Zombies.Focus is not recognized : %s . It could be 'None','Nearest','Random','DeathSpawn','InitialSpawn'.");
+				put("Severe.TribuCantMkdir","Tribu can't make dirs so it cannot create the level directory, you would not be able to save levels ! You can't use Tribu !");
 				put("Severe.WorldInvalidFileVersion", "World invalid file version");
 				put("Severe.WorldDoesntExist", "World doesn't exist");
 				put("Severe.ErrorDuringLevelLoading", "Error during level loading : %s");
@@ -324,7 +326,8 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public void keepTempInv(Player p, ItemStack[] items) {
-		//log.info("Keep " + items.length + " items for " + p.getDisplayName());
+		// log.info("Keep " + items.length + " items for " +
+		// p.getDisplayName());
 		tempInventories.put(p, new TribuInventory(p, items));
 	}
 
@@ -427,7 +430,7 @@ public class Tribu extends JavaPlugin {
 		}
 		if (getConfiguration().getString("PluginMode.DefaultLevel", "") != "")
 			setLevel(levelLoader.loadLevel(getConfiguration().getString("PluginMode.DefaultLevel", "")));
-		if (getConfiguration().getBoolean("PluginMode.AutoStart", false))
+		if (getConfiguration().getBoolean("PluginMode.	", false))
 			startRunning();
 		LogInfo(language.get("Info.Enable"));
 	}
@@ -447,13 +450,13 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public void restoreInventory(Player p) {
-		//log.info("Restore items for " + p.getDisplayName());
+		// log.info("Restore items for " + p.getDisplayName());
 		if (inventories.containsKey(p))
 			inventories.remove(p).restore();
 	}
 
 	public void restoreTempInv(Player p) {
-		log.info("Restore items for " + p.getDisplayName());
+		//log.info("Restore items for " + p.getDisplayName());
 		if (tempInventories.containsKey(p))
 			tempInventories.remove(p).restore();
 	}
@@ -521,6 +524,7 @@ public class Tribu extends JavaPlugin {
 							e.damage(100000);
 
 					}
+
 				// Make sure no data is lost if server decides to die
 				// during a game and player forgot to /level save
 				if (!getLevelLoader().saveLevel(getLevel())) {
@@ -529,10 +533,11 @@ public class Tribu extends JavaPlugin {
 					LogInfo(language.get("Info.LevelSaved"));
 				}
 				getLevel().initSigns();
-				Set<Entry<Player, PlayerStats>> stats = players.entrySet();
-				for (Entry<Player, PlayerStats> stat : stats) {
-					stat.getValue().resetPoints();
-					stat.getValue().resetMoney();
+				this.sortedStats.clear();
+				for (PlayerStats stat : players.values()) {
+					stat.resetPoints();
+					stat.resetMoney();
+					this.sortedStats.add(stat);
 				}
 
 				getWaveStarter().resetWave();

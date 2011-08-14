@@ -72,22 +72,6 @@ public class CmdTribu implements CommandExecutor {
 			}
 
 			return true;
-		} else if (args[0].equals("list")) {
-
-			Iterator<Player> i = plugin.getPlayers().iterator();
-			String s;
-			Player cur;
-			while (i.hasNext()) {
-				s = "";
-				for (byte j = 0; i.hasNext() && j < 3; j++) {
-					cur = i.next();
-					s += ", " + cur.getDisplayName();
-				}
-
-				plugin.Message(sender, s.substring(2));
-			}
-
-			return true;
 		} else if (args[0].equals("vote")) {
 			if (!(sender instanceof Player)) {
 				plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
@@ -198,7 +182,8 @@ public class CmdTribu implements CommandExecutor {
 			for (String level : levels) {
 				msg += ", " + level;
 			}
-			plugin.Message(sender, String.format(plugin.getLocale("Message.Levels"), msg.substring(2)));
+			if(msg != "")
+				plugin.Message(sender, String.format(plugin.getLocale("Message.Levels"), msg.substring(2)));
 			return true;
 		}
 		/*

@@ -7,10 +7,12 @@ import java.util.HashMap;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 public class ShopSign extends TribuSign {
 
@@ -26,8 +28,10 @@ public class ShopSign extends TribuSign {
 			i = Material.getMaterial(signLines[2].toUpperCase());
 		return i;
 	}
+
 	private int cost = 0;
-	private boolean initialized = false;
+	
+	private Item droppedItem = null;
 
 	private Material item = null;
 
@@ -53,9 +57,11 @@ public class ShopSign extends TribuSign {
 	@Override
 	protected String[] getSpecificLines() {
 		String[] lines = new String[4];
-		if (item.toString().lastIndexOf('_') < 0)
+		lines[0] = "";
+		if (item.toString().lastIndexOf('_') < 0) {
 			lines[1] = item.toString();
-		else {
+			lines[2] = "";
+		} else {
 			lines[1] = item.toString().substring(0, item.toString().lastIndexOf('_'));
 			lines[2] = item.toString().substring(item.toString().lastIndexOf('_') + 1);
 		}
@@ -65,12 +71,13 @@ public class ShopSign extends TribuSign {
 
 	@Override
 	public void init() {
-		if (!initialized) {
-			initialized = true;
-			pos.getWorld().dropItem(pos, new ItemStack(item));
-		}
-	}
 
+			if (item != null && (droppedItem==null || droppedItem.isDead()) && plugin.getConfiguration().getBoolean("Signs.ShopSign.DropItem", true)) {
+				droppedItem = pos.getWorld().dropItem(pos, new ItemStack(item));
+				droppedItem.setVelocity(new Vector(0, 0, 0));
+			}
+			
+	}
 	@Override
 	public boolean isUsedEvent(Event e) {
 		return e instanceof PlayerInteractEvent && ((PlayerInteractEvent) e).getClickedBlock().getLocation().equals(pos);
@@ -85,7 +92,7 @@ public class ShopSign extends TribuSign {
 			if (item != null) {
 				HashMap<Integer, ItemStack> failed = p.getInventory().addItem(new ItemStack(item, 1));
 				p.updateInventory();
-				if (failed.size() > 0) {
+				if (failed != null && failed.size() > 0) {
 					// maybe the inventory is full
 					p.sendMessage(plugin.getLocale("Message.UnableToGiveYouThatItem"));
 					stats.addMoney(cost);

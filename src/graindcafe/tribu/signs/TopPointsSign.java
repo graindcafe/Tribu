@@ -23,6 +23,7 @@ public class TopPointsSign extends HighscoreSign {
 	@Override
 	protected String[] getSpecificLines() {
 		String[] lines = new String[4];
+		lines[0]=lines[1]=lines[2]=lines[3]="";
 		LinkedList<PlayerStats> stats = plugin.getSortedStats();
 		Iterator<PlayerStats> i = stats.iterator();
 		int count = plugin.getPlayersCount();

@@ -15,6 +15,7 @@ public class SpawnControlToggleSign extends SpawnControlSign {
 	@Override
 	protected String[] getSpecificLines() {
 		String[] lines = new String[4];
+		lines[0]=lines[1]=lines[2]=lines[3]="";
 		lines[1] = ZombieSpawn;
 		lines[2] = state ? "ON" : "OFF";
 		return lines;

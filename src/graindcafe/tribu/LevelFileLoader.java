@@ -34,11 +34,12 @@ public class LevelFileLoader {
 				tmplevelFolder = tmplevelFolder.concat(levelFolders[i] + File.separatorChar);
 
 				dir = new File(tmplevelFolder);
-				dir.mkdir();
+				if(dir.mkdir())
+					plugin.LogSevere(plugin.getLocale("Severe.TribuCantMkdir"));
 			}
 		}
 		File[] files = dir.listFiles();
-		plugin.LogInfo(String.format(plugin.getLocale("Info.LevelFound"), String.valueOf(files.length)));
+		plugin.LogInfo(String.format(plugin.getLocale("Info.LevelFound"), String.valueOf(files == null ? 0 :files.length)));
 		if (files != null) {
 			for (File file : files) {
 				levels.add(file.getName().substring(0, file.getName().lastIndexOf(".")));
