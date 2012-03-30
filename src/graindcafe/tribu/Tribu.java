@@ -68,7 +68,7 @@ public class Tribu extends JavaPlugin {
 	public void addPlayer(Player player) {
 		if (player != null && !players.containsKey(player)) {
 
-			if (getConfiguration().getBoolean("Players.StoreInventory", false)) {
+			if (getConfig().getBoolean("Players.StoreInventory", false)) {
 				inventories.put(player, new TribuInventory(player, true));
 				if (player.getInventory() != null)
 					player.getInventory().clear();
@@ -164,7 +164,7 @@ public class Tribu extends JavaPlugin {
 	}
 
 	private void initConfig() {
-		getConfiguration().setHeader("# Tribu Config File Version " + Constants.ConfigFileVersion + " \n");
+		getConfig().options().header("# Tribu Config File Version " + Constants.ConfigFileVersion + " \n");
 		HashMap<String, Object> DefaultConfiguration = new HashMap<String, Object>() {
 			private static final long serialVersionUID = 1L;
 
@@ -193,15 +193,15 @@ public class Tribu extends JavaPlugin {
 				
 			}
 		};
-		for (String key : getConfiguration().getAll().keySet()) {
+		for (String key : getConfig().getAll().keySet()) {
 			DefaultConfiguration.remove(key);
 		}
 		// Add missings keys
 		for (Entry<String, Object> e : DefaultConfiguration.entrySet()) {
-			getConfiguration().setProperty(e.getKey(), e.getValue());
+			getConfig().set(e.getKey(), e.getValue());
 		}
 		// Create the file if it doesn't exist
-		getConfiguration().save();
+		getConfig().save("config.yml");
 	}
 
 	private void initLanguage() {
@@ -304,7 +304,7 @@ public class Tribu extends JavaPlugin {
 				put("Severe.Exception", "Exception: %s");
 			}
 		});
-		language = Language.init(log, getConfiguration().getString("PluginMode.Language", "english"));
+		language = Language.init(log, getConfig().getString("PluginMode.Language", "english"));
 		Constants.MessageMoneyPoints = language.get("Message.MoneyPoints");
 		Constants.MessageZombieSpawnList = language.get("Message.ZombieSpawnList");
 	}
@@ -373,13 +373,13 @@ public class Tribu extends JavaPlugin {
 		rnd = new Random();
 		initConfig();
 		initLanguage();
-		dedicatedServer = getConfiguration().getBoolean("PluginMode.ServerExclusive", false);
+		dedicatedServer = getConfig().getBoolean("PluginMode.ServerExclusive", false);
 		/*
 		 * if(dedicatedServer) LogInfo("dedicated"); else
 		 * LogInfo("not dedicated");
 		 * 
 		 * for(Entry<String, Object> cur :
-		 * getConfiguration().getAll().entrySet()) {
+		 * getConfig().getAll().entrySet()) {
 		 * LogInfo(cur.getKey()+" = "+cur.getValue().toString()); }
 		 */
 		blockTrace = new BlockTrace(log);
@@ -428,9 +428,9 @@ public class Tribu extends JavaPlugin {
 				i++;
 			}
 		}
-		if (getConfiguration().getString("PluginMode.DefaultLevel", "") != "")
-			setLevel(levelLoader.loadLevel(getConfiguration().getString("PluginMode.DefaultLevel", "")));
-		if (getConfiguration().getBoolean("PluginMode.	", false))
+		if (getConfig().getString("PluginMode.DefaultLevel", "") != "")
+			setLevel(levelLoader.loadLevel(getConfig().getString("PluginMode.DefaultLevel", "")));
+		if (getConfig().getBoolean("PluginMode.	", false))
 			startRunning();
 		LogInfo(language.get("Info.Enable"));
 	}
@@ -464,7 +464,7 @@ public class Tribu extends JavaPlugin {
 	public void revivePlayer(Player player) {
 
 		players.get(player).revive();
-		if (getConfiguration().getBoolean("WaveStart.HealPlayers", true))
+		if (getConfig().getBoolean("WaveStart.HealPlayers", true))
 			player.setHealth(20);
 		restoreTempInv(player);
 		aliveCount++;
@@ -489,8 +489,8 @@ public class Tribu extends JavaPlugin {
 				aliveCount--;
 				PlayerStats p = players.get(player);
 				p.resetMoney();
-				p.subtractmoney(getConfiguration().getInt("Stats.OnPlayerDeath.Money", 10000));
-				p.subtractPoints(getConfiguration().getInt("Stats.OnPlayerDeath.Points", 50));
+				p.subtractmoney(getConfig().getInt("Stats.OnPlayerDeath.Money", 10000));
+				p.subtractPoints(getConfig().getInt("Stats.OnPlayerDeath.Points", 50));
 				p.msgStats();
 				/*
 				 * Set<Entry<Player, PlayerStats>> stats = players.entrySet();
@@ -515,7 +515,7 @@ public class Tribu extends JavaPlugin {
 			if (players.isEmpty()) {
 				waitingForPlayers = true;
 			} else {
-				if (!getConfiguration().getBoolean("PluginMode.AutoStart", false))
+				if (!getConfig().getBoolean("PluginMode.AutoStart", false))
 					waitingForPlayers = false;
 				isRunning = true;
 				if (dedicatedServer)
@@ -542,7 +542,7 @@ public class Tribu extends JavaPlugin {
 
 				getWaveStarter().resetWave();
 				revivePlayers(true);
-				getWaveStarter().scheduleWave(Constants.TicksBySecond * getConfiguration().getInt("WaveStart.Delay", 10));
+				getWaveStarter().scheduleWave(Constants.TicksBySecond * getConfig().getInt("WaveStart.Delay", 10));
 			}
 		}
 	}

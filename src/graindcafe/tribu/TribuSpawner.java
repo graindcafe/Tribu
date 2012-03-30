@@ -219,7 +219,7 @@ public class TribuSpawner {
 		Zombie zombie = pos.getWorld().spawn(pos, Zombie.class);
 		justspawned = false;
 		MoveTo dest = null;
-		String focus = plugin.getConfiguration().getString("Zombies.Focus", "None");
+		String focus = plugin.getConfig().getString("Zombies.Focus", "None");
 		if (focus.equalsIgnoreCase("Nearest")) {
 			if (plugin.getPlayersCount() != 0 && zombie.getTarget() == null) {
 				List<org.bukkit.entity.Entity> targets;
@@ -249,7 +249,7 @@ public class TribuSpawner {
 			dest = new MoveTo(plugin, zombie, plugin.getLevel().getInitialSpawn());
 		else {
 			if (!focus.equalsIgnoreCase("None"))
-				plugin.LogWarning(String.format(plugin.getLocale("Warning.UnknownFocus"), plugin.getConfiguration().getString("Zombies.Focus")));
+				plugin.LogWarning(String.format(plugin.getLocale("Warning.UnknownFocus"), plugin.getConfig().getString("Zombies.Focus")));
 		}
 		zombies.put(zombie, new CleverMob(zombie, dest));
 		zombie.setHealth(health);
@@ -267,7 +267,7 @@ public class TribuSpawner {
 			starting = true;
 			plugin.getServer().broadcastMessage(plugin.getLocale("Broadcast.WaveComplete"));
 			plugin.getWaveStarter().incrementWave();
-			plugin.getWaveStarter().scheduleWave(Constants.TicksBySecond * plugin.getConfiguration().getInt("WaveStart.Delay", 10));
+			plugin.getWaveStarter().scheduleWave(Constants.TicksBySecond * plugin.getConfig().getInt("WaveStart.Delay", 10));
 		}
 		return starting;
 	}

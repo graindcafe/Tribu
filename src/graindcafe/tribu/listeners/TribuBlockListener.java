@@ -84,10 +84,10 @@ public class TribuBlockListener extends BlockListener {
 
 	public void registerEvents(PluginManager pm) {
 		
-		pm.registerEvent(Event.Type.BLOCK_BREAK, this, Priority.Low, plugin);
-		pm.registerEvent(Event.Type.BLOCK_PLACE, this, Priority.Low, plugin);
-		pm.registerEvent(Event.Type.REDSTONE_CHANGE, this, Priority.Normal, plugin);
-		pm.registerEvent(Event.Type.SIGN_CHANGE, this, Priority.Normal, plugin);
+		//pm.registerEvent(org.bukkit.event.block.BlockBreakEvent.class, this, org.bukkit.event.EventPriority.LOW, org.bukkit.event., plugin);
+		pm.registerEvent(org.bukkit.event.block.BlockPlaceEvent.class, this, org.bukkit.event.EventPriority.LOW, plugin);
+		pm.registerEvent(Event.Type.REDSTONE_CHANGE, this, org.bukkit.event.EventPriority.NORMAL, plugin);
+		pm.registerEvent(Event.Type.SIGN_CHANGE, this, org.bukkit.event.EventPriority.NORMAL, plugin);
 
 	}
 }

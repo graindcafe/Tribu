@@ -72,7 +72,7 @@ public class ShopSign extends TribuSign {
 	@Override
 	public void init() {
 
-			if (item != null && (droppedItem==null || droppedItem.isDead()) && plugin.getConfiguration().getBoolean("Signs.ShopSign.DropItem", true)) {
+			if (item != null && (droppedItem==null || droppedItem.isDead()) && plugin.getConfig().getBoolean("Signs.ShopSign.DropItem", true)) {
 				droppedItem = pos.getWorld().dropItem(pos, new ItemStack(item));
 				droppedItem.setVelocity(new Vector(0, 0, 0));
 			}

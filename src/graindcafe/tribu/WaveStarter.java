@@ -59,18 +59,18 @@ public class WaveStarter implements Runnable {
 	@Override
 	public void run() {
 		if (plugin.isRunning()) {
-			if (plugin.getConfiguration().getBoolean("WaveStart.TeleportPlayers", false)) {
+			if (plugin.getConfig().getBoolean("WaveStart.TeleportPlayers", false)) {
 				for (Player p : plugin.getPlayers()) {
 					p.teleport(plugin.getLevel().getInitialSpawn());
 				}
 			}
-			if (plugin.getConfiguration().getBoolean("WaveStart.SetTime", true))
-				plugin.getLevel().getInitialSpawn().getWorld().setTime(plugin.getConfiguration().getInt("WaveStart.SetTimeTo", 37000));
+			if (plugin.getConfig().getBoolean("WaveStart.SetTime", true))
+				plugin.getLevel().getInitialSpawn().getWorld().setTime(plugin.getConfig().getInt("WaveStart.SetTimeTo", 37000));
 			scheduled = false;
 			plugin.revivePlayers(false);
 			plugin.getLevel().onWaveStart();
-			int max = calcPolynomialFunction(waveNumber, plugin.getConfiguration().getDoubleList("Zombies.Quantity", null));
-			int health = calcPolynomialFunction(waveNumber, plugin.getConfiguration().getDoubleList("Zombies.Health", null));
+			int max = calcPolynomialFunction(waveNumber, plugin.getConfig().getDoubleList("Zombies.Quantity"));
+			int health = calcPolynomialFunction(waveNumber, plugin.getConfig().getDoubleList("Zombies.Health"));
 			plugin.getSpawnTimer().StartWave(max, health);
 			plugin.getServer()
 					.broadcastMessage(
