@@ -3,8 +3,6 @@ import graindcafe.tribu.Tribu;
 import graindcafe.tribu.signs.TribuSign;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
-import org.bukkit.event.Event;
-import org.bukkit.event.Event.Priority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;

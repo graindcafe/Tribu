@@ -196,7 +196,7 @@ public class Tribu extends JavaPlugin {
 		for (String key : getConfig().getAll().keySet()) {
 			DefaultConfiguration.remove(key);
 		}
-		// Add missings keys
+		// Add missing keys
 		for (Entry<String, Object> e : DefaultConfiguration.entrySet()) {
 			getConfig().set(e.getKey(), e.getValue());
 		}

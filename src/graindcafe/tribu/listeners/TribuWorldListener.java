@@ -5,21 +5,20 @@ import graindcafe.tribu.Tribu;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Zombie;
-import org.bukkit.event.Event;
-import org.bukkit.event.Event.Priority;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.event.world.WorldListener;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.PluginManager;
 
-public class TribuWorldListener extends WorldListener {
+public class TribuWorldListener implements Listener {
 	private Tribu plugin;
 
 	public TribuWorldListener(Tribu instance) {
 		plugin = instance;
 	}
 
-	@Override
+	@EventHandler 
 	public void onChunkUnload(ChunkUnloadEvent event) {
 
 		for (Entity e : event.getChunk().getEntities()) {
@@ -29,13 +28,13 @@ public class TribuWorldListener extends WorldListener {
 
 	}
 
-	@Override
+	@EventHandler
 	public void onWorldUnload(WorldUnloadEvent event) {
 		plugin.stopRunning();
 	}
 
 	public void registerEvents(PluginManager pm) {
-		pm.registerEvent(Event.Type.CHUNK_UNLOAD, this, Priority.High, plugin);
-		pm.registerEvent(Event.Type.WORLD_UNLOAD, this, Priority.Low, plugin);
+		pm.registerEvent(org.bukkit.event.world.ChunkUnloadEvent.class, this, org.bukkit.event.EventPriority.HIGH, null, plugin);
+		pm.registerEvent(org.bukkit.event.world.WorldUnloadEvent.class, this, org.bukkit.event.EventPriority.LOW, null, plugin);
 	}
 }
