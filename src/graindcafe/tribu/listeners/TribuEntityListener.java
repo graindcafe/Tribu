@@ -7,25 +7,24 @@ import graindcafe.tribu.Tribu;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
-import org.bukkit.event.Event;
-import org.bukkit.event.Event.Priority;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityListener;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.PluginManager;
 
-public class TribuEntityListener extends EntityListener {
+public class TribuEntityListener implements Listener {
 	private Tribu plugin;
 
 	public TribuEntityListener(Tribu instance) {
 		plugin = instance;
 	}
 
-	@Override
+	@EventHandler(priority = EventPriority.NORMAL )
 	public void onCreatureSpawn(CreatureSpawnEvent event) {
 		if ((plugin.isDedicatedServer() || plugin.isRunning()) && !plugin.getSpawner().justSpawned()) {
 			event.setCancelled(true);
@@ -33,12 +32,12 @@ public class TribuEntityListener extends EntityListener {
 
 	}
 
-	@Override
+	@EventHandler
 	public void onEntityDamage(EntityDamageEvent dam) {
 		if (dam.isCancelled()) {
 			return;
 		}
-		if (dam.getCause().equals(DamageCause.FIRE_TICK) && plugin.getConfiguration().getBoolean("Zombies.FireResistant", false)) {
+		if (dam.getCause().equals(DamageCause.FIRE_TICK) && plugin.getConfig().getBoolean("Zombies.FireResistant", false)) {
 			dam.setCancelled(true);
 			dam.getEntity().setFireTicks(0);
 			return;
@@ -61,14 +60,14 @@ public class TribuEntityListener extends EntityListener {
 		}
 	}
 
-	@Override
+	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event) {
 		if (plugin.isRunning() && event.getEntity() instanceof LivingEntity) {
 			if (event.getEntity() instanceof Player) {
 				Player player = (Player) event.getEntity();
 				plugin.setDead(player);
 
-				if (plugin.getConfiguration().getBoolean("Players.DontLooseItem", false))
+				if (plugin.getConfig().getBoolean("Players.DontLooseItem", false))
 					plugin.keepTempInv((Player) event.getEntity(), event.getDrops().toArray(new ItemStack[] {}));
 				event.getDrops().clear();
 
@@ -82,8 +81,8 @@ public class TribuEntityListener extends EntityListener {
 					if (player != null && player.isOnline()) {
 						PlayerStats stats = plugin.getStats(player);
 						if (stats != null) {
-							stats.addMoney(plugin.getConfiguration().getInt("Stats.OnZombieKill.Money", 10));
-							stats.addPoints(plugin.getConfiguration().getInt("Stats.OnZombieKill.Points", 15));
+							stats.addMoney(plugin.getConfig().getInt("Stats.OnZombieKill.Money", 10));
+							stats.addPoints(plugin.getConfig().getInt("Stats.OnZombieKill.Points", 15));
 							stats.msgStats();
 							plugin.getLevel().onWaveStart();
 						} else {
@@ -95,12 +94,4 @@ public class TribuEntityListener extends EntityListener {
 			}
 		}
 	}
-
-	public void registerEvents(PluginManager pm) {
-		pm.registerEvent(Event.Type.ENTITY_DEATH, this, Priority.Monitor, plugin);
-		pm.registerEvent(Event.Type.CREATURE_SPAWN, this, Priority.Lowest, plugin);
-		pm.registerEvent(Event.Type.ENTITY_DAMAGE, this, Priority.High, plugin);
-
-	}
-
 }

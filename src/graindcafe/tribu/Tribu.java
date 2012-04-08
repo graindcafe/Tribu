@@ -9,6 +9,7 @@ import graindcafe.tribu.listeners.TribuEntityListener;
 import graindcafe.tribu.listeners.TribuPlayerListener;
 import graindcafe.tribu.listeners.TribuWorldListener;
 
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,7 +29,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Tribu extends JavaPlugin {
@@ -209,6 +209,7 @@ public class Tribu extends JavaPlugin {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+
 	}
 
 	private void initLanguage() {
@@ -404,11 +405,10 @@ public class Tribu extends JavaPlugin {
 		entityListener = new TribuEntityListener(this);
 		blockListener = new TribuBlockListener(this);
 		worldListener = new TribuWorldListener(this);
-		PluginManager pm = getServer().getPluginManager();
-		playerListener.registerEvents(pm);
-		entityListener.registerEvents(pm);
-		blockListener.registerEvents(pm);
-		worldListener.registerEvents(pm);
+		getServer().getPluginManager().registerEvents(playerListener, this);
+		getServer().getPluginManager().registerEvents(entityListener, this);
+		getServer().getPluginManager().registerEvents(blockListener, this);
+		getServer().getPluginManager().registerEvents(worldListener, this);
 		spawner = new TribuSpawner(this);
 		spawnTimer = new SpawnTimer(this);
 		waveStarter = new WaveStarter(this);
