@@ -9,6 +9,7 @@ import graindcafe.tribu.listeners.TribuEntityListener;
 import graindcafe.tribu.listeners.TribuPlayerListener;
 import graindcafe.tribu.listeners.TribuWorldListener;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -193,7 +194,8 @@ public class Tribu extends JavaPlugin {
 				
 			}
 		};
-		for (String key : getConfig().getAll().keySet()) {
+		
+		for (String key : getConfig().getKeys(true)) {
 			DefaultConfiguration.remove(key);
 		}
 		// Add missings keys
@@ -201,7 +203,12 @@ public class Tribu extends JavaPlugin {
 			getConfig().set(e.getKey(), e.getValue());
 		}
 		// Create the file if it doesn't exist
-		getConfig().save("config.yml");
+		try {
+			getConfig().save("config.yml");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 	private void initLanguage() {
