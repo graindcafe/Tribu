@@ -9,7 +9,6 @@ import graindcafe.tribu.listeners.TribuEntityListener;
 import graindcafe.tribu.listeners.TribuPlayerListener;
 import graindcafe.tribu.listeners.TribuWorldListener;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -27,7 +26,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Tribu extends JavaPlugin {
@@ -165,43 +163,6 @@ public class Tribu extends JavaPlugin {
 
 	private void initConfig() {
 		getConfig().options().header("# Tribu Config File Version " + Constants.ConfigFileVersion + " \n");
-		HashMap<String, Object> DefaultConfiguration = new HashMap<String, Object>() {
-			private static final long serialVersionUID = 1L;
-
-			{
-				put("PluginMode.ServerExclusive", false);
-				put("PluginMode.Language", "english");
-				put("PluginMode.AutoStart", false);
-				put("PluginMode.DefaultLevel", "");
-				put("WaveStart.SetTime", true);
-				put("WaveStart.SetTimeTo", 37000);
-				put("WaveStart.Delay", 10);
-				put("WaveStart.TeleportPlayers", false);
-				put("WaveStart.HealPlayers", true);
-				put("Zombies.Quantity", Arrays.asList(0.5, 1.0, 1.0));
-				put("Zombies.Health", Arrays.asList(.5, 4.0));
-				put("Zombies.FireResistant", false);
-				put("Zombies.Focus", "None");
-				put("Stats.OnZombieKill.Money", 15);
-				put("Stats.OnZombieKill.Points", 10);
-				put("Stats.OnPlayerDeath.Money", 10000);
-				put("Stats.OnPlayerDeath.Points", 50);
-				put("Players.DontLooseItem", false);
-				put("Players.StoreInventory", false);
-				put("Players.RevertBlocksChanges", true);
-				put("Signs.ShopSign.DropItem", true);
-				
-			}
-		};
-		for (String key : getConfig().getAll().keySet()) {
-			DefaultConfiguration.remove(key);
-		}
-		// Add missing keys
-		for (Entry<String, Object> e : DefaultConfiguration.entrySet()) {
-			getConfig().set(e.getKey(), e.getValue());
-		}
-		// Create the file if it doesn't exist
-		getConfig().save("config.yml");
 	}
 
 	private void initLanguage() {
@@ -397,11 +358,10 @@ public class Tribu extends JavaPlugin {
 		entityListener = new TribuEntityListener(this);
 		blockListener = new TribuBlockListener(this);
 		worldListener = new TribuWorldListener(this);
-		PluginManager pm = getServer().getPluginManager();
-		playerListener.registerEvents(pm);
-		entityListener.registerEvents(pm);
-		blockListener.registerEvents(pm);
-		worldListener.registerEvents(pm);
+		getServer().getPluginManager().registerEvents(playerListener, this);
+		getServer().getPluginManager().registerEvents(entityListener, this);
+		getServer().getPluginManager().registerEvents(blockListener, this);
+		getServer().getPluginManager().registerEvents(worldListener, this);
 		spawner = new TribuSpawner(this);
 		spawnTimer = new SpawnTimer(this);
 		waveStarter = new WaveStarter(this);

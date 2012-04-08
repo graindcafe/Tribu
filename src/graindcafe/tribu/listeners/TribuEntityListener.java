@@ -16,7 +16,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.PluginManager;
 
 public class TribuEntityListener implements Listener {
 	private Tribu plugin;
@@ -95,12 +94,4 @@ public class TribuEntityListener implements Listener {
 			}
 		}
 	}
-
-	public void registerEvents(PluginManager pm) {
-		pm.registerEvent(org.bukkit.event.entity.EntityDeathEvent.class, this, org.bukkit.event.EventPriority.MONITOR, null, plugin);
-		pm.registerEvent(org.bukkit.event.entity.CreatureSpawnEvent.class, this, org.bukkit.event.EventPriority.LOWEST, null, plugin);
-		pm.registerEvent(org.bukkit.event.entity.EntityDamageEvent.class, this, org.bukkit.event.EventPriority.HIGH, null, plugin);
-
-	}
-
 }
