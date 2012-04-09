@@ -213,7 +213,7 @@ public class Tribu extends JavaPlugin {
 	}
 
 	private void initLanguage() {
-		DefaultLanguage.setAuthor("Graindcafe");
+		DefaultLanguage.setAuthor("Graindcafe with help from mmob18");
 		DefaultLanguage.setName("English");
 		DefaultLanguage.setVersion(Constants.LanguageFileVersion);
 		DefaultLanguage.setLanguagesFolder(getDataFolder().getPath() + "/languages/");
