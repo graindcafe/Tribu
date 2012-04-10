@@ -10,6 +10,7 @@ import graindcafe.tribu.listeners.TribuPlayerListener;
 import graindcafe.tribu.listeners.TribuWorldListener;
 
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,6 +26,7 @@ import me.graindcafe.gls.Language;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
@@ -165,6 +167,18 @@ public class Tribu extends JavaPlugin {
 	}
 
 	private void initConfig() {
+		try {
+			getConfig().load(getDataFolder().getPath() + "/config.yml");
+		} catch (FileNotFoundException e2) {
+			// TODO Auto-generated catch block
+			
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (InvalidConfigurationException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		getConfig().options().header("# Tribu Config File Version " + Constants.ConfigFileVersion + " \n");
 		HashMap<String, Object> DefaultConfiguration = new HashMap<String, Object>() {
 			private static final long serialVersionUID = 1L;
@@ -204,7 +218,7 @@ public class Tribu extends JavaPlugin {
 		}
 		// Create the file if it doesn't exist
 		try {
-			getConfig().save("config.yml");
+			getConfig().save(getDataFolder().getPath() + "/config.yml");
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -381,6 +395,7 @@ public class Tribu extends JavaPlugin {
 		rnd = new Random();
 		initConfig();
 		initLanguage();
+		
 		dedicatedServer = getConfig().getBoolean("PluginMode.ServerExclusive", false);
 		/*
 		 * if(dedicatedServer) LogInfo("dedicated"); else
