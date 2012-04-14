@@ -1,10 +1,10 @@
 name: Tribu
 main: graindcafe.tribu.Tribu
-version: 0.4.1.1000
+version: 0.4.1.12510
 commands:
     tribu:
-        description: start,stop, join, leave, the game, create, save, load, levels. 
-        usage: /tribu enter | leave | vote <1|2> | stats
+        description: start,stop, join, leave, the game, create, save, load, levels, package create and delete.
+        usage: /tribu enter | leave | vote <1|2> | stats | package <create|delete>
     zspawn:
         description: creates a zombie spawnpoint at the current location. Use [jump] <name> to jump to the spawn
         usage: /zspawn (( set | remove | jump ) <name> ) | list
@@ -14,4 +14,3 @@ commands:
     ispawn:
         description: sets the initial spawnpoint. Use [jump] to jump to the spawn
         usage: /ispawn [jump]
-    

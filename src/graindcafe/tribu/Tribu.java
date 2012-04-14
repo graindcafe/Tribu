@@ -213,7 +213,7 @@ public class Tribu extends JavaPlugin {
 	}
 
 	private void initLanguage() {
-		DefaultLanguage.setAuthor("Graindcafe with help from mmob18");
+		DefaultLanguage.setAuthor("Graindcafe");
 		DefaultLanguage.setName("English");
 		DefaultLanguage.setVersion(Constants.LanguageFileVersion);
 		DefaultLanguage.setLanguagesFolder(getDataFolder().getPath() + "/languages/");
@@ -242,6 +242,7 @@ public class Tribu extends JavaPlugin {
 				put("Message.LevelLoadedSuccessfully", ChatColor.GREEN + "Level loaded successfully");
 				put("Message.LevelIsAlreadyTheCurrentLevel", ChatColor.RED + "Level %s is already the current level");
 				put("Message.UnableToSaveLevel", ChatColor.RED + "Unable to save level, try again later");
+				put("Message.UnableToCreatePackage", ChatColor.RED + "Unable to create package, try again later");
 				put("Message.UnableToLoadLevel", ChatColor.RED + "Unable to load level");
 				put("Message.NoLevelLoaded", "No level loaded, type '/tribu load' to load one,");
 				put("Message.NoLevelLoaded2", "or '/tribu create' to create a new one,");
@@ -253,6 +254,7 @@ public class Tribu extends JavaPlugin {
 				put("Message.LevelSaveSuccessful", ChatColor.GREEN + "Level save successful");
 				put("Message.LevelCreated", ChatColor.GREEN + "Level " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.GREEN + " created");
 				put("Message.UnableToDeleteLevel", ChatColor.RED + "Unable to delete current level.");
+				put("Message.PackageCreated", ChatColor.RED + "Package created successfully");
 				put("Message.LevelDeleted", ChatColor.GREEN + "Level deleted successfully.");
 				put("Message.Levels", ChatColor.GREEN + "Levels: %s");
 				put("Message.UnknownLevel", ChatColor.RED + "Unknown level: %s");

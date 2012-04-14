@@ -2,6 +2,7 @@ package graindcafe.tribu.executors;
 
 import graindcafe.tribu.PlayerStats;
 import graindcafe.tribu.Tribu;
+import graindcafe.tribu.Packagemaker;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -22,7 +23,7 @@ public class CmdTribu implements CommandExecutor {
 		plugin = instance;
 	}
 
-	// usage: /tribu ((create | load | delete) <name>) | enter | leave |
+	// usage: /tribu ((create | load | delete) <name>) | enter | leave | package (create |delete | list)
 	// list | start [<name>] | stop | save | stats
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -108,6 +109,29 @@ public class CmdTribu implements CommandExecutor {
 		/*
 		 * Ops commands
 		 */
+		else if (args[0].equals("package") || args[0].equals("pck")) {
+			   if (args.length == 1 || !sender.isOp()) {
+			    return usage(sender);
+			   
+			   }
+
+			   if (!(sender instanceof Player)) {
+			    plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
+			    return true;
+			   }
+			   Player player = (Player) sender;
+
+			   if (!plugin.getLevelLoader().saveLevel(plugin.getLevel())) {
+			    player.sendMessage(plugin.getLocale("Message.UnableToCreatePackage"));
+
+			    return true;
+			   }
+
+			   plugin.setLevel(plugin.getLevelLoader().newLevel(args[1], player.getLocation()));
+			   player.sendMessage(String.format(plugin.getLocale("Message.PackageCreated"), args[1]));
+
+			   return true;
+			  }
 		/*
 		 * Level management
 		 */
