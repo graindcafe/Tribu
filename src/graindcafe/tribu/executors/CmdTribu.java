@@ -22,7 +22,7 @@ public class CmdTribu implements CommandExecutor {
 		plugin = instance;
 	}
 
-	// usage: /tribu ((create | load | delete) <name>) | enter | leave |
+	// usage: /tribu ((create | load | delete) <name>) | enter | leave | package (create |delete | list)
 	// list | start [<name>] | stop | save | stats
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -108,6 +108,19 @@ public class CmdTribu implements CommandExecutor {
 		/*
 		 * Ops commands
 		 */
+		else if (args[0].equals("package") || args[0].equals("pck")) {
+			   if (args.length == 1 || !sender.isOp()) {
+				   return usage(sender);
+			   }
+
+			   // Why ? 
+			   if (!(sender instanceof Player)) {
+			    plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
+			    return true;
+			   }
+			   
+			   return true;
+			  }
 		/*
 		 * Level management
 		 */
