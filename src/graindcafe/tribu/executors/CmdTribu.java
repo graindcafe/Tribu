@@ -3,6 +3,7 @@ package graindcafe.tribu.executors;
 import graindcafe.tribu.PlayerStats;
 import graindcafe.tribu.Tribu;
 
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
@@ -110,13 +111,42 @@ public class CmdTribu implements CommandExecutor {
 		 */
 		else if (args[0].equals("package") || args[0].equals("pck")) {
 			   if (args.length == 1 || !sender.isOp()) {
-				   return usage(sender);
+			    return usage(sender);
 			   }
-
-			   // Why ? 
-			   if (!(sender instanceof Player)) {
-			    plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
-			    return true;
+			   
+			   args[1] = args[1].toLowerCase();
+			   
+			   if(args[1].equals("new") || args[1].equals("create"))
+			   {
+				   
+			   }
+			   else if(args[1].equals("open"))
+			   {
+			   
+			   }
+			   else if(args[1].equals("close"))
+			   {
+			   
+			   }
+			   else if(args[1].equals("save"))
+			   {
+			   
+			   }
+			   else if(args[1].equals("add"))
+			   {
+			   
+			   }
+			   else if(args[1].equals("del") || args[1].equals("delete") )
+			   {
+			   
+			   }
+			   else if(args[1].equals("list"))
+			   {
+			   
+			   }
+			   else if(args[1].equals("remove"))
+			   {
+			   
 			   }
 			   
 			   return true;
