@@ -1,5 +1,6 @@
 package graindcafe.tribu.executors;
 
+import graindcafe.tribu.Package;
 import graindcafe.tribu.PlayerStats;
 import graindcafe.tribu.Tribu;
 
@@ -17,6 +18,7 @@ import org.bukkit.entity.Player;
 public class CmdTribu implements CommandExecutor {
 	// use to confirm deletion of a level
 	private String deletedLevel = "";
+	private Package pck=null;
 	private Tribu plugin;
 
 	public CmdTribu(Tribu instance) {
@@ -118,37 +120,49 @@ public class CmdTribu implements CommandExecutor {
 			   
 			   if(args[1].equals("new") || args[1].equals("create"))
 			   {
-				   
+				   pck= new Package();
 			   }
 			   else if(args[1].equals("open"))
 			   {
-			   
+				   if(args.length == 3)
+					   pck = plugin.getLevel().getPackage(args[2]);
+				   else
+					   return usage(sender);
 			   }
-			   else if(args[1].equals("close"))
+			   else if(args[1].equals("close") || args[1].equals("save") )
 			   {
-			   
-			   }
-			   else if(args[1].equals("save"))
-			   {
-			   
+				   plugin.getLevel().setChanged();
+				   pck = null;
 			   }
 			   else if(args[1].equals("add"))
 			   {
-			   
+				   if(args.length == 3)
+					   pck.addItem(Integer.getInteger(args[2]));
+				   else if(args.length == 4)
+					   pck.addItem(Integer.getInteger(args[2]), Integer.getInteger(args[3]));
+				   else if(args.length >= 5)
+					   pck.addItem(Integer.getInteger(args[2]), Integer.getInteger(args[3]), Short.parseShort(args[4]));   
+				   else
+					   return usage(sender);
 			   }
 			   else if(args[1].equals("del") || args[1].equals("delete") )
 			   {
-			   
+				   if(args.length == 4)
+					   pck.deleteItem(Integer.getInteger(args[2]), Integer.getInteger(args[3]));
+				   else
+					   return usage(sender);
 			   }
 			   else if(args[1].equals("list"))
 			   {
-			   
+				   sender.sendMessage(plugin.getLevel().listPackages());
 			   }
 			   else if(args[1].equals("remove"))
 			   {
-			   
+				   if(args.length == 4)
+					   plugin.getLevel().removePackage(args[2]);
+				   else
+					   return usage(sender);
 			   }
-			   
 			   return true;
 			  }
 		/*
