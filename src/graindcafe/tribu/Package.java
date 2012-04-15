@@ -43,7 +43,10 @@ public class Package {
 	{
 		return pck.remove(getItem(id,subid));
 	}
-	
+	public LinkedList<ItemStack> getItemStacks()
+	{
+		return this.pck;
+	}
 	public String getName()
 	{
 		return this.name;

@@ -114,6 +114,10 @@ public class TribuLevel {
 				return n;
 		return null;
 	}
+	public LinkedList<Package> getPackages()
+	{
+		return this.Packages;
+	}
 	public boolean removePackage(Package n)
 	{
 		return this.Packages.remove(n);
