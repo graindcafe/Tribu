@@ -43,6 +43,11 @@ public class Package {
 	{
 		return pck.remove(getItem(id,subid));
 	}
+	
+	public String getName()
+	{
+		return this.name;
+	}
 	public void setName(String name)
 	{
 		this.name=name;

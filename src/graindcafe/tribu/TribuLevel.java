@@ -4,6 +4,7 @@ import graindcafe.tribu.signs.TribuSign;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
 
@@ -22,6 +23,7 @@ public class TribuLevel {
 	private Random rnd = new Random();
 	private HashMap<Location, TribuSign> Signs;
 	private HashMap<String, Location> zombieSpawns;
+	private LinkedList<Package> Packages;
 
 	public TribuLevel(String name, Location spawn) {
 		this.zombieSpawns = new HashMap<String, Location>();
@@ -36,6 +38,7 @@ public class TribuLevel {
 		 * ArrayList<ShopSign>(); this.tSigns = new ArrayList<TollSign>();
 		 */
 		this.Signs = new HashMap<Location, TribuSign>();
+		this.Packages = new LinkedList<Package>();
 	}
 
 	public void activateZombieSpawn(String name) {
@@ -44,12 +47,11 @@ public class TribuLevel {
 				Location spawn = zombieSpawns.get(sname);
 				if (!this.activeZombieSpawns.contains(spawn))
 					this.activeZombieSpawns.add(spawn);
-
 				return;
 			}
 		}
 	}
-
+	
 	public boolean addSign(TribuSign sign) {
 		if (sign == null)
 			return false;
@@ -71,7 +73,7 @@ public class TribuLevel {
 		changed = true;
 	}
 
-	public void desactivateZombieSpawn(String name) {
+	public void deactivateZombieSpawn(String name) {
 		for (String sname : zombieSpawns.keySet()) {
 			if (sname.equalsIgnoreCase(name)) {
 				Location spawn = zombieSpawns.get(sname);
@@ -101,7 +103,33 @@ public class TribuLevel {
 		}
 		return activeZombieSpawns.get(rnd.nextInt(activeZombieSpawns.size()));
 	}
-
+	public void addPackage(Package n)
+	{
+		this.Packages.add(n);
+	}
+	public Package getPackage(String name)
+	{
+		for(Package n : Packages)
+			if(n.getName().equalsIgnoreCase(name))
+				return n;
+		return null;
+	}
+	public boolean removePackage(Package n)
+	{
+		return this.Packages.remove(n);
+	}
+	public boolean removePackage(String name)
+	{
+		return this.Packages.add(this.getPackage(name));
+	}
+	public String listPackages()
+	{
+		String str = "";
+		for(Package n : Packages)
+			str=n.getName()+", ";
+		str=str.substring(0,str.length()-2);
+		return str;
+	}
 	public TribuSign[] getSigns() {
 		return Signs.values().toArray(new TribuSign[] {});
 	}
@@ -113,7 +141,10 @@ public class TribuLevel {
 	public Location getZombieSpawn(String name) {
 		return zombieSpawns.get(name);
 	}
-
+	public void setChanged()
+	{
+		changed = true;
+	}
 	public boolean hasChanged() {
 		return changed;
 	}
