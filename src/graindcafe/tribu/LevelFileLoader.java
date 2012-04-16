@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.inventory.ItemStack;
 
 public class LevelFileLoader {
 
@@ -92,7 +93,16 @@ public class LevelFileLoader {
 				new FileOutputStream(file, true).write(0);
 				in.reset();
 			}
+			if(version == 2 )
+			{
+				// set the file version
+				new FileOutputStream(file).write(3);
+				version = 3;
 
+				// set package count = 0
+				new FileOutputStream(file, true).write(0);
+				in.reset();
+			}
 			if (version != Constants.LevelFileVersion) {
 				fstream.close();
 				plugin.LogSevere(plugin.getLocale("Severe.WorldInvalidFileVersion"));
@@ -137,11 +147,22 @@ public class LevelFileLoader {
 				pos = new Location(world, sx, sy, sz, sYaw, 0.0f);
 				level.addZombieSpawn(pos, spawnName);
 			}
-			int signCount = in.readInt();
-			for (int i = 0; i < signCount; i++) {
+			int count = in.readInt();
+			for (int i = 0; i < count; i++) {
 				if (!level.addSign(TribuSign.LoadFromStream(plugin, world, in))) {
 					plugin.LogWarning(plugin.getLocale("Warning.UnableToAddSign"));
 				}
+			}
+			count= in.readInt();
+			int iCount;
+			Package n;
+			for (int i = 0; i < count; i++) {
+				iCount=in.readInt();
+				n= new Package();
+				for (int j = 0; j < iCount; j++) {
+					n.addItem(in.readInt(), in.readByte(), in.readShort());
+				}
+				level.addPackage(n);
 			}
 
 		} catch (Exception e) {
@@ -213,6 +234,17 @@ public class LevelFileLoader {
 				o.writeInt(signs.length);
 				for (int i = 0; i < signs.length; i++) {
 					signs[i].SaveToStream(o);
+				}
+			}
+			o.writeInt(level.getPackages().size());
+			for(Package n : level.getPackages())
+			{
+				o.writeInt(n.getItemStacks().size());
+				for(ItemStack is : n.getItemStacks())
+				{
+					o.writeInt(is.getTypeId());
+					o.writeByte(is.getData().getData());
+					o.writeShort(is.getAmount());
 				}
 			}
 			o.flush();
