@@ -293,6 +293,17 @@ public class Tribu extends JavaPlugin {
 				put("Message.TribuSignRemoved", ChatColor.GREEN + "Tribu sign successfully removed.");
 				put("Message.ProtectedBlock", ChatColor.YELLOW + "Sorry, this sign is protected, please ask an operator to remove it.");
 				put("Message.CannotPlaceASpecialSign", ChatColor.YELLOW + "Sorry, you cannot place a special signs, please ask an operator to do it.");
+				put("Message.PckNeedName", ChatColor.YELLOW + "You have to specify the name of the package.");
+				put("Message.PckNeedOpen", ChatColor.YELLOW + "You have to open or create a package first.");
+				put("Message.PckNeedId", ChatColor.YELLOW + "You have to specify the at least the id.");
+				put("Message.PckNeedIdSubid", ChatColor.YELLOW + "You have to specify the id and subid.");
+				put("Message.PckCreated",ChatColor.GREEN + "The package %s has been created.");
+				put("Message.PckOpened",ChatColor.GREEN + "The package %s has been opened.");
+				put("Message.PckSaved",ChatColor.GREEN + "The package %s has been saved and closed.");
+				put("Message.PckRemoved",ChatColor.GREEN + "The package has been removed.");
+				put("Message.PckItemDeleted",ChatColor.GREEN + "The item has been deleted.");
+				put("Message.PckItemAdded",ChatColor.GREEN + "The item has been successfully added.");
+				put("Message.PckList",ChatColor.GREEN + "Packages of this level : %s.");
 				put("Broadcast.MapChosen", ChatColor.DARK_BLUE + "Level " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.DARK_BLUE + " has been chosen");
 				put("Broadcast.MapVoteStarting", ChatColor.DARK_AQUA + "Level vote starting,");
 				put("Broadcast.Type", ChatColor.DARK_AQUA + "Type ");

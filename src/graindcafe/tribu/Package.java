@@ -12,9 +12,14 @@ public class Package {
 	{
 		pck = new LinkedList<ItemStack>();
 	}
+	public Package(String name)
+	{
+		this();
+		this.name=name;
+	}
 	public Package(Material m)
 	{
-		pck = new LinkedList<ItemStack>();
+		this();
 		pck.add(new ItemStack(m));
 		this.setName(m.toString());
 	}

@@ -3,6 +3,7 @@ package graindcafe.tribu.executors;
 import graindcafe.tribu.Package;
 import graindcafe.tribu.PlayerStats;
 import graindcafe.tribu.Tribu;
+import graindcafe.tribu.signs.TribuSign;
 
 
 import java.util.Iterator;
@@ -120,48 +121,86 @@ public class CmdTribu implements CommandExecutor {
 			   
 			   if(args[1].equals("new") || args[1].equals("create"))
 			   {
-				   pck= new Package();
+				   if(args.length == 2)
+				   {
+					   plugin.Message(sender, plugin.getLocale("Message.PckNeedName"));
+				   }
+				   else
+				   {
+					   pck= new Package(args[2]);
+					   plugin.Message(sender, String.format(plugin.getLocale("Message.PckCreated"),args[2]));
+				   }
+				   
 			   }
 			   else if(args[1].equals("open"))
 			   {
-				   if(args.length == 3)
-					   pck = plugin.getLevel().getPackage(args[2]);
+				   if(args.length == 2)
+				   {
+					   plugin.Message(sender, plugin.getLocale("Message.PckNeedName"));
+				   }
 				   else
-					   return usage(sender);
+				   {
+					   pck = plugin.getLevel().getPackage(args[2]);
+					   plugin.Message(sender, String.format(plugin.getLocale("Message.PckOpened"),args[2]));
+				   }
+				   
 			   }
 			   else if(args[1].equals("close") || args[1].equals("save") )
 			   {
-				   plugin.getLevel().setChanged();
-				   pck = null;
+				   if(pck==null)
+				   {
+					   plugin.Message(sender, plugin.getLocale("Message.PckNeedOpen"));
+				   }
+				   else{
+					   plugin.getLevel().setChanged();
+					   pck = null;
+					   plugin.Message(sender, String.format(plugin.getLocale("Message.PckSaved"),args[2]));
+				   }
+				   
 			   }
 			   else if(args[1].equals("add"))
 			   {
-				   if(args.length == 3)
-					   pck.addItem(Integer.getInteger(args[2]));
-				   else if(args.length == 4)
-					   pck.addItem(Integer.getInteger(args[2]), Integer.getInteger(args[3]));
-				   else if(args.length >= 5)
-					   pck.addItem(Integer.getInteger(args[2]), Integer.getInteger(args[3]), Short.parseShort(args[4]));   
+				   if(pck==null)
+					   plugin.Message(sender, plugin.getLocale("Message.PckNeedOpen"));
+				   else if(args.length==2)
+					   plugin.Message(sender, plugin.getLocale("Message.PckNeedId"));
 				   else
-					   return usage(sender);
+				   {
+					   if(args.length == 3)
+						   pck.addItem(TribuSign.parseInt(args[2]));
+					   else if(args.length == 4)
+						   pck.addItem(TribuSign.parseInt(args[2]), TribuSign.parseInt(args[3]));
+					   else
+						   pck.addItem(TribuSign.parseInt(args[2]), TribuSign.parseInt(args[3]), (short) TribuSign.parseInt(args[4]));
+					   plugin.Message(sender, plugin.getLocale("Message.PckItemAdded"));
+				   }
 			   }
 			   else if(args[1].equals("del") || args[1].equals("delete") )
 			   {
-				   if(args.length == 4)
-					   pck.deleteItem(Integer.getInteger(args[2]), Integer.getInteger(args[3]));
+				   if(pck==null)
+					   plugin.Message(sender, plugin.getLocale("Message.PckNeedOpen"));
 				   else
-					   return usage(sender);
+				   if(args.length == 4)
+				   {
+					   pck.deleteItem(TribuSign.parseInt(args[2]), TribuSign.parseInt(args[3]));
+					   plugin.Message(sender, plugin.getLocale("Message.PckItemDeleted"));
+				   }
+				   else
+					   plugin.Message(sender, plugin.getLocale("Message.PckNeedSubidId"));
 			   }
 			   else if(args[1].equals("list"))
 			   {
-				   sender.sendMessage(plugin.getLevel().listPackages());
+				   plugin.Message(sender, String.format(plugin.getLocale("Message.PckList"),plugin.getLevel().listPackages()));
 			   }
 			   else if(args[1].equals("remove"))
 			   {
-				   if(args.length == 4)
-					   plugin.getLevel().removePackage(args[2]);
+				   if(args.length == 3)
+					   plugin.Message(sender, plugin.getLocale("Message.PckNeedName"));
 				   else
-					   return usage(sender);
+				   {
+					   plugin.getLevel().removePackage(args[2]);
+					   plugin.Message(sender, plugin.getLocale("Message.PckRemoved"));
+				   }
 			   }
 			   return true;
 			  }
@@ -285,7 +324,9 @@ public class CmdTribu implements CommandExecutor {
 	private boolean usage(CommandSender sender) {
 		if (sender.isOp()) {
 			sender.sendMessage("Ops commands :");
-			sender.sendMessage("/tribu ((create | load | delete) <name>) | enter | leave | list | start [<name>] | stop | save");
+			sender.sendMessage("/tribu ((create | load | delete) <name>) | save | list | start [<name>] | stop");
+			sender.sendMessage("/tribu package (add | del) | (open | close <name>)");
+			sender.sendMessage("See also /ispawn /dspawn /zspawn"); 
 			sender.sendMessage("Players commands :");
 		}
 		return false;
