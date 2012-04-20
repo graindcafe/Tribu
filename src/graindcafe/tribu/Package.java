@@ -2,6 +2,7 @@ package graindcafe.tribu;
 
 import java.util.LinkedList;
 
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public class Package {
@@ -11,7 +12,16 @@ public class Package {
 	{
 		pck = new LinkedList<ItemStack>();
 	}
-	
+	public Package(Material m)
+	{
+		pck = new LinkedList<ItemStack>();
+		pck.add(new ItemStack(m));
+		this.setName(m.toString());
+	}
+	public boolean isEmpty()
+	{
+		return pck.isEmpty();
+	}
 	public boolean addItem(int id)
 	{
 		return addItem(id,1,(short) 1);
