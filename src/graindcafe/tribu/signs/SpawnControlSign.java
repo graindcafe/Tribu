@@ -42,7 +42,7 @@ public class SpawnControlSign extends TribuSign {
 			plugin.getLevel().activateZombieSpawn(ZombieSpawn);
 
 		} else {
-			plugin.getLevel().desactivateZombieSpawn(ZombieSpawn);
+			plugin.getLevel().deactivateZombieSpawn(ZombieSpawn);
 
 		}
 	}
