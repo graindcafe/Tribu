@@ -33,9 +33,8 @@ public class LevelFileLoader {
 			String tmplevelFolder = "";
 			for (byte i = 0; i < levelFolders.length; i++) {
 				tmplevelFolder = tmplevelFolder.concat(levelFolders[i] + File.separatorChar);
-
 				dir = new File(tmplevelFolder);
-				if(dir.mkdir())
+				if(!dir.mkdir())
 					plugin.LogSevere(plugin.getLocale("Severe.TribuCantMkdir"));
 			}
 		}
