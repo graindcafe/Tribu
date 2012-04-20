@@ -157,13 +157,23 @@ public class LevelFileLoader {
 			int iCount;
 			Package n;
 			for (int i = 0; i < count; i++) {
-				iCount=in.readInt();
+				
 				n= new Package();
+				int strC=in.readInt();
+				char[] c=new char[strC];
+				byte k=0;
+				while(k<strC){
+					c[k]=in.readChar();
+					k++;
+				}
+				n.setName(new String(c));
+				iCount=in.readInt();
 				for (int j = 0; j < iCount; j++) {
 					n.addItem(in.readInt(), in.readByte(), in.readShort());
 				}
 				level.addPackage(n);
 			}
+			
 
 		} catch (Exception e) {
 			plugin.LogSevere(String.format(plugin.getLocale("Severe.ErrorDuringLevelLoading"), Tribu.getExceptionMessage(e)));
@@ -239,6 +249,8 @@ public class LevelFileLoader {
 			o.writeInt(level.getPackages().size());
 			for(Package n : level.getPackages())
 			{
+				o.writeInt(n.getName().length());
+				o.writeChars(n.getName());
 				o.writeInt(n.getItemStacks().size());
 				for(ItemStack is : n.getItemStacks())
 				{
