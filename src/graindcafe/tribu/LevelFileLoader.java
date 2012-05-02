@@ -25,7 +25,6 @@ public class LevelFileLoader {
 		plugin = instance;
 		levels = new HashSet<String>();
 		levels.clear();
-		// File dir = new File(Constants.levelFolder);
 		File dir = new File(Constants.levelFolder);
 		if (!dir.exists()) {
 			plugin.LogInfo(plugin.getLocale("Info.LevelFolderDoesntExist"));

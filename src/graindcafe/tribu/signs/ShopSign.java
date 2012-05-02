@@ -11,37 +11,40 @@ import java.util.LinkedList;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
 
 public class ShopSign extends TribuSign {
 
-	private static Package getItem(String[] signLines,TribuLevel level) {
+	private static Package getItem(String[] signLines, TribuLevel level) {
+		if(signLines == null  || level == null)
+			return new Package(31);
 		Package i;
-		i = level.getPackage((signLines[1].toUpperCase() + "_" + signLines[2].toUpperCase()));
-		if(i.isEmpty())
-			i= level.getPackage(signLines[1].toUpperCase());
-		if(i.isEmpty())
-			i= level.getPackage(signLines[2].toUpperCase());
-		if(i.isEmpty())
-			i =  new Package(Material.getMaterial(signLines[1].toUpperCase() + "_" + signLines[2].toUpperCase()));
+		/* Try to get a package */ 
+		i = level.getPackage((signLines[1] + "_" + signLines[2]));
+		if (i==null || i.isEmpty())
+			i = level.getPackage(signLines[1]);
+		if (i==null || i.isEmpty())
+			i = level.getPackage(signLines[2]);
+		
+		/* Try to get a single item */
+		if (i==null || i.isEmpty())
+			i = new Package(Material.getMaterial(signLines[1] + "_" + signLines[2]));
 		// If the item is inexistent, let's try with
 		// only the second line
-		if(i.isEmpty())
+		if (i.isEmpty())
 			i = new Package(Material.getMaterial(signLines[1].toUpperCase()));
-		// Still no ? With the third one, so
-		if(i.isEmpty())
+		// Still not ? With the third one, so
+		if (i.isEmpty())
 			i = new Package(Material.getMaterial(signLines[2].toUpperCase()));
 		return i;
 	}
 
 	private int cost = 0;
-	
-	private Item droppedItem = null;
+
+	/* private Item droppedItem = null; */
 
 	private Package items = null;
 
@@ -54,11 +57,13 @@ public class ShopSign extends TribuSign {
 		this.items = new Package(item);
 		this.cost = cost;
 	}
+
 	public ShopSign(Tribu plugin, Location pos, Package item, int cost) {
 		super(plugin, pos);
 		this.items = item;
 		this.cost = cost;
 	}
+
 	public ShopSign(Tribu plugin, Location pos, String item, int cost) {
 		this(plugin, pos, Material.getMaterial(item), cost);
 	}
@@ -84,17 +89,23 @@ public class ShopSign extends TribuSign {
 
 	@Override
 	public void init() {
-			this.items=getItem(((Sign) pos.getBlock()).getLines(), plugin.getLevel());
-			// TODO:Fix it, it should just "display" the item but make it not lootable. We can loot it
-			/*if (!items.getItemStacks().isEmpty() && (droppedItem==null || droppedItem.isDead()) && plugin.getConfig().getBoolean("Signs.ShopSign.DropItem", true)) {
-				for(ItemStack n : items.getItemStacks())
-				{
-					droppedItem = pos.getWorld().dropItem(pos, new ItemStack(item));
-					droppedItem.setVelocity(new Vector(0, 0, 0));
-				}
-			}*/
-			
+		if(pos.getBlock().getState() instanceof Sign)
+			this.items = getItem(((Sign)pos.getBlock().getState() ).getLines(), plugin.getLevel());
+		else
+			plugin.LogWarning("Missing sign !");
+		// TODO:Fix it, it should just "display" the item but make it not
+		// lootable. We can loot it
+		/*
+		 * if (!items.getItemStacks().isEmpty() && (droppedItem==null ||
+		 * droppedItem.isDead()) &&
+		 * plugin.getConfig().getBoolean("Signs.ShopSign.DropItem", true)) {
+		 * for(ItemStack n : items.getItemStacks()) { droppedItem =
+		 * pos.getWorld().dropItem(pos, new ItemStack(item));
+		 * droppedItem.setVelocity(new Vector(0, 0, 0)); } }
+		 */
+
 	}
+
 	@Override
 	public boolean isUsedEvent(Event e) {
 		return e instanceof PlayerInteractEvent && ((PlayerInteractEvent) e).getClickedBlock().getLocation().equals(pos);
@@ -108,21 +119,21 @@ public class ShopSign extends TribuSign {
 		if (stats.subtractmoney(cost)) {
 			if (!items.isEmpty()) {
 				LinkedList<ItemStack> givenItems = new LinkedList<ItemStack>();
-				for(ItemStack item : items.getItemStacks())
-				{
+				for (ItemStack item : items.getItemStacks()) {
 					givenItems.add(item);
 					HashMap<Integer, ItemStack> failed = p.getInventory().addItem(item);
-					
+
 					if (failed != null && failed.size() > 0) {
 						// maybe the inventory is full
 						p.sendMessage(plugin.getLocale("Message.UnableToGiveYouThatItem"));
 						stats.addMoney(cost);
-						for(ItemStack i : givenItems)
+						for (ItemStack i : givenItems)
 							p.getInventory().remove(i);
-						givenItems=null;
+						givenItems = null;
 						break;
 					}
 				}
+				
 				p.updateInventory();
 				// Alright
 				p.sendMessage(String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));

@@ -1,6 +1,7 @@
 package graindcafe.tribu.listeners;
 
 import graindcafe.tribu.Tribu;
+import graindcafe.tribu.executors.TribuPlayerJoin;
 import graindcafe.tribu.signs.TribuSign;
 
 import org.bukkit.block.Block;
@@ -12,7 +13,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
@@ -24,7 +24,10 @@ public class TribuPlayerListener implements Listener {
 	public TribuPlayerListener(Tribu instance) {
 		plugin = instance;
 	}
-
+	public Tribu getPlugin()
+	{
+		return plugin;
+	}
 	@EventHandler 
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (!event.isCancelled()) {
@@ -49,11 +52,6 @@ public class TribuPlayerListener implements Listener {
 		}
 	}
 
-	@EventHandler
-	public void onPlayerJoin(PlayerJoinEvent event) {
-
-		plugin.addPlayer(event.getPlayer());
-	}
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
@@ -73,7 +71,9 @@ public class TribuPlayerListener implements Listener {
 	}
 
 	public void registerEvents(PluginManager pm) {
-		if (plugin.isDedicatedServer())
-			pm.registerEvent(null, null, null, null, this.plugin);
+		if (plugin.isDedicatedServer()) {
+			pm.registerEvent(org.bukkit.event.player.PlayerJoinEvent.class, this, org.bukkit.event.EventPriority.NORMAL, new TribuPlayerJoin(), plugin);
+		}
+		pm.registerEvents(this, plugin);
 	}
 }

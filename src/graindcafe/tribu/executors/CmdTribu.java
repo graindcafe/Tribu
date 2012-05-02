@@ -112,11 +112,16 @@ public class CmdTribu implements CommandExecutor {
 		/*
 		 * Ops commands
 		 */
+		/* Package management */
 		else if (args[0].equals("package") || args[0].equals("pck")) {
 			   if (args.length == 1 || !sender.isOp()) {
 			    return usage(sender);
 			   }
-			   
+			   if (plugin.getLevel() == null) {
+					plugin.Message(sender, plugin.getLocale("Message.NoLevelLoaded"));
+					plugin.Message(sender, plugin.getLocale("Message.NoLevelLoaded2"));
+					return true;
+				}
 			   args[1] = args[1].toLowerCase();
 			   
 			   if(args[1].equals("new") || args[1].equals("create"))
@@ -141,7 +146,10 @@ public class CmdTribu implements CommandExecutor {
 				   else
 				   {
 					   pck = plugin.getLevel().getPackage(args[2]);
-					   plugin.Message(sender, String.format(plugin.getLocale("Message.PckOpened"),args[2]));
+					   if(pck!=null)
+						   plugin.Message(sender, String.format(plugin.getLocale("Message.PckOpened"),args[2]));
+					   else
+						   plugin.Message(sender, String.format(plugin.getLocale("Message.PckNotFound"),args[2]));
 				   }
 				   
 			   }
@@ -152,9 +160,10 @@ public class CmdTribu implements CommandExecutor {
 					   plugin.Message(sender, plugin.getLocale("Message.PckNeedOpen"));
 				   }
 				   else{
+					   plugin.getLevel().addPackage(pck);
 					   plugin.getLevel().setChanged();
+					   plugin.Message(sender, String.format(plugin.getLocale("Message.PckSaved"),pck.getName()));
 					   pck = null;
-					   plugin.Message(sender, String.format(plugin.getLocale("Message.PckSaved"),args[2]));
 				   }
 				   
 			   }

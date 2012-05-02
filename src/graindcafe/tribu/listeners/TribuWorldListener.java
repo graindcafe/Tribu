@@ -34,7 +34,6 @@ public class TribuWorldListener implements Listener {
 	}
 
 	public void registerEvents(PluginManager pm) {
-		pm.registerEvent(org.bukkit.event.world.ChunkUnloadEvent.class, this, org.bukkit.event.EventPriority.HIGH, null, plugin);
-		pm.registerEvent(org.bukkit.event.world.WorldUnloadEvent.class, this, org.bukkit.event.EventPriority.LOW, null, plugin);
+		pm.registerEvents(this, plugin);
 	}
 }

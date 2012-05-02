@@ -131,7 +131,8 @@ public class TribuLevel {
 		String str = "";
 		for(Package n : Packages)
 			str=n.getName()+", ";
-		str=str.substring(0,str.length()-2);
+		if(str.length()>2)
+			str=str.substring(0,str.length()-2);
 		return str;
 	}
 	public TribuSign[] getSigns() {

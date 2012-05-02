@@ -16,6 +16,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.PluginManager;
 
 public class TribuEntityListener implements Listener {
 	private Tribu plugin;
@@ -93,5 +94,8 @@ public class TribuEntityListener implements Listener {
 				plugin.getSpawner().despawnZombie(zombie, event.getDrops());
 			}
 		}
+	}
+	public void registerEvents(PluginManager pm) {
+		pm.registerEvents(this, plugin);
 	}
 }

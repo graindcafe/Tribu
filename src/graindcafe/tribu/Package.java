@@ -23,6 +23,10 @@ public class Package {
 		pck.add(new ItemStack(m));
 		this.setName(m.toString());
 	}
+	public Package(int id) {
+		this();
+		pck.add(new ItemStack(id,0,(short) 1));
+	}
 	public boolean isEmpty()
 	{
 		return pck.isEmpty();
