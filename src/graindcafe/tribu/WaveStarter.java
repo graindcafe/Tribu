@@ -9,11 +9,13 @@ public class WaveStarter implements Runnable {
 	private boolean scheduled;
 	private int taskID;
 	private int waveNumber;
-
+	private int health,max;
 	public WaveStarter(Tribu instance) {
 		plugin = instance;
 		waveNumber = 1;
 		scheduled = false;
+		max = calcPolynomialFunction(waveNumber, plugin.getConfig().getDoubleList("Zombies.Quantity"));
+		health = calcPolynomialFunction(waveNumber, plugin.getConfig().getDoubleList("Zombies.Health"));
 	}
 
 	private int calcPolynomialFunction(int x, List<Double> coef) {
@@ -69,8 +71,7 @@ public class WaveStarter implements Runnable {
 			scheduled = false;
 			plugin.revivePlayers(false);
 			plugin.getLevel().onWaveStart();
-			int max = calcPolynomialFunction(waveNumber, plugin.getConfig().getDoubleList("Zombies.Quantity"));
-			int health = calcPolynomialFunction(waveNumber, plugin.getConfig().getDoubleList("Zombies.Health"));
+			
 			plugin.getSpawnTimer().StartWave(max, health);
 			plugin.getServer()
 					.broadcastMessage(

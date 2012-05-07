@@ -5,7 +5,6 @@ import graindcafe.tribu.PlayerStats;
 import graindcafe.tribu.Tribu;
 import graindcafe.tribu.signs.TribuSign;
 
-
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
@@ -19,14 +18,15 @@ import org.bukkit.entity.Player;
 public class CmdTribu implements CommandExecutor {
 	// use to confirm deletion of a level
 	private String deletedLevel = "";
-	private Package pck=null;
+	private Package pck = null;
 	private Tribu plugin;
 
 	public CmdTribu(Tribu instance) {
 		plugin = instance;
 	}
 
-	// usage: /tribu ((create | load | delete) <name>) | enter | leave | package (create |delete | list)
+	// usage: /tribu ((create | load | delete) <name>) | enter | leave | package
+	// (create |delete | list)
 	// list | start [<name>] | stop | save | stats
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -114,105 +114,103 @@ public class CmdTribu implements CommandExecutor {
 		 */
 		/* Package management */
 		else if (args[0].equals("package") || args[0].equals("pck")) {
-			   if (args.length == 1 || !sender.isOp()) {
-			    return usage(sender);
-			   }
-			   if (plugin.getLevel() == null) {
-					plugin.Message(sender, plugin.getLocale("Message.NoLevelLoaded"));
-					plugin.Message(sender, plugin.getLocale("Message.NoLevelLoaded2"));
-					return true;
+			if (args.length == 1 || !sender.isOp()) {
+				return usage(sender);
+			}
+			if (plugin.getLevel() == null) {
+				plugin.Message(sender, plugin.getLocale("Message.NoLevelLoaded"));
+				plugin.Message(sender, plugin.getLocale("Message.NoLevelLoaded2"));
+				return true;
+			}
+			args[1] = args[1].toLowerCase();
+
+			if (args[1].equals("new") || args[1].equals("create")) {
+				if (args.length == 2) {
+					plugin.Message(sender, plugin.getLocale("Message.PckNeedName"));
+				} else {
+					pck = new Package(args[2]);
+					plugin.Message(sender, String.format(plugin.getLocale("Message.PckCreated"), args[2]));
 				}
-			   args[1] = args[1].toLowerCase();
-			   
-			   if(args[1].equals("new") || args[1].equals("create"))
-			   {
-				   if(args.length == 2)
-				   {
-					   plugin.Message(sender, plugin.getLocale("Message.PckNeedName"));
-				   }
-				   else
-				   {
-					   pck= new Package(args[2]);
-					   plugin.Message(sender, String.format(plugin.getLocale("Message.PckCreated"),args[2]));
-				   }
-				   
-			   }
-			   else if(args[1].equals("open"))
-			   {
-				   if(args.length == 2)
-				   {
-					   plugin.Message(sender, plugin.getLocale("Message.PckNeedName"));
-				   }
-				   else
-				   {
-					   pck = plugin.getLevel().getPackage(args[2]);
-					   if(pck!=null)
-						   plugin.Message(sender, String.format(plugin.getLocale("Message.PckOpened"),args[2]));
-					   else
-						   plugin.Message(sender, String.format(plugin.getLocale("Message.PckNotFound"),args[2]));
-				   }
-				   
-			   }
-			   else if(args[1].equals("close") || args[1].equals("save") )
-			   {
-				   if(pck==null)
-				   {
-					   plugin.Message(sender, plugin.getLocale("Message.PckNeedOpen"));
-				   }
-				   else{
-					   plugin.getLevel().addPackage(pck);
-					   plugin.getLevel().setChanged();
-					   plugin.Message(sender, String.format(plugin.getLocale("Message.PckSaved"),pck.getName()));
-					   pck = null;
-				   }
-				   
-			   }
-			   else if(args[1].equals("add"))
-			   {
-				   if(pck==null)
-					   plugin.Message(sender, plugin.getLocale("Message.PckNeedOpen"));
-				   else if(args.length==2)
-					   plugin.Message(sender, plugin.getLocale("Message.PckNeedId"));
-				   else
-				   {
-					   if(args.length == 3)
-						   pck.addItem(TribuSign.parseInt(args[2]));
-					   else if(args.length == 4)
-						   pck.addItem(TribuSign.parseInt(args[2]), TribuSign.parseInt(args[3]));
-					   else
-						   pck.addItem(TribuSign.parseInt(args[2]), TribuSign.parseInt(args[3]), (short) TribuSign.parseInt(args[4]));
-					   plugin.Message(sender, plugin.getLocale("Message.PckItemAdded"));
-				   }
-			   }
-			   else if(args[1].equals("del") || args[1].equals("delete") )
-			   {
-				   if(pck==null)
-					   plugin.Message(sender, plugin.getLocale("Message.PckNeedOpen"));
-				   else
-				   if(args.length == 4)
-				   {
-					   pck.deleteItem(TribuSign.parseInt(args[2]), TribuSign.parseInt(args[3]));
-					   plugin.Message(sender, plugin.getLocale("Message.PckItemDeleted"));
-				   }
-				   else
-					   plugin.Message(sender, plugin.getLocale("Message.PckNeedSubidId"));
-			   }
-			   else if(args[1].equals("list"))
-			   {
-				   plugin.Message(sender, String.format(plugin.getLocale("Message.PckList"),plugin.getLevel().listPackages()));
-			   }
-			   else if(args[1].equals("remove"))
-			   {
-				   if(args.length == 3)
-					   plugin.Message(sender, plugin.getLocale("Message.PckNeedName"));
-				   else
-				   {
-					   plugin.getLevel().removePackage(args[2]);
-					   plugin.Message(sender, plugin.getLocale("Message.PckRemoved"));
-				   }
-			   }
-			   return true;
-			  }
+
+			} else if (args[1].equals("open")) {
+				if (args.length == 2) {
+					plugin.Message(sender, plugin.getLocale("Message.PckNeedName"));
+				} else {
+					pck = plugin.getLevel().getPackage(args[2]);
+					if (pck != null)
+						plugin.Message(sender, String.format(plugin.getLocale("Message.PckOpened"), args[2]));
+					else
+						plugin.Message(sender, String.format(plugin.getLocale("Message.PckNotFound"), args[2]));
+				}
+
+			} else if (args[1].equals("close") || args[1].equals("save")) {
+				if (pck == null) {
+					plugin.Message(sender, plugin.getLocale("Message.PckNeedOpen"));
+				} else {
+					plugin.getLevel().addPackage(pck);
+					plugin.getLevel().setChanged();
+					plugin.Message(sender, String.format(plugin.getLocale("Message.PckSaved"), pck.getName()));
+					pck = null;
+				}
+
+			} else if (args[1].equals("add")) {
+				if (pck == null)
+					plugin.Message(sender, plugin.getLocale("Message.PckNeedOpen"));
+				else if (args.length == 2)
+					plugin.Message(sender, plugin.getLocale("Message.PckNeedId"));
+				else {
+					if (args.length == 3)
+						if (args[2] == "this")
+							if (!(sender instanceof Player)) {
+								plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
+								return true;
+							} else
+								pck.addItem(((Player) sender).getItemInHand());
+						else
+							pck.addItem(TribuSign.parseInt(args[2]));
+					else if (args.length == 4)
+						if (args[2] == "this")
+							if (!(sender instanceof Player)) {
+								plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
+								return true;
+							} else
+								pck.addItem(((Player) sender).getItemInHand(), TribuSign.parseInt(args[3]));
+						else
+							pck.addItem(TribuSign.parseInt(args[2]), (short) TribuSign.parseInt(args[3]));
+					else
+						pck.addItem(TribuSign.parseInt(args[2]), (short) TribuSign.parseInt(args[3]), (short) TribuSign.parseInt(args[4]));
+					plugin.Message(sender, plugin.getLocale("Message.PckItemAdded"));
+				}
+			} else if (args[1].equals("del") || args[1].equals("delete")) {
+				if (pck == null)
+					plugin.Message(sender, plugin.getLocale("Message.PckNeedOpen"));
+				else if (args.length == 4) {
+					pck.deleteItem(TribuSign.parseInt(args[2]), TribuSign.parseInt(args[3]));
+					plugin.Message(sender, plugin.getLocale("Message.PckItemDeleted"));
+				} else
+					plugin.Message(sender, plugin.getLocale("Message.PckNeedSubidId"));
+			
+			} else if (args[1].equals("remove")) {
+				if (args.length == 3)
+					plugin.Message(sender, plugin.getLocale("Message.PckNeedName"));
+				else {
+					plugin.getLevel().removePackage(args[2]);
+					plugin.Message(sender, plugin.getLocale("Message.PckRemoved"));
+				}
+			} else if (args[1].equals("list")) {
+				plugin.Message(sender, String.format(plugin.getLocale("Message.PckList"), plugin.getLevel().listPackages()));
+			} else if (args[1].equals("show") || args[1].equals("describe")) {
+				Package p=pck;
+				if(args.length==2)
+					if(pck == null)
+						plugin.Message(sender, plugin.getLocale("Message.PckNeedOpen"));
+				else
+					p=plugin.getLevel().getPackage(args[2]);
+				if(p != null)
+					plugin.Message(sender, p.toString());
+			}
+			return true;
+		}
 		/*
 		 * Level management
 		 */
@@ -226,7 +224,6 @@ public class CmdTribu implements CommandExecutor {
 				return true;
 			}
 			Player player = (Player) sender;
-
 			if (!plugin.getLevelLoader().saveLevel(plugin.getLevel())) {
 				player.sendMessage(plugin.getLocale("Message.UnableToSaveCurrentLevel"));
 				return true;
@@ -259,7 +256,8 @@ public class CmdTribu implements CommandExecutor {
 		} else if (args[0].equals("save")) {
 			if (!sender.isOp())
 				return usage(sender);
-
+			if(plugin.getLevel()!=null)
+				plugin.getLevel().addPackage(pck);
 			if (!plugin.getLevelLoader().saveLevel(plugin.getLevel())) {
 				plugin.Message(sender, plugin.getLocale("Message.UnableToSaveCurrentLevel"));
 			} else {
@@ -287,7 +285,7 @@ public class CmdTribu implements CommandExecutor {
 			for (String level : levels) {
 				msg += ", " + level;
 			}
-			if(msg != "")
+			if (msg != "")
 				plugin.Message(sender, String.format(plugin.getLocale("Message.Levels"), msg.substring(2)));
 			return true;
 		}
@@ -334,8 +332,8 @@ public class CmdTribu implements CommandExecutor {
 		if (sender.isOp()) {
 			sender.sendMessage("Ops commands :");
 			sender.sendMessage("/tribu ((create | load | delete) <name>) | save | list | start [<name>] | stop");
-			sender.sendMessage("/tribu package (add | del) | (open | close <name>)");
-			sender.sendMessage("See also /ispawn /dspawn /zspawn"); 
+			sender.sendMessage("/tribu package ((add | del)  <id>  [<subid>] [<number>]) | ((new | open | remove) <name> | close) | list");
+			sender.sendMessage("See also /ispawn /dspawn /zspawn");
 			sender.sendMessage("Players commands :");
 		}
 		return false;

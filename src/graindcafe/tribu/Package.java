@@ -1,87 +1,142 @@
 package graindcafe.tribu;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 public class Package {
 	LinkedList<ItemStack> pck;
 	String name;
-	public Package()
-	{
+
+	public Package() {
 		pck = new LinkedList<ItemStack>();
 	}
-	public Package(String name)
-	{
+
+	public Package(String name) {
 		this();
-		this.name=name;
+		setName(name);
 	}
-	public Package(Material m)
-	{
+
+	public Package(Material m) {
 		this();
-		pck.add(new ItemStack(m));
-		this.setName(m.toString());
+		if (m != null) {
+			addItem(m);
+			setName(m.toString());
+		}
 	}
+
 	public Package(int id) {
 		this();
-		pck.add(new ItemStack(id,0,(short) 1));
+		addItem(id);
 	}
-	public boolean isEmpty()
-	{
+
+	public boolean isEmpty() {
 		return pck.isEmpty();
 	}
-	public boolean addItem(int id)
-	{
-		return addItem(id,1,(short) 1);
+
+	public boolean addItem(int id) {
+		return addItem(id, (short) 0, (short) 1);
 	}
-	public boolean addItem(int id,int subid)
-	{
-		return addItem(id,subid,(short) 1);
+
+	public boolean addItem(int id, short subid) {
+		return addItem(id, subid, (short) 1);
 	}
-	public boolean addItem(int id, int subid, short number)
-	{
-		return pck.add(new ItemStack(id,subid,number));
+
+	public boolean addItem(int id, short subid, short number) {
+		return addItem(Material.getMaterial(id), subid, number);
 	}
-	public ItemStack getItem(int id,int subid)
-	{
-		for(ItemStack i : pck)
-			if(i.getTypeId()==id && i.getData().getData()==((byte)subid))
+
+	public boolean addItem(Material m) {
+		return addItem(m, (short) 0, (short) 1);
+	}
+
+	public boolean addItem(Material m, short subid) {
+		return addItem(m, subid, (short) 1);
+	}
+
+	public boolean addItem(Material m, short subid, short number) {
+		return addItem(m, subid, number, null);
+	}
+
+	public boolean addItem(Material m, short subid, short number, Enchantment enchantment, Integer enchLvl) {
+		if (enchantment != null) {
+			HashMap<Enchantment, Integer> hm = new HashMap<Enchantment, Integer>();
+			hm.put(enchantment, enchLvl);
+			return addItem(m, subid, number, hm);
+		}
+		return addItem(m, subid, number, null);
+	}
+
+	public boolean addItem(int id, short subid, short amount, HashMap<Enchantment, Integer> enchts) {
+		return addItem(Material.getMaterial(id), subid, amount, enchts);
+	}
+
+	public boolean addItem(Material m, short subid, short number, Map<Enchantment, Integer> enchantments) {
+		if (m != null) {
+			ItemStack is = new ItemStack(m, subid, number);
+			if (enchantments != null && !enchantments.isEmpty())
+				for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+					if(entry.getKey()!=null)
+						is.addEnchantment(entry.getKey(), entry.getValue());
+		        }
+			return this.addItem(is);
+		} else
+			return false;
+	}
+
+	public boolean addItem(ItemStack item, int number) {
+		item.setAmount(number);
+		return this.addItem(item);
+	}
+
+	public boolean addItem(ItemStack item) {
+		return item == null ? false : pck.add(item);
+	}
+
+	public ItemStack getItem(int id, int subid) {
+		for (ItemStack i : pck)
+			if (i.getTypeId() == id && i.getData().getData() == ((byte) subid))
 				return i;
 		return null;
 	}
-	public LinkedList<ItemStack> getItems(int id)
-	{
-		LinkedList<ItemStack> list=new LinkedList<ItemStack>();
-		for(ItemStack i : pck)
-			if(i.getTypeId()==id)
+
+	public LinkedList<ItemStack> getItems(int id) {
+		LinkedList<ItemStack> list = new LinkedList<ItemStack>();
+
+		for (ItemStack i : pck)
+			if (i.getTypeId() == id)
 				list.add(i);
 		return list;
 	}
-	public boolean deleteItem(int id, int subid)
-	{
-		return pck.remove(getItem(id,subid));
+
+	public boolean deleteItem(int id, int subid) {
+		return pck.remove(getItem(id, subid));
 	}
-	public LinkedList<ItemStack> getItemStacks()
-	{
+
+	public LinkedList<ItemStack> getItemStacks() {
 		return this.pck;
 	}
-	public String getName()
-	{
+
+	public String getName() {
 		return this.name;
 	}
-	public void setName(String name)
-	{
-		this.name=name;
+
+	public void setName(String name) {
+		this.name = name;
 	}
+
 	// Exemple{42:10x64,13:01x1}
-	public String toString()
-	{
-		String s= new String(name);
-		s+='{';
-		for(ItemStack i : pck)
-			s=String.valueOf(i.getTypeId())+':'+String.valueOf(i.getData().getData())+'x'+String.valueOf(i.getAmount())+',';
-		s+='}';
+	public String toString() {
+		String s = new String(name);
+		s += '{';
+		for (ItemStack i : pck)
+			s = String.valueOf(i.getTypeId()) + ':' + String.valueOf(i.getData().getData()) + 'x' + String.valueOf(i.getAmount()) + ' ';
+		s += '}';
 		return s;
 	}
+
 }

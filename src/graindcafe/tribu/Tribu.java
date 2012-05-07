@@ -9,13 +9,13 @@ import graindcafe.tribu.listeners.TribuEntityListener;
 import graindcafe.tribu.listeners.TribuPlayerListener;
 import graindcafe.tribu.listeners.TribuWorldListener;
 
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
@@ -26,7 +26,9 @@ import me.graindcafe.gls.Language;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
@@ -68,6 +70,8 @@ public class Tribu extends JavaPlugin {
 	private WaveStarter waveStarter;
 	private TribuWorldListener worldListener;
 
+	private LinkedList<Package> packages;
+
 	public void addPlayer(Player player) {
 		if (player != null && !players.containsKey(player)) {
 
@@ -88,6 +92,14 @@ public class Tribu extends JavaPlugin {
 		}
 	}
 
+	public void addDefaultPackages() {
+		if (level != null)
+			for (Package pck : this.getDefaultPackages()) {
+				this.LogInfo("Adding default pck : " + pck.getName() + " " + pck.toString());
+				level.addPackage(pck);
+			}
+	}
+
 	public void checkAliveCount() {
 		if (aliveCount == 0 && isRunning) {
 			stopRunning();
@@ -96,6 +108,10 @@ public class Tribu extends JavaPlugin {
 			if (getPlayersCount() != 0)
 				getLevelSelector().startVote(Constants.VoteDelay);
 		}
+	}
+
+	public LinkedList<Package> getDefaultPackages() {
+		return packages;
 	}
 
 	public int getAliveCount() {
@@ -171,7 +187,7 @@ public class Tribu extends JavaPlugin {
 			getConfig().load(getDataFolder().getPath() + "/config.yml");
 		} catch (FileNotFoundException e2) {
 			// TODO Auto-generated catch block
-			
+
 		} catch (IOException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -205,10 +221,10 @@ public class Tribu extends JavaPlugin {
 				put("Players.StoreInventory", false);
 				put("Players.RevertBlocksChanges", true);
 				put("Signs.ShopSign.DropItem", true);
-				
+				put("DefaultPackages", null);
 			}
 		};
-		
+
 		for (String key : getConfig().getKeys(true)) {
 			DefaultConfiguration.remove(key);
 		}
@@ -223,9 +239,53 @@ public class Tribu extends JavaPlugin {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+			}
+	private void loadDefaultPackages()
+	{
+		if (getConfig().isConfigurationSection("DefaultPackages")) {
+			Package pck;
+			List<Integer> enchIds;
+			List<Integer> enchLvls;
+			ConfigurationSection defaultPackage = getConfig().getConfigurationSection("DefaultPackages");
+			ConfigurationSection pckCs, item;
+			byte i = 0;
+			HashMap<Enchantment, Integer> enchts = new HashMap<Enchantment, Integer>();
+
+			for (String pckName : defaultPackage.getKeys(false)) {
+				this.LogInfo(pckName);
+
+				pckCs = defaultPackage.getConfigurationSection(pckName);
+				if (pckCs != null) {
+					pck = new Package(pckName);
+					for (String itemName : pckCs.getKeys(false)) {
+						item = pckCs.getConfigurationSection(itemName);
+						if (item != null && item.contains("id")) {
+
+							enchts.clear();
+							if (item.contains("enchantmentsId")) {
+								enchIds = item.getIntegerList("enchantmentsId");
+								if (item.contains("enchantmentsLevel"))
+									enchLvls = item.getIntegerList("enchantmentsLevel");
+								else
+									enchLvls = new LinkedList<Integer>();
+								i = 0;
+								for (Integer id : enchIds) {
+									enchts.put(Enchantment.getById(id), (enchLvls.size() > i) ? enchLvls.get(i) : 1);
+									i++;
+								}
+							}
+							pck.addItem(item.getInt("id"), (short) item.getInt("data", 0), (short) item.getInt("amount", 1), enchts);
+						} else
+							this.LogInfo(itemName + " not loaded");
+					}
+					this.packages.push(pck);
+				} else
+					this.LogInfo(pckName + " not loaded");
+
+			}
+		}
 
 	}
-
 	private void initLanguage() {
 		DefaultLanguage.setAuthor("Graindcafe");
 		DefaultLanguage.setName("English");
@@ -280,7 +340,8 @@ public class Tribu extends JavaPlugin {
 				put("Message.InvalidSpawnName", ChatColor.RED + "Invalid spawn name");
 				put("Message.TeleportedToZombieSpawn", ChatColor.GREEN + "Teleported to zombie spawn " + ChatColor.LIGHT_PURPLE + "%s");
 				put("Message.UnableToGiveYouThatItem", "Unable to give you that item...");
-				put("Message.PurchaseSuccessfulMoney", ChatColor.GREEN + "Purchase successful."+ChatColor.DARK_GRAY+" Money: " + ChatColor.GRAY + "%s $");
+				put("Message.PurchaseSuccessfulMoney", ChatColor.GREEN + "Purchase successful." + ChatColor.DARK_GRAY + " Money: " + ChatColor.GRAY
+						+ "%s $");
 				put("Message.YouDontHaveEnoughMoney", ChatColor.DARK_RED + "You don't have enough money for that!");
 				put("Message.MoneyPoints", ChatColor.DARK_GRAY + "Money: " + ChatColor.GRAY + "%s $" + ChatColor.DARK_GRAY + " Points: "
 						+ ChatColor.GRAY + "%s");
@@ -293,31 +354,31 @@ public class Tribu extends JavaPlugin {
 				put("Message.TribuSignRemoved", ChatColor.GREEN + "Tribu sign successfully removed.");
 				put("Message.ProtectedBlock", ChatColor.YELLOW + "Sorry, this sign is protected, please ask an operator to remove it.");
 				put("Message.CannotPlaceASpecialSign", ChatColor.YELLOW + "Sorry, you cannot place a special signs, please ask an operator to do it.");
-				put("Message.PckNotFound",ChatColor.YELLOW + "Package %s not found in this level.");
+				put("Message.PckNotFound", ChatColor.YELLOW + "Package %s not found in this level.");
 				put("Message.PckNeedName", ChatColor.YELLOW + "You have to specify the name of the package.");
 				put("Message.PckNeedOpen", ChatColor.YELLOW + "You have to open or create a package first.");
 				put("Message.PckNeedId", ChatColor.YELLOW + "You have to specify the at least the id.");
 				put("Message.PckNeedIdSubid", ChatColor.YELLOW + "You have to specify the id and subid.");
-				put("Message.PckCreated",ChatColor.GREEN + "The package %s has been created.");
-				put("Message.PckOpened",ChatColor.GREEN + "The package %s has been opened.");
-				put("Message.PckSaved",ChatColor.GREEN + "The package %s has been saved and closed.");
-				put("Message.PckRemoved",ChatColor.GREEN + "The package has been removed.");
-				put("Message.PckItemDeleted",ChatColor.GREEN + "The item has been deleted.");
-				put("Message.PckItemAdded",ChatColor.GREEN + "The item has been successfully added.");
-				put("Message.PckList",ChatColor.GREEN + "Packages of this level : %s.");
+				put("Message.PckCreated", ChatColor.GREEN + "The package %s has been created.");
+				put("Message.PckOpened", ChatColor.GREEN + "The package %s has been opened.");
+				put("Message.PckSaved", ChatColor.GREEN + "The package %s has been saved and closed.");
+				put("Message.PckRemoved", ChatColor.GREEN + "The package has been removed.");
+				put("Message.PckItemDeleted", ChatColor.GREEN + "The item has been deleted.");
+				put("Message.PckItemAdded", ChatColor.GREEN + "The item has been successfully added.");
+				put("Message.PckList", ChatColor.GREEN + "Packages of this level : %s.");
 				put("Broadcast.MapChosen", ChatColor.DARK_BLUE + "Level " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.DARK_BLUE + " has been chosen");
 				put("Broadcast.MapVoteStarting", ChatColor.DARK_AQUA + "Level vote starting,");
 				put("Broadcast.Type", ChatColor.DARK_AQUA + "Type ");
 				put("Broadcast.SlashVoteForMap", ChatColor.GOLD + "'/tribu vote %s'" + ChatColor.DARK_AQUA + " for map " + ChatColor.BLUE + "%s");
 				put("Broadcast.VoteClosingInSeconds", ChatColor.DARK_AQUA + "Vote closing in %s seconds");
 				put("Broadcast.StartingWave", ChatColor.GRAY + "Starting wave " + ChatColor.DARK_RED + "%s" + ChatColor.GRAY + ", "
-						+ ChatColor.DARK_RED + "%s" + ChatColor.GRAY + " Zombies @ " + ChatColor.DARK_RED + "%s" + ChatColor.GRAY
-						+ " health");
+						+ ChatColor.DARK_RED + "%s" + ChatColor.GRAY + " Zombies @ " + ChatColor.DARK_RED + "%s" + ChatColor.GRAY + " health");
 				put("Broadcast.Wave", ChatColor.DARK_GRAY + "Wave " + ChatColor.DARK_RED + "%s" + ChatColor.DARK_GRAY + " starting in "
 						+ ChatColor.DARK_RED + "%s" + ChatColor.DARK_GRAY + " seconds.");
 				put("Broadcast.WaveComplete", ChatColor.GOLD + "Wave Complete");
 				put("Info.LevelFound", "%s levels found");
-				put("Info.Enable", ChatColor.WHITE+"Starting "+ChatColor.DARK_RED+"Tribu"+ChatColor.WHITE+" by Graindcafe, original author : samp20");
+				put("Info.Enable", ChatColor.WHITE + "Starting " + ChatColor.DARK_RED + "Tribu" + ChatColor.WHITE
+						+ " by Graindcafe, original author : samp20");
 				put("Info.Disable", "Stopping Tribu");
 				put("Info.LevelSaved", "Level saved");
 				put("Info.ChosenLanguage", "Chosen language : %s (default). Provided by : %s.");
@@ -331,7 +392,8 @@ public class Tribu extends JavaPlugin {
 				put("Warning.UnableToAddSign", "Unable to add sign, maybe you've changed your locales, or signs' tags.");
 				put("Warning.UnknownFocus",
 						"The string given for the configuration Zombies.Focus is not recognized : %s . It could be 'None','Nearest','Random','DeathSpawn','InitialSpawn'.");
-				put("Severe.TribuCantMkdir","Tribu can't make dirs so it cannot create the level directory, you would not be able to save levels ! You can't use Tribu !");
+				put("Severe.TribuCantMkdir",
+						"Tribu can't make dirs so it cannot create the level directory, you would not be able to save levels ! You can't use Tribu !");
 				put("Severe.WorldInvalidFileVersion", "World invalid file version");
 				put("Severe.WorldDoesntExist", "World doesn't exist");
 				put("Severe.ErrorDuringLevelLoading", "Error during level loading : %s");
@@ -407,16 +469,18 @@ public class Tribu extends JavaPlugin {
 	public void onEnable() {
 		log = Logger.getLogger("Minecraft");
 		rnd = new Random();
+		packages = new LinkedList<Package>();
 		initConfig();
+		loadDefaultPackages();
 		initLanguage();
 		
+
 		dedicatedServer = getConfig().getBoolean("PluginMode.ServerExclusive", false);
 		/*
 		 * if(dedicatedServer) LogInfo("dedicated"); else
 		 * LogInfo("not dedicated");
 		 * 
-		 * for(Entry<String, Object> cur :
-		 * getConfig().getAll().entrySet()) {
+		 * for(Entry<String, Object> cur : getConfig().getAll().entrySet()) {
 		 * LogInfo(cur.getKey()+" = "+cur.getValue().toString()); }
 		 */
 		blockTrace = new BlockTrace(log);
@@ -466,7 +530,7 @@ public class Tribu extends JavaPlugin {
 		}
 		if (getConfig().getString("PluginMode.DefaultLevel", "") != "")
 			setLevel(levelLoader.loadLevel(getConfig().getString("PluginMode.DefaultLevel", "")));
-		if (getConfig().getBoolean("PluginMode.	", false))
+		if (getConfig().getBoolean("PluginMode.Autostart", false))
 			startRunning();
 		LogInfo(language.get("Info.Enable"));
 	}
@@ -492,13 +556,12 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public void restoreTempInv(Player p) {
-		//log.info("Restore items for " + p.getDisplayName());
+		// log.info("Restore items for " + p.getDisplayName());
 		if (tempInventories.containsKey(p))
 			tempInventories.remove(p).restore();
 	}
 
 	public void revivePlayer(Player player) {
-
 		players.get(player).revive();
 		if (getConfig().getBoolean("WaveStart.HealPlayers", true))
 			player.setHealth(20);
@@ -508,14 +571,12 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public void revivePlayers(boolean teleportAll) {
-
 		aliveCount = 0;
 		for (Player player : players.keySet()) {
 			revivePlayer(player);
 			if (isRunning && level != null && (teleportAll || !isAlive(player))) {
 				player.teleport(level.getInitialSpawn());
 			}
-
 		}
 	}
 
@@ -556,11 +617,10 @@ public class Tribu extends JavaPlugin {
 				isRunning = true;
 				if (dedicatedServer)
 					for (LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
-						if (!(e instanceof Player) && !(e instanceof Wolf))
-							e.damage(100000);
-
+						if ((e.getLocation().distance(level.getInitialSpawn()))< getConfig().getDouble("LevelStart.ClearZone",50.0) && !(e instanceof Player) && !(e instanceof Wolf))
+							e.damage(Integer.MAX_VALUE);
 					}
-
+				
 				// Make sure no data is lost if server decides to die
 				// during a game and player forgot to /level save
 				if (!getLevelLoader().saveLevel(getLevel())) {
@@ -568,6 +628,7 @@ public class Tribu extends JavaPlugin {
 				} else {
 					LogInfo(language.get("Info.LevelSaved"));
 				}
+				this.addDefaultPackages();
 				getLevel().initSigns();
 				this.sortedStats.clear();
 				for (PlayerStats stat : players.values()) {

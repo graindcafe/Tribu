@@ -16,11 +16,20 @@ import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+/**
+ * @author Graindcafe
+ *
+ */
 public class ShopSign extends TribuSign {
 
+	/**
+	 * @param signLines lines of the sign 
+	 * @param level	the currentLevel
+	 * @return the found package or an empty one
+	 */
 	private static Package getItem(String[] signLines, TribuLevel level) {
 		if(signLines == null  || level == null)
-			return new Package(31);
+			return new Package();
 		Package i;
 		/* Try to get a package */ 
 		i = level.getPackage((signLines[1] + "_" + signLines[2]));
@@ -42,36 +51,73 @@ public class ShopSign extends TribuSign {
 		return i;
 	}
 
+	/**
+	 * Cost of this sign
+	 */
 	private int cost = 0;
 
 	/* private Item droppedItem = null; */
 
+	/**
+	 * Items to sell 
+	 */
 	private Package items = null;
 
+	/**
+	 * Default constructor (never used ?)
+	 * @param plugin Tribu
+	 */
 	public ShopSign(Tribu plugin) {
 		super(plugin);
 	}
 
+	/**
+	 * 
+	 * @param plugin Tribu
+	 * @param pos Location of the sign
+	 * @param item Material to be sold
+	 * @param cost 
+	 */
 	public ShopSign(Tribu plugin, Location pos, Material item, int cost) {
 		super(plugin, pos);
 		this.items = new Package(item);
 		this.cost = cost;
 	}
 
+	/**
+	 * @param plugin Tribu
+	 * @param pos Location of the sign
+	 * @param item Package to be sold
+	 * @param cost
+	 */
 	public ShopSign(Tribu plugin, Location pos, Package item, int cost) {
 		super(plugin, pos);
 		this.items = item;
 		this.cost = cost;
 	}
 
+	/**
+	 * @param plugin Tribu
+	 * @param pos Location of the sign
+	 * @param item String of the item to sell 
+	 * @param cost
+	 */
 	public ShopSign(Tribu plugin, Location pos, String item, int cost) {
 		this(plugin, pos, Material.getMaterial(item), cost);
 	}
 
+	/**
+	 * @param plugin Tribu
+	 * @param pos Location of the sign
+	 * @param signLines Lines of this sign 
+	 */
 	public ShopSign(Tribu plugin, Location pos, String[] signLines) {
 		this(plugin, pos, getItem(signLines, plugin.getLevel()), TribuSign.parseInt(signLines[3]));
 	}
 
+	/* Get lines specific for this sign (non-Javadoc)
+	 * @see graindcafe.tribu.signs.TribuSign#getSpecificLines()
+	 */
 	@Override
 	protected String[] getSpecificLines() {
 		String[] lines = new String[4];
@@ -87,6 +133,9 @@ public class ShopSign extends TribuSign {
 		return lines;
 	}
 
+	/* Init the sign : find the item to be sold (non-Javadoc)
+	 * @see graindcafe.tribu.signs.TribuSign#init()
+	 */
 	@Override
 	public void init() {
 		if(pos.getBlock().getState() instanceof Sign)
@@ -103,14 +152,19 @@ public class ShopSign extends TribuSign {
 		 * pos.getWorld().dropItem(pos, new ItemStack(item));
 		 * droppedItem.setVelocity(new Vector(0, 0, 0)); } }
 		 */
-
 	}
 
+	/* Is the passed argument is used for this sign ? (non-Javadoc)
+	 * @see graindcafe.tribu.signs.TribuSign#isUsedEvent(org.bukkit.event.Event)
+	 */
 	@Override
 	public boolean isUsedEvent(Event e) {
 		return e instanceof PlayerInteractEvent && ((PlayerInteractEvent) e).getClickedBlock().getLocation().equals(pos);
 	}
 
+	/* Sell the item (non-Javadoc)
+	 * @see graindcafe.tribu.signs.TribuSign#raiseEvent(org.bukkit.event.Event)
+	 */
 	@Override
 	@SuppressWarnings("deprecation")
 	public void raiseEvent(Event e) {
@@ -133,7 +187,6 @@ public class ShopSign extends TribuSign {
 						break;
 					}
 				}
-				
 				p.updateInventory();
 				// Alright
 				p.sendMessage(String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));

@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 public class LevelFileLoader {
@@ -106,6 +107,12 @@ public class LevelFileLoader {
 				plugin.LogSevere(plugin.getLocale("Severe.WorldInvalidFileVersion"));
 				return null;
 			}
+			if(in.available()<2)
+			{
+				fstream.close();
+				plugin.LogSevere("Something wrong happened ... Level is empty");
+				return null;
+			}
 			World world = plugin.getServer().getWorld(in.readUTF());
 			if (world == null) {
 				fstream.close();
@@ -154,8 +161,12 @@ public class LevelFileLoader {
 			count= in.readInt();
 			int iCount;
 			Package n;
+			HashMap<Enchantment,Integer> ench=new HashMap<Enchantment, Integer>();
+			int id;
+			int enchNumber;
+			short amount;
+			short data;
 			for (int i = 0; i < count; i++) {
-				
 				n= new Package();
 				int strC=in.readInt();
 				char[] c=new char[strC];
@@ -166,8 +177,18 @@ public class LevelFileLoader {
 				}
 				n.setName(new String(c));
 				iCount=in.readInt();
+				ench.clear();
 				for (int j = 0; j < iCount; j++) {
-					n.addItem(in.readInt(), in.readByte(), in.readShort());
+					id=in.readInt();
+					data=in.readShort();
+					amount=in.readShort();
+					enchNumber=in.readInt();
+					while(enchNumber!=0)
+					{
+						ench.put(Enchantment.getById(in.readInt()), in.readInt());
+						enchNumber--;
+					}
+					n.addItem(id,data,amount,ench);
 				}
 				level.addPackage(n);
 			}
@@ -253,8 +274,17 @@ public class LevelFileLoader {
 				for(ItemStack is : n.getItemStacks())
 				{
 					o.writeInt(is.getTypeId());
-					o.writeByte(is.getData().getData());
+					if(is.getData() == null)
+						o.writeShort((short)0);
+					else
+						o.writeShort(is.getDurability());
 					o.writeShort(is.getAmount());
+					o.writeInt(is.getEnchantments().size());
+					for(Entry<Enchantment,Integer> ench: is.getEnchantments().entrySet())
+					{
+						o.writeInt(ench.getKey().getId());
+						o.writeInt(ench.getValue());
+					}
 				}
 			}
 			o.flush();

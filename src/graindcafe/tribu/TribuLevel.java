@@ -32,15 +32,10 @@ public class TribuLevel {
 		this.initialSpawn = spawn;
 		this.deathSpawn = spawn;
 		this.changed = false;
-		/*
-		 * this.highscoreSigns = new ArrayList<HighscoreSign>(); this.scSigns =
-		 * new ArrayList<SpawnControlSign>(); this.shopSigns = new
-		 * ArrayList<ShopSign>(); this.tSigns = new ArrayList<TollSign>();
-		 */
 		this.Signs = new HashMap<Location, TribuSign>();
 		this.Packages = new LinkedList<Package>();
 	}
-
+	
 	public void activateZombieSpawn(String name) {
 		for (String sname : zombieSpawns.keySet()) {
 			if (sname.equalsIgnoreCase(name)) {
@@ -51,18 +46,11 @@ public class TribuLevel {
 			}
 		}
 	}
-	
+
 	public boolean addSign(TribuSign sign) {
 		if (sign == null)
 			return false;
 		Signs.put(sign.getLocation(), sign);
-		/*
-		 * if (sign instanceof SpawnControlSign) scSigns.add((SpawnControlSign)
-		 * sign); else if (sign instanceof HighscoreSign)
-		 * highscoreSigns.add((HighscoreSign) sign); else if (sign instanceof
-		 * ShopSign) shopSigns.add((ShopSign) sign); else if (sign instanceof
-		 * TollSign) tSigns.add((TollSign) sign); else return false;
-		 */
 		return true;
 
 	}
@@ -82,7 +70,6 @@ public class TribuLevel {
 				return;
 			}
 		}
-
 	}
 
 	public Location getDeathSpawn() {
@@ -103,38 +90,50 @@ public class TribuLevel {
 		}
 		return activeZombieSpawns.get(rnd.nextInt(activeZombieSpawns.size()));
 	}
-	public void addPackage(Package n)
-	{
-		this.Packages.add(n);
+
+	public void addPackage(Package newPck) {
+		if(newPck==null)
+			return;
+		String name=newPck.getName();
+		for (Package cur : Packages)
+			if (cur.getName().equalsIgnoreCase(name))
+			{
+				Packages.remove(cur);
+				break;
+			}
+		this.Packages.add(newPck);
 	}
-	public Package getPackage(String name)
-	{
-		for(Package n : Packages)
-			if(n.getName().equalsIgnoreCase(name))
+
+	public Package getPackage(String name) {
+		for (Package n : Packages)
+			if (n.getName().equalsIgnoreCase(name))
 				return n;
 		return null;
 	}
-	public LinkedList<Package> getPackages()
-	{
+
+	public LinkedList<Package> getPackages() {
 		return this.Packages;
 	}
-	public boolean removePackage(Package n)
-	{
+
+	public boolean removePackage(Package n) {
 		return this.Packages.remove(n);
 	}
-	public boolean removePackage(String name)
-	{
+
+	public boolean removePackage(String name) {
 		return this.Packages.add(this.getPackage(name));
 	}
-	public String listPackages()
-	{
+
+	public String listPackages() {
 		String str = "";
-		for(Package n : Packages)
-			str=n.getName()+", ";
-		if(str.length()>2)
-			str=str.substring(0,str.length()-2);
+		if (!Packages.isEmpty()) {
+			for (Package n : Packages)
+				str += n.getName() + ", ";
+
+			str = str.substring(0, str.length() - 2);
+		}
 		return str;
 	}
+
 	public TribuSign[] getSigns() {
 		return Signs.values().toArray(new TribuSign[] {});
 	}
@@ -146,23 +145,42 @@ public class TribuLevel {
 	public Location getZombieSpawn(String name) {
 		return zombieSpawns.get(name);
 	}
-	public void setChanged()
-	{
+
+	public void setChanged() {
 		changed = true;
 	}
+
+	/**
+	 * @return
+	 */
 	public boolean hasChanged() {
 		return changed;
 	}
 
+	/**
+	 * Initialize all signs of the level
+	 */
 	public void initSigns() {
 		for (TribuSign s : Signs.values())
 			s.init();
 	}
 
+	/**
+	 * Is this sign part of this level ?
+	 * 
+	 * @param pos
+	 *            Position of the sign
+	 * @return
+	 */
 	public boolean isSpecialSign(Location pos) {
 		return Signs.containsKey(pos);
 	}
 
+	/**
+	 * List the spawns to a player
+	 * 
+	 * @param player
+	 */
 	public void listZombieSpawns(Player player) {
 		Set<String> names = zombieSpawns.keySet();
 		String nameList = "";
@@ -174,44 +192,60 @@ public class TribuLevel {
 		player.sendMessage(String.format(Constants.MessageZombieSpawnList, nameList));
 	}
 
+	/**
+	 * On click
+	 * 
+	 * @param e
+	 *            The player event that occurs
+	 */
 	public void onClick(PlayerInteractEvent e) {
 		for (TribuSign s : Signs.values())
 			if (s.isUsedEvent(e))
 				s.raiseEvent(e);
 	}
 
+	/**
+	 * When a redstone change
+	 * 
+	 * @param e
+	 *            The redstone event that occurs
+	 */
 	public void onRedstoneChange(BlockRedstoneEvent e) {
 		for (TribuSign s : Signs.values())
 			if (s.isUsedEvent(e))
 				s.raiseEvent(e);
-		/*
-		 * for (SpawnControlSign scs : scSigns) { scs.raiseEvent(e); } for
-		 * (TollSign ts : tSigns) { ts.raiseEvent(e); }
-		 */
-
 	}
 
+	/**
+	 * When a sign is clicked on
+	 * 
+	 * @param e
+	 *            The player event that occurs
+	 */
 	public void onSignClicked(PlayerInteractEvent e) {
 		if (Signs.containsKey(e.getClickedBlock().getLocation())) {
 			TribuSign ss = Signs.get(e.getClickedBlock().getLocation());
 			if (ss.isUsedEvent(e))
 				ss.raiseEvent(e);
-
-			/*
-			 * if (ss instanceof ShopSign) ((ShopSign) ss).raiseEvent(e);
-			 */
 		}
 	}
 
+	/**
+	 * Actions to run at begining of a wave
+	 */
 	public void onWaveStart() {
-		/*
-		 * for (HighscoreSign hs : highscoreSigns) { hs.raiseEvent(); }
-		 */
 		for (TribuSign s : Signs.values())
 			if (s.isUsedEvent(null))
 				s.raiseEvent(null);
 	}
 
+	/**
+	 * Remove a sign
+	 * 
+	 * @param pos
+	 *            Location of the sign to delete
+	 * @return
+	 */
 	public boolean removeSign(Location pos) {
 		if (Signs.containsKey(pos)) {
 			removeSign(Signs.get(pos));
@@ -220,20 +254,34 @@ public class TribuLevel {
 		return false;
 	}
 
+	/**
+	 * Remove a sign
+	 * 
+	 * @param sign
+	 *            The sign to delete from the level
+	 */
 	public void removeSign(TribuSign sign) {
 		Signs.remove(sign.getLocation());
-		/*
-		 * if (sign instanceof SpawnControlSign) scSigns.remove(sign); else if
-		 * (sign instanceof HighscoreSign) highscoreSigns.remove(sign); else if
-		 * (sign instanceof ShopSign) shopSigns.remove(sign);
-		 */
 	}
 
+	/**
+	 * Remove a zombie spawn
+	 * 
+	 * @param name
+	 *            Zombie spawn to be deleted
+	 */
 	public void removeZombieSpawn(String name) {
 		zombieSpawns.remove(name);
 		changed = true;
 	}
 
+	/**
+	 * Set the death spawn of players (where they go after reviving)
+	 * 
+	 * @param loc
+	 *            Location of the death spawn
+	 * @return success or fail
+	 */
 	public boolean setDeathSpawn(Location loc) {
 		if (loc.getWorld() == initialSpawn.getWorld()) {
 			deathSpawn = loc;
@@ -243,6 +291,13 @@ public class TribuLevel {
 		return false;
 	}
 
+	/**
+	 * Set the initial spawn of players
+	 * 
+	 * @param loc
+	 *            Location of the initial spawn
+	 * @return success or fail
+	 */
 	public boolean setInitialSpawn(Location loc) {
 		if (loc.getWorld() == initialSpawn.getWorld()) {
 			initialSpawn = loc;
@@ -252,6 +307,9 @@ public class TribuLevel {
 		return false;
 	}
 
+	/**
+	 * Mark the level as just saved and to be save in a file
+	 */
 	public void setSaved() {
 		changed = false;
 	}
