@@ -9,6 +9,7 @@ import graindcafe.tribu.listeners.TribuEntityListener;
 import graindcafe.tribu.listeners.TribuPlayerListener;
 import graindcafe.tribu.listeners.TribuWorldListener;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ import me.graindcafe.gls.Language;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.enchantments.Enchantment;
@@ -60,7 +62,7 @@ public class Tribu extends JavaPlugin {
 	private TribuPlayerListener playerListener;
 	private HashMap<Player, PlayerStats> players;
 	private Random rnd;
-
+	private Configuration defaultConf;
 	private LinkedList<PlayerStats> sortedStats;
 	private TribuSpawner spawner;
 	private SpawnTimer spawnTimer;
@@ -239,9 +241,10 @@ public class Tribu extends JavaPlugin {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-			}
-	private void loadDefaultPackages()
-	{
+		this.defaultConf = getConfig();
+	}
+
+	private void loadDefaultPackages() {
 		if (getConfig().isConfigurationSection("DefaultPackages")) {
 			Package pck;
 			List<Integer> enchIds;
@@ -286,6 +289,87 @@ public class Tribu extends JavaPlugin {
 		}
 
 	}
+
+	public void loadCustomConf() {
+		if (this.level == null)
+			return;
+		File worldFile = null, levelFile = null, worldDir, levelDir;
+		Configuration lastConf;
+		worldDir = new File(getDataFolder().getPath() + "/per-world/");
+		levelDir = new File(getDataFolder().getPath() + "/per-level/");
+		String levelName = this.level.getName();
+		String worldName = this.level.getInitialSpawn().getWorld().getName();
+		if (!levelDir.exists()) {
+
+			String[] folders = (getDataFolder().getPath() + "/per-level").split("/");
+			String tmpFolder = "";
+			for (byte i = 0; i < folders.length; i++) {
+				tmpFolder = tmpFolder.concat(folders[i] + File.separatorChar);
+				levelDir = new File(tmpFolder);
+				levelDir.mkdir();
+			}
+		}
+		if (!worldDir.exists()) {
+			String[] folders = (getDataFolder().getPath() + "/per-world").split("/");
+			String tmpFolder = "";
+			for (byte i = 0; i < folders.length; i++) {
+				tmpFolder = tmpFolder.concat(folders[i] + File.separatorChar);
+				worldDir = new File(tmpFolder);
+				worldDir.mkdir();
+			}
+		}
+
+		for (File file : levelDir.listFiles()) {
+			if (file.getName().equalsIgnoreCase(levelName)) {
+				levelFile = file;
+				break;
+			}
+		}
+		for (File file : worldDir.listFiles()) {
+			if (file.getName().equalsIgnoreCase(worldName)) {
+				worldFile = file;
+				break;
+			}
+		}
+		if (levelFile != null) {
+			lastConf = defaultConf;
+			if (worldFile != null) {
+				try {
+					getConfig().load(worldFile);
+				} catch (FileNotFoundException e2) {
+					// TODO Auto-generated catch block
+
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				} catch (InvalidConfigurationException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
+				for (String path : lastConf.getKeys(true)) {
+					getConfig().addDefault(path, lastConf.get(path));
+				}
+				lastConf = getConfig();
+			}
+			try {
+				getConfig().load(levelFile);
+			} catch (FileNotFoundException e2) {
+				// TODO Auto-generated catch block
+
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			} catch (InvalidConfigurationException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			for (String path : lastConf.getKeys(true)) {
+				getConfig().addDefault(path, lastConf.get(path));
+			}
+		}
+
+	}
+
 	private void initLanguage() {
 		DefaultLanguage.setAuthor("Graindcafe");
 		DefaultLanguage.setName("English");
@@ -473,7 +557,6 @@ public class Tribu extends JavaPlugin {
 		initConfig();
 		loadDefaultPackages();
 		initLanguage();
-		
 
 		dedicatedServer = getConfig().getBoolean("PluginMode.ServerExclusive", false);
 		/*
@@ -605,6 +688,7 @@ public class Tribu extends JavaPlugin {
 
 	public void setLevel(TribuLevel level) {
 		this.level = level;
+		this.loadCustomConf();
 	}
 
 	public void startRunning() {
@@ -617,10 +701,11 @@ public class Tribu extends JavaPlugin {
 				isRunning = true;
 				if (dedicatedServer)
 					for (LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
-						if ((e.getLocation().distance(level.getInitialSpawn()))< getConfig().getDouble("LevelStart.ClearZone",50.0) && !(e instanceof Player) && !(e instanceof Wolf))
+						if ((e.getLocation().distance(level.getInitialSpawn())) < getConfig().getDouble("LevelStart.ClearZone", 50.0)
+								&& !(e instanceof Player) && !(e instanceof Wolf))
 							e.damage(Integer.MAX_VALUE);
 					}
-				
+
 				// Make sure no data is lost if server decides to die
 				// during a game and player forgot to /level save
 				if (!getLevelLoader().saveLevel(getLevel())) {
