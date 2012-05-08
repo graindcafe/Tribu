@@ -47,7 +47,23 @@ public class Package {
 	}
 
 	public boolean addItem(int id, short subid, short number) {
-		return addItem(Material.getMaterial(id), subid, number);
+		return addItem(id, subid, number);
+	}
+
+	public boolean addItem(String name) {
+		return addItem(name, (short) 0);
+	}
+
+	public boolean addItem(String name, short subid) {
+		return addItem(name, subid, (short) 1);
+	}
+
+	public boolean addItem(String name, short subid, short number) {
+		try {
+			return addItem(Integer.parseInt(name), subid, number);
+		} catch (NumberFormatException e) {
+			return addItem(Material.getMaterial(name), subid, number);
+		}
 	}
 
 	public boolean addItem(Material m) {
@@ -71,21 +87,21 @@ public class Package {
 		return addItem(m, subid, number, null);
 	}
 
-	public boolean addItem(int id, short subid, short amount, HashMap<Enchantment, Integer> enchts) {
-		return addItem(Material.getMaterial(id), subid, amount, enchts);
-	}
-
-	public boolean addItem(Material m, short subid, short number, Map<Enchantment, Integer> enchantments) {
+	public boolean addItem(Material m, short subid, short amount, Map<Enchantment, Integer> enchts) {
 		if (m != null) {
-			ItemStack is = new ItemStack(m, subid, number);
-			if (enchantments != null && !enchantments.isEmpty())
-				for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-					if(entry.getKey()!=null)
-						is.addEnchantment(entry.getKey(), entry.getValue());
-		        }
-			return this.addItem(is);
+			return addItem(m.getId(), subid, amount, enchts);
 		} else
 			return false;
+	}
+
+	public boolean addItem(int id, short subid, short number, Map<Enchantment, Integer> enchantments) {
+		ItemStack is = new ItemStack(id, subid, number);
+		if (enchantments != null && !enchantments.isEmpty())
+			for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+				if (entry.getKey() != null)
+					is.addEnchantment(entry.getKey(), entry.getValue());
+			}
+		return this.addItem(is);
 	}
 
 	public boolean addItem(ItemStack item, int number) {
@@ -94,29 +110,82 @@ public class Package {
 	}
 
 	public boolean addItem(ItemStack item) {
-		return item == null ? false : pck.add(item);
+		removeDuplicate(item);
+		return item == null || item.getAmount() == 0 || item.getTypeId() == 0 ? false : pck.add(item);
 	}
 
-	public ItemStack getItem(int id, int subid) {
+	public ItemStack getItem(int id, short subid) {
 		for (ItemStack i : pck)
-			if (i.getTypeId() == id && i.getData().getData() == ((byte) subid))
+			if (i.getTypeId() == id && i.getDurability() == subid)
 				return i;
 		return null;
+	}
+	public ItemStack getItem(ItemStack item)
+	{
+		ItemStack r = null;
+		for (ItemStack i : pck)
+			if(i.equals(item))
+				return i;
+			else if (i.getTypeId() == item.getTypeId()) {
+				if(i.getDurability() == item.getDurability())
+					return i;
+				if (r == null)
+					r = i;
+				else
+					return null;
+			}
+				
+		return r;
+	}
+	public ItemStack getItem(int id) {
+		ItemStack r = null;
+		for (ItemStack i : pck)
+			if (i.getTypeId() == id) {
+				if (r == null)
+					r = i;
+				else
+					return null;
+			}
+		return r;
+	}
+
+	public String getLastItemName() {
+		return pck.isEmpty() ? "" : pck.getLast().getData().getItemType().toString();
 	}
 
 	public LinkedList<ItemStack> getItems(int id) {
 		LinkedList<ItemStack> list = new LinkedList<ItemStack>();
-
 		for (ItemStack i : pck)
 			if (i.getTypeId() == id)
 				list.add(i);
 		return list;
 	}
 
-	public boolean deleteItem(int id, int subid) {
+	public boolean deleteItem(int id, short subid) {
 		return pck.remove(getItem(id, subid));
 	}
 
+	public boolean deleteItem(int id) {
+		ItemStack r = getItem(id);
+		if (r == null)
+			return false;
+		else
+			return pck.remove(r);
+	}
+	private void removeDuplicate(ItemStack item)
+	{
+		if(item==null) return;
+		ItemStack r = null;
+		for (ItemStack i : pck)
+			if(i.equals(item))
+				r=i;
+			else if (i.getTypeId() == item.getTypeId())
+				if(i.getDurability() == item.getDurability())
+					r=i;
+			
+		if(r!=null)
+		pck.remove(r);
+	}
 	public LinkedList<ItemStack> getItemStacks() {
 		return this.pck;
 	}
@@ -132,9 +201,9 @@ public class Package {
 	// Exemple{42:10x64,13:01x1}
 	public String toString() {
 		String s = new String(name);
-		s += '{';
+		s += " { ";
 		for (ItemStack i : pck)
-			s = String.valueOf(i.getTypeId()) + ':' + String.valueOf(i.getData().getData()) + 'x' + String.valueOf(i.getAmount()) + ' ';
+			s += String.valueOf(i.getData().getItemType().toString()) + ':' + String.valueOf(i.getDurability()) + 'x' + String.valueOf(i.getAmount()) + ' ';
 		s += '}';
 		return s;
 	}

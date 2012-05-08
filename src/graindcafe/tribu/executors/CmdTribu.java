@@ -154,42 +154,55 @@ public class CmdTribu implements CommandExecutor {
 				}
 
 			} else if (args[1].equals("add")) {
+				boolean success=false;
+				
 				if (pck == null)
 					plugin.Message(sender, plugin.getLocale("Message.PckNeedOpen"));
 				else if (args.length == 2)
 					plugin.Message(sender, plugin.getLocale("Message.PckNeedId"));
 				else {
 					if (args.length == 3)
-						if (args[2] == "this")
+						if (args[2].equalsIgnoreCase("this"))
 							if (!(sender instanceof Player)) {
 								plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 								return true;
 							} else
-								pck.addItem(((Player) sender).getItemInHand());
+								success=pck.addItem(((Player) sender).getItemInHand().clone());
 						else
-							pck.addItem(TribuSign.parseInt(args[2]));
+							success=pck.addItem(args[2]);
 					else if (args.length == 4)
-						if (args[2] == "this")
+						if (args[2].equalsIgnoreCase("this"))
 							if (!(sender instanceof Player)) {
 								plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 								return true;
 							} else
-								pck.addItem(((Player) sender).getItemInHand(), TribuSign.parseInt(args[3]));
+								success=pck.addItem(((Player) sender).getItemInHand().clone(),(short) TribuSign.parseInt(args[3]));
 						else
-							pck.addItem(TribuSign.parseInt(args[2]), (short) TribuSign.parseInt(args[3]));
+							success=pck.addItem(args[2], (short) TribuSign.parseInt(args[3]));
 					else
-						pck.addItem(TribuSign.parseInt(args[2]), (short) TribuSign.parseInt(args[3]), (short) TribuSign.parseInt(args[4]));
-					plugin.Message(sender, plugin.getLocale("Message.PckItemAdded"));
+						success=pck.addItem(args[2], (short) TribuSign.parseInt(args[3]), (short) TribuSign.parseInt(args[4]));
+					if(success)
+						plugin.Message(sender, String.format(plugin.getLocale("Message.PckItemAdded"),pck.getLastItemName()));
+					else
+						plugin.Message(sender, String.format(plugin.getLocale("Message.PckItemAddFailed"),args[2]));
+					/*plugin.Message(sender, String.format("active slot %d %s . %d %d %d",((Player) sender).getInventory().getHeldItemSlot(),((Player) sender).getItemInHand().toString(),((Player) sender).getItemInHand().getTypeId(),((Player) sender).getItemInHand().getDurability(),(short) ((Player) sender).getItemInHand().getAmount()));
+					for(byte i=0; i<10;i++)
+					{
+						plugin.Message(sender, String.format("%d %s",i,((Player) sender).getInventory().getItem(i).toString()));
+					}*/
+					
 				}
 			} else if (args[1].equals("del") || args[1].equals("delete")) {
 				if (pck == null)
 					plugin.Message(sender, plugin.getLocale("Message.PckNeedOpen"));
 				else if (args.length == 4) {
-					pck.deleteItem(TribuSign.parseInt(args[2]), TribuSign.parseInt(args[3]));
+					pck.deleteItem(TribuSign.parseInt(args[2]), (short) TribuSign.parseInt(args[3]));
 					plugin.Message(sender, plugin.getLocale("Message.PckItemDeleted"));
-				} else
-					plugin.Message(sender, plugin.getLocale("Message.PckNeedSubidId"));
-			
+				} else if (pck.deleteItem(TribuSign.parseInt(args[2]), (short) TribuSign.parseInt(args[3])))
+					plugin.Message(sender, plugin.getLocale("Message.PckItemDeleted"));
+				else
+					plugin.Message(sender, plugin.getLocale("Message.PckNeedSubId"));
+
 			} else if (args[1].equals("remove")) {
 				if (args.length == 3)
 					plugin.Message(sender, plugin.getLocale("Message.PckNeedName"));
@@ -200,14 +213,25 @@ public class CmdTribu implements CommandExecutor {
 			} else if (args[1].equals("list")) {
 				plugin.Message(sender, String.format(plugin.getLocale("Message.PckList"), plugin.getLevel().listPackages()));
 			} else if (args[1].equals("show") || args[1].equals("describe")) {
-				Package p=pck;
-				if(args.length==2)
-					if(pck == null)
-						plugin.Message(sender, plugin.getLocale("Message.PckNeedOpen"));
-				else
-					p=plugin.getLevel().getPackage(args[2]);
-				if(p != null)
+				if (plugin.getLevel() == null) {
+					plugin.Message(sender, plugin.getLocale("Message.NoLevelLoaded"));
+					plugin.Message(sender, plugin.getLocale("Message.NoLevelLoaded2"));
+					return true;
+				}	
+				Package p = pck;
+				if (args.length > 2)
+					p = plugin.getLevel().getPackage(args[2]);
+				if (p != null)
 					plugin.Message(sender, p.toString());
+				else
+					plugin.Message(
+							sender,
+							String.format(plugin.getLocale("Message.PckNotFound"),
+									args.length > 2 ? args[2] : plugin.getLocale("Message.PckNotFound")));
+			}
+			else
+			{
+				return usage(sender);
 			}
 			return true;
 		}
@@ -256,7 +280,7 @@ public class CmdTribu implements CommandExecutor {
 		} else if (args[0].equals("save")) {
 			if (!sender.isOp())
 				return usage(sender);
-			if(plugin.getLevel()!=null)
+			if (plugin.getLevel() != null)
 				plugin.getLevel().addPackage(pck);
 			if (!plugin.getLevelLoader().saveLevel(plugin.getLevel())) {
 				plugin.Message(sender, plugin.getLocale("Message.UnableToSaveCurrentLevel"));

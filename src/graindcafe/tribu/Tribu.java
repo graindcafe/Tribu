@@ -206,6 +206,7 @@ public class Tribu extends JavaPlugin {
 				put("PluginMode.Language", "english");
 				put("PluginMode.AutoStart", false);
 				put("PluginMode.DefaultLevel", "");
+				put("LevelStart.ClearZone",50.0);
 				put("WaveStart.SetTime", true);
 				put("WaveStart.SetTimeTo", 37000);
 				put("WaveStart.Delay", 10);
@@ -448,8 +449,10 @@ public class Tribu extends JavaPlugin {
 				put("Message.PckSaved", ChatColor.GREEN + "The package %s has been saved and closed.");
 				put("Message.PckRemoved", ChatColor.GREEN + "The package has been removed.");
 				put("Message.PckItemDeleted", ChatColor.GREEN + "The item has been deleted.");
-				put("Message.PckItemAdded", ChatColor.GREEN + "The item has been successfully added.");
+				put("Message.PckItemAdded", ChatColor.GREEN + "The item \"%s\" has been successfully added.");
+				put("Message.PckItemAddFailed", ChatColor.YELLOW + "The item \"%s\" could not be added.");
 				put("Message.PckList", ChatColor.GREEN + "Packages of this level : %s.");
+				put("Message.PckNoneOpened", "none opened");
 				put("Broadcast.MapChosen", ChatColor.DARK_BLUE + "Level " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.DARK_BLUE + " has been chosen");
 				put("Broadcast.MapVoteStarting", ChatColor.DARK_AQUA + "Level vote starting,");
 				put("Broadcast.Type", ChatColor.DARK_AQUA + "Type ");
