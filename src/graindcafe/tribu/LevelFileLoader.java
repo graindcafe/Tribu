@@ -158,39 +158,60 @@ public class LevelFileLoader {
 					plugin.LogWarning(plugin.getLocale("Warning.UnableToAddSign"));
 				}
 			}
-			count= in.readInt();
-			int iCount;
+			
+			byte iCount;
 			Package n;
 			HashMap<Enchantment,Integer> ench=new HashMap<Enchantment, Integer>();
 			int id;
 			int enchNumber;
 			short amount;
 			short data;
+			// Number of packages
+			count= in.readShort();
+			// Each packages
 			for (int i = 0; i < count; i++) {
+				// Init a new package
 				n= new Package();
-				int strC=in.readInt();
+				// Package name length
+				int strC=in.readByte();
 				char[] c=new char[strC];
 				byte k=0;
+				// Read each char
 				while(k<strC){
 					c[k]=in.readChar();
 					k++;
 				}
+				// Set the package name
 				n.setName(new String(c));
-				iCount=in.readInt();
-				ench.clear();
-				for (int j = 0; j < iCount; j++) {
+				// Number of items
+				iCount=in.readByte();
+				// Each item
+				for (k = 0; k < iCount; k++) {
+					
+					// Item type
 					id=in.readInt();
+					// Item data
 					data=in.readShort();
+					// Amount of item
 					amount=in.readShort();
-					enchNumber=in.readInt();
+					// Number of enchantments
+					enchNumber=in.readByte();
+					// Clear previous enchantments
+					ench.clear();
+					// Each enchantment
 					while(enchNumber!=0)
 					{
+						// Read enchantment type and enchantment level
 						ench.put(Enchantment.getById(in.readInt()), in.readInt());
 						enchNumber--;
 					}
+					// Add this item to the package with enchantments
 					n.addItem(id,data,amount,ench);
+						
 				}
+				// Add this package to the level
 				level.addPackage(n);
+					
 			}
 			
 
@@ -265,24 +286,34 @@ public class LevelFileLoader {
 					signs[i].SaveToStream(o);
 				}
 			}
-			o.writeInt(level.getPackages().size());
+			// Number of packages
+			o.writeShort((short)level.getPackages().size());
+			// Each package
 			for(Package n : level.getPackages())
 			{
-				o.writeInt(n.getName().length());
+				// Pck name length
+				o.write(n.getName().length());
+				// Pck name chars
 				o.writeChars(n.getName());
-				o.writeInt(n.getItemStacks().size());
+				// Pck number of items 
+				o.write(n.getItemStacks().size());
+				// Each item
 				for(ItemStack is : n.getItemStacks())
 				{
+					// Item id
 					o.writeInt(is.getTypeId());
-					if(is.getData() == null)
-						o.writeShort((short)0);
-					else
-						o.writeShort(is.getDurability());
+					// Durability = subid (getData() but on short (useful for potions)
+					o.writeShort(is.getDurability());
+					// Amount 
 					o.writeShort(is.getAmount());
-					o.writeInt(is.getEnchantments().size());
+					// Number of enchantments for this item
+					o.write(is.getEnchantments().size());
+					// Each enchantment
 					for(Entry<Enchantment,Integer> ench: is.getEnchantments().entrySet())
 					{
+						// Enchantment type
 						o.writeInt(ench.getKey().getId());
+						// Enchantment level
 						o.writeInt(ench.getValue());
 					}
 				}

@@ -452,7 +452,9 @@ public class Tribu extends JavaPlugin {
 				put("Message.PckItemAdded", ChatColor.GREEN + "The item \"%s\" has been successfully added.");
 				put("Message.PckItemAddFailed", ChatColor.YELLOW + "The item \"%s\" could not be added.");
 				put("Message.PckList", ChatColor.GREEN + "Packages of this level : %s.");
-				put("Message.PckNoneOpened", "none opened");
+				put("Message.PckNoneOpened", "none opened/specified");
+				put("Message.LevelNotReady",ChatColor.YELLOW + "The level is not ready to run. Make sure you create/load a level and that it contains zombie spawns.");
+				put("Message.Deny",ChatColor.RED+"A zombie denied your action, sorry.");
 				put("Broadcast.MapChosen", ChatColor.DARK_BLUE + "Level " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.DARK_BLUE + " has been chosen");
 				put("Broadcast.MapVoteStarting", ChatColor.DARK_AQUA + "Level vote starting,");
 				put("Broadcast.Type", ChatColor.DARK_AQUA + "Type ");
@@ -479,6 +481,7 @@ public class Tribu extends JavaPlugin {
 				put("Warning.UnableToAddSign", "Unable to add sign, maybe you've changed your locales, or signs' tags.");
 				put("Warning.UnknownFocus",
 						"The string given for the configuration Zombies.Focus is not recognized : %s . It could be 'None','Nearest','Random','DeathSpawn','InitialSpawn'.");
+				put("Warning.NoSpawns","You didn't set any zombie spawn.");
 				put("Severe.TribuCantMkdir",
 						"Tribu can't make dirs so it cannot create the level directory, you would not be able to save levels ! You can't use Tribu !");
 				put("Severe.WorldInvalidFileVersion", "World invalid file version");
@@ -694,21 +697,12 @@ public class Tribu extends JavaPlugin {
 		this.loadCustomConf();
 	}
 
-	public void startRunning() {
+	public boolean startRunning() {
 		if (!isRunning && getLevel() != null) {
 			if (players.isEmpty()) {
 				waitingForPlayers = true;
 			} else {
-				if (!getConfig().getBoolean("PluginMode.AutoStart", false))
-					waitingForPlayers = false;
-				isRunning = true;
-				if (dedicatedServer)
-					for (LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
-						if ((e.getLocation().distance(level.getInitialSpawn())) < getConfig().getDouble("LevelStart.ClearZone", 50.0)
-								&& !(e instanceof Player) && !(e instanceof Wolf))
-							e.damage(Integer.MAX_VALUE);
-					}
-
+				
 				// Make sure no data is lost if server decides to die
 				// during a game and player forgot to /level save
 				if (!getLevelLoader().saveLevel(getLevel())) {
@@ -716,6 +710,26 @@ public class Tribu extends JavaPlugin {
 				} else {
 					LogInfo(language.get("Info.LevelSaved"));
 				}
+				if(this.getLevel().getSpawns().isEmpty())
+				{
+					LogWarning(language.get("Warning.NoSpawns"));
+					return false;
+				}
+				
+				if (!getConfig().getBoolean("PluginMode.AutoStart", false))
+					waitingForPlayers = false;
+				isRunning = true;
+				if (dedicatedServer)
+					for (LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
+						if (!(e instanceof Player) && !(e instanceof Wolf))
+							e.damage(Integer.MAX_VALUE);
+					}
+				else
+					for (LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
+						if ((e.getLocation().distance(level.getInitialSpawn())) < getConfig().getDouble("LevelStart.ClearZone", 50.0)
+								&& !(e instanceof Player) && !(e instanceof Wolf))
+							e.damage(Integer.MAX_VALUE);
+					}
 				this.addDefaultPackages();
 				getLevel().initSigns();
 				this.sortedStats.clear();
@@ -730,6 +744,7 @@ public class Tribu extends JavaPlugin {
 				getWaveStarter().scheduleWave(Constants.TicksBySecond * getConfig().getInt("WaveStart.Delay", 10));
 			}
 		}
+		return true;
 	}
 
 	public void stopRunning() {

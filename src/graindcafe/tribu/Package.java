@@ -47,7 +47,7 @@ public class Package {
 	}
 
 	public boolean addItem(int id, short subid, short number) {
-		return addItem(id, subid, number);
+		return addItem(id, subid, number,null);
 	}
 
 	public boolean addItem(String name) {
@@ -95,7 +95,9 @@ public class Package {
 	}
 
 	public boolean addItem(int id, short subid, short number, Map<Enchantment, Integer> enchantments) {
-		ItemStack is = new ItemStack(id, subid, number);
+		ItemStack is = new ItemStack(id);
+		is.setAmount(number);
+		is.setDurability(subid);
 		if (enchantments != null && !enchantments.isEmpty())
 			for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
 				if (entry.getKey() != null)
