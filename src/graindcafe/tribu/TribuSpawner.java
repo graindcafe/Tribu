@@ -25,10 +25,11 @@ class Attack extends MoveTo {
 		if (subject.getTarget() == null && !subject.isDead() && !entity.isDead() && !subject.getLocation().getBlock().equals(target.getBlock())) {
 
 			target = entity.getLocation();
-			((org.bukkit.craftbukkit.entity.CraftCreature) subject).getHandle().setPathEntity(
+			
+			/*((org.bukkit.craftbukkit.entity.CraftCreature) subject).getHandle().setPathEntity(
 					new net.minecraft.server.PathEntity(new net.minecraft.server.PathPoint[] { new net.minecraft.server.PathPoint(target.getBlockX(),
-							target.getBlockY(), target.getBlockZ()) }));
-			// subject.setTarget(entity);
+							target.getBlockY(), target.getBlockZ()) }));*/
+			subject.setTarget(entity);
 
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, this, 20);
 		}
@@ -55,7 +56,7 @@ class MoveTo implements Runnable {
 	@Override
 	public void run() {
 		if (!subject.isDead() && !subject.getLocation().getBlock().equals(target.getBlock())) {
-
+			
 			((org.bukkit.craftbukkit.entity.CraftCreature) subject).getHandle().setPathEntity(
 					new net.minecraft.server.PathEntity(new net.minecraft.server.PathPoint[] { new net.minecraft.server.PathPoint(target.getBlockX(),
 							target.getBlockY(), target.getBlockZ()) }));
