@@ -16,7 +16,9 @@ public class CmdDspawn implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if (!sender.isOp()) {
+		if(!sender.hasPermission("tribu.level.dspawn"))
+		{
+			sender.sendMessage(plugin.getLocale("Message.Deny"));
 			return true;
 		}
 
