@@ -14,4 +14,90 @@ commands:
     ispawn:
         description: sets the initial spawnpoint. Use [jump] to jump to the spawn
         usage: /ispawn [jump]
-    
+permissions:
+    tribu.*:
+        description: Gives access to all commands
+        children:
+            doorman.kick: true
+            doorman.ban: true
+            doorman.knock: true
+            doorman.denied: false
+    tribu.use:
+        description: Gives access to all commands
+        children:
+            tribu.use.enter: true
+            tribu.use.leave: true
+            tribu.use.vote: true
+            tribu.use.stats: true
+    tribu.use.enter:
+        description: Enter the game
+        default: true
+    tribu.use.leave:
+        description: Leave the game
+        default: true
+    tribu.use.vote:
+        description: Vote
+        default: true
+    tribu.use.stats:
+        description: Display stats
+        default: true
+    tribu.level:
+        description: Gives access to all level commands
+        children:
+            tribu.level.package: true
+            tribu.level.create: true
+            tribu.level.delete: true
+            tribu.level.load: true
+            tribu.level.unload: true
+            tribu.level.save: true
+            tribu.level.list: true
+            tribu.level.zspawn: true
+            tribu.level.dspawn: true
+            tribu.level.ispawn: true
+    tribu.level.package:
+        description: Manage packages
+        default: op
+    tribu.level.create:
+        description: Create a level
+        default: op
+    tribu.level.delete:
+        description: Delete a level
+        default: op
+    tribu.level.load:
+        description: Load a level
+        default: op
+    tribu.level.unload:
+        description: Delete a level
+        default: op
+    tribu.level.save:
+        description: Save a level
+        default: op
+    tribu.level.list:
+        description: List levels
+        default: op
+    tribu.level.zspawn:
+        description: Manage zombies spawn
+        default: op
+    tribu.level.dspawn:
+        description: Set death spawn
+        default: op
+    tribu.level.ispawn:
+        description: Set initial spawn
+        default: op
+    tribu.game:
+        description: Manage the game
+        children:
+          tribu.game.start: true
+          tribu.game.stop: true
+    tribu.game.start:
+        description: Start the game
+        default: op
+    tribu.game.stop:
+        description: Stop the game
+        default: op
+    tribu.plugin:
+        description: Manage the plugin
+        default: op
+    tribu.plugin.reload:
+        description: Reload config
+        default: op

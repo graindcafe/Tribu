@@ -386,7 +386,6 @@ public class CmdTribu implements CommandExecutor {
 			plugin.stopRunning();
 			plugin.Message(sender, plugin.getLocale("Message.ZombieModeDisabled"));
 			return true;
-
 		} else if (args[0].equals("tpfz")) {
 			Location loc = plugin.getSpawner().getFirstZombieLocation();
 			if (loc != null)
@@ -394,6 +393,11 @@ public class CmdTribu implements CommandExecutor {
 					((Player) sender).teleport(loc);
 				else if (args.length > 1)
 					plugin.getServer().getPlayer(args[1]).teleport(loc);
+			return true;
+
+		}else if (args[0].equals("reload")) {
+			if(sender.hasPermission("tribu.plugin.reload"))
+				plugin.reloadConf();
 			return true;
 
 		} else if (args[0].equals("help") || args[0].equals("?") || args[0].equals("aide")) {
