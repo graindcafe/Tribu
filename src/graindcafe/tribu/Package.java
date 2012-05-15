@@ -101,7 +101,8 @@ public class Package {
 		if (enchantments != null && !enchantments.isEmpty())
 			for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
 				if (entry.getKey() != null)
-					is.addEnchantment(entry.getKey(), entry.getValue());
+					if(entry.getKey().canEnchantItem(is))
+						is.addEnchantment(entry.getKey(), entry.getValue());
 			}
 		return this.addItem(is);
 	}

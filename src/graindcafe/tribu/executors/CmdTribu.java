@@ -48,7 +48,10 @@ public class CmdTribu implements CommandExecutor {
 
 				} else {
 					sender.sendMessage(plugin.getLocale("Message.YouJoined"));
-					plugin.addPlayer((Player) sender);
+					if(!plugin.isPlaying((Player) sender))
+						plugin.addPlayer((Player) sender);
+					else
+						sender.sendMessage(plugin.getLocale("Message.AlreadyIn"));
 				}
 			return true;
 		} else if (args[0].equals("leave")) {

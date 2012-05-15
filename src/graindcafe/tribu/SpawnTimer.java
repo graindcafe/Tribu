@@ -50,7 +50,6 @@ public class SpawnTimer implements Runnable {
 
 	public void Start() {
 		taskID = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, this, Constants.ZombieSpawnDelay, Constants.ZombieSpawnDelay);
-
 	}
 
 	public void StartWave(int max, int health) {

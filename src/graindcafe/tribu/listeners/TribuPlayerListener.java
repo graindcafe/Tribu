@@ -1,18 +1,19 @@
 package graindcafe.tribu.listeners;
 
 import graindcafe.tribu.Tribu;
-import graindcafe.tribu.executors.TribuPlayerJoin;
 import graindcafe.tribu.signs.TribuSign;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
 import org.bukkit.event.block.Action;
 
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
@@ -28,13 +29,11 @@ public class TribuPlayerListener implements Listener {
 	{
 		return plugin;
 	}
-	@EventHandler 
+	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (!event.isCancelled()) {
-
 			Block block = event.getClickedBlock();
 			if (block != null) {
-
 				if (Sign.class.isInstance(block.getState()) && plugin.getLevel() != null) {
 					if (plugin.isRunning()) {
 						if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
@@ -55,15 +54,21 @@ public class TribuPlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
-
 		plugin.removePlayer(event.getPlayer());
+	}
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		if (plugin.isDedicatedServer()) {
+			plugin.addPlayer(event.getPlayer());
+		}
 	}
 	
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		if (plugin.getLevel() != null) {
 			plugin.setDead(event.getPlayer());
-			event.setRespawnLocation(plugin.getLevel().getDeathSpawn());
+			
+			//event.setRespawnLocation(plugin.getLevel().getDeathSpawn());
 			plugin.restoreTempInv(event.getPlayer());
 			if (!plugin.isPlaying(event.getPlayer()))
 				plugin.restoreInventory(event.getPlayer());
@@ -71,9 +76,6 @@ public class TribuPlayerListener implements Listener {
 	}
 
 	public void registerEvents(PluginManager pm) {
-		if (plugin.isDedicatedServer()) {
-			pm.registerEvent(org.bukkit.event.player.PlayerJoinEvent.class, this, org.bukkit.event.EventPriority.NORMAL, new TribuPlayerJoin(), plugin);
-		}
 		pm.registerEvents(this, plugin);
 	}
 }

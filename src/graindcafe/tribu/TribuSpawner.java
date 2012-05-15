@@ -1,69 +1,15 @@
 package graindcafe.tribu;
 
-import java.util.HashMap;
+import graindcafe.tribu.TribuZombie.CraftTribuZombie;
+
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Creature;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
 
-class Attack extends MoveTo {
-
-	LivingEntity entity;
-
-	public Attack(Tribu Plugin, Creature Subject, LivingEntity entity) {
-		super(Plugin, Subject, entity.getLocation());
-		this.entity = entity;
-	}
-
-	@Override
-	public void run() {
-		if (subject.getTarget() == null && !subject.isDead() && !entity.isDead() && !subject.getLocation().getBlock().equals(target.getBlock())) {
-
-			target = entity.getLocation();
-			
-			/*((org.bukkit.craftbukkit.entity.CraftCreature) subject).getHandle().setPathEntity(
-					new net.minecraft.server.PathEntity(new net.minecraft.server.PathPoint[] { new net.minecraft.server.PathPoint(target.getBlockX(),
-							target.getBlockY(), target.getBlockZ()) }));*/
-			subject.setTarget(entity);
-
-			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, this, 20);
-		}
-	}
-}
-
-class MoveTo implements Runnable {
-	Tribu plugin;
-	Creature subject;
-	Location target;
-
-	public MoveTo(Tribu Plugin, Creature Subject) {
-		plugin = Plugin;
-		subject = Subject;
-	}
-
-	public MoveTo(Tribu Plugin, Creature Subject, Location Target) {
-		plugin = Plugin;
-		subject = Subject;
-		target = Target;
-
-	}
-
-	@Override
-	public void run() {
-		if (!subject.isDead() && !subject.getLocation().getBlock().equals(target.getBlock())) {
-			
-			((org.bukkit.craftbukkit.entity.CraftCreature) subject).getHandle().setPathEntity(
-					new net.minecraft.server.PathEntity(new net.minecraft.server.PathPoint[] { new net.minecraft.server.PathPoint(target.getBlockX(),
-							target.getBlockY(), target.getBlockZ()) }));
-			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, this, 20);
-		}
-	}
-}
 
 public class TribuSpawner {
 	private boolean finished;
@@ -76,8 +22,8 @@ public class TribuSpawner {
 	private boolean starting;
 	// spawned zombies
 	private int totalSpawned;
-	private HashMap<LivingEntity, CleverMob> zombies = new HashMap<LivingEntity, CleverMob>();
-
+	private LinkedList<CraftTribuZombie> zombies;
+	
 	public TribuSpawner(Tribu instance) {
 		plugin = instance;
 		totalSpawned = 0;
@@ -85,13 +31,14 @@ public class TribuSpawner {
 		finished = false;
 		starting = true;
 		health = 10;
+		zombies = new LinkedList<CraftTribuZombie>();
 	}
 
 	// check if a zombie has been despawned (too far, killed but not caught by
 	// event,...)
 	public void checkZombies() {
 		Stack<LivingEntity> toDelete = new Stack<LivingEntity>();
-		for (LivingEntity e : zombies.keySet())
+		for (CraftTribuZombie e : zombies)
 			if (e.isDead())
 				toDelete.push(e);
 		if (finished && !toDelete.isEmpty())
@@ -102,15 +49,15 @@ public class TribuSpawner {
 	}
 
 	public void clearZombies() {
-		for (LivingEntity zombie : zombies.keySet()) {
+		for (CraftTribuZombie zombie : zombies) {
 			zombie.remove();
 		}
 		resetTotal();
 		zombies.clear();
 	}
 
-	public void despawnZombie(LivingEntity zombie, List<ItemStack> drops) {
-		if (zombies.containsKey(zombie)) {
+	public void despawnZombie(CraftTribuZombie zombie, List<ItemStack> drops) {
+		if (zombies.contains(zombie)) {
 			zombies.remove(zombie);
 			drops.clear();
 			tryStartNextWave();
@@ -123,18 +70,18 @@ public class TribuSpawner {
 		finished = true;
 	}
 
-	public CleverMob getCleverMob(LivingEntity mob) {
-		return zombies.get(mob);
-	}
+	/*public CleverMob getCleverMob(TribuCraftZombie mob) {
+		return zombies.(mob);
+	}*/
 
 	// Debug command
 	public Location getFirstZombieLocation() {
 		if (totalSpawned > 0)
 			if (!zombies.isEmpty()) {
-				plugin.LogInfo("Health : " + ((LivingEntity) zombies.keySet().toArray()[0]).getHealth());
-				plugin.LogInfo("LastDamage : " + ((LivingEntity) zombies.keySet().toArray()[0]).getLastDamage());
-				plugin.LogInfo("isDead : " + ((LivingEntity) zombies.keySet().toArray()[0]).isDead());
-				return ((LivingEntity) zombies.keySet().toArray()[0]).getLocation();
+				plugin.LogInfo("Health : " + zombies.get(0).getHealth());
+				plugin.LogInfo("LastDamage : " + zombies.get(0).getLastDamage());
+				plugin.LogInfo("isDead : " +  zombies.get(0).isDead());
+				return  zombies.get(0).getLocation();
 			} else {
 				plugin.getSpawnTimer().getState();
 				plugin.LogSevere("No zombie currently spawned " + zombies.size() + " zombie of " + totalSpawned + "/" + maxSpawn
@@ -167,7 +114,7 @@ public class TribuSpawner {
 	}
 
 	public boolean isSpawned(LivingEntity ent) {
-		return zombies.containsKey(ent);
+		return zombies.contains(ent);
 	}
 
 	public boolean isWaveCompleted() {
@@ -179,7 +126,7 @@ public class TribuSpawner {
 	}
 
 	public void removedZombieCallback(LivingEntity e) {
-		e.damage(10000000);
+		e.damage(Integer.MAX_VALUE);
 		zombies.remove(e);
 		totalSpawned--;
 	}
@@ -217,42 +164,10 @@ public class TribuSpawner {
 		// Surrounded with justspawned so that the zombie isn't
 		// removed in the entity spawn listener
 		justspawned = true;
-		Zombie zombie = pos.getWorld().spawn(pos, Zombie.class);
+		CraftTribuZombie zombie = (CraftTribuZombie) CraftTribuZombie.spawn(plugin,pos);
 		justspawned = false;
-		MoveTo dest = null;
-		String focus = plugin.getConfig().getString("Zombies.Focus", "None");
-		if (focus.equalsIgnoreCase("Nearest")) {
-			if (plugin.getPlayersCount() != 0 && zombie.getTarget() == null) {
-				List<org.bukkit.entity.Entity> targets;
-				int x = 10, y = 5, z = 10, i = 0, c = 0;
 
-				do {
-					targets = zombie.getNearbyEntities(x, y, z);
-					c = targets.size();
-					i = 0;
-					while (i < c) {
-						if (targets.get(i) instanceof Player && (plugin.getPlayers().contains((targets.get(i))))) {
-							dest = new Attack(plugin, (Creature) zombie, (LivingEntity) targets.get(i));
-							break;
-						}
-						i++;
-					}
-					x += 10;
-					y += 10;
-					z += 10;
-				} while (dest == null && plugin.getPlayersCount() != 0);
-			}
-		} else if (focus.equalsIgnoreCase("Random"))
-			dest = new Attack(plugin, zombie, plugin.getRandomPlayer());
-		else if (focus.equalsIgnoreCase("DeathSpawn"))
-			dest = new MoveTo(plugin, zombie, plugin.getLevel().getDeathSpawn());
-		else if (focus.equalsIgnoreCase("InitialSpawn"))
-			dest = new MoveTo(plugin, zombie, plugin.getLevel().getInitialSpawn());
-		else {
-			if (!focus.equalsIgnoreCase("None"))
-				plugin.LogWarning(String.format(plugin.getLocale("Warning.UnknownFocus"), plugin.getConfig().getString("Zombies.Focus")));
-		}
-		zombies.put(zombie, new CleverMob(zombie, dest));
+		zombies.add(zombie);
 		zombie.setHealth(health);
 		totalSpawned++;
 

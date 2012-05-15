@@ -1,5 +1,6 @@
 package graindcafe.tribu;
 
+import graindcafe.tribu.TribuZombie.EntityTribuZombie;
 import graindcafe.tribu.executors.CmdDspawn;
 import graindcafe.tribu.executors.CmdIspawn;
 import graindcafe.tribu.executors.CmdTribu;
@@ -12,6 +13,7 @@ import graindcafe.tribu.listeners.TribuWorldListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,6 +26,8 @@ import java.util.logging.Logger;
 
 import me.graindcafe.gls.DefaultLanguage;
 import me.graindcafe.gls.Language;
+import net.minecraft.server.EntityTypes;
+import net.minecraft.server.EntityZombie;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -33,6 +37,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -236,6 +241,7 @@ public class Tribu extends JavaPlugin {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+		dedicatedServer = getConfig().getBoolean("PluginMode.ServerExclusive", false);
 		this.loadDefaultPackages();
 
 	}
@@ -251,10 +257,12 @@ public class Tribu extends JavaPlugin {
 			HashMap<Enchantment, Integer> enchts = new HashMap<Enchantment, Integer>();
 
 			for (String pckName : defaultPackage.getKeys(false)) {
+				
 				pckCs = defaultPackage.getConfigurationSection(pckName);
 				if (pckCs != null) {
 					pck = new Package(pckName);
 					for (String itemName : pckCs.getKeys(false)) {
+						
 						item = pckCs.getConfigurationSection(itemName);
 						if (item != null && item.contains("id")) {
 
@@ -271,7 +279,7 @@ public class Tribu extends JavaPlugin {
 									i++;
 								}
 							}
-							pck.addItem(item.getInt("id"), (short) item.getInt("data", 0), (short) item.getInt("amount", 1), enchts);
+							pck.addItem(item.getInt("id"), (short) item.getInt("data", item.getInt("subid",item.getInt("durability",0))), (short) item.getInt("amount", 1), enchts);
 						} else
 							this.LogInfo(itemName + " not loaded");
 					}
@@ -284,27 +292,21 @@ public class Tribu extends JavaPlugin {
 
 	}
 
-	private void pluginModeInit() {
+	private void initPluginMode() {
 		dedicatedServer = getConfig().getBoolean("PluginMode.ServerExclusive", false);
-		int i = 0;
-		Player[] tmpPlayerList = this.getServer().getOnlinePlayers();
 		if (dedicatedServer) {
-			int c = tmpPlayerList.length;
-			while (i < c) {
-				this.addPlayer(tmpPlayerList[i]);
-				i++;
-			}
+			for(Player p : this.getServer().getOnlinePlayers())
+				this.addPlayer(p);
 		}
 		if (getConfig().getString("PluginMode.DefaultLevel", "") != "")
 			setLevel(levelLoader.loadLevel(getConfig().getString("PluginMode.DefaultLevel", "")));
-		if (getConfig().getBoolean("PluginMode.Autostart", false))
+		if (getConfig().getBoolean("PluginMode.AutoStart", false))
 			startRunning();
 	}
 
 	public void reloadConf() {
 		this.reloadConfig();
-
-		this.pluginModeInit();
+		this.initPluginMode();
 		this.loadCustomConf();
 	}
 
@@ -329,7 +331,6 @@ public class Tribu extends JavaPlugin {
 			}
 		}
 		for (File file : worldDir.listFiles()) {
-
 			if (file.getName().equalsIgnoreCase(worldName)) {
 				worldFile = file;
 				break;
@@ -452,6 +453,7 @@ public class Tribu extends JavaPlugin {
 				put("Message.LevelNotReady", ChatColor.YELLOW
 						+ "The level is not ready to run. Make sure you create/load a level and that it contains zombie spawns.");
 				put("Message.Deny", ChatColor.RED + "A zombie denied your action, sorry.");
+				put("Message.AlreadyIn", ChatColor.YELLOW + "You are already in.");
 				put("Broadcast.MapChosen", ChatColor.DARK_BLUE + "Level " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.DARK_BLUE + " has been chosen");
 				put("Broadcast.MapVoteStarting", ChatColor.DARK_AQUA + "Level vote starting,");
 				put("Broadcast.Type", ChatColor.DARK_AQUA + "Type ");
@@ -534,7 +536,7 @@ public class Tribu extends JavaPlugin {
 		else
 			sender.sendMessage(message);
 	}
-
+	
 	@Override
 	public void onDisable() {
 		for (Entry<Player, TribuInventory> e : inventories.entrySet()) {
@@ -560,37 +562,53 @@ public class Tribu extends JavaPlugin {
 		initConfig();
 		initLanguage();
 
-		blockTrace = new BlockTrace(log);
+		try
+        {
+            @SuppressWarnings("rawtypes")
+			Class[] args = {Class.class, String.class, Integer.TYPE, Integer.TYPE, Integer.TYPE};
+            Method a = EntityTypes.class.getDeclaredMethod("a", args);
+            a.setAccessible(true);
+            
+            a.invoke(a,EntityTribuZombie.class, "Zombie", 54, '\uafaf', 7969893);
+            a.invoke(a,EntityZombie.class, "Zombie", 54, '\uafaf', 7969893);
+
+            
+        }
+        catch (Exception e)
+        {
+        	e.printStackTrace();
+            setEnabled(false);
+            return;
+        }
+		
 		isRunning = false;
 		aliveCount = 0;
 		level = null;
+		blockTrace = new BlockTrace(log);
 		tempInventories = new HashMap<Player, TribuInventory>();
 		inventories = new HashMap<Player, TribuInventory>();
 		players = new HashMap<Player, PlayerStats>();
 		sortedStats = new LinkedList<PlayerStats>();
 		levelLoader = new LevelFileLoader(this);
 		levelSelector = new LevelSelector(this);
+
 		// Create listeners
 		playerListener = new TribuPlayerListener(this);
 		entityListener = new TribuEntityListener(this);
 		blockListener = new TribuBlockListener(this);
 		worldListener = new TribuWorldListener(this);
+		
 		getServer().getPluginManager().registerEvents(playerListener, this);
 		getServer().getPluginManager().registerEvents(entityListener, this);
 		getServer().getPluginManager().registerEvents(blockListener, this);
 		getServer().getPluginManager().registerEvents(worldListener, this);
-
+		
 		getCommand("dspawn").setExecutor(new CmdDspawn(this));
 		getCommand("zspawn").setExecutor(new CmdZspawn(this));
 		getCommand("ispawn").setExecutor(new CmdIspawn(this));
 		getCommand("tribu").setExecutor(new CmdTribu(this));
-		this.pluginModeInit();
-		/*
-		 * List<String> zmAliases = new LinkedList<String>();
-		 * zmAliases.add("zm"); zmAliases.add("zombie");
-		 * getCommand("zombiemode").setAliases(zmAliases);
-		 * getCommand("zombiemode").setExecutor(new CmdZombieMode(this));
-		 */
+		
+		this.initPluginMode();
 
 		LogInfo(language.get("Info.Enable"));
 	}
@@ -600,12 +618,13 @@ public class Tribu extends JavaPlugin {
 			if (isAlive(player)) {
 				aliveCount--;
 			}
-			checkAliveCount();
 			sortedStats.remove(players.get(player));
 			players.remove(player);
+			// check alive AFTER player remove
+			checkAliveCount();
 			if (!player.isDead())
-				if (inventories.containsKey(player))
-					inventories.remove(player).restore();
+				restoreInventory(player);
+
 		}
 	}
 
@@ -693,13 +712,13 @@ public class Tribu extends JavaPlugin {
 				isRunning = true;
 				if (dedicatedServer)
 					for (LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
-						if (!(e instanceof Player) && !(e instanceof Wolf))
+						if (!(e instanceof Player) && !(e instanceof Wolf) && !(e instanceof Villager))
 							e.damage(Integer.MAX_VALUE);
 					}
 				else
 					for (LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
 						if ((e.getLocation().distance(level.getInitialSpawn())) < getConfig().getDouble("LevelStart.ClearZone", 50.0)
-								&& !(e instanceof Player) && !(e instanceof Wolf))
+								&& !(e instanceof Player) && !(e instanceof Wolf) && !(e instanceof Villager))
 							e.damage(Integer.MAX_VALUE);
 					}
 
@@ -732,7 +751,6 @@ public class Tribu extends JavaPlugin {
 			inventories.clear();
 			if (!dedicatedServer) {
 				players.clear();
-
 			}
 		}
 

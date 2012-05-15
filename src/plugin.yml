@@ -16,14 +16,14 @@ commands:
         usage: /ispawn [jump]
 permissions:
     tribu.*:
-        description: Gives access to all commands
+        description: All commands
         children:
-            doorman.kick: true
-            doorman.ban: true
-            doorman.knock: true
-            doorman.denied: false
+            tribu.use: true
+            tribu.level: true
+            tribu.game: true
+            tribu.plugin: true
     tribu.use:
-        description: Gives access to all commands
+        description: Player commands 
         children:
             tribu.use.enter: true
             tribu.use.leave: true
@@ -42,7 +42,7 @@ permissions:
         description: Display stats
         default: true
     tribu.level:
-        description: Gives access to all level commands
+        description: Level management commands
         children:
             tribu.level.package: true
             tribu.level.create: true
