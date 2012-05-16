@@ -55,19 +55,20 @@ public class EntityTribuZombie extends EntityZombie {
 		this.goalSelector.a(1, new PathfinderGoalBreakDoor(this));
 		this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, EntityHuman.class, this.bb, false));
 		this.goalSelector.a(3, new PathfinderGoalMeleeAttack(this, EntityVillager.class, this.bb, true));
-		this.goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this, this.bb));
-		this.goalSelector.a(5, new PathfinderGoalMoveThroughVillage(this, this.bb, false));
 		String focus = plugin.getConfig().getString("Zombies.Focus", "None");
 		if (focus.equals("None"))
-			this.goalSelector.a(6, new PathfinderGoalRandomStroll(this, this.bb));
+			this.goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this, this.bb));
 		else if (focus.equals("Nearest") || focus.equals("Random")) {
 			if (focus.equals("Random"))
 				this.setTarget(((CraftPlayer) plugin.getRandomPlayer()).getHandle());
-			this.goalSelector.a(6, new PathfinderGoalMoveTowardsTarget(this, this.bb, 1000f));
+			this.goalSelector.a(4, new PathfinderGoalMoveTowardsTarget(this, this.bb, 1000f));
 		} else if (focus.equals("InitialSpawn") || focus.equals("DeathSpawn")) {
-			this.goalSelector.a(6, new PathfinderGoalMoveToLocation(this, focus.equals("DeathSpawn") ? plugin.getLevel().getDeathSpawn() : plugin
+			this.goalSelector.a(4, new PathfinderGoalMoveToLocation(this, focus.equals("DeathSpawn") ? plugin.getLevel().getDeathSpawn() : plugin
 					.getLevel().getInitialSpawn(), this.bb, false));
 		}
+		
+		this.goalSelector.a(5, new PathfinderGoalMoveThroughVillage(this, this.bb, false));
+		this.goalSelector.a(6, new PathfinderGoalRandomStroll(this, this.bb));
 		this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
 		this.goalSelector.a(7, new PathfinderGoalRandomLookaround(this));
 		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));

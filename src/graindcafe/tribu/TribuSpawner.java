@@ -70,10 +70,6 @@ public class TribuSpawner {
 		finished = true;
 	}
 
-	/*public CleverMob getCleverMob(TribuCraftZombie mob) {
-		return zombies.(mob);
-	}*/
-
 	// Debug command
 	public Location getFirstZombieLocation() {
 		if (totalSpawned > 0)

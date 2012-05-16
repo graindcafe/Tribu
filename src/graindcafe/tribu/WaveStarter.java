@@ -14,8 +14,6 @@ public class WaveStarter implements Runnable {
 		plugin = instance;
 		waveNumber = 1;
 		scheduled = false;
-		max = calcPolynomialFunction(waveNumber, plugin.getConfig().getDoubleList("Zombies.Quantity"));
-		health = calcPolynomialFunction(waveNumber, plugin.getConfig().getDoubleList("Zombies.Health"));
 	}
 
 	private int calcPolynomialFunction(int x, List<Double> coef) {
@@ -68,6 +66,8 @@ public class WaveStarter implements Runnable {
 			}
 			if (plugin.getConfig().getBoolean("WaveStart.SetTime", true))
 				plugin.getLevel().getInitialSpawn().getWorld().setTime(plugin.getConfig().getInt("WaveStart.SetTimeTo", 37000));
+			max = calcPolynomialFunction(waveNumber, plugin.getConfig().getDoubleList("Zombies.Quantity"));
+			health = calcPolynomialFunction(waveNumber, plugin.getConfig().getDoubleList("Zombies.Health"));
 			scheduled = false;
 			plugin.revivePlayers(false);
 			plugin.getLevel().onWaveStart();

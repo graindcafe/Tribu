@@ -400,7 +400,10 @@ public class CmdTribu implements CommandExecutor {
 
 		}else if (args[0].equals("reload")) {
 			if(sender.hasPermission("tribu.plugin.reload"))
+			{
 				plugin.reloadConf();
+				plugin.Message(sender,plugin.getLocale("Message.ConfigFileReloaded"));
+			}
 			return true;
 
 		} else if (args[0].equals("help") || args[0].equals("?") || args[0].equals("aide")) {

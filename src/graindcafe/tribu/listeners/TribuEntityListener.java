@@ -20,14 +20,21 @@ import org.bukkit.plugin.PluginManager;
 
 public class TribuEntityListener implements Listener {
 	private Tribu plugin;
+	double clearZone = 50f;
 
 	public TribuEntityListener(Tribu instance) {
 		plugin = instance;
 	}
 
+	public void resetClearZone() {
+		clearZone = plugin.getConfig().getDouble("Level.ClearZone", 50.0);
+	}
+
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onCreatureSpawn(CreatureSpawnEvent event) {
-		if ((plugin.isDedicatedServer() || plugin.isRunning()) && !plugin.getSpawner().justSpawned()) {
+		if ((plugin.isDedicatedServer() || (plugin.isRunning() && plugin.getLevel() != null && event.getEntity().getLocation()
+				.distance(plugin.getLevel().getInitialSpawn()) <= clearZone))
+				&& !plugin.getSpawner().justSpawned()) {
 			event.setCancelled(true);
 		}
 
@@ -48,12 +55,8 @@ public class TribuEntityListener implements Listener {
 					if (!plugin.getConfig().getBoolean("Players.DontLooseItem", false))
 						p.getInventory().clear();
 					plugin.setDead(p);
-					// plugin.keepTempInv((Player) event.getEntity(),
-					// event.getDrops().toArray(new ItemStack[] {}));
-
 				}
-			}
-			else
+			} else
 				plugin.restoreInventory(p);
 		}
 		if (dam.getEntity() instanceof CraftTribuZombie) {
@@ -63,7 +66,8 @@ public class TribuEntityListener implements Listener {
 				return;
 			}
 
-			if (plugin.isRunning() && (dam.getCause() == DamageCause.ENTITY_ATTACK || dam.getCause() == DamageCause.PROJECTILE)) {
+			if (plugin.isRunning()
+					&& (dam.getCause() == DamageCause.ENTITY_ATTACK || dam.getCause() == DamageCause.PROJECTILE || dam.getCause() == DamageCause.POISON)) {
 				EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) dam;
 
 				CraftTribuZombie zomb = (CraftTribuZombie) event.getEntity();
@@ -72,8 +76,6 @@ public class TribuEntityListener implements Listener {
 					Projectile pj = (Projectile) event.getDamager();
 					if (pj.getShooter() instanceof Player)
 						p = (Player) pj.getShooter();
-					else
-						plugin.LogInfo(pj.getShooter().toString());
 				} else if (event.getDamager() instanceof Player) {
 					p = (Player) event.getDamager();
 				} else if (zomb.getTarget() instanceof Player)
@@ -87,8 +89,7 @@ public class TribuEntityListener implements Listener {
 
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event) {
-		// if (plugin.isRunning() && event.getEntity() instanceof LivingEntity)
-		// {
+
 		if (event.getEntity() instanceof Player) {
 			Player player = (Player) event.getEntity();
 			plugin.setDead(player);
@@ -111,14 +112,11 @@ public class TribuEntityListener implements Listener {
 					stats.addPoints(plugin.getConfig().getInt("Stats.OnZombieKill.Points", 15));
 					stats.msgStats();
 					plugin.getLevel().onWaveStart();
-				} /*
-				 * else { mob.setAttacker(null); }
-				 */
+				}
 			}
 
 			plugin.getSpawner().despawnZombie(zombie, event.getDrops());
 		}
-		// }
 	}
 
 	public void registerEvents(PluginManager pm) {

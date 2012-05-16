@@ -361,10 +361,9 @@ public class Tribu extends JavaPlugin {
 					getConfig().set(key, tmpConf.get(key));
 		}
 
-		spawner = new TribuSpawner(this);
-		spawnTimer = new SpawnTimer(this);
-		waveStarter = new WaveStarter(this);
+
 		this.loadDefaultPackages();
+		this.entityListener.resetClearZone();
 		
 	}
 
@@ -436,6 +435,7 @@ public class Tribu extends JavaPlugin {
 				put("Message.TribuSignRemoved", ChatColor.GREEN + "Tribu sign successfully removed.");
 				put("Message.ProtectedBlock", ChatColor.YELLOW + "Sorry, this sign is protected, please ask an operator to remove it.");
 				put("Message.CannotPlaceASpecialSign", ChatColor.YELLOW + "Sorry, you cannot place a special signs, please ask an operator to do it.");
+				put("Message.ConfigFileReloaded", ChatColor.GREEN+ "Config files have been reloaded.");
 				put("Message.PckNotFound", ChatColor.YELLOW + "Package %s not found in this level.");
 				put("Message.PckNeedName", ChatColor.YELLOW + "You have to specify the name of the package.");
 				put("Message.PckNeedOpen", ChatColor.YELLOW + "You have to open or create a package first.");
@@ -591,12 +591,20 @@ public class Tribu extends JavaPlugin {
 		sortedStats = new LinkedList<PlayerStats>();
 		levelLoader = new LevelFileLoader(this);
 		levelSelector = new LevelSelector(this);
-
+		
+		spawner = new TribuSpawner(this);
+		spawnTimer = new SpawnTimer(this);
+		waveStarter = new WaveStarter(this);
+		
+		
 		// Create listeners
 		playerListener = new TribuPlayerListener(this);
 		entityListener = new TribuEntityListener(this);
 		blockListener = new TribuBlockListener(this);
 		worldListener = new TribuWorldListener(this);
+		
+		this.initPluginMode();
+		this.loadCustomConf();
 		
 		getServer().getPluginManager().registerEvents(playerListener, this);
 		getServer().getPluginManager().registerEvents(entityListener, this);
@@ -608,8 +616,7 @@ public class Tribu extends JavaPlugin {
 		getCommand("ispawn").setExecutor(new CmdIspawn(this));
 		getCommand("tribu").setExecutor(new CmdTribu(this));
 		
-		this.initPluginMode();
-
+		
 		LogInfo(language.get("Info.Enable"));
 	}
 
