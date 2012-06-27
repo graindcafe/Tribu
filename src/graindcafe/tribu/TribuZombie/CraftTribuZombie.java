@@ -4,9 +4,9 @@
 
 package graindcafe.tribu.TribuZombie;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import graindcafe.tribu.Tribu;
@@ -24,10 +24,16 @@ import org.bukkit.entity.Zombie;
 
 public class CraftTribuZombie extends CraftZombie implements Zombie {
 	private HashMap<Player, Integer> playerDamage;
+	private Integer max,total,maxDamage;
+	private Player bestAttacker;
     public CraftTribuZombie(CraftServer server, EntityTribuZombie entity) {
         super(server, entity);
         playerDamage=new HashMap<Player,Integer>();
+        max=0;
+        total=0;
+        maxDamage=0;
     }
+    
 
     @Override
     public EntityTribuZombie getHandle() {
@@ -40,6 +46,8 @@ public class CraftTribuZombie extends CraftZombie implements Zombie {
     }
     public void addAttack(Player p, int damage)
     {
+    	if(maxDamage<damage)
+    		maxDamage=damage;
     	Integer i;
     	if(this.playerDamage.containsKey(p))
     	{
@@ -52,22 +60,62 @@ public class CraftTribuZombie extends CraftZombie implements Zombie {
     		i=new Integer(damage);
     		this.playerDamage.put(p, i);
     	}
+    	if(max<i)
+    	{
+    		max=i;
+    		bestAttacker=p;
+    	}
+    	total+=damage;
+    }
+    public Player getFirstAttacker()
+    {
+    	if(this.playerDamage.isEmpty())
+    		return null;
+    	return this.playerDamage.keySet().iterator().next();
+    }
+    public Player getLastAttacker()
+    {
+    	if(this.playerDamage.isEmpty())
+    		return null;
+    	Iterator<Player> i=this.playerDamage.keySet().iterator();
+    	
+    	Player beforeLast=i.next();
+    	Player p;
+    	do
+    		p=i.next();
+    	while(p!=null);
+    	return beforeLast;
+    	
+    }
+    public Map<Player,Float> getAttackersPercentage()
+    {
+    	HashMap<Player,Float> r=new HashMap<Player,Float>();
+    	
+    	for(Entry<Player,Integer> e : playerDamage.entrySet())
+    	{
+    		r.put(e.getKey(),  ( (float)e.getValue())/ ((float)total));
+    	}
+    	
+    	return r;
     }
     public Player getBestAttacker()
     {
+    	/*
     	LinkedList<Integer> list = new LinkedList<Integer>();
     	list.addAll(playerDamage.values());
     	Collections.sort(list, Collections.reverseOrder());
     	Player p=null;
+    	Integer max=list.get(0);
     	for(Entry<Player,Integer> e : playerDamage.entrySet())
     	{
-    		if(e.getValue().equals(list.get(0)))
+    		if(e.getValue().equals(max))
     		{
     			p=e.getKey();
     			break;
     		}
     	}
-    	return p;
+    	return p;*/
+    	return bestAttacker;
     }
     public EntityType getType() {
         return EntityType.ZOMBIE;

@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
 
 /**
@@ -21,9 +22,18 @@ import org.bukkit.material.MaterialData;
 public class BlockTrace {
 	Logger log;
 	private BlockTraceNode top = null;
-
+	private LinkedList<BlockTraceNode> ignitedBlocks, interactedBlocks;
+	private LinkedList<Location> possibleIgnitedBlocks;
+	private LinkedList<Location> movingBlock;
+	
+	
 	public BlockTrace(Logger log) {
 		this.log = log;
+		this.ignitedBlocks=new LinkedList<BlockTraceNode>();
+		this.interactedBlocks=new LinkedList<BlockTraceNode>();
+		this.possibleIgnitedBlocks=new LinkedList<Location>();
+		this.movingBlock=new LinkedList<Location>();
+		
 	}
 
 	public void clear() {
@@ -36,7 +46,7 @@ public class BlockTrace {
 			if (theTop.getLocation().equals(loc))
 				return true;
 			else
-				theTop = theTop.getPrecedent();
+				theTop = theTop.getPrevious();
 		return false;
 	}
 
@@ -46,7 +56,7 @@ public class BlockTrace {
 			if (theHead.LocationBlockEquals(loc))
 				return theHead;
 			else
-				theHead = theHead.getPrecedent();
+				theHead = theHead.getPrevious();
 		return top;
 	}
 
@@ -55,19 +65,59 @@ public class BlockTrace {
 	}
 
 	private void log(String s) {
-		//log.info(s);
+		 log.info(s);
 	}
 
 	public BlockTraceNode peek() {
 		return top;
 	}
-
 	public BlockTraceNode pop() {
 		BlockTraceNode r = top;
-		top = top.getPrecedent();
+		top = top.getPrevious();
 		return r;
 	}
-
+	public void pushIgnitedBlock(Block b)
+	{
+		log("Start fire at "+locToString(b.getLocation()));
+		
+		byte i=0;
+		for(BlockFace bf : BlockFace.values())
+		{
+			Block nb=b.getRelative(bf);
+			if(nb.getType().equals(Material.AIR))
+				possibleIgnitedBlocks.add(nb.getLocation());
+			else if(i<6)
+				ignitedBlocks.add(new BlockTraceNode(nb));
+			i++;
+		}
+	}
+	public void pushBurntBlock(Block b)
+	{
+		log("Burnt : "+b.getType().toString());
+		for(BlockTraceNode btn : ignitedBlocks)
+		{
+			if(btn.equals(b))
+				push(b,true);
+		}
+		/*else
+			for(BlockTraceNode btn : ignitedBlocks)
+				for(BlockFace bf : BlockFace.values())
+					if(btn.equals(b.getRelative(bf)))
+						push(b,true);*/
+	}
+	public void pushPlayerInteract(Block b)
+	{
+		log("Player interact on "+b.getType().toString());
+		interactedBlocks.add(new BlockTraceNode(b));
+	}
+	public void pushRedstoneChanged(Block b)
+	{	
+		/*if(interactedBlocks.contains(b))
+		{
+			log("Redstone changed at "+locToString(b.getLocation()));
+			push(b,true);
+		}*/
+	}
 	public void push(Block b, boolean isRemoved) {
 		push(new BlockTraceNode(b), isRemoved);
 	}
@@ -86,6 +136,20 @@ public class BlockTrace {
 
 	public void push(BlockTraceNode node, boolean isRemoved) {
 
+		node.setPrevious(top);
+		BlockTraceNode previous = node;
+		
+		log("Checking for multiple blocks");
+		// Door etc...
+		if (node.hasOtherBlock()) {
+			// for (Location l : node.getMultipleBlocks())
+			log("Detected other block");
+			try {
+				previous = new BlockTraceNode(node.getOtherBlock(), previous);
+			} catch (NotFoundException e) {
+				
+			}
+		}
 		if (isRemoved) {
 			log("Block removed");
 			log("Checking for bound blocks");
@@ -99,19 +163,18 @@ public class BlockTrace {
 						push(node.getLocation().getBlock().getRelative(bf), true);
 					}
 
+			log("Start adding the block to the list");
+			
+			
 			log("Checking for fallings blocks");
-			node.setPrecedent(top);
-			BlockTraceNode precedent = node;
-			Location loc = node.getLocation().clone();
+			Location loc = node.getLocation().clone().add(0,1,0);
 			Queue<BlockTraceNode> fallingBlocks = new LinkedList<BlockTraceNode>();
-			loc = loc.add(0, 1, 0);
-			// if is falling calc where the clock fall
+			// if is falling calc where the block fall
 			while (BlockTraceNode.isSubjectedToPhysical(loc.getBlock())) {
 				log("Detected falling block : " + loc.getBlock().getType());
 				fallingBlocks.add(new BlockTraceNode(loc));
 				loc = loc.add(0, 1, 0);
 			}
-
 			// if some blocks may fall by removing this one
 			if (!fallingBlocks.isEmpty()) {
 				loc = node.getLocation().clone();
@@ -124,13 +187,12 @@ public class BlockTrace {
 				while (!fallingBlocks.isEmpty()) {
 					loc.add(0, 1, 0);
 					// = the block to replace
-					fallingBlocks.peek().setPrecedent(precedent);
+					fallingBlocks.peek().setPrevious(previous);
 					// = the block to remove
-					precedent = new BlockTraceNode(loc, fallingBlocks.poll());
+					previous = new BlockTraceNode(loc, fallingBlocks.poll());
 				}
 			}
-			top = precedent;
-
+			
 		} else {
 			log("Block placed");
 			// If this block may fall, then, place it as it will be removed
@@ -138,13 +200,20 @@ public class BlockTrace {
 			// its platform
 			log("Check if the block is falling");
 			if (BlockTraceNode.isSubjectedToPhysical(node.getLocation().getBlock())) {
+				node.setLocation(node.getLocation().add(0, 1, 0));
+				if(BlockTraceNode.isSubjectedToPhysical(node.getLocation().getBlock()))
+				{
+					log("Block above is falling !");
+					push(node,false);
+				}
+				node.setLocation(node.getLocation().subtract(0, 2, 0));
 				log("Falling block");
 				do
 					node.setLocation(node.getLocation().subtract(0, 1, 0));
 				while (!BlockTraceNode.isSolid(node.getLocation().getBlock()));
 				node.setLocation(node.getLocation().add(0, 1, 0));
-
 			}
+			
 			/*
 			 * if (node.isSubjectedToPhysical()) {
 			 * 
@@ -170,13 +239,12 @@ public class BlockTrace {
 			 * } pushBefore(node,b); }
 			 */
 
-			node.setPrecedent(top);
-			top = node;
-
+			//node.setPrevious(top);
 		}
+		top = previous;
 		log("Push block " + node.getType());
 
-		if (top.getPrecedent() == node && node.getPrecedent() == top)
+		if (top.getPrevious() == node && node.getPrevious() == top)
 			log("WARNING top precedent = node && node.precendent() == top. YOUR SERVER WILL NEVER STOP WHEN YOU WILL STOP TRIBU");
 
 	}
@@ -189,12 +257,41 @@ public class BlockTrace {
 		push((byte) typeId, data.getData(), location, isRemoved);
 
 	}
-
+	public String locToString(Location loc)
+	{
+		return loc.getBlock().getType().toString()+" ("+loc.getBlockX()+","+loc.getBlockY()+","+loc.getBlockZ()+")";
+	}
 	public void reverse() {
+		
+		for(Location loc: possibleIgnitedBlocks)
+		{
+			//for(BlockFace bf : BlockFace.values())
+			{
+				//Block b=btn.getLocation().getBlock().getRelative(bf);
+				Block b = loc.getBlock();
+				if(b.getType().equals(Material.FIRE))
+				{
+					log("Stop fire at " + locToString(loc));
+					b.setType(Material.AIR);
+				}
+			}
+		}
 		while (top != null) {
 			log("Reverse block : " + top.getType());
 			pop().reverse();
 		}
 
+	}
+
+	public boolean isFireSpreadingOut(Location location) {
+		return possibleIgnitedBlocks.remove(location);
+	}
+	public boolean isWaterSpreadingOut(Location location) {
+		return this.movingBlock.remove(location);
+	}
+	
+	public void pushMovingBlock(Block block) {
+		this.movingBlock.add(block.getLocation());
+		push(block,false);
 	}
 }

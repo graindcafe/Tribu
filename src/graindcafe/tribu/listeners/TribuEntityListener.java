@@ -1,5 +1,8 @@
 package graindcafe.tribu.listeners;
 
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 import graindcafe.tribu.PlayerStats;
 import graindcafe.tribu.Tribu;
 import graindcafe.tribu.TribuZombie.CraftTribuZombie;
@@ -20,21 +23,15 @@ import org.bukkit.plugin.PluginManager;
 
 public class TribuEntityListener implements Listener {
 	private Tribu plugin;
-	double clearZone = 50f;
 
 	public TribuEntityListener(Tribu instance) {
 		plugin = instance;
 	}
 
-	public void resetClearZone() {
-		clearZone = plugin.getConfig().getDouble("Level.ClearZone", 50.0);
-	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onCreatureSpawn(CreatureSpawnEvent event) {
-		if ((plugin.isDedicatedServer() || (plugin.isRunning() && plugin.getLevel() != null && event.getEntity().getLocation()
-				.distance(plugin.getLevel().getInitialSpawn()) <= clearZone))
-				&& !plugin.getSpawner().justSpawned()) {
+		if (plugin.isInsideLevel(event.getLocation()) && !plugin.getSpawner().justSpawned()) {
 			event.setCancelled(true);
 		}
 
@@ -48,19 +45,26 @@ public class TribuEntityListener implements Listener {
 		if (dam.getEntity() instanceof Player) {
 			Player p = (Player) dam.getEntity();
 			if (plugin.isPlaying(p)) {
-				if (p.getHealth() - dam.getDamage() < 0) {
+				if (p.getHealth() - dam.getDamage() <= 0) {
 					dam.setCancelled(true);
 					p.teleport(plugin.getLevel().getDeathSpawn());
 					p.setHealth(1);
-					if (!plugin.getConfig().getBoolean("Players.DontLooseItem", false))
+					if (!plugin.config().PlayersDontLooseItem)
+					{
+						for(ItemStack is : p.getInventory())
+						{
+							p.getLocation().getWorld().dropItemNaturally(p.getLocation(), is);
+						}
 						p.getInventory().clear();
+					}
+					
 					plugin.setDead(p);
 				}
 			} else
 				plugin.restoreInventory(p);
 		}
 		if (dam.getEntity() instanceof CraftTribuZombie) {
-			if (dam.getCause().equals(DamageCause.FIRE_TICK) && plugin.getConfig().getBoolean("Zombies.FireResistant", false)) {
+			if (dam.getCause().equals(DamageCause.FIRE_TICK) && plugin.config().ZombiesFireResistant) {
 				dam.setCancelled(true);
 				dam.getEntity().setFireTicks(0);
 				return;
@@ -94,24 +98,51 @@ public class TribuEntityListener implements Listener {
 			Player player = (Player) event.getEntity();
 			plugin.setDead(player);
 
-			if (plugin.getConfig().getBoolean("Players.DontLooseItem", false))
+			if (plugin.config().PlayersDontLooseItem)
+			{
 				plugin.keepTempInv((Player) event.getEntity(), event.getDrops().toArray(new ItemStack[] {}));
-
-			event.getDrops().clear();
+				event.getDrops().clear();
+			}
 
 		} else if (event.getEntity() instanceof CraftTribuZombie) {
 			CraftTribuZombie zombie = (CraftTribuZombie) event.getEntity();
 
-			Player player = (Player) zombie.getBestAttacker();
-			if (player == null && zombie.getTarget() instanceof Player)
-				player = (Player) zombie.getTarget();
-			if (player != null && player.isOnline()) {
-				PlayerStats stats = plugin.getStats(player);
-				if (stats != null) {
-					stats.addMoney(plugin.getConfig().getInt("Stats.OnZombieKill.Money", 10));
-					stats.addPoints(plugin.getConfig().getInt("Stats.OnZombieKill.Points", 15));
-					stats.msgStats();
-					plugin.getLevel().onWaveStart();
+			HashMap<Player,Float> rewards=new HashMap<Player,Float>();
+			String rewardMethod=plugin.config().StatsRewardMethod;
+			boolean onlyForAlive=plugin.config().StatsRewardOnlyAlive;
+			float baseMoney=(float)plugin.config().StatsOnZombieKillMoney;
+			float basePoint=(float)plugin.config().StatsOnZombieKillPoints;
+			if(rewardMethod.equalsIgnoreCase("Last"))
+				rewards.put(zombie.getLastAttacker(),1f);
+			else if(rewardMethod.equalsIgnoreCase("First"))
+				rewards.put(zombie.getFirstAttacker(),1f);
+			else if(rewardMethod.equalsIgnoreCase("Best"))
+				rewards.put(zombie.getBestAttacker(),1f);
+			else if(rewardMethod.equalsIgnoreCase("Percentage"))
+				rewards.putAll(zombie.getAttackersPercentage());
+			else if(rewardMethod.equalsIgnoreCase("All"))
+				for(Player p : plugin.getPlayers())
+				{
+					rewards.put(p, 1f);
+				}
+			
+			Player player;
+			Float percentage;
+			for(Entry<Player, Float> entry : rewards.entrySet())
+			{
+				player=entry.getKey();
+				percentage=entry.getValue();
+				if (player == null && zombie.getTarget() instanceof Player)
+					player = (Player) zombie.getTarget();
+				if (player != null && player.isOnline() && !(onlyForAlive && player.isDead())) {
+					PlayerStats stats = plugin.getStats(player);
+					if (stats != null) {
+						stats.addMoney(Math.round(baseMoney*percentage));
+						stats.addPoints(Math.round(basePoint*percentage));
+						stats.msgStats();
+						// Removed 24/06 : why is it here ?
+						// plugin.getLevel().onWaveStart();
+					}
 				}
 			}
 

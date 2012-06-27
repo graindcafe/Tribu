@@ -9,13 +9,12 @@ public class WaveStarter implements Runnable {
 	private boolean scheduled;
 	private int taskID;
 	private int waveNumber;
-	private int health,max;
 	public WaveStarter(Tribu instance) {
 		plugin = instance;
 		waveNumber = 1;
 		scheduled = false;
 	}
-
+	
 	private int calcPolynomialFunction(int x, List<Double> coef) {
 		if (coef == null || coef.size() == 0)
 			return 0;
@@ -59,22 +58,22 @@ public class WaveStarter implements Runnable {
 	@Override
 	public void run() {
 		if (plugin.isRunning()) {
-			if (plugin.getConfig().getBoolean("WaveStart.TeleportPlayers", false)) {
+			if (plugin.config().WaveStartTeleportPlayers) {
 				for (Player p : plugin.getPlayers()) {
 					p.teleport(plugin.getLevel().getInitialSpawn());
 				}
 			}
-			if (plugin.getConfig().getBoolean("WaveStart.SetTime", true))
-				plugin.getLevel().getInitialSpawn().getWorld().setTime(plugin.getConfig().getInt("WaveStart.SetTimeTo", 37000));
-			max = calcPolynomialFunction(waveNumber, plugin.getConfig().getDoubleList("Zombies.Quantity"));
-			health = calcPolynomialFunction(waveNumber, plugin.getConfig().getDoubleList("Zombies.Health"));
+			if (plugin.config().WaveStartSetTime)
+				plugin.getLevel().getInitialSpawn().getWorld().setTime(plugin.config().WaveStartSetTimeTo);
+			int max = calcPolynomialFunction(waveNumber, plugin.config().ZombiesQuantity);
+			int health = calcPolynomialFunction(waveNumber, plugin.config().ZombiesHealth);
+			int timeToSpawn = calcPolynomialFunction(waveNumber, plugin.config().ZombiesTimeToSpawn)/max; 
 			scheduled = false;
 			plugin.revivePlayers(false);
 			plugin.getLevel().onWaveStart();
 			
-			plugin.getSpawnTimer().StartWave(max, health);
-			plugin.getServer()
-					.broadcastMessage(
+			plugin.getSpawnTimer().StartWave(max, health,timeToSpawn);
+			plugin.messagePlayers(
 							String.format(plugin.getLocale("Broadcast.StartingWave"), String.valueOf(waveNumber), String.valueOf(max),
 									String.valueOf(health)));
 			plugin.getSpawner().startingCallback();
@@ -85,7 +84,7 @@ public class WaveStarter implements Runnable {
 		if (!scheduled && plugin.isRunning()) {
 			taskID = plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, this, delay);
 			scheduled = true;
-			plugin.getServer().broadcastMessage(
+			plugin.messagePlayers(
 					String.format(plugin.getLocale("Broadcast.Wave"), String.valueOf(plugin.getWaveStarter().getWaveNumber()),
 							String.valueOf(delay / 20)));
 		}

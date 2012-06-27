@@ -33,12 +33,13 @@ public class TribuPlayerListener implements Listener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		if (!event.isCancelled()) {
 			Block block = event.getClickedBlock();
-			if (block != null) {
+			if (block != null && plugin.isPlaying(event.getPlayer())) {
+				plugin.getBlockTrace().push(block, true);
 				if (Sign.class.isInstance(block.getState()) && plugin.getLevel() != null) {
 					if (plugin.isRunning()) {
 						if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
 							plugin.getLevel().onSignClicked(event);
-					} else if (event.getPlayer().isOp()) {
+					} else if (event.getPlayer().hasPermission("tribu.signs.place")) {
 						if (plugin.getLevel().removeSign(block.getLocation()))
 							event.getPlayer().sendMessage(plugin.getLocale("Message.TribuSignRemoved"));
 						else if (plugin.getLevel().addSign(TribuSign.getObject(plugin, block.getLocation())))
@@ -58,7 +59,7 @@ public class TribuPlayerListener implements Listener {
 	}
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		if (plugin.isDedicatedServer()) {
+		if (plugin.config().PluginModeServerExclusive) {
 			plugin.addPlayer(event.getPlayer());
 		}
 	}
@@ -68,7 +69,7 @@ public class TribuPlayerListener implements Listener {
 		if (plugin.getLevel() != null) {
 			plugin.setDead(event.getPlayer());
 			
-			//event.setRespawnLocation(plugin.getLevel().getDeathSpawn());
+			event.setRespawnLocation(plugin.getLevel().getDeathSpawn());
 			plugin.restoreTempInv(event.getPlayer());
 			if (!plugin.isPlaying(event.getPlayer()))
 				plugin.restoreInventory(event.getPlayer());

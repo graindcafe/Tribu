@@ -189,7 +189,7 @@ public class TribuLevel {
 			nameList += separator + name;
 			separator = ", ";
 		}
-		player.sendMessage(String.format(Constants.MessageZombieSpawnList, nameList));
+		Tribu.messagePlayer(player,String.format(Constants.MessageZombieSpawnList, nameList));
 	}
 
 	/**

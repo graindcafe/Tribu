@@ -40,7 +40,7 @@ public class ShopSign extends TribuSign {
 		
 		/* Try to get a single item */
 		if (i==null || i.isEmpty())
-			i = new Package(Material.getMaterial(signLines[1] + "_" + signLines[2]));
+			i = new Package(Material.getMaterial(signLines[1].toUpperCase() + "_" + signLines[2].toUpperCase()));
 		// If the item is inexistent, let's try with
 		// only the second line
 		if (i.isEmpty())
@@ -178,8 +178,8 @@ public class ShopSign extends TribuSign {
 					HashMap<Integer, ItemStack> failed = p.getInventory().addItem(item);
 
 					if (failed != null && failed.size() > 0) {
-						// maybe the inventory is full
-						p.sendMessage(plugin.getLocale("Message.UnableToGiveYouThatItem"));
+						// the inventory may be full
+						Tribu.messagePlayer(p, (plugin.getLocale("Message.UnableToGiveYouThatItem")));
 						stats.addMoney(cost);
 						for (ItemStack i : givenItems)
 							p.getInventory().remove(i);
@@ -189,14 +189,14 @@ public class ShopSign extends TribuSign {
 				}
 				p.updateInventory();
 				// Alright
-				p.sendMessage(String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));
+				Tribu.messagePlayer(p,String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));
 			} else {
-				p.sendMessage(plugin.getLocale("Message.UnknownItem"));
+				Tribu.messagePlayer(p,plugin.getLocale("Message.UnknownItem"));
 				stats.addMoney(cost);
 			}
 
 		} else {
-			p.sendMessage(plugin.getLocale("Message.YouDontHaveEnoughMoney"));
+			Tribu.messagePlayer(p,plugin.getLocale("Message.YouDontHaveEnoughMoney"));
 		}
 
 	}

@@ -26,7 +26,7 @@ public class TopNamesSign extends HighscoreSign {
 		lines[0]=lines[1]=lines[2]=lines[3]="";
 		LinkedList<PlayerStats> stats = plugin.getSortedStats();
 		Iterator<PlayerStats> i = stats.iterator();
-		int count = plugin.getPlayersCount();
+		int count = 3;
 		for (byte j = 1; j <= count; j++)
 			lines[j] = String.valueOf(i.next().getPlayer().getDisplayName());
 		return lines;

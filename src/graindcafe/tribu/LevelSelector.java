@@ -53,7 +53,7 @@ public class LevelSelector implements Runnable {
 	public void ChangeLevel(String name, Player player) {
 		if (plugin.getLevel() != null) {
 			if (plugin.getLevel().getName().equalsIgnoreCase(name)) {
-				plugin.Message(player, String.format(plugin.getLocale("Message.LevelIsAlreadyTheCurrentLevel"), name));
+				Tribu.messagePlayer(player, String.format(plugin.getLocale("Message.LevelIsAlreadyTheCurrentLevel"), name));
 				return;
 			}
 		}

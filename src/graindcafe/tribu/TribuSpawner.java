@@ -104,7 +104,10 @@ public class TribuSpawner {
 		return null;
 
 	}
-
+	public int getMaxSpawn()
+	{
+		return this.maxSpawn;
+	}
 	public boolean haveZombieToSpawn() {
 		return totalSpawned != maxSpawn;
 	}
@@ -177,9 +180,9 @@ public class TribuSpawner {
 	public boolean tryStartNextWave() {
 		if (zombies.isEmpty() && finished && !starting) {
 			starting = true;
-			plugin.getServer().broadcastMessage(plugin.getLocale("Broadcast.WaveComplete"));
+			plugin.messagePlayers(plugin.getLocale("Broadcast.WaveComplete"));
 			plugin.getWaveStarter().incrementWave();
-			plugin.getWaveStarter().scheduleWave(Constants.TicksBySecond * plugin.getConfig().getInt("WaveStart.Delay", 10));
+			plugin.getWaveStarter().scheduleWave(Constants.TicksBySecond * plugin.config().WaveStartDelay);
 		}
 		return starting;
 	}

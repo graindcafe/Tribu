@@ -46,7 +46,7 @@ public class EntityTribuZombie extends EntityZombie {
 
 	public EntityTribuZombie(Tribu plugin, World world, double d0, double d1, double d2) {
 		this(world, d0, d1, d2);
-		fireResistant=plugin.getConfig().getBoolean("Zombies.FireResistant", false);
+		fireResistant=plugin.config().ZombiesFireResistant;
 		this.texture = "/mob/zombie.png";
 		this.bb = 0.23F;
 		this.damage = 4;
@@ -55,7 +55,7 @@ public class EntityTribuZombie extends EntityZombie {
 		this.goalSelector.a(1, new PathfinderGoalBreakDoor(this));
 		this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, EntityHuman.class, this.bb, false));
 		this.goalSelector.a(3, new PathfinderGoalMeleeAttack(this, EntityVillager.class, this.bb, true));
-		String focus = plugin.getConfig().getString("Zombies.Focus", "None");
+		String focus = plugin.config().ZombiesFocus;
 		if (focus.equals("None"))
 			this.goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this, this.bb));
 		else if (focus.equals("Nearest") || focus.equals("Random")) {

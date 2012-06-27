@@ -22,6 +22,7 @@ permissions:
             tribu.level: true
             tribu.game: true
             tribu.plugin: true
+            tribu.signs: true
     tribu.use:
         description: Player commands 
         children:
@@ -83,6 +84,18 @@ permissions:
         default: op
     tribu.level.ispawn:
         description: Set initial spawn
+        default: op
+    tribu.signs:
+        description: Manage the signs
+        default: op
+        children:
+          tribu.signs.break: true
+          tribu.signs.place: true
+    tribu.signs.place:
+        description: Can place a sign
+        default: op
+    tribu.signs.break:
+        description: Can break a sign
         default: op
     tribu.game:
         description: Manage the game

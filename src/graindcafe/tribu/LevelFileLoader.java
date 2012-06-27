@@ -84,38 +84,90 @@ public class LevelFileLoader {
 			int version = in.readByte();
 
 			if (version == 1) {
-				// set the file version
-				new FileOutputStream(file).write(2);
-				version = 2;
-
-				// set sign count = 0
-				new FileOutputStream(file, true).write(0);
-				in.reset();
+				fstream.close();
+				in.close();
+				if(file.renameTo(new File(Constants.levelFolder + "/" + name + "."+version)))
+				{
+					file=new File(Constants.levelFolder + "/" + name + "."+version);
+					fstream = new FileInputStream(file);
+					in = new DataInputStream(fstream);
+					
+					File tempFile=new File(Constants.levelFolder + "/" + name + ".lvl");
+					version = 3;
+					DataOutputStream out=new DataOutputStream(new FileOutputStream(tempFile));
+					// set the file version
+					out.writeByte(version);
+					int i=in.available()-1;
+					in.skipBytes(1);
+					while(i>0)
+					{
+						// Copy data
+						out.write(in.read());
+						i--;
+					}
+					// set sign count = 0
+					out.writeInt(0);
+					in.close();
+					fstream.close();
+					file.delete();
+					file = tempFile;
+					
+				}
+				fstream = new FileInputStream(file);
+				in = new DataInputStream(fstream);
+				version = in.readByte();
 			}
 			if(version == 2 )
 			{
-				// set the file version
-				new FileOutputStream(file).write(3);
-				version = 3;
-
-				// set package count = 0
-				new FileOutputStream(file, true).write(0);
-				in.reset();
+				fstream.close();
+				in.close();
+				if(file.renameTo(new File(Constants.levelFolder + "/" + name + "."+version)))
+				{
+					file=new File(Constants.levelFolder + "/" + name + "."+version);
+					fstream = new FileInputStream(file);
+					in = new DataInputStream(fstream);
+					
+					File tempFile=new File(Constants.levelFolder + "/" + name + ".lvl");
+					version = 3;
+					DataOutputStream out=new DataOutputStream(new FileOutputStream(tempFile));
+					// set the file version
+					out.writeByte(version);
+					int i=in.available()-1;
+					in.skipBytes(1);
+					while(i>0)
+					{
+						// Copy data
+						out.write(in.read());
+						i--;
+					}
+					// set sign count = 0
+					out.writeInt(0);
+					in.close();
+					fstream.close();
+					file.delete();
+					file = tempFile;
+				}
+				fstream = new FileInputStream(file);
+				in = new DataInputStream(fstream);
+				version = in.readByte();
 			}
 			if (version != Constants.LevelFileVersion) {
 				fstream.close();
+				in.close();
 				plugin.LogSevere(plugin.getLocale("Severe.WorldInvalidFileVersion"));
 				return null;
 			}
 			if(in.available()<2)
 			{
 				fstream.close();
+				in.close();
 				plugin.LogSevere("Something wrong happened ... Level is empty");
 				return null;
 			}
 			World world = plugin.getServer().getWorld(in.readUTF());
 			if (world == null) {
 				fstream.close();
+				in.close();
 				plugin.LogSevere(plugin.getLocale("Severe.WorldDoesntExist"));
 				return null;
 			}

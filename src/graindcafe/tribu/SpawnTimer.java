@@ -48,16 +48,16 @@ public class SpawnTimer implements Runnable {
 
 	}
 
-	public void Start() {
-		taskID = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, this, Constants.ZombieSpawnDelay, Constants.ZombieSpawnDelay);
+	public void Start(int timeToSpawn) {
+		taskID = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, this, 0, timeToSpawn);
 	}
 
-	public void StartWave(int max, int health) {
+	public void StartWave(int max, int health,int timeToSpawn) {
 		if (plugin.isRunning()) {
 			plugin.getSpawner().setMaxSpawn(max);
 			plugin.getSpawner().resetTotal();
 			plugin.getSpawner().setHealth(health);
-			Start();
+			Start(timeToSpawn);
 		}
 	}/*
 	 * public void StartWave(int total, int max, int health) { if
