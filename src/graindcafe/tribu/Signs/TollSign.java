@@ -1,4 +1,4 @@
-package graindcafe.tribu.signs;
+package graindcafe.tribu.Signs;
 
 import java.util.LinkedList;
 

@@ -1,11 +1,11 @@
-package graindcafe.tribu;
+package graindcafe.tribu.Configuration;
 
 import java.io.File;
 
 import org.bukkit.ChatColor;
 
 public class Constants {
-	public static final byte ConfigFileVersion = 1;
+	public static final byte ConfigFileVersion = 2;
 	public static final byte LanguageFileVersion = 1;
 	public static String dataFolder="plugins"+File.separator+"Tribu"+File.separator;
 	public static String languagesFolder = dataFolder+"languages"+File.separator;

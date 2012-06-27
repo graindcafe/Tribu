@@ -1,7 +1,8 @@
-package graindcafe.tribu.listeners;
+package graindcafe.tribu.Listeners;
 
 import graindcafe.tribu.Tribu;
-import graindcafe.tribu.signs.TribuSign;
+import graindcafe.tribu.Signs.TribuSign;
+
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
 import org.bukkit.event.block.BlockBreakEvent;

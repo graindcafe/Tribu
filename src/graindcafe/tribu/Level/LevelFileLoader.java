@@ -1,6 +1,9 @@
-package graindcafe.tribu;
+package graindcafe.tribu.Level;
 
-import graindcafe.tribu.signs.TribuSign;
+import graindcafe.tribu.Package;
+import graindcafe.tribu.Tribu;
+import graindcafe.tribu.Configuration.Constants;
+import graindcafe.tribu.Signs.TribuSign;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

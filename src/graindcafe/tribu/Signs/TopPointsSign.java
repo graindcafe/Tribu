@@ -1,4 +1,4 @@
-package graindcafe.tribu.signs;
+package graindcafe.tribu.Signs;
 
 import graindcafe.tribu.PlayerStats;
 import graindcafe.tribu.Tribu;
@@ -9,13 +9,13 @@ import java.util.LinkedList;
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
 
-public class TopNamesSign extends HighscoreSign {
+public class TopPointsSign extends HighscoreSign {
 
-	public TopNamesSign(Tribu plugin) {
+	public TopPointsSign(Tribu plugin) {
 		super(plugin);
 	}
 
-	public TopNamesSign(Tribu plugin, Location pos) {
+	public TopPointsSign(Tribu plugin, Location pos) {
 		super(plugin, pos);
 
 	}
@@ -28,7 +28,7 @@ public class TopNamesSign extends HighscoreSign {
 		Iterator<PlayerStats> i = stats.iterator();
 		int count = 3;
 		for (byte j = 1; j <= count; j++)
-			lines[j] = String.valueOf(i.next().getPlayer().getDisplayName());
+			lines[j] = String.valueOf(i.next().getPoints());
 		return lines;
 	}
 
@@ -36,11 +36,10 @@ public class TopNamesSign extends HighscoreSign {
 	public void raiseEvent() {
 		Sign s = ((Sign) pos.getBlock().getState());
 		String[] lines = getSpecificLines();
-		// s.setLine(0, plugin.getLocale("Sign.HighscoreNames"));
+		// s.setLine(0, plugin.getLocale("Sign.HighscorePoints"));
 		s.setLine(1, lines[1]);
 		s.setLine(2, lines[2]);
 		s.setLine(3, lines[3]);
 		s.update();
 	}
-
 }

@@ -1,4 +1,4 @@
-package graindcafe.tribu.executors;
+package graindcafe.tribu.Executors;
 
 import graindcafe.tribu.Tribu;
 

@@ -1,4 +1,6 @@
-package graindcafe.tribu;
+package graindcafe.tribu.BlockTracer;
+
+import graindcafe.tribu.NotFoundException;
 
 import java.util.LinkedList;
 

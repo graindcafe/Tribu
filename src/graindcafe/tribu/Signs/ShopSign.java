@@ -1,9 +1,9 @@
-package graindcafe.tribu.signs;
+package graindcafe.tribu.Signs;
 
 import graindcafe.tribu.PlayerStats;
 import graindcafe.tribu.Tribu;
 import graindcafe.tribu.Package;
-import graindcafe.tribu.TribuLevel;
+import graindcafe.tribu.Level.TribuLevel;
 
 import java.util.HashMap;
 import java.util.LinkedList;

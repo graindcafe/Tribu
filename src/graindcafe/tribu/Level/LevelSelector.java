@@ -1,4 +1,6 @@
-package graindcafe.tribu;
+package graindcafe.tribu.Level;
+
+import graindcafe.tribu.Tribu;
 
 import java.util.Collection;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package graindcafe.tribu.listeners;
+package graindcafe.tribu.Listeners;
 
 import graindcafe.tribu.Tribu;
 

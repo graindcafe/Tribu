@@ -1,5 +1,6 @@
 package graindcafe.tribu;
 
+import graindcafe.tribu.Configuration.Constants;
 import graindcafe.tribu.TribuZombie.CraftTribuZombie;
 
 import java.util.LinkedList;

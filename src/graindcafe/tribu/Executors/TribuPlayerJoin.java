@@ -1,6 +1,6 @@
-package graindcafe.tribu.executors;
+package graindcafe.tribu.Executors;
 
-import graindcafe.tribu.listeners.TribuPlayerListener;
+import graindcafe.tribu.Listeners.TribuPlayerListener;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;

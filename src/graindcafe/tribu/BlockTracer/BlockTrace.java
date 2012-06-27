@@ -1,4 +1,6 @@
-package graindcafe.tribu;
+package graindcafe.tribu.BlockTracer;
+
+import graindcafe.tribu.NotFoundException;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -27,8 +29,8 @@ public class BlockTrace {
 	private LinkedList<Location> movingBlock;
 	
 	
-	public BlockTrace(Logger log) {
-		this.log = log;
+	public BlockTrace() {
+		this.log = Logger.getLogger("Minecraft");
 		this.ignitedBlocks=new LinkedList<BlockTraceNode>();
 		this.interactedBlocks=new LinkedList<BlockTraceNode>();
 		this.possibleIgnitedBlocks=new LinkedList<Location>();

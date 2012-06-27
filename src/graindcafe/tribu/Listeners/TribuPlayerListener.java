@@ -1,7 +1,7 @@
-package graindcafe.tribu.listeners;
+package graindcafe.tribu.Listeners;
 
 import graindcafe.tribu.Tribu;
-import graindcafe.tribu.signs.TribuSign;
+import graindcafe.tribu.Signs.TribuSign;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -68,6 +68,7 @@ public class TribuPlayerListener implements Listener {
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		if (plugin.getLevel() != null) {
 			plugin.setDead(event.getPlayer());
+			plugin.resetedSpawnAdd(event.getPlayer(),event.getRespawnLocation());
 			
 			event.setRespawnLocation(plugin.getLevel().getDeathSpawn());
 			plugin.restoreTempInv(event.getPlayer());
