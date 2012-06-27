@@ -1,14 +1,20 @@
 package graindcafe.tribu;
 
+import graindcafe.tribu.BlockTracer.BlockTrace;
+import graindcafe.tribu.Configuration.Constants;
+import graindcafe.tribu.Configuration.TribuConfig;
+import graindcafe.tribu.Executors.CmdDspawn;
+import graindcafe.tribu.Executors.CmdIspawn;
+import graindcafe.tribu.Executors.CmdTribu;
+import graindcafe.tribu.Executors.CmdZspawn;
+import graindcafe.tribu.Level.LevelFileLoader;
+import graindcafe.tribu.Level.LevelSelector;
+import graindcafe.tribu.Level.TribuLevel;
+import graindcafe.tribu.Listeners.TribuBlockListener;
+import graindcafe.tribu.Listeners.TribuEntityListener;
+import graindcafe.tribu.Listeners.TribuPlayerListener;
+import graindcafe.tribu.Listeners.TribuWorldListener;
 import graindcafe.tribu.TribuZombie.EntityTribuZombie;
-import graindcafe.tribu.executors.CmdDspawn;
-import graindcafe.tribu.executors.CmdIspawn;
-import graindcafe.tribu.executors.CmdTribu;
-import graindcafe.tribu.executors.CmdZspawn;
-import graindcafe.tribu.listeners.TribuBlockListener;
-import graindcafe.tribu.listeners.TribuEntityListener;
-import graindcafe.tribu.listeners.TribuPlayerListener;
-import graindcafe.tribu.listeners.TribuWorldListener;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -69,8 +75,7 @@ public class Tribu extends JavaPlugin {
 	private boolean waitingForPlayers = false;
 	private WaveStarter waveStarter;
 	private TribuWorldListener worldListener;
-
-	private LinkedList<Package> packages;
+	
 	
 	private TribuConfig config;
 
@@ -82,7 +87,6 @@ public class Tribu extends JavaPlugin {
 				if (player.getInventory() != null)
 					player.getInventory().clear();
 			}
-			spawnPoint.put(player, player.getBedSpawnLocation());
 			PlayerStats stats = new PlayerStats(player);
 			players.put(player, stats);
 			sortedStats.add(stats);
@@ -96,8 +100,8 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public void addDefaultPackages() {
-		if (level != null)
-			for (Package pck : this.getDefaultPackages()) {
+		if (level != null && this.config.DefaultPackages != null)
+			for (Package pck : this.config.DefaultPackages) {
 				level.addPackage(pck);
 			}
 	}
@@ -110,10 +114,6 @@ public class Tribu extends JavaPlugin {
 			if (getPlayersCount() != 0)
 				getLevelSelector().startVote(Constants.VoteDelay);
 		}
-	}
-
-	public LinkedList<Package> getDefaultPackages() {
-		return getPackages();
 	}
 
 	public int getAliveCount() {
@@ -207,10 +207,7 @@ public class Tribu extends JavaPlugin {
 		return waveStarter;
 	}
 
-	
-
 	private void initPluginMode() {
-		
 		if (config.PluginModeServerExclusive) {
 			for (Player p : this.getServer().getOnlinePlayers())
 				this.addPlayer(p);
@@ -223,8 +220,8 @@ public class Tribu extends JavaPlugin {
 
 	public void reloadConf() {
 		this.reloadConfig();
-		this.initPluginMode();
 		this.loadCustomConf();
+		this.initPluginMode();
 	}
 
 	public void loadCustomConf() {
@@ -253,7 +250,14 @@ public class Tribu extends JavaPlugin {
 				break;
 			}
 		}
-		this.config=new TribuConfig(levelFile,new TribuConfig(worldFile));
+		if(levelFile!=null)
+			if(worldFile != null)
+				this.config=new TribuConfig(levelFile,new TribuConfig(worldFile));
+			else
+				this.config=new TribuConfig(levelFile);
+		else
+			this.config=new TribuConfig();
+
 		/*
 		try {
 			config.set("DefaultPackages", null);
@@ -491,7 +495,7 @@ public class Tribu extends JavaPlugin {
 		isRunning = false;
 		aliveCount = 0;
 		level = null;
-		blockTrace = new BlockTrace(log);
+		blockTrace = new BlockTrace();
 		tempInventories = new HashMap<Player, TribuInventory>();
 		inventories = new HashMap<Player, TribuInventory>();
 		players = new HashMap<Player, PlayerStats>();
@@ -499,7 +503,7 @@ public class Tribu extends JavaPlugin {
 		sortedStats = new LinkedList<PlayerStats>();
 		levelLoader = new LevelFileLoader(this);
 		levelSelector = new LevelSelector(this);
-
+		
 		spawner = new TribuSpawner(this);
 		spawnTimer = new SpawnTimer(this);
 		waveStarter = new WaveStarter(this);
@@ -525,7 +529,10 @@ public class Tribu extends JavaPlugin {
 
 		LogInfo(language.get("Info.Enable"));
 	}
-
+	public void resetedSpawnAdd(Player p,Location point)
+	{
+		spawnPoint.put(p, point);
+	}
 	public void removePlayer(Player player) {
 		if (player != null && players.containsKey(player)) {
 			if (isAlive(player)) {
@@ -533,7 +540,10 @@ public class Tribu extends JavaPlugin {
 			}
 			sortedStats.remove(players.get(player));
 			players.remove(player);
-			player.setBedSpawnLocation(spawnPoint.get(player));
+			if(player.isOnline() && spawnPoint.containsKey(player))
+			{
+				player.setBedSpawnLocation(spawnPoint.remove(player));
+			}
 			// check alive AFTER player remove
 			checkAliveCount();
 			if (!player.isDead())
@@ -555,6 +565,10 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public void revivePlayer(Player player) {
+		if(spawnPoint.containsKey(player))
+		{
+			player.setBedSpawnLocation(spawnPoint.remove(player));
+		}
 		players.get(player).revive();
 		if (config.WaveStartHealPlayers)
 			player.setHealth(20);
@@ -669,13 +683,4 @@ public class Tribu extends JavaPlugin {
 		}
 
 	}
-
-	public LinkedList<Package> getPackages() {
-		return packages;
-	}
-
-	/*public void setPackages(LinkedList<Package> packages) {
-		this.packages = packages;
-	}*/
-
 }
