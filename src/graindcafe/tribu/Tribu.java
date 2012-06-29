@@ -540,7 +540,8 @@ public class Tribu extends JavaPlugin {
 
 		this.initPluginMode();
 		this.loadCustomConf();
-		
+		config.PluginModeWorldExclusiveWorldName = level.getInitialSpawn().getWorld().getName(); //log world
+
 		getServer().getPluginManager().registerEvents(playerListener, this);
 		getServer().getPluginManager().registerEvents(entityListener, this);
 		getServer().getPluginManager().registerEvents(blockListener, this);
