@@ -423,6 +423,7 @@ public class Tribu extends JavaPlugin {
 				
 				put("Message.PlayerDied",ChatColor.RED + "You are dead.");
 				put("Message.PlayerRevive",ChatColor.GREEN + "You have been revived.");
+				put("Message.PlayerWrongWorld","You are in the incorrect world. Please join world " + ChatColor.LIGHT_PURPLE + config.PluginModeWorldExclusiveWorldName + ChatColor.RED + " to join the game.");
 			}
 		});
 		language = Language.init(log, config.PluginModeLanguage);
