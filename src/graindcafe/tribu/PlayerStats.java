@@ -64,7 +64,7 @@ public class PlayerStats implements Comparable<PlayerStats> {
 	}
 
 	public void msgStats() {
-		Tribu.messagePlayer(player, String.format(Constants.MessageMoneyPoints, String.valueOf(money), String.valueOf(points)),ChatColor.YELLOW);
+		Tribu.messagePlayer(player, String.format(Constants.MessageMoneyPoints, String.valueOf(money), String.valueOf(points)));
 	}
 
 	public void resetMoney() {
