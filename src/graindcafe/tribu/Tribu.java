@@ -422,6 +422,7 @@ public class Tribu extends JavaPlugin {
 				put("Severe.PlayerDidntGetInvBack", ChatColor.RED + "didn't get his inventory back because he was returned null. (Maybe he was not in server?)");
 				
 				put("Message.PlayerDied",ChatColor.RED + "You are dead.");
+				put("Message.PlayerRevive",ChatColor.GREEN + "You have been revived.");
 			}
 		});
 		language = Language.init(log, config.PluginModeLanguage);
