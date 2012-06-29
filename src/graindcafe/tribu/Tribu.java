@@ -481,6 +481,10 @@ public class Tribu extends JavaPlugin {
 				log.severe(player + language.get("Severe.PlayerDidntGetInvBack"));
 			}
 		} 
+		if(this.isRunning)
+		{
+			blockTrace.reverse();
+		}
 		players.clear();
 		sortedStats.clear();
 		stopRunning();
