@@ -85,7 +85,7 @@ public class TollSign extends TribuSign {
 				PlayerStats stats = plugin.getStats(p);
 				if (!getAllowedPlayer().contains(p) && !stats.subtractmoney(cost)) {
 					
-					p.sendMessage(plugin.getLocale("Message.YouDontHaveEnoughMoney"));
+					Tribu.messagePlayer(p,plugin.getLocale("Message.YouDontHaveEnoughMoney"));
 					e.setCancelled(true);
 					if(linkedButton instanceof Door)
 						if(linkedButton.getState().getType() != Material.IRON_DOOR)
@@ -93,7 +93,7 @@ public class TollSign extends TribuSign {
 				} else
 				{
 					getAllowedPlayer().add(p);
-					p.sendMessage(String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));
+					Tribu.messagePlayer(p,String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));
 				}
 			}
 		}
