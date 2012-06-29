@@ -77,7 +77,7 @@ public class WaveStarter implements Runnable {
 				plugin.revivePlayer(pp);
 				plugin.deadPeople.remove(pp);
 				pp.teleport(plugin.getLevel().getInitialSpawn());
-				Tribu.messagePlayer(pp,"You have been revived.",ChatColor.GREEN);
+				Tribu.messagePlayer(pp,plugin.getLocale("Message.PlayerRevive"));
 			}
 			
 			plugin.getSpawnTimer().StartWave(max, health,timeToSpawn);
