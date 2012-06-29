@@ -122,13 +122,38 @@ public class TribuConfig extends TribuDefaultConfiguration{
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		PluginModeServerExclusive = config.getBoolean("PluginMode.ServerExclusive", false);
-		
+		//PluginModeServerExclusive = config.getBoolean("PluginMode.ServerExclusive", false);
+		checkServerWorldExclusive();
 
 	}
+	private void checkServerWorldExclusive() 
+	{
+		//check servermode and worldmode 
+		if(PluginModeServerExclusive && PluginModeWorldExclusive)
+		{
+			LogSevere("Server Exclusive and World Exclusive can't be both enabled.");
+			LogSevere("Server Exclusive Mode is enabled. World Exclusive Mode DISABLED");
+			PluginModeWorldExclusive = false;
+		}
+		if(PluginModeWorldExclusive)
+		{
+			if(PluginModeWorldExclusiveWorldName == "")
+			{
+				LogSevere("World Exclusive Mode doesnt contain the set world. DISABLING it.");
+				PluginModeWorldExclusive = false;
+			}
+		}
+		
+	}
+
 	protected void info(String info)
 	{
-		//Logger.getLogger("Minecraft").info(info);
+		Logger.getLogger("Minecraft").info("[Tribu] " + info);
+	}
+	
+	protected void LogSevere(String string)
+	{
+		Logger.getLogger("Minecraft").severe("[Tribu] " + string);
 	}
 	public void load(String key,FileConfiguration config)
 	{
@@ -137,7 +162,7 @@ public class TribuConfig extends TribuDefaultConfiguration{
 		info(key);
 		if(nodeCount>=2)
 		{
-			info(keyNode[0] + " - "+keyNode[1] );
+		//	info(keyNode[0] + " - "+keyNode[1] );
 			if(keyNode[0].equalsIgnoreCase("PluginMode"))
 			{
 				//if(nodeCount>2)
@@ -149,6 +174,10 @@ public class TribuConfig extends TribuDefaultConfiguration{
 					else if(keyNode[1].equalsIgnoreCase("WorldExclusive"))
 					{
 						PluginModeWorldExclusive= config.getBoolean(key);
+					}
+					else if(keyNode[1].equalsIgnoreCase("WorldExclusiveWorldName"))
+					{
+						PluginModeWorldExclusiveWorldName = config.getString(key);
 					}
 					else if(keyNode[1].equalsIgnoreCase("Language"))
 					{

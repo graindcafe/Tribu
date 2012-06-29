@@ -19,6 +19,8 @@ public class TribuDefaultConfiguration {
 	public boolean PluginModeServerExclusive=false;
 	//Not used yet
 	public boolean PluginModeWorldExclusive=false;
+	public String PluginModeWorldExclusiveWorldName="world";
+	
 	public String PluginModeLanguage="english";
 	public boolean PluginModeAutoStart=false;
 	public String PluginModeDefaultLevel="";
@@ -70,6 +72,8 @@ public class TribuDefaultConfiguration {
 		
 
 			{
+				put("PluginMode.WorldExclusive", PluginModeWorldExclusive);
+				put("PluginMode.WorldExclusiveWorldName", PluginModeWorldExclusiveWorldName);
 				put("PluginMode.ServerExclusive", PluginModeServerExclusive);
 				put("PluginMode.Language", PluginModeLanguage);
 				put("PluginMode.AutoStart", PluginModeAutoStart);

@@ -8,6 +8,7 @@ import graindcafe.tribu.Level.TribuLevel;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
@@ -179,7 +180,7 @@ public class ShopSign extends TribuSign {
 
 					if (failed != null && failed.size() > 0) {
 						// the inventory may be full
-						Tribu.messagePlayer(p, (plugin.getLocale("Message.UnableToGiveYouThatItem")));
+						Tribu.messagePlayer(p, (plugin.getLocale("Message.UnableToGiveYouThatItem")),ChatColor.RED);
 						stats.addMoney(cost);
 						for (ItemStack i : givenItems)
 							p.getInventory().remove(i);
@@ -189,14 +190,14 @@ public class ShopSign extends TribuSign {
 				}
 				p.updateInventory();
 				// Alright
-				Tribu.messagePlayer(p,String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));
+				Tribu.messagePlayer(p,String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())),ChatColor.GREEN);
 			} else {
-				Tribu.messagePlayer(p,plugin.getLocale("Message.UnknownItem"));
+				Tribu.messagePlayer(p,plugin.getLocale("Message.UnknownItem"),ChatColor.RED);
 				stats.addMoney(cost);
 			}
 
 		} else {
-			Tribu.messagePlayer(p,plugin.getLocale("Message.YouDontHaveEnoughMoney"));
+			Tribu.messagePlayer(p,plugin.getLocale("Message.YouDontHaveEnoughMoney"),ChatColor.RED);
 		}
 
 	}

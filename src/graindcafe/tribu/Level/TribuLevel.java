@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockRedstoneEvent;
@@ -192,7 +193,7 @@ public class TribuLevel {
 			nameList += separator + name;
 			separator = ", ";
 		}
-		Tribu.messagePlayer(player,String.format(Constants.MessageZombieSpawnList, nameList));
+		Tribu.messagePlayer(player,String.format(Constants.MessageZombieSpawnList, nameList),ChatColor.YELLOW);
 	}
 
 	/**

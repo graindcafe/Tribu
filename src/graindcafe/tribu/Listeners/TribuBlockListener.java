@@ -28,6 +28,7 @@ public class TribuBlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockBreak(BlockBreakEvent event) {
+		if(!plugin.isCorrectWorld(event.getBlock().getWorld())) return; //world check
 		if (TribuSign.isIt(plugin, event.getBlock())) {
 			if (event.getPlayer().hasPermission("tribu.signs.break")) {
 				plugin.getLevel().removeSign(event.getBlock().getLocation());
@@ -43,6 +44,7 @@ public class TribuBlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockPlace(BlockPlaceEvent event) {
+		if(!plugin.isCorrectWorld(event.getBlock().getWorld())) return; //world check
 		if (plugin.isRunning() && plugin.isPlaying(event.getPlayer()))
 			if (event.getBlock().getType().equals(Material.FIRE))
 				plugin.getBlockTrace().pushIgnitedBlock(event.getBlockAgainst());
@@ -53,6 +55,7 @@ public class TribuBlockListener implements Listener {
 
 	@EventHandler
 	public void onBlockRedstoneChange(BlockRedstoneEvent event) {
+		if(!plugin.isCorrectWorld(event.getBlock().getWorld())) return; //world check
 		if (plugin.isRunning()) {
 			//plugin.getBlockTrace().pushRedstoneChanged(event.getBlock());
 			if (plugin.getLevel() != null)
@@ -62,6 +65,7 @@ public class TribuBlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockIgnite(BlockIgniteEvent event) {
+		if(!plugin.isCorrectWorld(event.getBlock().getWorld())) return; // world check
 		if (plugin.getBlockTrace().isFireSpreadingOut(event.getBlock().getLocation()) || plugin.isInsideLevel(event.getBlock().getLocation()))
 			plugin.getBlockTrace().pushIgnitedBlock(event.getBlock());
 		
@@ -69,12 +73,14 @@ public class TribuBlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockBurn(BlockBurnEvent event) {
+		if(!plugin.isCorrectWorld(event.getBlock().getWorld())) return; //world check
 		if (plugin.isRunning())
 			plugin.getBlockTrace().pushBurntBlock(event.getBlock());
 	}
 
 	@EventHandler
 	public void onSignChange(SignChangeEvent event) {
+		if(!plugin.isCorrectWorld(event.getBlock().getWorld())) return; //world check
 		if (TribuSign.isIt(plugin, event.getLines())) {
 			if (event.getPlayer().hasPermission("tribu.signs.place")) {
 				TribuSign sign = TribuSign.getObject(plugin, event.getBlock().getLocation(), event.getLines());
@@ -100,6 +106,7 @@ public class TribuBlockListener implements Listener {
 	@EventHandler
 	public void onBlockFade(BlockFadeEvent event)
 	{
+		if(!plugin.isCorrectWorld(event.getBlock().getWorld())) return; //world check
 		if(plugin.isInsideLevel(event.getBlock().getLocation()))
 		{
 			plugin.getBlockTrace().push(event.getBlock(),true);
@@ -108,6 +115,7 @@ public class TribuBlockListener implements Listener {
 	@EventHandler
 	public void onBlockFromTo(BlockFromToEvent event)
 	{
+		if(!plugin.isCorrectWorld(event.getBlock().getWorld())) return; //world check
 		if(plugin.getBlockTrace().isWaterSpreadingOut(event.getToBlock().getLocation()) || plugin.isInsideLevel(event.getBlock().getLocation()))
 		{
 			plugin.getBlockTrace().pushMovingBlock(event.getBlock());

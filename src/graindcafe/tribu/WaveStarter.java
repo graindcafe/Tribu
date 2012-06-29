@@ -2,6 +2,7 @@ package graindcafe.tribu;
 
 import java.util.List;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class WaveStarter implements Runnable {
@@ -71,6 +72,13 @@ public class WaveStarter implements Runnable {
 			scheduled = false;
 			plugin.revivePlayers(false);
 			plugin.getLevel().onWaveStart();
+			for(Player pp:plugin.deadPeople.keySet())
+			{
+				plugin.revivePlayer(pp);
+				plugin.deadPeople.remove(pp);
+				pp.teleport(plugin.getLevel().getInitialSpawn());
+				Tribu.messagePlayer(pp,"You have been revived.",ChatColor.GREEN);
+			}
 			
 			plugin.getSpawnTimer().StartWave(max, health,timeToSpawn);
 			plugin.messagePlayers(

@@ -31,6 +31,7 @@ public class TribuEntityListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onCreatureSpawn(CreatureSpawnEvent event) {
+		if(!plugin.isCorrectWorld(event.getEntity().getWorld())) return; //world check
 		if (plugin.isInsideLevel(event.getLocation()) && !plugin.getSpawner().justSpawned()) {
 			event.setCancelled(true);
 		}
@@ -42,26 +43,30 @@ public class TribuEntityListener implements Listener {
 		if (dam.isCancelled()) {
 			return;
 		}
+		if(!plugin.isCorrectWorld(dam.getEntity().getWorld())) return; //world check
 		if (dam.getEntity() instanceof Player) {
 			Player p = (Player) dam.getEntity();
-			if (plugin.isPlaying(p)) {
-				if (p.getHealth() - dam.getDamage() <= 0) {
-					dam.setCancelled(true);
-					p.teleport(plugin.getLevel().getDeathSpawn());
-					p.setHealth(1);
-					if (!plugin.config().PlayersDontLooseItem)
-					{
-						for(ItemStack is : p.getInventory())
+			if(plugin.isRunning())
+			{
+				if (plugin.isPlaying(p)) {
+					if (p.getHealth() - dam.getDamage() <= 0) {
+						dam.setCancelled(true);
+						p.teleport(plugin.getLevel().getDeathSpawn());
+						p.setHealth(1);
+						if (!plugin.config().PlayersDontLooseItem)
 						{
-							p.getLocation().getWorld().dropItemNaturally(p.getLocation(), is);
+							for(ItemStack is : p.getInventory())
+							{
+								p.getLocation().getWorld().dropItemNaturally(p.getLocation(), is);
+							}
+							p.getInventory().clear();
 						}
-						p.getInventory().clear();
+						
+						plugin.setDead(p);
 					}
-					
-					plugin.setDead(p);
-				}
-			} else
-				plugin.restoreInventory(p);
+				} else
+					plugin.restoreInventory(p);
+			}
 		}
 		if (dam.getEntity() instanceof CraftTribuZombie) {
 			if (dam.getCause().equals(DamageCause.FIRE_TICK) && plugin.config().ZombiesFireResistant) {
@@ -93,7 +98,7 @@ public class TribuEntityListener implements Listener {
 
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event) {
-
+		if(!plugin.isCorrectWorld(event.getEntity().getWorld())) return; //world check
 		if (event.getEntity() instanceof Player) {
 			Player player = (Player) event.getEntity();
 			plugin.setDead(player);

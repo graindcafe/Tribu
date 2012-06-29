@@ -7,6 +7,8 @@ import graindcafe.tribu.Executors.CmdDspawn;
 import graindcafe.tribu.Executors.CmdIspawn;
 import graindcafe.tribu.Executors.CmdTribu;
 import graindcafe.tribu.Executors.CmdZspawn;
+import graindcafe.tribu.Inventory.TribuInventory;
+import graindcafe.tribu.Inventory.TribuTempInventory;
 import graindcafe.tribu.Level.LevelFileLoader;
 import graindcafe.tribu.Level.LevelSelector;
 import graindcafe.tribu.Level.TribuLevel;
@@ -14,6 +16,7 @@ import graindcafe.tribu.Listeners.TribuBlockListener;
 import graindcafe.tribu.Listeners.TribuEntityListener;
 import graindcafe.tribu.Listeners.TribuPlayerListener;
 import graindcafe.tribu.Listeners.TribuWorldListener;
+import graindcafe.tribu.Signs.TollSign;
 import graindcafe.tribu.TribuZombie.EntityTribuZombie;
 
 import java.io.File;
@@ -21,7 +24,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -31,8 +34,10 @@ import me.graindcafe.gls.Language;
 import net.minecraft.server.EntityTypes;
 import net.minecraft.server.EntityZombie;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -54,7 +59,8 @@ public class Tribu extends JavaPlugin {
 	private BlockTrace blockTrace;
 	
 	private TribuEntityListener entityListener;
-	private HashMap<Player, TribuInventory> inventories;
+	public TribuInventory inventorySave;
+	
 	private boolean isRunning;
 	private Language language;
 
@@ -70,7 +76,7 @@ public class Tribu extends JavaPlugin {
 	private LinkedList<PlayerStats> sortedStats;
 	private TribuSpawner spawner;
 	private SpawnTimer spawnTimer;
-	private HashMap<Player, TribuInventory> tempInventories;
+	private HashMap<Player, TribuTempInventory> tempInventories;
 
 	private boolean waitingForPlayers = false;
 	private WaveStarter waveStarter;
@@ -83,22 +89,33 @@ public class Tribu extends JavaPlugin {
 		if (player != null && !players.containsKey(player)) {
 
 			if (config.PlayersStoreInventory) {
-				inventories.put(player, new TribuInventory(player, true));
-				if (player.getInventory() != null)
-					player.getInventory().clear();
+				saveSetTribuInventory(player);
 			}
 			PlayerStats stats = new PlayerStats(player);
 			players.put(player, stats);
 			sortedStats.add(stats);
-			if (waitingForPlayers)
+			if (isWaitingForPlayers())
+			{
 				startRunning();
-			else if (getLevel() != null && isRunning) {
+				setWaitingForPlayers(false);
+			}
+			else if (getLevel() != null && isRunning) 
+			{
 				player.teleport(level.getDeathSpawn());
-				player.sendMessage(language.get("Message.GameInProgress"));
+				messagePlayer(player,language.get("Message.GameInProgress"),ChatColor.RED);
+				messagePlayer(player, "You are dead.", ChatColor.RED);
+				deadPeople.put(player,null);
 			}
 		}
 	}
 
+	public void saveSetTribuInventory(Player player)
+	{
+		inventorySave.addInventory(player);
+		player.getInventory().clear();
+		player.getInventory().setArmorContents(null);
+	}
+	
 	public void addDefaultPackages() {
 		if (level != null && this.config.DefaultPackages != null)
 			for (Package pck : this.config.DefaultPackages) {
@@ -107,7 +124,10 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public void checkAliveCount() {
-		if (aliveCount == 0 && isRunning) {
+		//	log.info("checking alive count " + aliveCount);
+		int alive = players.size() - deadPeople.size();
+		if (alive == 0 && isRunning) { //if (aliveCount == 0 && isRunning) { //if deadPeople isnt used.
+			deadPeople.clear();
 			stopRunning();
 			getServer().broadcastMessage(language.get("Message.ZombieHavePrevailed"));
 			getServer().broadcastMessage(String.format(language.get("Message.YouHaveReachedWave"), String.valueOf(getWaveStarter().getWaveNumber())));
@@ -156,23 +176,7 @@ public class Tribu extends JavaPlugin {
 	public Player getRandomPlayer() {
 		return sortedStats.get(rnd.nextInt(sortedStats.size())).getPlayer();
 	}
-	public void messagePlayers(String msg)
-	{
-		if(msg.isEmpty())
-			return;
-		for(Player p : players.keySet())
-		{
-			p.sendMessage(msg);
-		}
-	}
-	public static void messagePlayer(CommandSender sender, String message) {
-		if(message.isEmpty())
-			return;
-		if (sender == null)
-			Logger.getLogger("Minecraft").info(ChatColor.stripColor(message));
-		else
-			sender.sendMessage(message);
-	}
+	
 	public LinkedList<PlayerStats> getSortedStats() {
 
 		Collections.sort(this.sortedStats);
@@ -194,7 +198,7 @@ public class Tribu extends JavaPlugin {
 
 	public boolean isInsideLevel(Location loc) {
 		if (isRunning && level != null)
-			return config.PluginModeServerExclusive || (loc.distance(level.getInitialSpawn()) < config.LevelClearZone);
+			return config.PluginModeServerExclusive  || config.PluginModeWorldExclusive || (loc.distance(level.getInitialSpawn()) < config.LevelClearZone);
 		else
 			return false;
 	}
@@ -211,6 +215,13 @@ public class Tribu extends JavaPlugin {
 		if (config.PluginModeServerExclusive) {
 			for (Player p : this.getServer().getOnlinePlayers())
 				this.addPlayer(p);
+		}
+		if(config.PluginModeWorldExclusive)
+		{
+			for(Player d:Bukkit.getWorld(config.PluginModeWorldExclusiveWorldName).getPlayers())
+			{
+				this.addPlayer(d);
+			}
 		}
 		if (config.PluginModeDefaultLevel != "")
 			setLevel(levelLoader.loadLevel(config.PluginModeDefaultLevel));
@@ -433,19 +444,19 @@ public class Tribu extends JavaPlugin {
 	public void keepTempInv(Player p, ItemStack[] items) {
 		// log.info("Keep " + items.length + " items for " +
 		// p.getDisplayName());
-		tempInventories.put(p, new TribuInventory(p, items));
+		tempInventories.put(p, new TribuTempInventory(p, items));
 	}
 
 	public void LogInfo(String message) {
-		log.info(message);
+		log.info("[Tribu] " + message);
 	}
 
 	public void LogSevere(String message) {
-		log.severe(message);
+		log.severe("[Tribu] " + message);
 	}
 
 	public void LogWarning(String message) {
-		log.warning(message);
+		log.warning("[Tribu] " + message);
 		
 	}
 
@@ -454,15 +465,17 @@ public class Tribu extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		for (Entry<Player, TribuInventory> e : inventories.entrySet()) {
-			if (e.getKey().isOnline() && !e.getKey().isDead())
-				e.getValue().restore();
-			else if (level != null)
-				e.getValue().drop(level.getInitialSpawn());
-			else
-				// We have a BIG problem
-				log.severe(String.format(getLocale("Severe.PlayerHaveNotRetrivedHisItems"), e.getKey().getDisplayName(), e.getValue().toString()));
-		}
+		for(String player:TribuInventory.inventories.keySet()) //this will only get players if the players inventory has been set. (for world Exclusive)
+		{
+			Player theplayer = Bukkit.getPlayer(player);
+			if(theplayer != null)
+			{
+				inventorySave.restoreInventory(theplayer);
+			} else
+			{
+				log.severe("[Tribu] " + player + " didn't get his inventory back because he was returned null. (Maybe he was not in server?)");
+			}
+		} 
 		players.clear();
 		sortedStats.clear();
 		stopRunning();
@@ -496,8 +509,8 @@ public class Tribu extends JavaPlugin {
 		aliveCount = 0;
 		level = null;
 		blockTrace = new BlockTrace();
-		tempInventories = new HashMap<Player, TribuInventory>();
-		inventories = new HashMap<Player, TribuInventory>();
+		tempInventories = new HashMap<Player, TribuTempInventory>();
+		inventorySave = new TribuInventory();
 		players = new HashMap<Player, PlayerStats>();
 		spawnPoint=new HashMap<Player,Location>();
 		sortedStats = new LinkedList<PlayerStats>();
@@ -516,7 +529,7 @@ public class Tribu extends JavaPlugin {
 
 		this.initPluginMode();
 		this.loadCustomConf();
-
+		
 		getServer().getPluginManager().registerEvents(playerListener, this);
 		getServer().getPluginManager().registerEvents(entityListener, this);
 		getServer().getPluginManager().registerEvents(blockListener, this);
@@ -539,6 +552,7 @@ public class Tribu extends JavaPlugin {
 				aliveCount--;
 			}
 			sortedStats.remove(players.get(player));
+			inventorySave.restoreInventory(player);
 			players.remove(player);
 			if(player.isOnline() && spawnPoint.containsKey(player))
 			{
@@ -554,8 +568,7 @@ public class Tribu extends JavaPlugin {
 
 	public void restoreInventory(Player p) {
 		// log.info("Restore items for " + p.getDisplayName());
-		if (inventories.containsKey(p))
-			inventories.remove(p).restore();
+		inventorySave.restoreInventory(p);
 	}
 
 	public void restoreTempInv(Player p) {
@@ -596,6 +609,7 @@ public class Tribu extends JavaPlugin {
 				p.subtractmoney(config.StatsOnPlayerDeathMoney);
 				p.subtractPoints(config.StatsOnPlayerDeathPoints);
 				p.msgStats();
+				messagePlayers(ChatColor.LIGHT_PURPLE + player.getName() + ChatColor.RED + " has died.");
 				/*
 				 * Set<Entry<Player, PlayerStats>> stats = players.entrySet();
 				 * for (Entry<Player, PlayerStats> stat : stats) {
@@ -603,6 +617,7 @@ public class Tribu extends JavaPlugin {
 				 * stat.getValue().resetMoney(); stat.getValue().msgStats(); }
 				 */
 			}
+			deadPeople.put(player,null);
 			players.get(player).kill();
 			if (getLevel() != null && isRunning) {
 				checkAliveCount();
@@ -618,7 +633,7 @@ public class Tribu extends JavaPlugin {
 	public boolean startRunning() {
 		if (!isRunning && getLevel() != null) {
 			if (players.isEmpty()) {
-				waitingForPlayers = true;
+				setWaitingForPlayers(true);
 			} else {
 				// Before (next instruction) it will saves current default
 				// packages to the level, saving theses packages with the level
@@ -634,11 +649,11 @@ public class Tribu extends JavaPlugin {
 					LogWarning(language.get("Warning.NoSpawns"));
 					return false;
 				}
-
+				
 				if (!config.PluginModeAutoStart)
-					waitingForPlayers = false;
+					setWaitingForPlayers(false);
 				isRunning = true;
-				if (config.PluginModeServerExclusive)
+				if (config.PluginModeServerExclusive || config.PluginModeWorldExclusive)
 					for (LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
 						if (!(e instanceof Player) && !(e instanceof Wolf) && !(e instanceof Villager))
 							e.damage(Integer.MAX_VALUE);
@@ -652,6 +667,12 @@ public class Tribu extends JavaPlugin {
 
 				getLevel().initSigns();
 				this.sortedStats.clear();
+				for (Player save : players.keySet()) //makes sure all inventorys have been saved
+				{
+					inventorySave.addInventory(save);
+					save.getInventory().clear();
+					save.getInventory().setArmorContents(null);
+				}
 				for (PlayerStats stat : players.values()) {
 					stat.resetPoints();
 					stat.resetMoney();
@@ -674,13 +695,94 @@ public class Tribu extends JavaPlugin {
 			getSpawner().clearZombies();
 			getLevelSelector().cancelVote();
 			blockTrace.reverse();
-			for (TribuInventory ti : inventories.values())
-				ti.restore();
-			inventories.clear();
-			if (!config.PluginModeServerExclusive) {
+			deadPeople.clear();
+			TollSign.getAllowedPlayer().clear();
+			for(String player:TribuInventory.inventories.keySet()) //this will only get players if the players inventory has been set. (for world Exclusive or server)
+			{
+				Player theplayer = Bukkit.getPlayer(player);
+				if(theplayer != null)
+				{
+					inventorySave.restoreInventory(theplayer);
+				} else
+				{
+					log.severe("[Tribu] " + player + " didn't get his inventory back because player was returned null. (Maybe he was not in server?)");
+				}
+			} 
+			for(Player fd:Bukkit.getServer().getWorld(config.PluginModeWorldExclusiveWorldName).getPlayers()) //teleports all players to spawn when game ends
+			{
+				fd.teleport(level.getInitialSpawn());
+			}
+			if (!config.PluginModeServerExclusive || !config.PluginModeWorldExclusive) {
 				players.clear();
 			}
 		}
 
 	}
+	
+	//to avoid warnings
+	public boolean isWaitingForPlayers() {
+		return waitingForPlayers;
+	}
+	//to avoid warnings
+	public void setWaitingForPlayers(boolean waitingForPlayers) {
+		this.waitingForPlayers = waitingForPlayers;
+	}
+	
+	public boolean isCorrectWorld(World World)
+	{
+		if(config.PluginModeServerExclusive)
+		{
+			return true; //continue (ignore world)
+		} else
+		if(config.PluginModeWorldExclusive)
+		{
+			 String world = World.toString();
+			 String[] ar = world.split("=");
+			 if(!ar[1].replace("}", "").equalsIgnoreCase(config.PluginModeWorldExclusiveWorldName))
+			 {
+				 return false; //your in wrong world
+			 }
+			 return true; //your in correct world
+		} else
+		{
+			LogSevere("We have a big problem in isCorrectWorld()");
+			return true; //continue (ignore world)
+		}
+	}
+	
+	/*
+	 * 	public static void messagePlayer(CommandSender sender, String message) {
+		if(message.isEmpty())
+			return;
+		if (sender == null)
+			Logger.getLogger("Minecraft").info(ChatColor.stripColor(message));
+		else
+			sender.sendMessage(message);
+	}
+	 */
+	
+	public void messageTribuPlayers(String msg) //This wil message only the players (confused what this is for haha)
+	{
+		if(msg.isEmpty())
+			return;
+		for(Player p : players.keySet())
+		{
+			p.sendMessage(ChatColor.GRAY + "[Tribu] " + msg);
+		}
+	}
+	
+	public void messagePlayers(String message) //this will message ALL of the players in that world.
+	{
+		for(Player players:Bukkit.getWorld(config.PluginModeWorldExclusiveWorldName).getPlayers())
+		{
+			players.sendMessage(ChatColor.GRAY + "[Tribu] " + message);
+		}
+	}
+	
+	public static void messagePlayer(CommandSender user, String message,ChatColor chatcolor) //this will message a set player.
+	{
+		((Player) user).sendMessage(ChatColor.GRAY + "[Tribu] " + chatcolor + message);
+	}
+
+	public Map<Player,String> deadPeople = new HashMap<Player,String>();
 }
