@@ -382,6 +382,11 @@ public class Tribu extends JavaPlugin {
 				put("Message.LevelNotReady", ChatColor.YELLOW
 						+ "The level is not ready to run. Make sure you create/load a level and that it contains zombie spawns.");
 				put("Message.Deny", ChatColor.RED + "A zombie denied your action, sorry.");
+				put("Message.PlayerDied",ChatColor.RED + "You are dead.");
+				put("Message.PlayerRevive",ChatColor.GREEN + "You have been revived.");
+				put("Message.PlayerWrongWorld","You are in the incorrect world. Please join world " + ChatColor.LIGHT_PURPLE + config.PluginModeWorldExclusiveWorldName + ChatColor.RED + " to join the game.");
+				put("Message.PlayerDSpawnLeaveWarning",ChatColor.GOLD + "You cannot leave until a new round starts.");
+				
 				put("Message.AlreadyIn", ChatColor.YELLOW + "You are already in.");
 				put("Broadcast.MapChosen", ChatColor.DARK_BLUE + "Level " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.DARK_BLUE + " has been chosen");
 				put("Broadcast.MapVoteStarting", ChatColor.DARK_AQUA + "Level vote starting,");
@@ -420,10 +425,6 @@ public class Tribu extends JavaPlugin {
 				put("Severe.Exception", ChatColor.RED  + "Exception: %s");
 				
 				put("Severe.PlayerDidntGetInvBack", ChatColor.RED + "didn't get his inventory back because he was returned null. (Maybe he was not in server?)");
-				
-				put("Message.PlayerDied",ChatColor.RED + "You are dead.");
-				put("Message.PlayerRevive",ChatColor.GREEN + "You have been revived.");
-				put("Message.PlayerWrongWorld","You are in the incorrect world. Please join world " + ChatColor.LIGHT_PURPLE + config.PluginModeWorldExclusiveWorldName + ChatColor.RED + " to join the game.");
 			}
 		});
 		language = Language.init(log, config.PluginModeLanguage);
