@@ -193,7 +193,7 @@ public class TribuLevel {
 			nameList += separator + name;
 			separator = ", ";
 		}
-		Tribu.messagePlayer(player,String.format(Constants.MessageZombieSpawnList, nameList),ChatColor.YELLOW);
+		Tribu.messagePlayer(player,String.format(Constants.MessageZombieSpawnList, nameList));
 	}
 
 	/**
