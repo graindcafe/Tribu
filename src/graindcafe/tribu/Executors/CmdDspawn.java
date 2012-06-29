@@ -30,9 +30,8 @@ public class CmdDspawn implements CommandExecutor {
 
 		// Make sure a level is loaded
 		if (plugin.getLevel() == null) {
-
-			player.sendMessage(plugin.getLocale("Message.NoLevelLoaded"));
-			player.sendMessage(plugin.getLocale("Message.NoLevelLoaded2"));
+			Tribu.messagePlayer(player,plugin.getLocale("Message.NoLevelLoaded"));
+			Tribu.messagePlayer(player,plugin.getLocale("Message.NoLevelLoaded2"));
 			return true;
 		}
 
@@ -40,14 +39,14 @@ public class CmdDspawn implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("jump")) {
 
 				player.teleport(plugin.getLevel().getDeathSpawn());
-				player.sendMessage(plugin.getLocale("Message.TeleportedToDeathSpawn"));
+				Tribu.messagePlayer(player,plugin.getLocale("Message.TeleportedToDeathSpawn"));
 				return true;
 
 			}
 		} else {
 
 			plugin.getLevel().setDeathSpawn(player.getLocation());
-			player.sendMessage(plugin.getLocale("Message.DeathSpawnSet"));
+			Tribu.messagePlayer(player,plugin.getLocale("Message.DeathSpawnSet"));
 			return true;
 
 		}
