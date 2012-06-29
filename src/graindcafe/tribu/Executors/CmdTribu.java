@@ -382,6 +382,7 @@ public class CmdTribu implements CommandExecutor {
 				return usage(sender);
 			} else {
 				plugin.getLevelSelector().ChangeLevel(args[1], sender instanceof Player ? (Player) sender : null);
+				plugin.config().PluginModeWorldExclusiveWorldName = plugin.getLevel().getInitialSpawn().getWorld().getName();
 				return true;
 			}
 		} else if (args[0].equals("unload")) {
@@ -416,6 +417,7 @@ public class CmdTribu implements CommandExecutor {
 			// if a level is given, load it before start
 			if (args.length > 1 && plugin.getLevelLoader().exists(args[1])) {
 				plugin.getLevelSelector().ChangeLevel(args[1], sender instanceof Player ? (Player) sender : null);
+				plugin.config().PluginModeWorldExclusiveWorldName = plugin.getLevel().getInitialSpawn().getWorld().getName();
 			} else if (plugin.getLevel() == null) {
 				Tribu.messagePlayer(sender, plugin.getLocale("Message.NoLevelLoaded"));
 				Tribu.messagePlayer(sender, plugin.getLocale("Message.NoLevelLoaded2"));

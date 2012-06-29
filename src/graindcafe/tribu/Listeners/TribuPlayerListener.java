@@ -2,8 +2,6 @@ package graindcafe.tribu.Listeners;
 
 import graindcafe.tribu.Tribu;
 import graindcafe.tribu.Signs.TribuSign;
-
-import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 
@@ -45,7 +43,8 @@ public class TribuPlayerListener implements Listener {
 			checkIfNeededAutoStart();
 			return; //They are leaving this world so if they are a player then remove them
 		}
-		if(!plugin.config().PluginModeAutoStart) return;
+		checkIfNeededAutoStart();
+		//if(!plugin.config().PluginModeAutoStart) return;
 		if(plugin.config().PluginModeWorldExclusive) // it will always be true because of above statement, but just in case if error.
 		{
 			timedOutAddPlayer(event.getPlayer(),0.5); //you need this orelse you will get kicked "Moving to fast Hacking?" its just a .5 of a second delay (it can be set to even less)
@@ -109,9 +108,9 @@ public class TribuPlayerListener implements Listener {
 							plugin.getLevel().onSignClicked(event);
 					} else if (event.getPlayer().hasPermission("tribu.signs.place")) {
 						if (plugin.getLevel().removeSign(block.getLocation()))
-							event.getPlayer().sendMessage(plugin.getLocale("Message.TribuSignRemoved"));
+							Tribu.messagePlayer(event.getPlayer(),plugin.getLocale("Message.TribuSignRemoved"));
 						else if (plugin.getLevel().addSign(TribuSign.getObject(plugin, block.getLocation())))
-							event.getPlayer().sendMessage(plugin.getLocale("Message.TribuSignAdded"));
+							Tribu.messagePlayer(event.getPlayer(),plugin.getLocale("Message.TribuSignAdded"));
 					}
 				} else if (plugin.isRunning()) {
 					plugin.getLevel().onClick(event);
@@ -136,7 +135,7 @@ public class TribuPlayerListener implements Listener {
 			if(plugin.getPlayers().size() < 1)
 			{
 				//if players size is < 1 (0) then send new wave start message (because not server exclusive)
-				Tribu.messagePlayer(event.getPlayer(),String.format(plugin.getLocale("Broadcast.Wave"), String.valueOf(plugin.getWaveStarter().getWaveNumber()),String.valueOf(10)),ChatColor.YELLOW);
+				Tribu.messagePlayer(event.getPlayer(),String.format(plugin.getLocale("Broadcast.Wave"), String.valueOf(plugin.getWaveStarter().getWaveNumber()),String.valueOf(10)));
 			}
 			plugin.addPlayer(event.getPlayer());
 		}
@@ -168,7 +167,7 @@ public class TribuPlayerListener implements Listener {
 				if(getDist((int)player.getLocation().getBlockX(),(int)player.getLocation().getBlockY(),(int)player.getLocation().getBlockZ(),(int)plugin.getLevel().getDeathSpawn().getBlockX(),(int)plugin.getLevel().getDeathSpawn().getBlockY(),(int)plugin.getLevel().getDeathSpawn().getBlockZ()) >= 5)
 				{
 					pp.teleport(plugin.getLevel().getDeathSpawn());
-					Tribu.messagePlayer(player,"You cannot leave until a new round starts.",ChatColor.RED);
+					Tribu.messagePlayer(player,plugin.getLocale("Message.PlayerDSpawnLeaveWarning"));
 				}
 			}
 		}

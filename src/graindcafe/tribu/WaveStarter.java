@@ -1,8 +1,6 @@
 package graindcafe.tribu;
 
 import java.util.List;
-
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class WaveStarter implements Runnable {

@@ -175,10 +175,6 @@ public class TribuConfig extends TribuDefaultConfiguration{
 					{
 						PluginModeWorldExclusive= config.getBoolean(key);
 					}
-					else if(keyNode[1].equalsIgnoreCase("WorldExclusiveWorldName"))
-					{
-						PluginModeWorldExclusiveWorldName = config.getString(key);
-					}
 					else if(keyNode[1].equalsIgnoreCase("Language"))
 					{
 						PluginModeLanguage= config.getString(key);

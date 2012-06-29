@@ -1,8 +1,6 @@
 package graindcafe.tribu;
 
 import graindcafe.tribu.Configuration.Constants;
-
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class PlayerStats implements Comparable<PlayerStats> {
