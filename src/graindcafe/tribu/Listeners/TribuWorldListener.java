@@ -20,7 +20,6 @@ public class TribuWorldListener implements Listener {
 
 	@EventHandler 
 	public void onChunkUnload(ChunkUnloadEvent event) {
-
 		for (Entity e : event.getChunk().getEntities()) {
 			if (e instanceof Zombie && plugin.getSpawner().isSpawned((LivingEntity) e))
 				plugin.getSpawner().removedZombieCallback((LivingEntity) e);
@@ -30,7 +29,8 @@ public class TribuWorldListener implements Listener {
 
 	@EventHandler
 	public void onWorldUnload(WorldUnloadEvent event) {
-		plugin.stopRunning();
+		if(plugin.config().PluginModeWorldExclusive && plugin.getLevel().getInitialSpawn().getWorld().equals(event.getWorld()))
+			plugin.stopRunning();
 	}
 
 	public void registerEvents(PluginManager pm) {

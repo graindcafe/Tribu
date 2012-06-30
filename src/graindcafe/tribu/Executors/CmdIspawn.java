@@ -18,7 +18,7 @@ public class CmdIspawn implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(!sender.hasPermission("tribu.level.ispawn"))
 		{
-			sender.sendMessage(plugin.getLocale("Message.Deny"));
+			Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
 			return true;
 		}
 
@@ -30,8 +30,8 @@ public class CmdIspawn implements CommandExecutor {
 
 		// Make sure a level is loaded
 		if (plugin.getLevel() == null) {
-			player.sendMessage(plugin.getLocale("Message.NoLevelLoaded"));
-			player.sendMessage(plugin.getLocale("Message.NoLevelLoaded2"));
+			Tribu.messagePlayer(player,plugin.getLocale("Message.NoLevelLoaded"));
+			Tribu.messagePlayer(player,plugin.getLocale("Message.NoLevelLoaded2"));
 			return true;
 		}
 
@@ -39,14 +39,14 @@ public class CmdIspawn implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("jump")) {
 
 				player.teleport(plugin.getLevel().getInitialSpawn());
-				player.sendMessage(plugin.getLocale("Message.TeleportedToInitialSpawn"));
+				Tribu.messagePlayer(sender,plugin.getLocale("Message.TeleportedToInitialSpawn"));
 				return true;
 
 			}
 		} else {
 
 			plugin.getLevel().setInitialSpawn(player.getLocation());
-			player.sendMessage(plugin.getLocale("Message.InitialSpawnSet"));
+			Tribu.messagePlayer(sender,plugin.getLocale("Message.InitialSpawnSet"));
 			return true;
 
 		}

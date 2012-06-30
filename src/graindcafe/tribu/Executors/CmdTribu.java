@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -41,34 +42,79 @@ public class CmdTribu implements CommandExecutor {
 
 		if (args[0].equalsIgnoreCase("enter") || args[0].equalsIgnoreCase("join")) {
 			if (!plugin.config().PluginModeServerExclusive || sender.isOp())
+			{
+				if(plugin.config().PluginModeWorldExclusive)
+				{
+					/*if(((Player) sender).getWorld() != Bukkit.getWorld(plugin.config().PluginModeWorldExclusiveWorldName))
+					{
+						Tribu.messagePlayer(sender,plugin.getLocale("Message.PlayerWrongWorld"));
+						return true;
+					}*/
+					if (!sender.hasPermission("tribu.use.enter"))
+					{
+						Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
+					} else 
+					if (!(sender instanceof Player)) 
+					{
+						plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
+					} else 
+					{
+						Tribu.messagePlayer(sender,plugin.getLocale("Message.YouJoined"));
+						if(!plugin.isPlaying((Player) sender))
+						{
+							plugin.addPlayer((Player) sender);
+						} else
+						{
+							Tribu.messagePlayer(sender,plugin.getLocale("Message.AlreadyIn"));
+						}
+					}
+				} else
 				if (!sender.hasPermission("tribu.use.enter"))
-					sender.sendMessage(plugin.getLocale("Message.Deny"));
-				else if (!(sender instanceof Player)) {
+				{
+					Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
+				} else 
+				if (!(sender instanceof Player)) 
+				{
 					plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
-
-				} else {
-					sender.sendMessage(plugin.getLocale("Message.YouJoined"));
+				} else 
+				{
+					Tribu.messagePlayer(sender,plugin.getLocale("Message.YouJoined"));
 					if(!plugin.isPlaying((Player) sender))
+					{
 						plugin.addPlayer((Player) sender);
-					else
-						sender.sendMessage(plugin.getLocale("Message.AlreadyIn"));
+					} else
+					{
+						Tribu.messagePlayer(sender,plugin.getLocale("Message.AlreadyIn"));
+					}
 				}
+			}
 			return true;
-		} else if (args[0].equals("leave")) {
+		} else if (args[0].equals("leave")) 
+		{
 			if (!plugin.config().PluginModeServerExclusive || sender.isOp())
+			{
+				if(plugin.config().PluginModeWorldExclusive)
+				{
+					//all we gata do is add another node for a different world (main world) and when they do /leave they will tp to the main worlds spawn.
+				} else
 				if (!sender.hasPermission("tribu.use.leave"))
-					sender.sendMessage(plugin.getLocale("Message.Deny"));
-				else if (!(sender instanceof Player)) {
+				{
+					Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
+				} else 
+				if (!(sender instanceof Player)) 
+				{
 					plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
-
-				} else {
-					sender.sendMessage(plugin.getLocale("Message.YouLeft"));
+				} else 
+				{
+					Tribu.messagePlayer(sender,plugin.getLocale("Message.YouLeft"));
 					plugin.removePlayer((Player) sender);
 				}
+			}
+			//add in them to change to main world (world when they leave the game);
 			return true;
 		} else if (args[0].equals("stats")) {
 			if (!sender.hasPermission("tribu.use.stats"))
-				sender.sendMessage(plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
 			else {
 				LinkedList<PlayerStats> stats = plugin.getSortedStats();
 				Tribu.messagePlayer(sender, plugin.getLocale("Message.Stats"));
@@ -88,7 +134,7 @@ public class CmdTribu implements CommandExecutor {
 			return true;
 		} else if (args[0].equals("vote")) {
 			if (!sender.hasPermission("tribu.use.vote"))
-				sender.sendMessage(plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
 			else {
 				if (!(sender instanceof Player)) {
 					plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
@@ -99,14 +145,14 @@ public class CmdTribu implements CommandExecutor {
 					try {
 						plugin.getLevelSelector().castVote((Player) sender, Integer.parseInt(args[1]));
 					} catch (NumberFormatException e) {
-						sender.sendMessage(plugin.getLocale("Message.InvalidVote"));
+						Tribu.messagePlayer(sender,plugin.getLocale("Message.InvalidVote"));
 					}
 					return true;
 				}
 			}
 		} else if (args[0].equals("vote1")) {
 			if(!sender.hasPermission("tribu.use.vote"))
-				sender.sendMessage(plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
 			else
 			{
 			if (!(sender instanceof Player)) {
@@ -120,7 +166,7 @@ public class CmdTribu implements CommandExecutor {
 
 		} else if (args[0].equals("vote2")) {
 			if(!sender.hasPermission("tribu.use.vote"))
-				sender.sendMessage(plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
 			else
 			{
 			if (!(sender instanceof Player)) {
@@ -264,7 +310,7 @@ public class CmdTribu implements CommandExecutor {
 		else if (args[0].equals("new") || args[0].equals("create")) {
 			if(!sender.hasPermission("tribu.level.create"))
 			{
-				sender.sendMessage(plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
 				return true;
 			}
 			if (args.length == 1) {
@@ -277,7 +323,7 @@ public class CmdTribu implements CommandExecutor {
 			}
 			Player player = (Player) sender;
 			if (!plugin.getLevelLoader().saveLevel(plugin.getLevel())) {
-				player.sendMessage(plugin.getLocale("Message.UnableToSaveCurrentLevel"));
+				Tribu.messagePlayer(sender,plugin.getLocale("Message.UnableToSaveCurrentLevely"));
 				return true;
 			}
 
@@ -288,14 +334,14 @@ public class CmdTribu implements CommandExecutor {
 		} else if (args[0].equals("delete") || args[0].equals("remove")) {
 			if(!sender.hasPermission("tribu.level.delete"))
 			{
-				sender.sendMessage(plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
 				return true;
 			}
 			if (args.length == 1) {
 				return usage(sender);
 			} else if (!plugin.getLevelLoader().exists(args[1])) {
-				sender.sendMessage(String.format(plugin.getLocale("Message.UnknownLevel"), args[1]));
-				sender.sendMessage(plugin.getLocale("Message.MaybeNotSaved"));
+				Tribu.messagePlayer(sender,String.format(plugin.getLocale("Message.UnknownLevel"), args[1]));
+				Tribu.messagePlayer(sender,plugin.getLocale("Message.MaybeNotSaved"));
 				return true;
 			} else if (!deletedLevel.equals(args[1])) {
 				deletedLevel = args[1];
@@ -328,7 +374,7 @@ public class CmdTribu implements CommandExecutor {
 		} else if (args[0].equals("load") || args[0].equals("open")) {
 			if(!sender.hasPermission("tribu.level.load"))
 			{
-				sender.sendMessage(plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
 				return true;
 			}
 			if (args.length == 1) {
@@ -340,7 +386,7 @@ public class CmdTribu implements CommandExecutor {
 		} else if (args[0].equals("unload")) {
 			if(!sender.hasPermission("tribu.level.unload"))
 			{
-				sender.sendMessage(plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
 				return true;
 			}
 			plugin.setLevel(null);
@@ -363,7 +409,7 @@ public class CmdTribu implements CommandExecutor {
 		else if (args[0].equals("start")) {
 			if(!sender.hasPermission("tribu.game.start"))
 			{
-				sender.sendMessage(plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
 				return true;
 			}
 			// if a level is given, load it before start
@@ -383,7 +429,7 @@ public class CmdTribu implements CommandExecutor {
 		} else if (args[0].equals("stop")) {
 			if(!sender.hasPermission("tribu.game.stop"))
 			{
-				sender.sendMessage(plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
 				return true;
 			}
 			plugin.stopRunning();
@@ -409,8 +455,8 @@ public class CmdTribu implements CommandExecutor {
 		} else if (args[0].equals("help") || args[0].equals("?") || args[0].equals("aide")) {
 
 			if (sender.isOp()) {
-				sender.sendMessage("There are 4 commands : /zspawn (setting zombie spawns) /ispawn (setting initial spawn) /dspawn (setting death spawn) /tribu.");
-				sender.sendMessage("This is the /tribu command detail :");
+				Tribu.messagePlayer(sender,"There are 4 commands : /zspawn (setting zombie spawns) /ispawn (setting initial spawn) /dspawn (setting death spawn) /tribu.");
+				Tribu.messagePlayer(sender,"This is the /tribu command detail :");
 			}
 			return usage(sender);
 
@@ -421,11 +467,12 @@ public class CmdTribu implements CommandExecutor {
 
 	private boolean usage(CommandSender sender) {
 		if (sender.isOp()) {
-			sender.sendMessage("Ops commands :");
-			sender.sendMessage("/tribu ((create | load | delete) <name>) | save | list | start [<name>] | stop");
-			sender.sendMessage("/tribu package ((add | del)  <id>  [<subid>] [<number>]) | ((new | open | remove) <name> | close) | list");
-			sender.sendMessage("See also /ispawn /dspawn /zspawn");
-			sender.sendMessage("Players commands :");
+			Tribu.messagePlayer(sender,ChatColor.LIGHT_PURPLE + "Ops commands :");
+			Tribu.messagePlayer(sender,ChatColor.YELLOW + "/tribu ((create | load | delete) <name>) | save | list | start [<name>] | stop");
+			Tribu.messagePlayer(sender,ChatColor.YELLOW + "/tribu package ((add | del)  <id>  [<subid>] [<number>]) | ((new | open | remove) <name> | close) | list");
+			Tribu.messagePlayer(sender,ChatColor.YELLOW + "See also /ispawn /dspawn /zspawn");
+			Tribu.messagePlayer(sender,ChatColor.YELLOW + "Players commands :");
+			
 		}
 		return false;
 

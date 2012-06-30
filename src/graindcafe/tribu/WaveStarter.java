@@ -1,7 +1,6 @@
 package graindcafe.tribu;
 
 import java.util.List;
-
 import org.bukkit.entity.Player;
 
 public class WaveStarter implements Runnable {
@@ -71,7 +70,6 @@ public class WaveStarter implements Runnable {
 			scheduled = false;
 			plugin.revivePlayers(false);
 			plugin.getLevel().onWaveStart();
-			
 			plugin.getSpawnTimer().StartWave(max, health,timeToSpawn);
 			plugin.messagePlayers(
 							String.format(plugin.getLocale("Broadcast.StartingWave"), String.valueOf(waveNumber), String.valueOf(max),

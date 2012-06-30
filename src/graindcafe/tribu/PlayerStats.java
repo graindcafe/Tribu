@@ -1,7 +1,6 @@
 package graindcafe.tribu;
 
 import graindcafe.tribu.Configuration.Constants;
-
 import org.bukkit.entity.Player;
 
 public class PlayerStats implements Comparable<PlayerStats> {
@@ -63,7 +62,7 @@ public class PlayerStats implements Comparable<PlayerStats> {
 	}
 
 	public void msgStats() {
-		player.sendMessage(String.format(Constants.MessageMoneyPoints, String.valueOf(money), String.valueOf(points)));
+		Tribu.messagePlayer(player, String.format(Constants.MessageMoneyPoints, String.valueOf(money), String.valueOf(points)));
 	}
 
 	public void resetMoney() {

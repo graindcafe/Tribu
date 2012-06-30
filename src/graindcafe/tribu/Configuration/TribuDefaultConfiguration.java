@@ -19,6 +19,7 @@ public class TribuDefaultConfiguration {
 	public boolean PluginModeServerExclusive=false;
 	//Not used yet
 	public boolean PluginModeWorldExclusive=false;
+	
 	public String PluginModeLanguage="english";
 	public boolean PluginModeAutoStart=false;
 	public String PluginModeDefaultLevel="";
@@ -27,6 +28,8 @@ public class TribuDefaultConfiguration {
 	 * Level related
 	 */
 	public double LevelClearZone=50d;
+	public boolean LevelJail=true;
+	public double LevelJailRadius=5.0;
 	
 	/*
 	 * Wave related
@@ -70,6 +73,7 @@ public class TribuDefaultConfiguration {
 		
 
 			{
+				put("PluginMode.WorldExclusive", PluginModeWorldExclusive);
 				put("PluginMode.ServerExclusive", PluginModeServerExclusive);
 				put("PluginMode.Language", PluginModeLanguage);
 				put("PluginMode.AutoStart", PluginModeAutoStart);

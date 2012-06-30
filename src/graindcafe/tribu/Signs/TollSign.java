@@ -19,12 +19,12 @@ public class TollSign extends TribuSign {
 	private int cost;
 	// private boolean clicked = false;
 	private Block linkedButton;
-	private LinkedList<Player> allowedPlayer;
+	private static LinkedList<Player> allowedPlayer;
 
 	public TollSign(Tribu plugin, Location pos, String[] lines) {
 		super(plugin, pos);
 		cost = TribuSign.parseInt(lines[1]);
-		allowedPlayer=new LinkedList<Player>();
+		setAllowedPlayer(new LinkedList<Player>());
 	}
 
 	@Override
@@ -83,21 +83,29 @@ public class TollSign extends TribuSign {
 				Player p = e.getPlayer();
 				
 				PlayerStats stats = plugin.getStats(p);
-				if (!this.allowedPlayer.contains(p) && !stats.subtractmoney(cost)) {
+				if (!getAllowedPlayer().contains(p) && !stats.subtractmoney(cost)) {
 					
-					p.sendMessage(plugin.getLocale("Message.YouDontHaveEnoughMoney"));
+					Tribu.messagePlayer(p,plugin.getLocale("Message.YouDontHaveEnoughMoney"));
 					e.setCancelled(true);
 					if(linkedButton instanceof Door)
 						if(linkedButton.getState().getType() != Material.IRON_DOOR)
 							((Door)linkedButton).setOpen(false);
 				} else
 				{
-					this.allowedPlayer.add(p);
-					p.sendMessage(String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));
+					getAllowedPlayer().add(p);
+					Tribu.messagePlayer(p,String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));
 				}
 			}
 		}
 
+	}
+
+	public static LinkedList<Player> getAllowedPlayer() {
+		return allowedPlayer;
+	}
+
+	public static void setAllowedPlayer(LinkedList<Player> allowedPlayer) {
+		TollSign.allowedPlayer = allowedPlayer;
 	}
 
 }

@@ -110,6 +110,7 @@ public class LevelFileLoader {
 					}
 					// set sign count = 0
 					out.writeInt(0);
+					out.close(); //close data
 					in.close();
 					fstream.close();
 					file.delete();
@@ -145,6 +146,7 @@ public class LevelFileLoader {
 					}
 					// set sign count = 0
 					out.writeInt(0);
+					out.close(); //close data
 					in.close();
 					fstream.close();
 					file.delete();

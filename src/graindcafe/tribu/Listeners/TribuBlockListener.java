@@ -33,12 +33,15 @@ public class TribuBlockListener implements Listener {
 				plugin.getLevel().removeSign(event.getBlock().getLocation());
 			} else {
 				if (event.getPlayer() != null)
-					event.getPlayer().sendMessage(plugin.getLocale("Message.ProtectedBlock"));
+				Tribu.messagePlayer(event.getPlayer(),plugin.getLocale("Message.ProtectedBlock"));
 				TribuSign.update((Sign) event.getBlock().getState());
 				event.setCancelled(true);
 			}
 		} else if (plugin.isRunning() && plugin.isPlaying(event.getPlayer()))
 			plugin.getBlockTrace().push(event.getBlock(), true);
+		// Else if not running or not playing we may check if it's server exclusive / world exclusive and prevent modifications
+		
+			
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
@@ -49,10 +52,12 @@ public class TribuBlockListener implements Listener {
 			else
 				plugin.getBlockTrace().push(event.getBlockReplacedState().getTypeId(), event.getBlockReplacedState().getData(),
 						event.getBlock().getLocation(), false);
+		// Else if not running or not playing we may check if it's server exclusive / world exclusive and prevent modifications
 	}
 
 	@EventHandler
 	public void onBlockRedstoneChange(BlockRedstoneEvent event) {
+		
 		if (plugin.isRunning()) {
 			//plugin.getBlockTrace().pushRedstoneChanged(event.getBlock());
 			if (plugin.getLevel() != null)
@@ -81,16 +86,16 @@ public class TribuBlockListener implements Listener {
 				if (sign != null)
 					if (plugin.getLevel() != null) {
 						if (plugin.getLevel().addSign(sign))
-							event.getPlayer().sendMessage(plugin.getLocale("Message.TribuSignAdded"));
+						Tribu.messagePlayer(event.getPlayer(),plugin.getLocale("Message.TribuSignAdded"));
 					} else {
-						event.getPlayer().sendMessage(plugin.getLocale("Message.NoLevelLoaded"));
-						event.getPlayer().sendMessage(plugin.getLocale("Message.NoLevelLoaded2"));
+						Tribu.messagePlayer(event.getPlayer(),plugin.getLocale("Message.NoLevelLoaded"));
+						Tribu.messagePlayer(event.getPlayer(),plugin.getLocale("Message.NoLevelLoaded2"));
 						event.getBlock().setTypeId(0);
 						event.getBlock().getLocation().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(Material.SIGN, 1));
 						event.setCancelled(true);
 					}
 			} else {
-				event.getPlayer().sendMessage(plugin.getLocale("Message.CannotPlaceASpecialSign"));
+				Tribu.messagePlayer(event.getPlayer(),plugin.getLocale("Message.CannotPlaceASpecialSign"));
 				event.getBlock().setTypeId(0);
 				event.getBlock().getLocation().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(Material.SIGN, 1));
 				event.setCancelled(true);

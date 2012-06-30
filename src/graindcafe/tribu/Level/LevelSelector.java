@@ -36,19 +36,19 @@ public class LevelSelector implements Runnable {
 		if (votingEnabled) {
 
 			if (v > 2 || v < 1) {
-				player.sendMessage(plugin.getLocale("Message.InvalidVote"));
+				Tribu.messagePlayer(player,plugin.getLocale("Message.InvalidVote"));
 				return;
 			}
 
 			votes.put(player, v);
-			player.sendMessage(plugin.getLocale("Message.ThankyouForYourVote"));
+			Tribu.messagePlayer(player,plugin.getLocale("Message.ThankyouForYourVote"));
 			// if all players have voted
 			if (votes.size() == plugin.getPlayersCount()) {
 				cancelVote();
 				run();
 			}
 		} else {
-			player.sendMessage(plugin.getLocale("Message.YouCannotVoteAtThisTime"));
+			Tribu.messagePlayer(player,plugin.getLocale("Message.YouCannotVoteAtThisTime"));
 		}
 	}
 
@@ -72,7 +72,7 @@ public class LevelSelector implements Runnable {
 
 		if (!plugin.getLevelLoader().saveLevel(plugin.getLevel())) {
 			if (player != null) {
-				player.sendMessage(plugin.getLocale("Message.UnableToSaveLevel"));
+				Tribu.messagePlayer(player,plugin.getLocale("Message.UnableToSaveLevel"));
 			} else {
 				plugin.LogWarning(ChatColor.stripColor(plugin.getLocale("Message.UnableToSaveLevel")));
 			}
@@ -81,14 +81,14 @@ public class LevelSelector implements Runnable {
 
 		if (temp == null) {
 			if (player != null) {
-				player.sendMessage(plugin.getLocale("Message.UnableToLoadLevel"));
+				Tribu.messagePlayer(player,plugin.getLocale("Message.UnableToLoadLevel"));
 			} else {
 				plugin.LogWarning(ChatColor.stripColor(plugin.getLocale("Message.UnableToLoadLevel")));
 			}
 			return;
 		} else {
 			if (player != null) {
-				player.sendMessage(plugin.getLocale("Message.LevelLoadedSuccessfully"));
+				Tribu.messagePlayer(player,plugin.getLocale("Message.LevelLoadedSuccessfully"));
 			} else {
 				plugin.LogInfo(ChatColor.stripColor(plugin.getLocale("Message.LevelLoadedSuccessfully")));
 			}
@@ -113,10 +113,10 @@ public class LevelSelector implements Runnable {
 		votes.clear();
 		if (voteCounts[0] >= voteCounts[1]) {
 			ChangeLevel(randomLevel1, null);
-			plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.MapChosen"), randomLevel1));
+			plugin.messagePlayers(String.format(plugin.getLocale("Broadcast.MapChosen"), randomLevel1));
 		} else {
 			ChangeLevel(randomLevel2, null);
-			plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.MapChosen"), randomLevel2));
+			plugin.messagePlayers(String.format(plugin.getLocale("Broadcast.MapChosen"), randomLevel2));
 		}
 		plugin.startRunning();
 	}
@@ -142,12 +142,11 @@ public class LevelSelector implements Runnable {
 		} else {
 			randomLevel2 = plugin.getLevel().getName();
 		}
-		plugin.getServer().broadcastMessage(plugin.getLocale("Broadcast.MapVoteStarting"));
-		plugin.getServer().broadcastMessage(plugin.getLocale("Broadcast.Type"));
-		plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.SlashVoteForMap"), '1', randomLevel1));
-		plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.SlashVoteForMap"), '2', randomLevel2));
-		plugin.getServer().broadcastMessage(String.format(plugin.getLocale("Broadcast.VoteClosingInSeconds"), String.valueOf(duration / 20)));
-
+		plugin.messagePlayers(plugin.getLocale("Broadcast.MapVoteStarting"));
+		plugin.messagePlayers(plugin.getLocale("Broadcast.Type"));
+		plugin.messagePlayers(String.format(plugin.getLocale("Broadcast.SlashVoteForMap"), '1', randomLevel1));
+		plugin.messagePlayers(String.format(plugin.getLocale("Broadcast.SlashVoteForMap"), '2', randomLevel2));
+		plugin.messagePlayers(String.format(plugin.getLocale("Broadcast.VoteClosingInSeconds"), String.valueOf(duration / 20)));
 	}
 
 }

@@ -31,7 +31,6 @@ public class TribuEntityListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onCreatureSpawn(CreatureSpawnEvent event) {
-		// is Inside level check if plugin is running
 		if (plugin.isInsideLevel(event.getLocation()) && !plugin.getSpawner().justSpawned()) {
 			event.setCancelled(true);
 		}
@@ -40,11 +39,9 @@ public class TribuEntityListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onEntityDamage(EntityDamageEvent dam) {
-		if(plugin.isRunning())
+		if(!dam.isCancelled() && plugin.isRunning())
 		{
-			if (dam.isCancelled()) {
-				return;
-			}
+			
 			if (dam.getEntity() instanceof Player) {
 				Player p = (Player) dam.getEntity();
 				if (plugin.isPlaying(p)) {

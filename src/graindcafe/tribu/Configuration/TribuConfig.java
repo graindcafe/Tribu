@@ -119,13 +119,19 @@ public class TribuConfig extends TribuDefaultConfiguration{
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		PluginModeServerExclusive = config.getBoolean("PluginMode.ServerExclusive", false);
+		//PluginModeServerExclusive = config.getBoolean("PluginMode.ServerExclusive", false);
 		
 
 	}
+
 	protected void info(String info)
 	{
-		//Logger.getLogger("Minecraft").info(info);
+		Logger.getLogger("Minecraft").info("[Tribu] " + info);
+	}
+	
+	protected void LogSevere(String string)
+	{
+		Logger.getLogger("Minecraft").severe("[Tribu] " + string);
 	}
 	public void load(String key,FileConfiguration config)
 	{
@@ -134,7 +140,7 @@ public class TribuConfig extends TribuDefaultConfiguration{
 		info(key);
 		if(nodeCount>=2)
 		{
-			info(keyNode[0] + " - "+keyNode[1] );
+		//	info(keyNode[0] + " - "+keyNode[1] );
 			if(keyNode[0].equalsIgnoreCase("PluginMode"))
 			{
 				//if(nodeCount>2)
@@ -164,7 +170,15 @@ public class TribuConfig extends TribuDefaultConfiguration{
 			{
 				//if(nodeCount>2)
 				{
-					if(keyNode[1].equalsIgnoreCase("ClearZone"))
+					if(keyNode[1].equalsIgnoreCase("Jail"))
+					{
+						LevelJail=config.getBoolean(key);
+					}
+					else if(keyNode[1].equalsIgnoreCase("JailRadius"))
+					{
+						LevelJailRadius=config.getDouble(key);
+					}
+					else if(keyNode[1].equalsIgnoreCase("ClearZone"))
 					{
 						LevelClearZone=(Double) config.getDouble(key);
 					}
