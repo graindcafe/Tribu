@@ -2,6 +2,7 @@ package graindcafe.tribu.BlockTracer;
 
 import graindcafe.tribu.NotFoundException;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Logger;
@@ -21,21 +22,21 @@ import org.bukkit.material.MaterialData;
  * @author Graindcafe
  * 
  */
-public class BlockTrace {
+public class BlockTrace extends Thread {
 	Logger log;
 	private BlockTraceNode top = null;
 	private LinkedList<BlockTraceNode> ignitedBlocks, interactedBlocks;
 	private LinkedList<Location> possibleIgnitedBlocks;
 	private LinkedList<Location> movingBlock;
-	
-	
+	private LinkedList<FallingBlockTraceNode> fallingBlocks;
+
 	public BlockTrace() {
 		this.log = Logger.getLogger("Minecraft");
-		this.ignitedBlocks=new LinkedList<BlockTraceNode>();
-		this.interactedBlocks=new LinkedList<BlockTraceNode>();
-		this.possibleIgnitedBlocks=new LinkedList<Location>();
-		this.movingBlock=new LinkedList<Location>();
-		
+		this.ignitedBlocks = new LinkedList<BlockTraceNode>();
+		this.interactedBlocks = new LinkedList<BlockTraceNode>();
+		this.possibleIgnitedBlocks = new LinkedList<Location>();
+		this.movingBlock = new LinkedList<Location>();
+		this.fallingBlocks = new LinkedList<FallingBlockTraceNode>();
 	}
 
 	public void clear() {
@@ -67,59 +68,58 @@ public class BlockTrace {
 	}
 
 	private void log(String s) {
-		 log.info(s);
+		//log.info(s);
 	}
 
 	public BlockTraceNode peek() {
 		return top;
 	}
+
 	public BlockTraceNode pop() {
 		BlockTraceNode r = top;
 		top = top.getPrevious();
 		return r;
 	}
-	public void pushIgnitedBlock(Block b)
-	{
-		log("Start fire at "+locToString(b.getLocation()));
-		
-		byte i=0;
-		for(BlockFace bf : BlockFace.values())
-		{
-			Block nb=b.getRelative(bf);
-			if(nb.getType().equals(Material.AIR))
+
+	public void pushIgnitedBlock(Block b) {
+		log("Start fire at " + locToString(b.getLocation()));
+
+		byte i = 0;
+		for (BlockFace bf : BlockFace.values()) {
+			Block nb = b.getRelative(bf);
+			if (nb.getType().equals(Material.AIR))
 				possibleIgnitedBlocks.add(nb.getLocation());
-			else if(i<6)
+			else if (i < 6)
 				ignitedBlocks.add(new BlockTraceNode(nb));
 			i++;
 		}
 	}
-	public void pushBurntBlock(Block b)
-	{
-		log("Burnt : "+b.getType().toString());
-		for(BlockTraceNode btn : ignitedBlocks)
-		{
-			if(btn.equals(b))
-				push(b,true);
+
+	public void pushBurntBlock(Block b) {
+		log("Burnt : " + b.getType().toString());
+		for (BlockTraceNode btn : ignitedBlocks) {
+			if (btn.equals(b))
+				push(b, true);
 		}
-		/*else
-			for(BlockTraceNode btn : ignitedBlocks)
-				for(BlockFace bf : BlockFace.values())
-					if(btn.equals(b.getRelative(bf)))
-						push(b,true);*/
+		/*
+		 * else for(BlockTraceNode btn : ignitedBlocks) for(BlockFace bf :
+		 * BlockFace.values()) if(btn.equals(b.getRelative(bf))) push(b,true);
+		 */
 	}
-	public void pushPlayerInteract(Block b)
-	{
-		log("Player interact on "+b.getType().toString());
+
+	public void pushPlayerInteract(Block b) {
+		log("Player interact on " + b.getType().toString());
 		interactedBlocks.add(new BlockTraceNode(b));
 	}
-	public void pushRedstoneChanged(Block b)
-	{	
-		/*if(interactedBlocks.contains(b))
-		{
-			log("Redstone changed at "+locToString(b.getLocation()));
-			push(b,true);
-		}*/
+
+	public void pushRedstoneChanged(Block b) {
+		/*
+		 * if(interactedBlocks.contains(b)) {
+		 * log("Redstone changed at "+locToString(b.getLocation()));
+		 * push(b,true); }
+		 */
 	}
+
 	public void push(Block b, boolean isRemoved) {
 		push(new BlockTraceNode(b), isRemoved);
 	}
@@ -140,7 +140,25 @@ public class BlockTrace {
 
 		node.setPrevious(top);
 		BlockTraceNode previous = node;
-		
+		if (!fallingBlocks.isEmpty()) {
+			Iterator<FallingBlockTraceNode> i = fallingBlocks.iterator();
+			FallingBlockTraceNode n = fallingBlocks.peek();
+			FallingBlockTraceNode tmp;
+			do {
+
+				if (n.isValid()) {
+					log("Falling block has find its platform");
+					tmp = i.next();
+					fallingBlocks.remove(n);
+					n = tmp;
+					continue;
+				} else if (!n.stillFalling()) {
+					log("Falling block is not falling anymore but has not find its platform");
+					n.update();
+				}
+				n = i.next();
+			} while (i.hasNext());
+		}
 		log("Checking for multiple blocks");
 		// Door etc...
 		if (node.hasOtherBlock()) {
@@ -149,7 +167,7 @@ public class BlockTrace {
 			try {
 				previous = new BlockTraceNode(node.getOtherBlock(), previous);
 			} catch (NotFoundException e) {
-				
+
 			}
 		}
 		if (isRemoved) {
@@ -166,10 +184,9 @@ public class BlockTrace {
 					}
 
 			log("Start adding the block to the list");
-			
-			
+
 			log("Checking for fallings blocks");
-			Location loc = node.getLocation().clone().add(0,1,0);
+			Location loc = node.getLocation().clone().add(0, 1, 0);
 			Queue<BlockTraceNode> fallingBlocks = new LinkedList<BlockTraceNode>();
 			// if is falling calc where the block fall
 			while (BlockTraceNode.isSubjectedToPhysical(loc.getBlock())) {
@@ -194,7 +211,7 @@ public class BlockTrace {
 					previous = new BlockTraceNode(loc, fallingBlocks.poll());
 				}
 			}
-			
+
 		} else {
 			log("Block placed");
 			// If this block may fall, then, place it as it will be removed
@@ -202,46 +219,27 @@ public class BlockTrace {
 			// its platform
 			log("Check if the block is falling");
 			if (BlockTraceNode.isSubjectedToPhysical(node.getLocation().getBlock())) {
-				node.setLocation(node.getLocation().add(0, 1, 0));
-				if(BlockTraceNode.isSubjectedToPhysical(node.getLocation().getBlock()))
-				{
-					log("Block above is falling !");
-					push(node,false);
-				}
-				node.setLocation(node.getLocation().subtract(0, 2, 0));
+				/*
+				 * node.setLocation(node.getLocation().add(0, 1, 0));
+				 * if(BlockTraceNode
+				 * .isSubjectedToPhysical(node.getLocation().getBlock())) {
+				 * log("Block above is falling !"); push(node,false); }
+				 * node.setLocation(node.getLocation().subtract(0, 2, 0));
+				 */
+				node = new FallingBlockTraceNode(node.getLocation().getBlock(), node);
+				this.fallingBlocks.push((FallingBlockTraceNode) node);
 				log("Falling block");
-				do
+				byte fall=0;
+				while (FallingBlockTraceNode.isFalling(node.getLocation()))
+				{
 					node.setLocation(node.getLocation().subtract(0, 1, 0));
-				while (!BlockTraceNode.isSolid(node.getLocation().getBlock()));
-				node.setLocation(node.getLocation().add(0, 1, 0));
-			}
-			
-			/*
-			 * if (node.isSubjectedToPhysical()) {
-			 * 
-			 * log("Block : " + node.getLocation().getBlock().getType() +
-			 * " is subjected to physical"); log("at : " +
-			 * node.getLocation().getBlockX() + "," +
-			 * node.getLocation().getBlockY() + "," +
-			 * node.getLocation().getBlockZ());
-			 * 
-			 * Location loc = node.getLocation().clone(); // if is falling calc
-			 * where the clock fall do loc=loc.subtract(0, 1, 0); while
-			 * (!BlockTraceNode.isSolid(loc.getBlock()));
-			 * 
-			 * 
-			 * node.setLocation(loc); loc = loc.clone(); // while
-			 * (BlockTraceNode.isSubjectedToPhysical(loc.getBlock()))
-			 * loc=loc.subtract(0, 1, 0);
-			 * 
-			 * log("Platform : " + loc.getBlock().getType()); log("at : " +
-			 * loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ());
-			 * BlockTraceNode b = getNodeAt(loc); if (b != top) {
-			 * log("is in the trace  "); } else { log("is not in the trace  ");
-			 * } pushBefore(node,b); }
-			 */
+					if(BlockTraceNode.isSolid(node.getLocation().getBlock()))
+						fall++;
+				}
+				node.setLocation(node.getLocation().add(0, 1+fall, 0));
 
-			//node.setPrevious(top);
+			}
+
 		}
 		top = previous;
 		log("Push block " + node.getType());
@@ -259,20 +257,22 @@ public class BlockTrace {
 		push((byte) typeId, data.getData(), location, isRemoved);
 
 	}
-	public String locToString(Location loc)
-	{
-		return loc.getBlock().getType().toString()+" ("+loc.getBlockX()+","+loc.getBlockY()+","+loc.getBlockZ()+")";
+
+	public String locToString(Location loc) {
+		return loc.getBlock().getType().toString() + " (" + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() + ")";
 	}
+
 	public void reverse() {
-		
-		for(Location loc: possibleIgnitedBlocks)
-		{
-			//for(BlockFace bf : BlockFace.values())
+		for (FallingBlockTraceNode n : fallingBlocks) {
+			log("Block was still falling at reverse");
+			n.update();
+		}
+		for (Location loc : possibleIgnitedBlocks) {
+			// for(BlockFace bf : BlockFace.values())
 			{
-				//Block b=btn.getLocation().getBlock().getRelative(bf);
+				// Block b=btn.getLocation().getBlock().getRelative(bf);
 				Block b = loc.getBlock();
-				if(b.getType().equals(Material.FIRE))
-				{
+				if (b.getType().equals(Material.FIRE)) {
 					log("Stop fire at " + locToString(loc));
 					b.setType(Material.AIR);
 				}
@@ -288,12 +288,13 @@ public class BlockTrace {
 	public boolean isFireSpreadingOut(Location location) {
 		return possibleIgnitedBlocks.remove(location);
 	}
+
 	public boolean isWaterSpreadingOut(Location location) {
 		return this.movingBlock.remove(location);
 	}
-	
+
 	public void pushMovingBlock(Block block) {
 		this.movingBlock.add(block.getLocation());
-		push(block,false);
+		push(block, false);
 	}
 }

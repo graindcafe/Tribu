@@ -133,12 +133,11 @@ public class BlockTraceNode implements Cloneable {
 				&& loc1.getBlockX() == loc2.getBlockX() && loc1.getBlockY() == loc2.getBlockY() && loc1.getBlockZ() == loc2.getBlockZ();
 	}
 
-	private byte blockData;
-	private byte blockId;
+	protected byte blockData;
+	protected byte blockId;
+	protected Location blockLocation;
 
-	private Location blockLocation;
-
-	private BlockTraceNode previous = null;
+	protected BlockTraceNode previous = null;
 
 	public BlockTraceNode(Block element) {
 		this((byte) element.getTypeId(), element.getData(), element.getLocation());
@@ -236,13 +235,11 @@ public class BlockTraceNode implements Cloneable {
 	{
 		if(obj instanceof BlockTraceNode)
 		{
-			
 			BlockTraceNode btn=(BlockTraceNode) obj;
 			return btn.getTypeId()==this.blockId && btn.getData() == blockData && btn.getLocation().equals(this.blockLocation);
 		}
 		else if(obj instanceof Block)
 		{
-			
 			Block b=(Block) obj;
 			return b.getTypeId()==this.blockId && b.getData() == blockData && b.getLocation().equals(this.blockLocation);
 		}
