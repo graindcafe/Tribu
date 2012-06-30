@@ -87,7 +87,7 @@ public class TribuConfig extends TribuDefaultConfiguration{
 	public TribuConfig(File config,TribuDefaultConfiguration DefaultConfig)
 	{
 		this(YamlConfiguration.loadConfiguration(config),DefaultConfig);
-		Logger.getLogger("Minecraft").info(config.getAbsoluteFile().toString());
+		
 	}
 	public TribuConfig(FileConfiguration config,TribuDefaultConfiguration DefaultConfig){
 		/*try {
@@ -100,10 +100,7 @@ public class TribuConfig extends TribuDefaultConfiguration{
 			e2.printStackTrace();
 		}*/
 		
-		for(String key : config.getKeys(true))
-		{
-			Logger.getLogger("Minecraft").info(key);
-		}
+		
 		config.options().header("# Tribu Config File Version " + Constants.ConfigFileVersion + " \n");
 		
 		HashMap<String, Object> DefaultConfiguration = (HashMap<String, Object>) DefaultConfig.toMap();
