@@ -39,6 +39,7 @@ public class TribuDefaultConfiguration {
 	public int WaveStartDelay=10;
 	public boolean WaveStartTeleportPlayers=false;
 	public boolean WaveStartHealPlayers=false;
+	public int WaveStartMinPlayers=1;
 	
 	/*
 	 * Zombies
@@ -79,11 +80,14 @@ public class TribuDefaultConfiguration {
 				put("PluginMode.AutoStart", PluginModeAutoStart);
 				put("PluginMode.DefaultLevel", PluginModeDefaultLevel);
 				put("Level.ClearZone", LevelClearZone);
+				put("Level.Jail", LevelJail);
+				put("Level.JailRadius", LevelJailRadius);
 				put("WaveStart.SetTime", WaveStartSetTime);
 				put("WaveStart.SetTimeTo", WaveStartSetTimeTo);
 				put("WaveStart.Delay", WaveStartDelay);
 				put("WaveStart.TeleportPlayers", WaveStartTeleportPlayers);
 				put("WaveStart.HealPlayers", WaveStartHealPlayers);
+				put("WaveStart.MinPlayers", WaveStartMinPlayers);
 				put("Zombies.Quantity", ZombiesQuantity);
 				put("Zombies.Health", ZombiesHealth);
 				put("Zombies.FireResistant", ZombiesFireResistant);

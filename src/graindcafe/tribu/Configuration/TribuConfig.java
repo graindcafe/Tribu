@@ -210,6 +210,12 @@ public class TribuConfig extends TribuDefaultConfiguration{
 					{
 						 WaveStartHealPlayers=(Boolean) config.getBoolean(key);
 					}
+					else if(keyNode[1].equalsIgnoreCase("MinPlayers"))
+					{
+						WaveStartMinPlayers= config.getInt(key);
+						if(WaveStartMinPlayers<1)
+							WaveStartMinPlayers= 1;
+					}
 						
 				}
 			}
