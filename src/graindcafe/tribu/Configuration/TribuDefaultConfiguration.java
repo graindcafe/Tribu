@@ -73,7 +73,6 @@ public class TribuDefaultConfiguration {
 
 			{
 				put("PluginMode.WorldExclusive", PluginModeWorldExclusive);
-				put("PluginMode.WorldExclusiveWorldName", PluginModeWorldExclusiveWorldName);
 				put("PluginMode.ServerExclusive", PluginModeServerExclusive);
 				put("PluginMode.Language", PluginModeLanguage);
 				put("PluginMode.AutoStart", PluginModeAutoStart);
