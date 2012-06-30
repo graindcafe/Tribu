@@ -735,7 +735,8 @@ public class Tribu extends JavaPlugin {
 			getSpawner().clearZombies();
 			getLevelSelector().cancelVote();
 			blockTrace.reverse();
-			TollSign.getAllowedPlayer().clear();
+			if(TollSign.getAllowedPlayer()!=null)
+				TollSign.getAllowedPlayer().clear();
 			inventorySave.addInventories(players.keySet());
 			for (Player p : players.keySet()) // Teleports all players to spawn
 												// when game ends
