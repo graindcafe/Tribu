@@ -56,7 +56,6 @@ public class TribuEntityListener implements Listener {
 							}
 							p.getInventory().clear();
 						}
-						plugin.messagePlayers(String.format(plugin.getLocale("Message.Died"),p.getName()));
 						p.teleport(plugin.getLevel().getDeathSpawn());
 						p.setHealth(1);
 						plugin.setDead(p);

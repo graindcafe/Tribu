@@ -360,7 +360,7 @@ public class Tribu extends JavaPlugin {
 				put("Message.LevelNotReady", ChatColor.YELLOW
 						+ "The level is not ready to run. Make sure you create/load a level and that it contains zombie spawns.");
 				put("Message.Deny", ChatColor.RED + "A zombie denied your action, sorry.");
-				put("Message.PlayerDied", ChatColor.RED + "You are dead.");
+				put("Message.PlayerDied", ChatColor.LIGHT_PURPLE + "%s"+ ChatColor.RED + " has died.");
 				put("Message.PlayerRevive", ChatColor.GREEN + "You have been revived.");
 				// put("Message.PlayerWrongWorld","You are in the incorrect world. Please join world "
 				// + ChatColor.LIGHT_PURPLE +
@@ -736,7 +736,8 @@ public class Tribu extends JavaPlugin {
 				p.subtractmoney(config.StatsOnPlayerDeathMoney);
 				p.subtractPoints(config.StatsOnPlayerDeathPoints);
 				p.msgStats();
-				messagePlayers(ChatColor.LIGHT_PURPLE + player.getName() + ChatColor.RED + " has died.");
+				
+				messagePlayers("Message.Died",player.getName());
 				/*
 				 * Set<Entry<Player, PlayerStats>> stats = players.entrySet();
 				 * for (Entry<Player, PlayerStats> stat : stats) {
