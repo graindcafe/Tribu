@@ -276,7 +276,7 @@ public class Tribu extends JavaPlugin {
 		DefaultLanguage.setAuthor("Graindcafe");
 		DefaultLanguage.setName("English");
 		DefaultLanguage.setVersion(Constants.LanguageFileVersion);
-		DefaultLanguage.setLanguagesFolder(getDataFolder().getPath() + File.separatorChar + "languages" + File.separatorChar);
+		DefaultLanguage.setLanguagesFolder(Constants.languagesFolder);
 		DefaultLanguage.setLocales(new HashMap<String, String>() {
 			private static final long serialVersionUID = 9166935722459443352L;
 			{
