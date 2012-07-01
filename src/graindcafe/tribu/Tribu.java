@@ -202,12 +202,10 @@ public class Tribu extends JavaPlugin {
 	public void checkAliveCount() {
 		// log.info("checking alive count " + aliveCount);
 
-		if (this.aliveCount == 0 && isRunning) { // if (aliveCount == 0 &&
-													// isRunning) { //if
-													// deadPeople isnt used.
-			stopRunning();
+		if (this.aliveCount == 0 && isRunning) {
 			messagePlayers(language.get("Message.ZombieHavePrevailed"));
 			messagePlayers(String.format(language.get("Message.YouHaveReachedWave"), String.valueOf(getWaveStarter().getWaveNumber())));
+			stopRunning();
 			if (getPlayersCount() != 0)
 				getLevelSelector().startVote(Constants.VoteDelay);
 		}
