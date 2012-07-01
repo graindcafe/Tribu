@@ -8,8 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -56,11 +55,11 @@ public class TribuConfig extends TribuDefaultConfiguration{
 							pck.addItem(item.getInt("id"), (short) item.getInt("data", item.getInt("subid", item.getInt("durability", 0))),
 									(short) item.getInt("amount", 1), enchts);
 						} else
-							Logger.getLogger("Minecraft").log(Level.INFO,itemName + " not loaded");
+							debugMsg(itemName + " not loaded");
 					}
 					DefaultPackages.push(pck);
 				} else
-					Logger.getLogger("Minecraft").log(Level.INFO,pckName + " not loaded");
+					debugMsg(pckName + " not loaded");
 
 			}
 		}
@@ -124,20 +123,20 @@ public class TribuConfig extends TribuDefaultConfiguration{
 
 	}
 
-	protected void info(String info)
+	protected static void debugMsg(String info)
 	{
-		Logger.getLogger("Minecraft").info("[Tribu] " + info);
+		//Logger.getLogger("Minecraft").info("[Tribu] " + info);
 	}
 	
-	protected void LogSevere(String string)
+	/*protected void LogSevere(String string)
 	{
 		Logger.getLogger("Minecraft").severe("[Tribu] " + string);
-	}
+	}*/
 	public void load(String key,FileConfiguration config)
 	{
 		String[] keyNode =key.split("\\.");
 		byte nodeCount=(byte) keyNode.length;
-		info(key);
+		debugMsg(key);
 		if(nodeCount>=2)
 		{
 		//	info(keyNode[0] + " - "+keyNode[1] );
@@ -194,9 +193,9 @@ public class TribuConfig extends TribuDefaultConfiguration{
 					}
 					else if(keyNode[1].equalsIgnoreCase("SetTimeTo"))
 					{
-						info("WaveStartSetTimeTo < "+WaveStartSetTimeTo);
+						debugMsg("WaveStartSetTimeTo < "+WaveStartSetTimeTo);
 						WaveStartSetTimeTo=(Integer) config.getInt(key);
-						info("WaveStartSetTimeTo > "+WaveStartSetTimeTo);
+						debugMsg("WaveStartSetTimeTo > "+WaveStartSetTimeTo);
 					}
 					else if(keyNode[1].equalsIgnoreCase("Delay"))
 					{
@@ -299,12 +298,12 @@ public class TribuConfig extends TribuDefaultConfiguration{
 			}
 			else
 			{
-				info("Not found : "+key);
+				debugMsg("Not found : "+key);
 				try {
 					this.getClass().getField(key).set(toMap().get(key), config.get(key));
 				} catch (Exception e)
 				{
-					info("Failed "+key);
+					debugMsg("Failed "+key);
 					return;
 				}
 				
@@ -315,7 +314,7 @@ public class TribuConfig extends TribuDefaultConfiguration{
 			 DefaultPackages=(LinkedList<Package>) TribuConfig.getDefaultPackages(config);
 		}
 		else
-			info("Section : "+key);
+			debugMsg("Section : "+key);
 		return;
 	}
 	
