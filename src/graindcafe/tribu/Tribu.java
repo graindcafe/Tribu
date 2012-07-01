@@ -47,58 +47,66 @@ import org.bukkit.plugin.java.JavaPlugin;
  * @author Graindcafe
  * 
  */
-/**
- * @author Quentin
- *
- */
 public class Tribu extends JavaPlugin {
+	private static String messagePrefix;
+
 	public static String getExceptionMessage(Exception e) {
 		String message = e.getLocalizedMessage() + "\n";
 		for (StackTraceElement st : e.getStackTrace())
 			message += "[" + st.getFileName() + ":" + st.getLineNumber() + "] " + st.getClassName() + "->" + st.getMethodName() + "\n";
 		return message;
 	}
-
+	/**
+	 * Send a message to a player or the console
+	 * @param sender The one to send a message
+	 * @param message The message
+	 */
+	public static void messagePlayer(CommandSender sender, String message) {
+		if (!message.isEmpty())
+			if (sender == null)
+				Logger.getLogger("Minecraft").info(ChatColor.stripColor(messagePrefix+message));
+			else
+				sender.sendMessage(messagePrefix+message);
+	}
+	private int aliveCount;
 	private TribuBlockListener blockListener;
 	private BlockTracer blockTrace;
-	private TribuWorldListener worldListener;
+	private String broadcastPrefix;
 	private TribuConfig config;
 	private TribuEntityListener entityListener;
-	private TribuInventory inventorySave;
-	private WaveStarter waveStarter;
-	private TribuSpawner spawner;
-	private SpawnTimer spawnTimer;
-	private TribuLevel level;
-	private LevelFileLoader levelLoader;
-	private LevelSelector levelSelector;
-	private TribuPlayerListener playerListener;
-
-	private Language language;
-
-	private Logger log;
-	private Random rnd;
-
-	private HashMap<Player, PlayerStats> players;
-	private HashMap<Player, Location> spawnPoint;
-	private LinkedList<PlayerStats> sortedStats;
-	private HashMap<Player, TribuTempInventory> tempInventories;
-
-	private int aliveCount;
-	private int waitingPlayers = 0;
-
-	private boolean isRunning;
-	private static String messagePrefix;
-	private String broadcastPrefix;
 	private String infoPrefix;
-	private String warningPrefix;
+	private TribuInventory inventorySave;
+	private boolean isRunning;
+	private Language language;
+	private TribuLevel level;
+
+	private LevelFileLoader levelLoader;
+
+	private LevelSelector levelSelector;
+	private Logger log;
+
+	private TribuPlayerListener playerListener;
+	private HashMap<Player, PlayerStats> players;
+	private Random rnd;
 	private String severePrefix;
 
-	public void addPlayer(final Player player, final double timeout) {
-		this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-			public void run() {
-				addPlayer(player);
+	private LinkedList<PlayerStats> sortedStats;
+	private TribuSpawner spawner;
+
+	private HashMap<Player, Location> spawnPoint;
+	private SpawnTimer spawnTimer;
+	private HashMap<Player, TribuTempInventory> tempInventories;
+	private int waitingPlayers = 0;
+	private String warningPrefix;
+	private WaveStarter waveStarter;
+
+	private TribuWorldListener worldListener;
+
+	public void addDefaultPackages() {
+		if (level != null && this.config.DefaultPackages != null)
+			for (Package pck : this.config.DefaultPackages) {
+				level.addPackage(pck);
 			}
-		}, Math.round(Constants.TicksBySecond * timeout));
 	}
 
 	public void addPlayer(Player player) {
@@ -127,17 +135,53 @@ public class Tribu extends JavaPlugin {
 		}
 	}
 
-	public void saveSetTribuInventory(Player player) {
-		inventorySave.addInventory(player);
-		player.getInventory().clear();
-		player.getInventory().setArmorContents(null);
+	public void addPlayer(final Player player, final double timeout) {
+		this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			public void run() {
+				addPlayer(player);
+			}
+		}, Math.round(Constants.TicksBySecond * timeout));
 	}
 
-	public void addDefaultPackages() {
-		if (level != null && this.config.DefaultPackages != null)
-			for (Package pck : this.config.DefaultPackages) {
-				level.addPackage(pck);
-			}
+	/**
+	 * Broadcast message to every players on the server
+	 * @param message Message to broadcast
+	 */
+	public void broadcast(String msg)
+	{
+		if(msg.isEmpty())
+			getServer().broadcastMessage(broadcastPrefix+msg);
+	}
+
+	/**
+	 * Broadcast message to every players on the server after formating the given language node
+	 * @param languageNode The language node to format
+	 * @param params The arguments to pass to the language node
+	 */
+	public void broadcast(String languageNode,Object... params)
+	{
+		broadcast(String.format(getLocale(languageNode),params));
+	}
+
+	/**
+	 * Broadcast message to every players on the server with given permission
+	 * @param message Message to broadcast
+	 * @param permission Permission to have
+	 */
+	public void broadcast(String message, String permission)
+	{
+		if(message.isEmpty())
+			getServer().broadcast(broadcastPrefix+message, permission);
+	}
+
+	/**
+	 * Broadcast message to every players on the server with the given permission after formating the given language node
+	 * @param languageNode The language node to format
+	 * @param params The arguments to pass to the language node
+	 */
+	public void broadcast(String languageNode, String permission, Object... params)
+	{
+		broadcast(String.format(getLocale(languageNode),params),permission);
 	}
 
 	public void checkAliveCount() {
@@ -152,6 +196,10 @@ public class Tribu extends JavaPlugin {
 			if (getPlayersCount() != 0)
 				getLevelSelector().startVote(Constants.VoteDelay);
 		}
+	}
+
+	public TribuConfig config() {
+		return config;
 	}
 
 	public int getAliveCount() {
@@ -203,79 +251,12 @@ public class Tribu extends JavaPlugin {
 		return spawnTimer;
 	}
 
-	public boolean isInsideLevel(Location loc) {
-
-		if (isRunning && level != null)
-			return config.PluginModeServerExclusive || config.PluginModeWorldExclusive && loc.getWorld().equals(level.getInitialSpawn().getWorld())
-					|| (loc.distance(level.getInitialSpawn()) < config.LevelClearZone);
-		else
-			return false;
-	}
-
 	public PlayerStats getStats(Player player) {
 		return players.get(player);
 	}
 
 	public WaveStarter getWaveStarter() {
 		return waveStarter;
-	}
-
-	private void initPluginMode() {
-		if (config.PluginModeServerExclusive) {
-			for (Player p : this.getServer().getOnlinePlayers())
-				this.addPlayer(p);
-		}
-
-		if (config.PluginModeDefaultLevel != "")
-			setLevel(levelLoader.loadLevel(config.PluginModeDefaultLevel));
-		if (config.PluginModeWorldExclusive && level != null) {
-			for (Player d : level.getInitialSpawn().getWorld().getPlayers()) {
-				this.addPlayer(d);
-			}
-		}
-		if (config.PluginModeAutoStart)
-			startRunning();
-	}
-
-	public void reloadConf() {
-		this.reloadConfig();
-		this.loadCustomConf();
-		this.initPluginMode();
-	}
-
-	public void loadCustomConf() {
-		TribuLevel level = this.getLevel();
-		if (level == null)
-			return;
-		File worldFile = null, levelFile = null, worldDir, levelDir;
-		worldDir = new File(Constants.perWorldFolder);
-		levelDir = new File(Constants.perLevelFolder);
-		String levelName = level.getName() + ".yml";
-		String worldName = level.getInitialSpawn().getWorld().getName() + ".yml";
-		if (!levelDir.exists())
-			levelDir.mkdirs();
-		if (!worldDir.exists())
-			worldDir.mkdirs();
-
-		for (File file : levelDir.listFiles()) {
-			if (file.getName().equalsIgnoreCase(levelName)) {
-				levelFile = file;
-				break;
-			}
-		}
-		for (File file : worldDir.listFiles()) {
-			if (file.getName().equalsIgnoreCase(worldName)) {
-				worldFile = file;
-				break;
-			}
-		}
-		if (levelFile != null)
-			if (worldFile != null)
-				this.config = new TribuConfig(levelFile, new TribuConfig(worldFile));
-			else
-				this.config = new TribuConfig(levelFile);
-		else
-			this.config = new TribuConfig();
 	}
 
 	private void initLanguage() {
@@ -432,12 +413,34 @@ public class Tribu extends JavaPlugin {
 		Constants.MessageZombieSpawnList = language.get("Message.ZombieSpawnList");
 	}
 
+	private void initPluginMode() {
+		if (config.PluginModeServerExclusive) {
+			for (Player p : this.getServer().getOnlinePlayers())
+				this.addPlayer(p);
+		}
+
+		if (config.PluginModeDefaultLevel != "")
+			setLevel(levelLoader.loadLevel(config.PluginModeDefaultLevel));
+		if (config.PluginModeWorldExclusive && level != null) {
+			for (Player d : level.getInitialSpawn().getWorld().getPlayers()) {
+				this.addPlayer(d);
+			}
+		}
+		if (config.PluginModeAutoStart)
+			startRunning();
+	}
+
 	public boolean isAlive(Player player) {
 		return players.get(player).isalive();
 	}
 
-	public TribuConfig config() {
-		return config;
+	public boolean isInsideLevel(Location loc) {
+
+		if (isRunning && level != null)
+			return config.PluginModeServerExclusive || config.PluginModeWorldExclusive && loc.getWorld().equals(level.getInitialSpawn().getWorld())
+					|| (loc.distance(level.getInitialSpawn()) < config.LevelClearZone);
+		else
+			return false;
 	}
 
 	public boolean isPlaying(Player p) {
@@ -454,6 +457,41 @@ public class Tribu extends JavaPlugin {
 		tempInventories.put(p, new TribuTempInventory(p, items));
 	}
 
+	public void loadCustomConf() {
+		TribuLevel level = this.getLevel();
+		if (level == null)
+			return;
+		File worldFile = null, levelFile = null, worldDir, levelDir;
+		worldDir = new File(Constants.perWorldFolder);
+		levelDir = new File(Constants.perLevelFolder);
+		String levelName = level.getName() + ".yml";
+		String worldName = level.getInitialSpawn().getWorld().getName() + ".yml";
+		if (!levelDir.exists())
+			levelDir.mkdirs();
+		if (!worldDir.exists())
+			worldDir.mkdirs();
+
+		for (File file : levelDir.listFiles()) {
+			if (file.getName().equalsIgnoreCase(levelName)) {
+				levelFile = file;
+				break;
+			}
+		}
+		for (File file : worldDir.listFiles()) {
+			if (file.getName().equalsIgnoreCase(worldName)) {
+				worldFile = file;
+				break;
+			}
+		}
+		if (levelFile != null)
+			if (worldFile != null)
+				this.config = new TribuConfig(levelFile, new TribuConfig(worldFile));
+			else
+				this.config = new TribuConfig(levelFile);
+		else
+			this.config = new TribuConfig();
+	}
+
 	public void LogInfo(String message) {
 		log.info(infoPrefix+message);
 	}
@@ -465,6 +503,37 @@ public class Tribu extends JavaPlugin {
 	public void LogWarning(String message) {
 		log.warning(warningPrefix+message);
 
+	}
+
+	/**
+	 * Send a message after formating the given languageNode with given arguments
+	 * @param sender The one to send a message
+	 * @param languageNode The language node to format
+	 * @param params The arguments to pass to the language node
+	 */
+	public void messagePlayer(CommandSender sender, String languageNode,Object... params) {
+		messagePlayer(sender,String.format(getLocale(languageNode),params));
+	}
+
+	/**
+	 * Broadcast message to playing players
+	 * 
+	 * @param msg
+	 */
+	public void messagePlayers(String msg) {
+		if (!msg.isEmpty())
+			for (Player p : players.keySet()) {
+				p.sendMessage(messagePrefix+msg);
+			}
+	}
+
+	/**
+	 * Broadcast message to playing players after formating the given language node
+	 * @param languageNode The language node to format
+	 * @param params The arguments to pass to the language node
+	 */
+	public void messagePlayers(String languageNode,Object... params) {
+		messagePlayers(String.format(getLocale(languageNode),params)); 
 	}
 
 	@Override
@@ -541,13 +610,10 @@ public class Tribu extends JavaPlugin {
 		LogInfo(language.get("Info.Enable"));
 	}
 
-	/**
-	 * Set that the player spawn has been reseted and should be set it back when reviving
-	 * @param p The player
-	 * @param point The previous spawn
-	 */
-	public void resetedSpawnAdd(Player p, Location point) {
-		spawnPoint.put(p, point);
+	public void reloadConf() {
+		this.reloadConfig();
+		this.loadCustomConf();
+		this.initPluginMode();
 	}
 
 	/**
@@ -571,6 +637,15 @@ public class Tribu extends JavaPlugin {
 				restoreInventory(player);
 
 		}
+	}
+
+	/**
+	 * Set that the player spawn has been reseted and should be set it back when reviving
+	 * @param p The player
+	 * @param point The previous spawn
+	 */
+	public void resetedSpawnAdd(Player p, Location point) {
+		spawnPoint.put(p, point);
 	}
 
 	public void restoreInventory(Player p) {
@@ -599,7 +674,6 @@ public class Tribu extends JavaPlugin {
 		aliveCount++;
 
 	}
-
 	/**
 	 * Revive all players
 	 * @param teleportAll Teleport everyone or just dead people
@@ -613,7 +687,11 @@ public class Tribu extends JavaPlugin {
 			}
 		}
 	}
-
+	public void saveSetTribuInventory(Player player) {
+		inventorySave.addInventory(player);
+		player.getInventory().clear();
+		player.getInventory().setArmorContents(null);
+	}
 	/**
 	 * Mark a player as dead and do all necessary stuff
 	 * @param player
@@ -641,7 +719,6 @@ public class Tribu extends JavaPlugin {
 			}
 		}
 	}
-
 	/**
 	 * Set the current level
 	 * @param level
@@ -650,19 +727,6 @@ public class Tribu extends JavaPlugin {
 		this.level = level;
 		this.loadCustomConf();
 	}
-
-	/**
-	 * Start the game in n seconds
-	 * @param timeout Delay in seconds
-	 */
-	public void startRunning(final double timeout) {
-		this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-			public void run() {
-				startRunning();
-			}
-		}, Math.round(Constants.TicksBySecond * timeout));
-	}
-
 	/**
 	 * Start a new game
 	 * @return if the game actually started
@@ -724,7 +788,17 @@ public class Tribu extends JavaPlugin {
 		}
 		return true;
 	}
-
+	/**
+	 * Start the game in n seconds
+	 * @param timeout Delay in seconds
+	 */
+	public void startRunning(final double timeout) {
+		this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			public void run() {
+				startRunning();
+			}
+		}, Math.round(Constants.TicksBySecond * timeout));
+	}
 	/**
 	 * End the game
 	 */
@@ -749,83 +823,5 @@ public class Tribu extends JavaPlugin {
 			}
 		}
 
-	}
-
-	/**
-	 * Send a message to a player or the console
-	 * @param sender The one to send a message
-	 * @param message The message
-	 */
-	public static void messagePlayer(CommandSender sender, String message) {
-		if (!message.isEmpty())
-			if (sender == null)
-				Logger.getLogger("Minecraft").info(ChatColor.stripColor(messagePrefix+message));
-			else
-				sender.sendMessage(messagePrefix+message);
-	}
-	/**
-	 * Send a message after formating the given languageNode with given arguments
-	 * @param sender The one to send a message
-	 * @param languageNode The language node to format
-	 * @param params The arguments to pass to the language node
-	 */
-	public void messagePlayer(CommandSender sender, String languageNode,Object... params) {
-		messagePlayer(sender,String.format(getLocale(languageNode),params));
-	}
-	/**
-	 * Broadcast message to playing players
-	 * 
-	 * @param msg
-	 */
-	public void messagePlayers(String msg) {
-		if (!msg.isEmpty())
-			for (Player p : players.keySet()) {
-				p.sendMessage(messagePrefix+msg);
-			}
-	}
-	/**
-	 * Broadcast message to playing players after formating the given language node
-	 * @param languageNode The language node to format
-	 * @param params The arguments to pass to the language node
-	 */
-	public void messagePlayers(String languageNode,Object... params) {
-		messagePlayers(String.format(getLocale(languageNode),params)); 
-	}
-	/**
-	 * Broadcast message to every players on the server
-	 * @param message Message to broadcast
-	 */
-	public void broadcast(String msg)
-	{
-		if(msg.isEmpty())
-			getServer().broadcastMessage(broadcastPrefix+msg);
-	}
-	/**
-	 * Broadcast message to every players on the server after formating the given language node
-	 * @param languageNode The language node to format
-	 * @param params The arguments to pass to the language node
-	 */
-	public void broadcast(String languageNode,Object... params)
-	{
-		broadcast(String.format(getLocale(languageNode),params));
-	}
-	/**
-	 * Broadcast message to every players on the server with given permission
-	 * @param message Message to broadcast
-	 * @param permission Permission to have
-	 */
-	public void broadcast(String message, String permission)
-	{
-		if(message.isEmpty())
-			getServer().broadcast(broadcastPrefix+message, permission);
-	}
-	/**
-	 * Broadcast message to every players on the server with the given permission after formating the given language node
-	 * @param languageNode The language node to format
-	 * @param params The arguments to pass to the language node
-	 */
-	public void broadcast(String languageNode, String permission, Object... params)
-	{
-		broadcast(String.format(getLocale(languageNode),params),permission);
 	}
 }
