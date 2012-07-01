@@ -729,13 +729,12 @@ public class Tribu extends JavaPlugin {
 	}
 	/**
 	 * Start a new game
-	 * @return if the game actually started
+	 * @return if the game can start
 	 */
 	public boolean startRunning() {
 		if (!isRunning && getLevel() != null) {
 			if (players.isEmpty()) {
 				waitingPlayers = config.WaveStartMinPlayers;
-				return false;
 			} else {
 				// Before (next instruction) it will saves current default
 				// packages to the level, saving theses packages with the level
