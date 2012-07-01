@@ -10,9 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBurnEvent;
-import org.bukkit.event.block.BlockFadeEvent;
-import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.block.SignChangeEvent;
@@ -38,7 +35,7 @@ public class TribuBlockListener implements Listener {
 				event.setCancelled(true);
 			}
 		} else if (plugin.isRunning() && plugin.isPlaying(event.getPlayer()))
-			plugin.getBlockTrace().push(event.getBlock(), true);
+			plugin.getBlockTrace().push(event.getBlock().getState());
 		// Else if not running or not playing we may check if it's server exclusive / world exclusive and prevent modifications
 		
 			
@@ -48,10 +45,9 @@ public class TribuBlockListener implements Listener {
 	public void onBlockPlace(BlockPlaceEvent event) {
 		if (plugin.isRunning() && plugin.isPlaying(event.getPlayer()))
 			if (event.getBlock().getType().equals(Material.FIRE))
-				plugin.getBlockTrace().pushIgnitedBlock(event.getBlockAgainst());
+				plugin.getBlockTrace().push(event.getBlockAgainst().getState());
 			else
-				plugin.getBlockTrace().push(event.getBlockReplacedState().getTypeId(), event.getBlockReplacedState().getData(),
-						event.getBlock().getLocation(), false);
+				plugin.getBlockTrace().push(event.getBlockReplacedState(), event.getBlockPlaced());
 		// Else if not running or not playing we may check if it's server exclusive / world exclusive and prevent modifications
 	}
 
@@ -59,23 +55,23 @@ public class TribuBlockListener implements Listener {
 	public void onBlockRedstoneChange(BlockRedstoneEvent event) {
 		
 		if (plugin.isRunning()) {
-			//plugin.getBlockTrace().pushRedstoneChanged(event.getBlock());
+			plugin.getBlockTrace().push(event.getBlock().getState());
 			if (plugin.getLevel() != null)
 				plugin.getLevel().onRedstoneChange(event);
 		}
 	}
-
+/*
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockIgnite(BlockIgniteEvent event) {
 		if (plugin.getBlockTrace().isFireSpreadingOut(event.getBlock().getLocation()) || plugin.isInsideLevel(event.getBlock().getLocation()))
 			plugin.getBlockTrace().pushIgnitedBlock(event.getBlock());
 		
-	}
+	}*/
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockBurn(BlockBurnEvent event) {
 		if (plugin.isRunning())
-			plugin.getBlockTrace().pushBurntBlock(event.getBlock());
+			plugin.getBlockTrace().push(event.getBlock().getState());
 	}
 
 	@EventHandler
@@ -102,6 +98,8 @@ public class TribuBlockListener implements Listener {
 			}
 		}
 	}
+	/*
+	
 	@EventHandler
 	public void onBlockFade(BlockFadeEvent event)
 	{
@@ -118,7 +116,7 @@ public class TribuBlockListener implements Listener {
 			plugin.getBlockTrace().pushMovingBlock(event.getBlock());
 		}
 	}
-	
+	*/
 	public void registerEvents(PluginManager pm) {
 		pm.registerEvents(this, plugin);
 	}

@@ -58,7 +58,7 @@ public class TribuPlayerListener implements Listener {
 		if (!event.isCancelled()) {
 			Block block = event.getClickedBlock();
 			if (block != null && plugin.isPlaying(event.getPlayer())) {
-				plugin.getBlockTrace().push(block, true);
+				//plugin.getBlockTrace().push(block, true);
 				if (Sign.class.isInstance(block.getState()) && plugin.getLevel() != null) {
 					if (plugin.isRunning()) {
 						if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
