@@ -56,18 +56,23 @@ public class Tribu extends JavaPlugin {
 			message += "[" + st.getFileName() + ":" + st.getLineNumber() + "] " + st.getClassName() + "->" + st.getMethodName() + "\n";
 		return message;
 	}
+
 	/**
 	 * Send a message to a player or the console
-	 * @param sender The one to send a message
-	 * @param message The message
+	 * 
+	 * @param sender
+	 *            The one to send a message
+	 * @param message
+	 *            The message
 	 */
 	public static void messagePlayer(CommandSender sender, String message) {
 		if (!message.isEmpty())
 			if (sender == null)
-				Logger.getLogger("Minecraft").info(ChatColor.stripColor(messagePrefix+message));
+				Logger.getLogger("Minecraft").info(ChatColor.stripColor(messagePrefix + message));
 			else
-				sender.sendMessage(messagePrefix+message);
+				sender.sendMessage(messagePrefix + message);
 	}
+
 	private int aliveCount;
 	private TribuBlockListener blockListener;
 	private BlockTracer blockTrace;
@@ -113,7 +118,8 @@ public class Tribu extends JavaPlugin {
 		if (player != null && !players.containsKey(player)) {
 
 			if (config.PlayersStoreInventory) {
-				saveSetTribuInventory(player);
+				inventorySave.addInventory(player);
+				player.getInventory().clear();
 			}
 			PlayerStats stats = new PlayerStats(player);
 			players.put(player, stats);
@@ -145,43 +151,52 @@ public class Tribu extends JavaPlugin {
 
 	/**
 	 * Broadcast message to every players on the server
-	 * @param message Message to broadcast
+	 * 
+	 * @param message
+	 *            Message to broadcast
 	 */
-	public void broadcast(String msg)
-	{
-		if(msg.isEmpty())
-			getServer().broadcastMessage(broadcastPrefix+msg);
+	public void broadcast(String msg) {
+		if (msg.isEmpty())
+			getServer().broadcastMessage(broadcastPrefix + msg);
 	}
 
 	/**
-	 * Broadcast message to every players on the server after formating the given language node
-	 * @param languageNode The language node to format
-	 * @param params The arguments to pass to the language node
+	 * Broadcast message to every players on the server after formating the
+	 * given language node
+	 * 
+	 * @param languageNode
+	 *            The language node to format
+	 * @param params
+	 *            The arguments to pass to the language node
 	 */
-	public void broadcast(String languageNode,Object... params)
-	{
-		broadcast(String.format(getLocale(languageNode),params));
+	public void broadcast(String languageNode, Object... params) {
+		broadcast(String.format(getLocale(languageNode), params));
 	}
 
 	/**
 	 * Broadcast message to every players on the server with given permission
-	 * @param message Message to broadcast
-	 * @param permission Permission to have
+	 * 
+	 * @param message
+	 *            Message to broadcast
+	 * @param permission
+	 *            Permission to have
 	 */
-	public void broadcast(String message, String permission)
-	{
-		if(message.isEmpty())
-			getServer().broadcast(broadcastPrefix+message, permission);
+	public void broadcast(String message, String permission) {
+		if (message.isEmpty())
+			getServer().broadcast(broadcastPrefix + message, permission);
 	}
 
 	/**
-	 * Broadcast message to every players on the server with the given permission after formating the given language node
-	 * @param languageNode The language node to format
-	 * @param params The arguments to pass to the language node
+	 * Broadcast message to every players on the server with the given
+	 * permission after formating the given language node
+	 * 
+	 * @param languageNode
+	 *            The language node to format
+	 * @param params
+	 *            The arguments to pass to the language node
 	 */
-	public void broadcast(String languageNode, String permission, Object... params)
-	{
-		broadcast(String.format(getLocale(languageNode),params),permission);
+	public void broadcast(String languageNode, String permission, Object... params) {
+		broadcast(String.format(getLocale(languageNode), params), permission);
 	}
 
 	public void checkAliveCount() {
@@ -396,19 +411,19 @@ public class Tribu extends JavaPlugin {
 
 				put("Severe.PlayerDidntGetInvBack", ChatColor.RED
 						+ "didn't get his inventory back because he was returned null. (Maybe he was not in server?)");
-				put("Prefix.Broadcast","[Tribu]");
-				put("Prefix.Message","");
-				put("Prefix.Info","[Tribu]");
-				put("Prefix.Warning","[Tribu]");
-				put("Prefix.Severe","[Tribu]");
+				put("Prefix.Broadcast", "[Tribu]");
+				put("Prefix.Message", "");
+				put("Prefix.Info", "[Tribu]");
+				put("Prefix.Warning", "[Tribu]");
+				put("Prefix.Severe", "[Tribu]");
 			}
-		});		
+		});
 		language = Language.init(log, config.PluginModeLanguage);
-		messagePrefix=language.get("Prefix.Message");
-		broadcastPrefix=language.get("Prefix.Broadcast");
-		infoPrefix=language.get("Prefix.Info");
-		warningPrefix=language.get("Prefix.Warning");
-		severePrefix=language.get("Prefix.Severe");
+		messagePrefix = language.get("Prefix.Message");
+		broadcastPrefix = language.get("Prefix.Broadcast");
+		infoPrefix = language.get("Prefix.Info");
+		warningPrefix = language.get("Prefix.Warning");
+		severePrefix = language.get("Prefix.Severe");
 		Constants.MessageMoneyPoints = language.get("Message.MoneyPoints");
 		Constants.MessageZombieSpawnList = language.get("Message.ZombieSpawnList");
 	}
@@ -493,26 +508,31 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public void LogInfo(String message) {
-		log.info(infoPrefix+message);
+		log.info(infoPrefix + message);
 	}
 
 	public void LogSevere(String message) {
-		log.severe(severePrefix+message);
+		log.severe(severePrefix + message);
 	}
 
 	public void LogWarning(String message) {
-		log.warning(warningPrefix+message);
+		log.warning(warningPrefix + message);
 
 	}
 
 	/**
-	 * Send a message after formating the given languageNode with given arguments
-	 * @param sender The one to send a message
-	 * @param languageNode The language node to format
-	 * @param params The arguments to pass to the language node
+	 * Send a message after formating the given languageNode with given
+	 * arguments
+	 * 
+	 * @param sender
+	 *            The one to send a message
+	 * @param languageNode
+	 *            The language node to format
+	 * @param params
+	 *            The arguments to pass to the language node
 	 */
-	public void messagePlayer(CommandSender sender, String languageNode,Object... params) {
-		messagePlayer(sender,String.format(getLocale(languageNode),params));
+	public void messagePlayer(CommandSender sender, String languageNode, Object... params) {
+		messagePlayer(sender, String.format(getLocale(languageNode), params));
 	}
 
 	/**
@@ -523,17 +543,21 @@ public class Tribu extends JavaPlugin {
 	public void messagePlayers(String msg) {
 		if (!msg.isEmpty())
 			for (Player p : players.keySet()) {
-				p.sendMessage(messagePrefix+msg);
+				p.sendMessage(messagePrefix + msg);
 			}
 	}
 
 	/**
-	 * Broadcast message to playing players after formating the given language node
-	 * @param languageNode The language node to format
-	 * @param params The arguments to pass to the language node
+	 * Broadcast message to playing players after formating the given language
+	 * node
+	 * 
+	 * @param languageNode
+	 *            The language node to format
+	 * @param params
+	 *            The arguments to pass to the language node
 	 */
-	public void messagePlayers(String languageNode,Object... params) {
-		messagePlayers(String.format(getLocale(languageNode),params)); 
+	public void messagePlayers(String languageNode, Object... params) {
+		messagePlayers(String.format(getLocale(languageNode), params));
 	}
 
 	@Override
@@ -575,7 +599,7 @@ public class Tribu extends JavaPlugin {
 		aliveCount = 0;
 		level = null;
 		blockTrace = new BlockTracer(this);
-		
+
 		tempInventories = new HashMap<Player, TribuTempInventory>();
 		inventorySave = new TribuInventory();
 		players = new HashMap<Player, PlayerStats>();
@@ -618,6 +642,7 @@ public class Tribu extends JavaPlugin {
 
 	/**
 	 * Remove a player from the game
+	 * 
 	 * @param player
 	 */
 	public void removePlayer(Player player) {
@@ -640,9 +665,13 @@ public class Tribu extends JavaPlugin {
 	}
 
 	/**
-	 * Set that the player spawn has been reseted and should be set it back when reviving
-	 * @param p The player
-	 * @param point The previous spawn
+	 * Set that the player spawn has been reseted and should be set it back when
+	 * reviving
+	 * 
+	 * @param p
+	 *            The player
+	 * @param point
+	 *            The previous spawn
 	 */
 	public void resetedSpawnAdd(Player p, Location point) {
 		spawnPoint.put(p, point);
@@ -661,6 +690,7 @@ public class Tribu extends JavaPlugin {
 
 	/**
 	 * Revive a player
+	 * 
 	 * @param player
 	 */
 	public void revivePlayer(Player player) {
@@ -674,9 +704,12 @@ public class Tribu extends JavaPlugin {
 		aliveCount++;
 
 	}
+
 	/**
 	 * Revive all players
-	 * @param teleportAll Teleport everyone or just dead people
+	 * 
+	 * @param teleportAll
+	 *            Teleport everyone or just dead people
 	 */
 	public void revivePlayers(boolean teleportAll) {
 		aliveCount = 0;
@@ -687,13 +720,11 @@ public class Tribu extends JavaPlugin {
 			}
 		}
 	}
-	public void saveSetTribuInventory(Player player) {
-		inventorySave.addInventory(player);
-		player.getInventory().clear();
-		player.getInventory().setArmorContents(null);
-	}
+
+
 	/**
 	 * Mark a player as dead and do all necessary stuff
+	 * 
 	 * @param player
 	 */
 	public void setDead(Player player) {
@@ -719,16 +750,20 @@ public class Tribu extends JavaPlugin {
 			}
 		}
 	}
+
 	/**
 	 * Set the current level
+	 * 
 	 * @param level
 	 */
 	public void setLevel(TribuLevel level) {
 		this.level = level;
 		this.loadCustomConf();
 	}
+
 	/**
 	 * Start a new game
+	 * 
 	 * @return if the game can start
 	 */
 	public boolean startRunning() {
@@ -769,12 +804,12 @@ public class Tribu extends JavaPlugin {
 				// makes sure all
 				// inventories have been
 				// saved
-				for (Player save : players.keySet()) 
-				{
-					inventorySave.addInventory(save);
-					save.getInventory().clear();
-					save.getInventory().setArmorContents(null);
-				}
+				/*if (config.PlayersStoreInventory)
+					for (Player save : players.keySet()) {
+						inventorySave.addInventory(save);
+						save.getInventory().clear();
+						save.getInventory().setArmorContents(null);
+					}*/
 				for (PlayerStats stat : players.values()) {
 					stat.resetPoints();
 					stat.resetMoney();
@@ -787,9 +822,12 @@ public class Tribu extends JavaPlugin {
 		}
 		return true;
 	}
+
 	/**
 	 * Start the game in n seconds
-	 * @param timeout Delay in seconds
+	 * 
+	 * @param timeout
+	 *            Delay in seconds
 	 */
 	public void startRunning(final double timeout) {
 		this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
@@ -798,6 +836,7 @@ public class Tribu extends JavaPlugin {
 			}
 		}, Math.round(Constants.TicksBySecond * timeout));
 	}
+
 	/**
 	 * End the game
 	 */
@@ -809,12 +848,11 @@ public class Tribu extends JavaPlugin {
 			getSpawner().clearZombies();
 			getLevelSelector().cancelVote();
 			blockTrace.reverse();
-			if(TollSign.getAllowedPlayer()!=null)
+			if (TollSign.getAllowedPlayer() != null)
 				TollSign.getAllowedPlayer().clear();
-			inventorySave.addInventories(players.keySet());
+			inventorySave.restoreInventories();
 			// Teleports all players to spawn when game ends
-			for (Player p : players.keySet()) 								
-			{
+			for (Player p : players.keySet()) {
 				p.teleport(level.getInitialSpawn());
 			}
 			if (!config.PluginModeServerExclusive || !config.PluginModeWorldExclusive) {
