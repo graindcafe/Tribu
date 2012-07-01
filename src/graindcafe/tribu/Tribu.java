@@ -1,6 +1,6 @@
 package graindcafe.tribu;
 
-import graindcafe.tribu.BlockTracer.BlockTrace;
+import graindcafe.tribu.BlockTrace.BlockTracer;
 import graindcafe.tribu.Configuration.Constants;
 import graindcafe.tribu.Configuration.TribuConfig;
 import graindcafe.tribu.Executors.CmdDspawn;
@@ -60,7 +60,7 @@ public class Tribu extends JavaPlugin {
 	}
 
 	private TribuBlockListener blockListener;
-	private BlockTrace blockTrace;
+	private BlockTracer blockTrace;
 	private TribuWorldListener worldListener;
 	private TribuConfig config;
 	private TribuEntityListener entityListener;
@@ -158,7 +158,7 @@ public class Tribu extends JavaPlugin {
 		return aliveCount;
 	}
 
-	public BlockTrace getBlockTrace() {
+	public BlockTracer getBlockTrace() {
 		return blockTrace;
 	}
 
@@ -505,7 +505,8 @@ public class Tribu extends JavaPlugin {
 		isRunning = false;
 		aliveCount = 0;
 		level = null;
-		blockTrace = new BlockTrace();
+		blockTrace = new BlockTracer(this);
+		
 		tempInventories = new HashMap<Player, TribuTempInventory>();
 		inventorySave = new TribuInventory();
 		players = new HashMap<Player, PlayerStats>();
@@ -738,8 +739,8 @@ public class Tribu extends JavaPlugin {
 			if(TollSign.getAllowedPlayer()!=null)
 				TollSign.getAllowedPlayer().clear();
 			inventorySave.addInventories(players.keySet());
-			for (Player p : players.keySet()) // Teleports all players to spawn
-												// when game ends
+			// Teleports all players to spawn when game ends
+			for (Player p : players.keySet()) 								
 			{
 				p.teleport(level.getInitialSpawn());
 			}
@@ -762,7 +763,15 @@ public class Tribu extends JavaPlugin {
 			else
 				sender.sendMessage(messagePrefix+message);
 	}
-
+	/**
+	 * Send a message after formating the given languageNode with given arguments
+	 * @param sender The one to send a message
+	 * @param languageNode The language node to format
+	 * @param params The arguments to pass to the language node
+	 */
+	public void messagePlayer(CommandSender sender, String languageNode,Object... params) {
+		messagePlayer(sender,String.format(getLocale(languageNode),params));
+	}
 	/**
 	 * Broadcast message to playing players
 	 * 
@@ -775,6 +784,14 @@ public class Tribu extends JavaPlugin {
 			}
 	}
 	/**
+	 * Broadcast message to playing players after formating the given language node
+	 * @param languageNode The language node to format
+	 * @param params The arguments to pass to the language node
+	 */
+	public void messagePlayers(String languageNode,Object... params) {
+		messagePlayers(String.format(getLocale(languageNode),params)); 
+	}
+	/**
 	 * Broadcast message to every players on the server
 	 * @param message Message to broadcast
 	 */
@@ -782,6 +799,15 @@ public class Tribu extends JavaPlugin {
 	{
 		if(msg.isEmpty())
 			getServer().broadcastMessage(broadcastPrefix+msg);
+	}
+	/**
+	 * Broadcast message to every players on the server after formating the given language node
+	 * @param languageNode The language node to format
+	 * @param params The arguments to pass to the language node
+	 */
+	public void broadcast(String languageNode,Object... params)
+	{
+		broadcast(String.format(getLocale(languageNode),params));
 	}
 	/**
 	 * Broadcast message to every players on the server with given permission
@@ -792,5 +818,14 @@ public class Tribu extends JavaPlugin {
 	{
 		if(message.isEmpty())
 			getServer().broadcast(broadcastPrefix+message, permission);
+	}
+	/**
+	 * Broadcast message to every players on the server with the given permission after formating the given language node
+	 * @param languageNode The language node to format
+	 * @param params The arguments to pass to the language node
+	 */
+	public void broadcast(String languageNode, String permission, Object... params)
+	{
+		broadcast(String.format(getLocale(languageNode),params),permission);
 	}
 }
