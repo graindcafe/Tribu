@@ -49,7 +49,7 @@ public class SpawnTimer implements Runnable {
 	}
 
 	public void Start(int timeToSpawn) {
-		taskID = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, this, 0, timeToSpawn);
+		taskID = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, this, 0, timeToSpawn);
 	}
 
 	public void StartWave(int max, int health,int timeToSpawn) {

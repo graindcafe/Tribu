@@ -3,6 +3,8 @@ package graindcafe.tribu;
 import java.util.List;
 import org.bukkit.entity.Player;
 
+import graindcafe.tribu.Configuration.Constants;
+
 public class WaveStarter implements Runnable {
 	private Tribu plugin;
 	private boolean scheduled;
@@ -19,7 +21,7 @@ public class WaveStarter implements Runnable {
 			return 0;
 		byte i = (byte) (coef.size() - 1);
 		byte j;
-		int r = 0;
+		float r = 0;
 		int tmpX;
 
 		for (double c : coef) {
@@ -29,10 +31,10 @@ public class WaveStarter implements Runnable {
 				tmpX *= x;
 				j++;
 			}
-			r += Math.round(c * tmpX);
+			r += c * tmpX;
 			i--;
 		}
-		return r;
+		return Math.round(r);
 	}
 
 	public void cancelWave() {
@@ -66,7 +68,7 @@ public class WaveStarter implements Runnable {
 				plugin.getLevel().getInitialSpawn().getWorld().setTime(plugin.config().WaveStartSetTimeTo);
 			int max = calcPolynomialFunction(waveNumber, plugin.config().ZombiesQuantity);
 			int health = calcPolynomialFunction(waveNumber, plugin.config().ZombiesHealth);
-			int timeToSpawn = calcPolynomialFunction(waveNumber, plugin.config().ZombiesTimeToSpawn)/max; 
+			int timeToSpawn = Math.round((float)Constants.TicksBySecond*((float)calcPolynomialFunction(waveNumber, plugin.config().ZombiesTimeToSpawn)/(float)max)); 
 			scheduled = false;
 			plugin.revivePlayers(false);
 			plugin.getLevel().onWaveStart();
@@ -84,7 +86,7 @@ public class WaveStarter implements Runnable {
 			scheduled = true;
 			plugin.messagePlayers(
 					"Broadcast.Wave", String.valueOf(plugin.getWaveStarter().getWaveNumber()),
-							String.valueOf(delay / 20));
+							String.valueOf(delay / Constants.TicksBySecond));
 		}
 	}
 
