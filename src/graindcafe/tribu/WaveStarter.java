@@ -72,8 +72,8 @@ public class WaveStarter implements Runnable {
 			plugin.getLevel().onWaveStart();
 			plugin.getSpawnTimer().StartWave(max, health,timeToSpawn);
 			plugin.messagePlayers(
-							String.format(plugin.getLocale("Broadcast.StartingWave"), String.valueOf(waveNumber), String.valueOf(max),
-									String.valueOf(health)));
+							"Broadcast.StartingWave", String.valueOf(waveNumber), String.valueOf(max),
+									String.valueOf(health));
 			plugin.getSpawner().startingCallback();
 		}
 	}
@@ -83,8 +83,8 @@ public class WaveStarter implements Runnable {
 			taskID = plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, this, delay);
 			scheduled = true;
 			plugin.messagePlayers(
-					String.format(plugin.getLocale("Broadcast.Wave"), String.valueOf(plugin.getWaveStarter().getWaveNumber()),
-							String.valueOf(delay / 20)));
+					"Broadcast.Wave", String.valueOf(plugin.getWaveStarter().getWaveNumber()),
+							String.valueOf(delay / 20));
 		}
 	}
 
