@@ -102,7 +102,7 @@ public class WaveStarter implements Runnable {
 				plugin.getLevel().getInitialSpawn().getWorld().setTime(plugin.config().WaveStartSetTimeTo);
 			int max = calcPolynomialFunction(waveNumber, plugin.config().ZombiesQuantity);
 			int health = calcPolynomialFunction(waveNumber, plugin.config().ZombiesHealth);
-			int timeToSpawn = Math.round((float)Constants.TicksBySecond*((float)calcPolynomialFunction(waveNumber, plugin.config().ZombiesTimeToSpawn)/(float)max)); 
+			int timeToSpawn = Math.round((float)Constants.TicksBySecond*((float)calcPolynomialFunction(waveNumber, plugin.config().ZombiesTimeToSpawn)/(float)max));
 			scheduled = false;
 			plugin.revivePlayers(false);
 			plugin.getLevel().onWaveStart();
