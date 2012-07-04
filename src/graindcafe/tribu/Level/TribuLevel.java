@@ -40,6 +40,7 @@ import graindcafe.tribu.Configuration.Constants;
 import graindcafe.tribu.Signs.TribuSign;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
@@ -181,7 +182,9 @@ public class TribuLevel {
 	public Location getZombieSpawn(String name) {
 		return zombieSpawns.get(name);
 	}
-
+	public Collection<Location> getZombieSpawns() {
+		return zombieSpawns.values();
+	}
 	public void setChanged() {
 		changed = true;
 	}

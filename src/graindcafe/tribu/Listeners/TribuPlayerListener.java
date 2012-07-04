@@ -135,18 +135,22 @@ public class TribuPlayerListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerMove(PlayerMoveEvent event)
 	{
-		
 		Player player = event.getPlayer();
-		if(plugin.config().LevelJail && plugin.isRunning() && plugin.isPlaying(player) && !plugin.isAlive(player)
-		&& plugin.getLevel().getDeathSpawn().distance(player.getLocation())>plugin.config().LevelJailRadius)
+		if(plugin.isRunning() && plugin.isPlaying(player))
 		{
-			player.teleport(plugin.getLevel().getDeathSpawn());
-			Tribu.messagePlayer(player,plugin.getLocale("Message.PlayerDSpawnLeaveWarning"));
-		}
+			plugin.getChunkMemory().add(player.getLocation().getChunk());
+			if(plugin.config().LevelJail && !plugin.isAlive(player)
+			&& plugin.getLevel().getDeathSpawn().distance(player.getLocation())>plugin.config().LevelJailRadius)
+			{
+				player.teleport(plugin.getLevel().getDeathSpawn());
+				Tribu.messagePlayer(player,plugin.getLocale("Message.PlayerDSpawnLeaveWarning"));
+			}
 		
+		
+		}
 	}
 
 	

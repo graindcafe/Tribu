@@ -45,7 +45,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
-
 public class TribuSpawner {
 	private boolean finished;
 	private int health;
@@ -58,7 +57,7 @@ public class TribuSpawner {
 	// spawned zombies
 	private int totalSpawned;
 	private LinkedList<CraftTribuZombie> zombies;
-	
+
 	public TribuSpawner(Tribu instance) {
 		plugin = instance;
 		totalSpawned = 0;
@@ -111,8 +110,8 @@ public class TribuSpawner {
 			if (!zombies.isEmpty()) {
 				plugin.LogInfo("Health : " + zombies.get(0).getHealth());
 				plugin.LogInfo("LastDamage : " + zombies.get(0).getLastDamage());
-				plugin.LogInfo("isDead : " +  zombies.get(0).isDead());
-				return  zombies.get(0).getLocation();
+				plugin.LogInfo("isDead : " + zombies.get(0).isDead());
+				return zombies.get(0).getLocation();
 			} else {
 				plugin.getSpawnTimer().getState();
 				plugin.LogSevere("No zombie currently spawned " + zombies.size() + " zombie of " + totalSpawned + "/" + maxSpawn
@@ -139,10 +138,11 @@ public class TribuSpawner {
 		return null;
 
 	}
-	public int getMaxSpawn()
-	{
+
+	public int getMaxSpawn() {
 		return this.maxSpawn;
 	}
+
 	public boolean haveZombieToSpawn() {
 		return totalSpawned != maxSpawn;
 	}
@@ -198,13 +198,19 @@ public class TribuSpawner {
 		// Surrounded with justspawned so that the zombie isn't
 		// removed in the entity spawn listener
 		justspawned = true;
-		CraftTribuZombie zombie = (CraftTribuZombie) CraftTribuZombie.spawn(plugin,pos);
-		justspawned = false;
+		CraftTribuZombie zombie;
+		try {
+			zombie = (CraftTribuZombie) CraftTribuZombie.spawn(plugin, pos);
 
-		zombies.add(zombie);
-		zombie.setHealth(health);
-		totalSpawned++;
+			justspawned = false;
 
+			zombies.add(zombie);
+			zombie.setHealth(health);
+			totalSpawned++;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			plugin.LogSevere(e.getMessage());
+		}
 	}
 
 	public void startingCallback() {

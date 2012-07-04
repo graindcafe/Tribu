@@ -34,7 +34,6 @@
  ******************************************************************************/
 package graindcafe.tribu;
 
-import graindcafe.tribu.BlockTrace.BlockTracer;
 import graindcafe.tribu.Configuration.Constants;
 import graindcafe.tribu.Configuration.TribuConfig;
 import graindcafe.tribu.Executors.CmdDspawn;
@@ -109,7 +108,7 @@ public class Tribu extends JavaPlugin {
 
 	private int aliveCount;
 	private TribuBlockListener blockListener;
-	private BlockTracer blockTrace;
+	
 	private String broadcastPrefix;
 	private TribuConfig config;
 	private TribuEntityListener entityListener;
@@ -140,7 +139,8 @@ public class Tribu extends JavaPlugin {
 	private WaveStarter waveStarter;
 
 	private TribuWorldListener worldListener;
-
+	private ChunkMemory memory;
+	
 	public void addDefaultPackages() {
 		if (level != null && this.config.DefaultPackages != null)
 			for (Package pck : this.config.DefaultPackages) {
@@ -252,11 +252,10 @@ public class Tribu extends JavaPlugin {
 	public int getAliveCount() {
 		return aliveCount;
 	}
-
-	public BlockTracer getBlockTrace() {
-		return blockTrace;
+	public ChunkMemory getChunkMemory()
+	{
+		return memory;
 	}
-
 	public TribuLevel getLevel() {
 		return level;
 	}
@@ -595,12 +594,11 @@ public class Tribu extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		inventorySave.restoreInventories();
-		if (this.isRunning) {
-			blockTrace.reverse();
-		}
 		players.clear();
 		sortedStats.clear();
+		memory.restoreAll();
 		stopRunning();
+		
 		LogInfo(language.get("Info.Disable"));
 	}
 
@@ -630,7 +628,6 @@ public class Tribu extends JavaPlugin {
 		isRunning = false;
 		aliveCount = 0;
 		level = null;
-		blockTrace = new BlockTracer(this);
 
 		tempInventories = new HashMap<Player, TribuTempInventory>();
 		inventorySave = new TribuInventory();
@@ -649,7 +646,8 @@ public class Tribu extends JavaPlugin {
 		entityListener = new TribuEntityListener(this);
 		blockListener = new TribuBlockListener(this);
 		worldListener = new TribuWorldListener(this);
-
+		
+		memory = new ChunkMemory();
 		this.initPluginMode();
 		this.loadCustomConf();
 
@@ -831,7 +829,11 @@ public class Tribu extends JavaPlugin {
 								&& !(e instanceof Wolf) && !(e instanceof Villager))
 							e.damage(Integer.MAX_VALUE);
 					}
-
+				memory.startCapturing();
+				memory.add(level.getInitialSpawn().getChunk());
+				memory.add(level.getDeathSpawn().getChunk());
+				for(Location l :level.getZombieSpawns())
+					memory.add(l.getChunk());
 				getLevel().initSigns();
 				this.sortedStats.clear();
 				// makes sure all
@@ -880,7 +882,7 @@ public class Tribu extends JavaPlugin {
 			getWaveStarter().cancelWave();
 			getSpawner().clearZombies();
 			getLevelSelector().cancelVote();
-			blockTrace.reverse();
+			memory.startRestoring(this, 85);
 			if (TollSign.getAllowedPlayer() != null)
 				TollSign.getAllowedPlayer().clear();
 			inventorySave.restoreInventories();

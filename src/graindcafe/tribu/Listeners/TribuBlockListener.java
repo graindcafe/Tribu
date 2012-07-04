@@ -39,13 +39,10 @@ import graindcafe.tribu.Signs.TribuSign;
 
 import org.bukkit.Material;
 import org.bukkit.block.Sign;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.block.BlockBurnEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.BlockRedstoneEvent;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
@@ -68,44 +65,7 @@ public class TribuBlockListener implements Listener {
 				TribuSign.update((Sign) event.getBlock().getState());
 				event.setCancelled(true);
 			}
-		} else if (plugin.isRunning() && plugin.isPlaying(event.getPlayer()))
-			plugin.getBlockTrace().push(event.getBlock().getState());
-		// Else if not running or not playing we may check if it's server exclusive / world exclusive and prevent modifications
-		
-			
-	}
-
-	@EventHandler(priority = EventPriority.LOW)
-	public void onBlockPlace(BlockPlaceEvent event) {
-		if (plugin.isRunning() && plugin.isPlaying(event.getPlayer()))
-			if (event.getBlock().getType().equals(Material.FIRE))
-				plugin.getBlockTrace().push(event.getBlockAgainst().getState());
-			else
-				plugin.getBlockTrace().push(event.getBlockReplacedState(), event.getBlockPlaced());
-		// Else if not running or not playing we may check if it's server exclusive / world exclusive and prevent modifications
-	}
-
-	@EventHandler
-	public void onBlockRedstoneChange(BlockRedstoneEvent event) {
-		
-		if (plugin.isRunning()) {
-			plugin.getBlockTrace().push(event.getBlock().getState());
-			if (plugin.getLevel() != null)
-				plugin.getLevel().onRedstoneChange(event);
-		}
-	}
-/*
-	@EventHandler(priority = EventPriority.LOW)
-	public void onBlockIgnite(BlockIgniteEvent event) {
-		if (plugin.getBlockTrace().isFireSpreadingOut(event.getBlock().getLocation()) || plugin.isInsideLevel(event.getBlock().getLocation()))
-			plugin.getBlockTrace().pushIgnitedBlock(event.getBlock());
-		
-	}*/
-
-	@EventHandler(priority = EventPriority.LOW)
-	public void onBlockBurn(BlockBurnEvent event) {
-		if (plugin.isRunning())
-			plugin.getBlockTrace().push(event.getBlock().getState());
+		}	
 	}
 
 	@EventHandler
@@ -132,25 +92,6 @@ public class TribuBlockListener implements Listener {
 			}
 		}
 	}
-	/*
-	
-	@EventHandler
-	public void onBlockFade(BlockFadeEvent event)
-	{
-		if(plugin.isInsideLevel(event.getBlock().getLocation()))
-		{
-			plugin.getBlockTrace().push(event.getBlock(),true);
-		}
-	}
-	@EventHandler
-	public void onBlockFromTo(BlockFromToEvent event)
-	{
-		if(plugin.getBlockTrace().isWaterSpreadingOut(event.getToBlock().getLocation()) || plugin.isInsideLevel(event.getBlock().getLocation()))
-		{
-			plugin.getBlockTrace().pushMovingBlock(event.getBlock());
-		}
-	}
-	*/
 	public void registerEvents(PluginManager pm) {
 		pm.registerEvents(this, plugin);
 	}
