@@ -63,16 +63,22 @@ public class ChunkMemory implements Runnable {
 		chunkMemory=new HashSet<Chunk>();
 	}
 	public void restoreAll() {
-		restoring=false;
-		try {
-			while(busy)
-				Thread.sleep(200);
-		} catch (InterruptedException e) {
-			
+		if(restoring)
+		{
+			Bukkit.getScheduler().cancelTask(taskId);
+			restoring=false;
+			try {
+				while(busy)
+					Thread.sleep(200);
+			} catch (InterruptedException e) {
+			}
 		}
-		for (ChunkSnapshot cs : snapMemory) {
-			restore(cs);
-		}
+		else
+			iterator=snapMemory.iterator();
+
+		while(iterator.hasNext())
+			restore(iterator.next());
+		
 		snapMemory.clear();
 		chunkMemory.clear();
 	}
@@ -116,6 +122,15 @@ public class ChunkMemory implements Runnable {
 				snapMemory.add(chunk.getChunkSnapshot(true,false,false));
 				
 			}
+	}
+	public void getReady(){
+		if(capturing || restoring)
+		{
+			capturing=false;
+			restoreAll();
+			restoring=false;
+		}
+		
 	}
 	public void add(Chunk chunk) {
 		int baseX=chunk.getX(),baseZ=chunk.getZ();

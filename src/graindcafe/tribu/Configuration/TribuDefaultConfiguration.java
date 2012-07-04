@@ -101,6 +101,8 @@ public class TribuDefaultConfiguration {
 	
 	/* Default Packages */
 	public LinkedList<Package> DefaultPackages=null;
+	/* Advanced */
+	public int AdvancedRestoringSpeed=85;
 	public Map<String, Object> toMap()
 	{
 		HashMap<String, Object> map = new HashMap<String, Object>() {
