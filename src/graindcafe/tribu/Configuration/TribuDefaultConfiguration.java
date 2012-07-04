@@ -81,7 +81,7 @@ public class TribuDefaultConfiguration {
 	public List<Double> ZombiesQuantity=Arrays.asList(0.5, 1.0, 1.0);
 	public List<Double> ZombiesHealth=Arrays.asList(0.5, 4.0);
 	public boolean ZombiesFireResistant=false;
-	public String ZombiesFocus="None";
+	public FocusType ZombiesFocus=FocusType.None;
 	public List<Double> ZombiesTimeToSpawn=Arrays.asList(1.0);
 	/*
 	 * Stats

@@ -5,6 +5,7 @@
 package graindcafe.tribu.TribuZombie;
 
 import graindcafe.tribu.Tribu;
+import graindcafe.tribu.Configuration.FocusType;
 
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
@@ -55,15 +56,15 @@ public class EntityTribuZombie extends EntityZombie {
 		this.goalSelector.a(1, new PathfinderGoalBreakDoor(this));
 		this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, EntityHuman.class, this.bb, false));
 		this.goalSelector.a(3, new PathfinderGoalMeleeAttack(this, EntityVillager.class, this.bb, true));
-		String focus = plugin.config().ZombiesFocus;
-		if (focus.equals("None"))
+		FocusType focus = plugin.config().ZombiesFocus;
+		if (focus.equals(FocusType.None))
 			this.goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this, this.bb));
-		else if (focus.equals("Nearest") || focus.equals("Random")) {
-			if (focus.equals("Random"))
+		else if (focus.equals(FocusType.NearestPlayer) || focus.equals(FocusType.RandomPlayer)) {
+			if (focus.equals(FocusType.RandomPlayer))
 				this.setTarget(((CraftPlayer) plugin.getRandomPlayer()).getHandle());
 			this.goalSelector.a(4, new PathfinderGoalMoveTowardsTarget(this, this.bb, 1000f));
-		} else if (focus.equals("InitialSpawn") || focus.equals("DeathSpawn")) {
-			this.goalSelector.a(4, new PathfinderGoalMoveToLocation(this, focus.equals("DeathSpawn") ? plugin.getLevel().getDeathSpawn() : plugin
+		} else if (focus.equals(FocusType.InitialSpawn) || focus.equals(FocusType.DeathSpawn)) {
+			this.goalSelector.a(4, new PathfinderGoalMoveToLocation(this, focus.equals(FocusType.DeathSpawn) ? plugin.getLevel().getDeathSpawn() : plugin
 					.getLevel().getInitialSpawn(), this.bb, false));
 		}
 		
@@ -73,7 +74,7 @@ public class EntityTribuZombie extends EntityZombie {
 		this.goalSelector.a(7, new PathfinderGoalRandomLookaround(this));
 		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
 		this.targetSelector.a(2,
-				new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, focus.equals("Nearest") ? 100.0F : 16.0F, 0, true));
+				new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, focus.equals(FocusType.NearestPlayer) ? 100.0F : 16.0F, 0, true));
 		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityVillager.class, 16.0F, 0, false));
 		this.plugin = plugin;
 	}

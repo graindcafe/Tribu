@@ -43,18 +43,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 
-public class TribuConfig extends TribuDefaultConfiguration{
-	
+public class TribuConfig extends TribuDefaultConfiguration {
+
 	protected static LinkedList<Package> getDefaultPackages(FileConfiguration config) {
-		LinkedList<Package> DefaultPackages=null;
+		LinkedList<Package> DefaultPackages = null;
 		if (config.isConfigurationSection("DefaultPackages")) {
-			DefaultPackages=new LinkedList<Package>();
+			DefaultPackages = new LinkedList<Package>();
 			Package pck;
 			List<Integer> enchIds;
 			List<Integer> enchLvls;
@@ -99,47 +98,43 @@ public class TribuConfig extends TribuDefaultConfiguration{
 		}
 		return DefaultPackages;
 	}
-	
-	public TribuConfig(FileConfiguration config){
-		this(config,new TribuDefaultConfiguration());
-	
-	
+
+	public TribuConfig(FileConfiguration config) {
+		this(config, new TribuDefaultConfiguration());
+
 	}
-	public TribuConfig()
-	{
+
+	public TribuConfig() {
 		this(Constants.configFile);
 	}
-	public TribuConfig(String config)
-	{
+
+	public TribuConfig(String config) {
 		this(new File(config));
 	}
-	public TribuConfig(File config)
-	{
-		this(config,new TribuDefaultConfiguration() );
-	}
-	public TribuConfig(File config,TribuDefaultConfiguration DefaultConfig)
-	{
-		this(YamlConfiguration.loadConfiguration(config),DefaultConfig);
-		
-	}
-	public TribuConfig(FileConfiguration config,TribuDefaultConfiguration DefaultConfig){
-		/*try {
-			config.load(config);
-		} catch (FileNotFoundException e2) {
 
-		} catch (IOException e2) {
-			e2.printStackTrace();
-		} catch (InvalidConfigurationException e2) {
-			e2.printStackTrace();
-		}*/
-		
-		
+	public TribuConfig(File config) {
+		this(config, new TribuDefaultConfiguration());
+	}
+
+	public TribuConfig(File config, TribuDefaultConfiguration DefaultConfig) {
+		this(YamlConfiguration.loadConfiguration(config), DefaultConfig);
+
+	}
+
+	public TribuConfig(FileConfiguration config, TribuDefaultConfiguration DefaultConfig) {
+		/*
+		 * try { config.load(config); } catch (FileNotFoundException e2) {
+		 * 
+		 * } catch (IOException e2) { e2.printStackTrace(); } catch
+		 * (InvalidConfigurationException e2) { e2.printStackTrace(); }
+		 */
+
 		config.options().header("# Tribu Config File Version " + Constants.ConfigFileVersion + " \n");
-		
+
 		HashMap<String, Object> DefaultConfiguration = (HashMap<String, Object>) DefaultConfig.toMap();
-		
-		for (String key: config.getKeys(true)) {
-			this.load(key,config);
+
+		for (String key : config.getKeys(true)) {
+			this.load(key, config);
 			DefaultConfiguration.remove(key);
 		}
 		// Add missing keys
@@ -152,20 +147,19 @@ public class TribuConfig extends TribuDefaultConfiguration{
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		//PluginModeServerExclusive = config.getBoolean("PluginMode.ServerExclusive", false);
-		
+		// PluginModeServerExclusive =
+		// config.getBoolean("PluginMode.ServerExclusive", false);
 
 	}
 
-	protected static void debugMsg(String info)
-	{
-		//Logger.getLogger("Minecraft").info("[Tribu] " + info);
+	protected static void debugMsg(String info) {
+		// Logger.getLogger("Minecraft").info("[Tribu] " + info);
 	}
-	
-	/*protected void LogSevere(String string)
-	{
-		Logger.getLogger("Minecraft").severe("[Tribu] " + string);
-	}*/
+
+	/*
+	 * protected void LogSevere(String string) {
+	 * Logger.getLogger("Minecraft").severe("[Tribu] " + string); }
+	 */
 	public void load(String key,FileConfiguration config)
 	{
 		String[] keyNode =key.split("\\.");
@@ -270,7 +264,16 @@ public class TribuConfig extends TribuDefaultConfiguration{
 					}
 					else if(keyNode[1].equalsIgnoreCase("Focus"))
 					{
-						 ZombiesFocus=(String) config.getString(key);
+						if(config.getString(key).toLowerCase().startsWith("near"))
+							ZombiesFocus=FocusType.NearestPlayer;
+						else if(config.getString(key).toLowerCase().startsWith("rand"))
+							ZombiesFocus=FocusType.RandomPlayer;
+						else if(config.getString(key).toLowerCase().startsWith("init"))
+							ZombiesFocus=FocusType.InitialSpawn;
+						else if(config.getString(key).toLowerCase().startsWith("death"))
+							ZombiesFocus=FocusType.DeathSpawn;
+						else
+							ZombiesFocus=FocusType.None;
 					}
 					else if(keyNode[1].equalsIgnoreCase("TimeToSpawn"))
 						ZombiesTimeToSpawn=(List<Double>) config.getDoubleList(key);
@@ -351,7 +354,5 @@ public class TribuConfig extends TribuDefaultConfiguration{
 			debugMsg("Section : "+key);
 		return;
 	}
-	
-	
-	
+
 }
