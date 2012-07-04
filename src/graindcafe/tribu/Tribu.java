@@ -59,6 +59,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import me.graindcafe.gls.DefaultLanguage;
@@ -829,22 +830,21 @@ public class Tribu extends JavaPlugin {
 								&& !(e instanceof Wolf) && !(e instanceof Villager))
 							e.damage(Integer.MAX_VALUE);
 					}
-				memory.startCapturing();
-				memory.add(level.getInitialSpawn().getChunk());
-				memory.add(level.getDeathSpawn().getChunk());
-				for(Location l :level.getZombieSpawns())
-					memory.add(l.getChunk());
+				if(config.PlayersRevertBlocksChanges)
+				{
+					// If there is a restoring operation currently, do it
+					// quickly
+					memory.getReady();
+					memory.startCapturing();
+					// Pre-cache level
+					memory.add(level.getInitialSpawn().getChunk());
+					memory.add(level.getDeathSpawn().getChunk());
+					for (Location l : level.getZombieSpawns())
+						memory.add(l.getChunk());
+				}
 				getLevel().initSigns();
 				this.sortedStats.clear();
-				// makes sure all
-				// inventories have been
-				// saved
-				/*if (config.PlayersStoreInventory)
-					for (Player save : players.keySet()) {
-						inventorySave.addInventory(save);
-						save.getInventory().clear();
-						save.getInventory().setArmorContents(null);
-					}*/
+
 				for (PlayerStats stat : players.values()) {
 					stat.resetPoints();
 					stat.resetMoney();
@@ -882,16 +882,30 @@ public class Tribu extends JavaPlugin {
 			getWaveStarter().cancelWave();
 			getSpawner().clearZombies();
 			getLevelSelector().cancelVote();
-			memory.startRestoring(this, 85);
+			if(config.PlayersRevertBlocksChanges)
+				memory.startRestoring(this, config.AdvancedRestoringSpeed);
 			if (TollSign.getAllowedPlayer() != null)
 				TollSign.getAllowedPlayer().clear();
-			inventorySave.restoreInventories();
+			if(config.PlayersStoreInventory)
+				inventorySave.restoreInventories();
 			// Teleports all players to spawn when game ends
 			for (Player p : players.keySet()) {
 				p.teleport(level.getInitialSpawn());
 			}
-			if (!config.PluginModeServerExclusive || !config.PluginModeWorldExclusive) {
-				players.clear();
+			if (!config.PluginModeServerExclusive && !config.PluginModeWorldExclusive) {
+				/*if(config.PluginModeWorldExclusive)
+				{
+					TreeMap<Player,PlayerStats> toKeep=new TreeMap<Player,PlayerStats>();
+					for(Player p : players.keySet())
+					{
+						if(p.getWorld().equals(getLevel().getInitialSpawn().getWorld()))
+							toKeep.put(p, players.get(p));
+					}
+					players.clear();
+					players.putAll(toKeep);
+				}
+				else*/
+					players.clear();
 			}
 		}
 
