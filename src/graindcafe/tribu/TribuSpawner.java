@@ -35,6 +35,7 @@
 package graindcafe.tribu;
 
 import graindcafe.tribu.Configuration.Constants;
+import graindcafe.tribu.TribuZombie.CannotSpawnException;
 import graindcafe.tribu.TribuZombie.CraftTribuZombie;
 
 import java.util.LinkedList;
@@ -114,8 +115,8 @@ public class TribuSpawner {
 				return zombies.get(0).getLocation();
 			} else {
 				plugin.getSpawnTimer().getState();
-				plugin.LogSevere("No zombie currently spawned " + zombies.size() + " zombie of " + totalSpawned + "/" + maxSpawn
-						+ " spawned  actually alive. The wave is " + (finished ? "finished" : "in progress"));
+				plugin.LogSevere("There is " + zombies.size() + " zombie alive of " + totalSpawned + "/" + maxSpawn
+						+ " spawned . The wave is " + (finished ? "finished" : "in progress"));
 				return null;
 			}
 		else
@@ -201,16 +202,13 @@ public class TribuSpawner {
 		CraftTribuZombie zombie;
 		try {
 			zombie = (CraftTribuZombie) CraftTribuZombie.spawn(plugin, pos);
-
-			justspawned = false;
-
 			zombies.add(zombie);
 			zombie.setHealth(health);
 			totalSpawned++;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			plugin.LogSevere(e.getMessage());
+		} catch (CannotSpawnException e) {
+			// Impossible to spawn the zombie, maybe because of lack of space
 		}
+		justspawned = false;
 	}
 
 	public void startingCallback() {
