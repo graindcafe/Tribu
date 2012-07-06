@@ -132,13 +132,13 @@ public class EntityTribuZombie extends EntityZombie {
 	}
 	// CraftBukkit end
 	
-	public static EntityTribuZombie spawn(Tribu plugin, WorldServer world, double x, double y, double z) throws Exception {
+	public static EntityTribuZombie spawn(Tribu plugin, WorldServer world, double x, double y, double z) throws CannotSpawnException {
 		EntityTribuZombie tz = new EntityTribuZombie(plugin, world, x, y, z);
 
 		if(world.addEntity(tz, SpawnReason.CUSTOM))
 			return tz;
 		else
-			throw new Exception("Impossible to spawn dat zombie!");
+			throw new CannotSpawnException();
 		
 	}
 }

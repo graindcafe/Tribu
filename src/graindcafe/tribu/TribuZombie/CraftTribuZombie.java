@@ -120,7 +120,7 @@ public class CraftTribuZombie extends CraftZombie implements Zombie {
     public EntityType getType() {
         return EntityType.ZOMBIE;
     }
-    public static Entity spawn(Tribu plugin, Location pos) throws Exception {
+    public static Entity spawn(Tribu plugin, Location pos) throws CannotSpawnException {
     	if(!pos.getChunk().isLoaded())
     		pos.getChunk().load();
     			
