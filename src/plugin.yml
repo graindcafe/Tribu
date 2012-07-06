@@ -114,3 +114,7 @@ permissions:
     tribu.plugin.reload:
         description: Reload config
         default: op
+    tribu.super.place:
+        description: Override "AllowPlace"
+    tribu.super.break:
+        description: Override "AllowBreak"
