@@ -77,31 +77,6 @@ public class CmdTribu implements CommandExecutor {
 		if (args[0].equalsIgnoreCase("enter") || args[0].equalsIgnoreCase("join")) {
 			if (!plugin.config().PluginModeServerExclusive || sender.isOp())
 			{
-				if(plugin.config().PluginModeWorldExclusive)
-				{
-					/*if(((Player) sender).getWorld() != Bukkit.getWorld(plugin.config().PluginModeWorldExclusiveWorldName))
-					{
-						Tribu.messagePlayer(sender,plugin.getLocale("Message.PlayerWrongWorld"));
-						return true;
-					}*/
-					if (!sender.hasPermission("tribu.use.enter"))
-					{
-						Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
-					} else 
-					if (!(sender instanceof Player)) 
-					{
-						plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
-					} else 
-					{
-						if(!plugin.isPlaying((Player) sender))
-						{
-							plugin.addPlayer((Player) sender);
-						} else
-						{
-							Tribu.messagePlayer(sender,plugin.getLocale("Message.AlreadyIn"));
-						}
-					}
-				} else
 				if (!sender.hasPermission("tribu.use.enter"))
 				{
 					Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
@@ -126,10 +101,6 @@ public class CmdTribu implements CommandExecutor {
 		{
 			if (!plugin.config().PluginModeServerExclusive || sender.isOp())
 			{
-				if(plugin.config().PluginModeWorldExclusive)
-				{
-					//all we gata do is add another node for a different world (main world) and when they do /leave they will tp to the main worlds spawn.
-				} else
 				if (!sender.hasPermission("tribu.use.leave"))
 				{
 					Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
