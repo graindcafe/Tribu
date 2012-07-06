@@ -53,6 +53,7 @@ import graindcafe.tribu.Signs.TollSign;
 import graindcafe.tribu.TribuZombie.EntityTribuZombie;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
@@ -158,6 +159,7 @@ public class Tribu extends JavaPlugin {
 			PlayerStats stats = new PlayerStats(player);
 			players.put(player, stats);
 			sortedStats.add(stats);
+			Tribu.messagePlayer(player,"Message.YouJoined");
 			if (waitingPlayers != 0) {
 				waitingPlayers--;
 				if (waitingPlayers == 0) {
@@ -165,12 +167,11 @@ public class Tribu extends JavaPlugin {
 					if (config.PluginModeServerExclusive)
 						startRunning();
 					else
-						startRunning(10);
+						startRunning(config.LevelStartDelay);
 				}
 			} else if (getLevel() != null && isRunning) {
 				player.teleport(level.getDeathSpawn());
 				messagePlayer(player, language.get("Message.GameInProgress"));
-				messagePlayer(player, language.get("Message.PlayerDied"));
 			}
 		}
 	}
@@ -449,7 +450,10 @@ public class Tribu extends JavaPlugin {
 				put("Prefix.Severe", "[Tribu]");
 			}
 		});
-		language = Language.init(log, config.PluginModeLanguage);
+		if(config!=null)
+			language = Language.init(log, config.PluginModeLanguage);
+		else
+			language = Language.init(log, "English");
 		messagePrefix = language.get("Prefix.Message");
 		broadcastPrefix = language.get("Prefix.Broadcast");
 		infoPrefix = language.get("Prefix.Info");
@@ -457,23 +461,6 @@ public class Tribu extends JavaPlugin {
 		severePrefix = language.get("Prefix.Severe");
 		Constants.MessageMoneyPoints = language.get("Message.MoneyPoints");
 		Constants.MessageZombieSpawnList = language.get("Message.ZombieSpawnList");
-	}
-
-	private void initPluginMode() {
-		if (config.PluginModeServerExclusive) {
-			for (Player p : this.getServer().getOnlinePlayers())
-				this.addPlayer(p);
-		}
-
-		if (config.PluginModeDefaultLevel != "")
-			setLevel(levelLoader.loadLevel(config.PluginModeDefaultLevel));
-		if (config.PluginModeWorldExclusive && level != null) {
-			for (Player d : level.getInitialSpawn().getWorld().getPlayers()) {
-				this.addPlayer(d);
-			}
-		}
-		if (config.PluginModeAutoStart)
-			startRunning();
 	}
 
 	public boolean isAlive(Player player) {
@@ -536,6 +523,18 @@ public class Tribu extends JavaPlugin {
 				this.config = new TribuConfig(levelFile);
 		else
 			this.config = new TribuConfig();
+		this.initLanguage();
+		if (config.PluginModeServerExclusive) {
+			for (Player p : this.getServer().getOnlinePlayers())
+				this.addPlayer(p);
+		}
+		if (config.PluginModeWorldExclusive && level != null) {
+			for (Player d : level.getInitialSpawn().getWorld().getPlayers()) {
+				this.addPlayer(d);
+			}
+		}
+		if (config.PluginModeAutoStart)
+			startRunning();
 	}
 
 	public void LogInfo(String message) {
@@ -607,9 +606,6 @@ public class Tribu extends JavaPlugin {
 		log = Logger.getLogger("Minecraft");
 		rnd = new Random();
 		Constants.rebuildPath(getDataFolder().getPath() + File.separatorChar);
-		this.config = new TribuConfig();
-		initLanguage();
-
 		try {
 			@SuppressWarnings("rawtypes")
 			Class[] args = { Class.class, String.class, Integer.TYPE, Integer.TYPE, Integer.TYPE };
@@ -624,17 +620,20 @@ public class Tribu extends JavaPlugin {
 			setEnabled(false);
 			return;
 		}
-
 		isRunning = false;
 		aliveCount = 0;
 		level = null;
-
+		// A language should be loaded BEFORE levelLoader uses
+		initLanguage();		
+		levelLoader = new LevelFileLoader(this);
+		// The level loader have to be ready
+		this.reloadConf();
 		tempInventories = new HashMap<Player, TribuTempInventory>();
 		inventorySave = new TribuInventory();
 		players = new HashMap<Player, PlayerStats>();
 		spawnPoint = new HashMap<Player, Location>();
 		sortedStats = new LinkedList<PlayerStats>();
-		levelLoader = new LevelFileLoader(this);
+		
 		levelSelector = new LevelSelector(this);
 
 		spawner = new TribuSpawner(this);
@@ -648,8 +647,6 @@ public class Tribu extends JavaPlugin {
 		worldListener = new TribuWorldListener(this);
 		
 		memory = new ChunkMemory();
-		this.initPluginMode();
-		this.loadCustomConf();
 
 		getServer().getPluginManager().registerEvents(playerListener, this);
 		getServer().getPluginManager().registerEvents(entityListener, this);
@@ -665,9 +662,21 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public void reloadConf() {
+		// Reload the main config file from disk
 		this.reloadConfig();
+		// Parse again the file
+		this.config=new TribuConfig();
+		// Create the file if it doesn't exist
+		try {
+			getConfig().save(Constants.configFile);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		// Before "loadCustom"
+		if (config.PluginModeDefaultLevel != "")
+			setLevel(levelLoader.loadLevel(config.PluginModeDefaultLevel));
+		// After loading the level from main file
 		this.loadCustomConf();
-		this.initPluginMode();
 	}
 
 	/**
@@ -683,6 +692,7 @@ public class Tribu extends JavaPlugin {
 			sortedStats.remove(players.get(player));
 			inventorySave.restoreInventory(player);
 			players.remove(player);
+			Tribu.messagePlayer(player,"Message.YouLeft");
 			if (player.isOnline() && spawnPoint.containsKey(player)) {
 				player.setBedSpawnLocation(spawnPoint.remove(player));
 			}
@@ -766,14 +776,7 @@ public class Tribu extends JavaPlugin {
 				p.subtractmoney(config.StatsOnPlayerDeathMoney);
 				p.subtractPoints(config.StatsOnPlayerDeathPoints);
 				p.msgStats();
-				
 				messagePlayers("Message.Died",player.getName());
-				/*
-				 * Set<Entry<Player, PlayerStats>> stats = players.entrySet();
-				 * for (Entry<Player, PlayerStats> stat : stats) {
-				 * stat.getValue().subtractPoints(50);
-				 * stat.getValue().resetMoney(); stat.getValue().msgStats(); }
-				 */
 			}
 			players.get(player).kill();
 			if (getLevel() != null && isRunning) {

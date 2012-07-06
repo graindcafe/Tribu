@@ -64,7 +64,7 @@ public class TribuDefaultConfiguration {
 	public double LevelClearZone=50d;
 	public boolean LevelJail=true;
 	public double LevelJailRadius=5.0;
-	
+	public int LevelStartDelay=10;
 	/*
 	 * Wave related
 	 */
@@ -118,6 +118,7 @@ public class TribuDefaultConfiguration {
 				put("Level.ClearZone", LevelClearZone);
 				put("Level.Jail", LevelJail);
 				put("Level.JailRadius", LevelJailRadius);
+				put("Level.StartDelay", LevelJailRadius);
 				put("WaveStart.SetTime", WaveStartSetTime);
 				put("WaveStart.SetTimeTo", WaveStartSetTimeTo);
 				put("WaveStart.Delay", WaveStartDelay);

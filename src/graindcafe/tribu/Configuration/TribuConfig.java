@@ -37,7 +37,6 @@ package graindcafe.tribu.Configuration;
 import graindcafe.tribu.Package;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -129,6 +128,11 @@ public class TribuConfig extends TribuDefaultConfiguration {
 		 * (InvalidConfigurationException e2) { e2.printStackTrace(); }
 		 */
 
+		load(config, DefaultConfig);
+
+	}
+	private void load(FileConfiguration config, TribuDefaultConfiguration DefaultConfig)
+	{
 		config.options().header("# Tribu Config File Version " + Constants.ConfigFileVersion + " \n");
 
 		HashMap<String, Object> DefaultConfiguration = (HashMap<String, Object>) DefaultConfig.toMap();
@@ -141,17 +145,11 @@ public class TribuConfig extends TribuDefaultConfiguration {
 		for (Entry<String, Object> e : DefaultConfiguration.entrySet()) {
 			config.set(e.getKey(), e.getValue());
 		}
-		// Create the file if it doesn't exist
-		try {
-			config.save(Constants.configFile);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		// PluginModeServerExclusive =
-		// config.getBoolean("PluginMode.ServerExclusive", false);
-
 	}
-
+	public void reload(FileConfiguration config)
+	{
+		this.load(config,this);
+	}
 	protected static void debugMsg(String info) {
 		// Logger.getLogger("Minecraft").info("[Tribu] " + info);
 	}
@@ -264,16 +262,7 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					}
 					else if(keyNode[1].equalsIgnoreCase("Focus"))
 					{
-						if(config.getString(key).toLowerCase().startsWith("near"))
-							ZombiesFocus=FocusType.NearestPlayer;
-						else if(config.getString(key).toLowerCase().startsWith("rand"))
-							ZombiesFocus=FocusType.RandomPlayer;
-						else if(config.getString(key).toLowerCase().startsWith("init"))
-							ZombiesFocus=FocusType.InitialSpawn;
-						else if(config.getString(key).toLowerCase().startsWith("death"))
-							ZombiesFocus=FocusType.DeathSpawn;
-						else
-							ZombiesFocus=FocusType.None;
+						ZombiesFocus = FocusType.fromString(config.getString("key"));
 					}
 					else if(keyNode[1].equalsIgnoreCase("TimeToSpawn"))
 						ZombiesTimeToSpawn=(List<Double>) config.getDoubleList(key);
