@@ -142,6 +142,9 @@ public class Tribu extends JavaPlugin {
 	private TribuWorldListener worldListener;
 	private ChunkMemory memory;
 	
+	/**
+	 * Add packages from config file to the level
+	 */
 	public void addDefaultPackages() {
 		if (level != null && this.config.DefaultPackages != null)
 			for (Package pck : this.config.DefaultPackages) {
@@ -149,6 +152,10 @@ public class Tribu extends JavaPlugin {
 			}
 	}
 
+	/**
+	 * Add a player to the game
+	 * @param player player to add
+	 */
 	public void addPlayer(Player player) {
 		if (player != null && !players.containsKey(player)) {
 
@@ -159,7 +166,7 @@ public class Tribu extends JavaPlugin {
 			PlayerStats stats = new PlayerStats(player);
 			players.put(player, stats);
 			sortedStats.add(stats);
-			Tribu.messagePlayer(player,"Message.YouJoined");
+			messagePlayer(player,this.getLocale("Message.YouJoined"));
 			if (waitingPlayers != 0) {
 				waitingPlayers--;
 				if (waitingPlayers == 0) {
@@ -176,6 +183,11 @@ public class Tribu extends JavaPlugin {
 		}
 	}
 
+	/**
+	 * Add a player to the game in timeout seconds 
+	 * @param player Player to add
+	 * @param timeout Time to wait in seconds
+	 */
 	public void addPlayer(final Player player, final double timeout) {
 		this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 			public void run() {
@@ -246,10 +258,18 @@ public class Tribu extends JavaPlugin {
 		}
 	}
 
+	/**
+	 * Get the current TribuConfig
+	 * @return
+	 */
 	public TribuConfig config() {
 		return config;
 	}
 
+	/**
+	 * Get the number of players that are not dead
+	 * @return
+	 */
 	public int getAliveCount() {
 		return aliveCount;
 	}
@@ -306,6 +326,9 @@ public class Tribu extends JavaPlugin {
 		return waveStarter;
 	}
 
+	/**
+	 * Init default language and if there is a config the chosen language
+	 */
 	private void initLanguage() {
 		DefaultLanguage.setAuthor("Graindcafe");
 		DefaultLanguage.setName("English");
@@ -394,10 +417,6 @@ public class Tribu extends JavaPlugin {
 				put("Message.Deny", ChatColor.RED + "A zombie denied your action, sorry.");
 				put("Message.PlayerDied", ChatColor.LIGHT_PURPLE + "%s"+ ChatColor.RED + " has died.");
 				put("Message.PlayerRevive", ChatColor.GREEN + "You have been revived.");
-				// put("Message.PlayerWrongWorld","You are in the incorrect world. Please join world "
-				// + ChatColor.LIGHT_PURPLE +
-				// config.PluginModeWorldExclusiveWorldName + ChatColor.RED +
-				// " to join the game.");
 				put("Message.PlayerDSpawnLeaveWarning", ChatColor.GOLD + "You cannot leave until a new round starts.");
 
 				put("Message.AlreadyIn", ChatColor.YELLOW + "You are already in.");
@@ -467,6 +486,13 @@ public class Tribu extends JavaPlugin {
 		return players.get(player).isalive();
 	}
 
+	/**
+	 * Check if Tribu is running and there is a level
+	 * if it's server exclusive or world exclusive & in the good world 
+	 * or if it's near the initial spawn (radius "LevelClearZone")
+	 * @param loc  Location to check
+	 * @return is inside level
+	 */
 	public boolean isInsideLevel(Location loc) {
 
 		if (isRunning && level != null)
@@ -476,10 +502,19 @@ public class Tribu extends JavaPlugin {
 			return false;
 	}
 
+	/**
+	 * Is this player playing Tribu ?
+	 * @param player
+	 * @return Is this player playing Tribu ?
+	 */
 	public boolean isPlaying(Player p) {
 		return players.containsKey(p);
 	}
 
+	/**
+	 * Is the plugin running ? (not waiting for players but really running)
+	 * @return Is the plugin running ? 
+	 */
 	public boolean isRunning() {
 		return isRunning;
 	}
@@ -490,7 +525,10 @@ public class Tribu extends JavaPlugin {
 		tempInventories.put(p, new TribuTempInventory(p, items));
 	}
 
-	public void loadCustomConf() {
+	/**
+	 * Load the custom config files, "per-world" and "per-level" 
+	 */
+	protected void loadCustomConf() {
 		TribuLevel level = this.getLevel();
 		if (level == null)
 			return;
@@ -549,7 +587,7 @@ public class Tribu extends JavaPlugin {
 		log.warning(warningPrefix + message);
 
 	}
-
+	
 	/**
 	 * Send a message after formating the given languageNode with given
 	 * arguments
