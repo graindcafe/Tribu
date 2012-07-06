@@ -115,8 +115,7 @@ public class ChunkMemory implements Runnable {
 		capturing=false;
 	}
 	private void addNoRecursion(Chunk chunk) {
-		if (capturing)
-			if(chunkMemory.add(chunk))
+		if (capturing && chunk.isLoaded() && chunkMemory.add(chunk) )
 			{
 				debugMsg("Adding : "+chunk.getX()+","+chunk.getZ());
 				snapMemory.add(chunk.getChunkSnapshot(true,false,false));
