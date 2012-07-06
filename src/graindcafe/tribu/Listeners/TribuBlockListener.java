@@ -61,11 +61,11 @@ public class TribuBlockListener implements Listener {
 				plugin.getLevel().removeSign(event.getBlock().getLocation());
 			} else {
 				if (event.getPlayer() != null)
-				Tribu.messagePlayer(event.getPlayer(),plugin.getLocale("Message.ProtectedBlock"));
+					Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.ProtectedBlock"));
 				TribuSign.update((Sign) event.getBlock().getState());
 				event.setCancelled(true);
 			}
-		}	
+		}
 	}
 
 	@EventHandler
@@ -76,22 +76,23 @@ public class TribuBlockListener implements Listener {
 				if (sign != null)
 					if (plugin.getLevel() != null) {
 						if (plugin.getLevel().addSign(sign))
-						Tribu.messagePlayer(event.getPlayer(),plugin.getLocale("Message.TribuSignAdded"));
+							Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.TribuSignAdded"));
 					} else {
-						Tribu.messagePlayer(event.getPlayer(),plugin.getLocale("Message.NoLevelLoaded"));
-						Tribu.messagePlayer(event.getPlayer(),plugin.getLocale("Message.NoLevelLoaded2"));
+						Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.NoLevelLoaded"));
+						Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.NoLevelLoaded2"));
 						event.getBlock().setTypeId(0);
 						event.getBlock().getLocation().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(Material.SIGN, 1));
 						event.setCancelled(true);
 					}
 			} else {
-				Tribu.messagePlayer(event.getPlayer(),plugin.getLocale("Message.CannotPlaceASpecialSign"));
+				Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.CannotPlaceASpecialSign"));
 				event.getBlock().setTypeId(0);
 				event.getBlock().getLocation().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(Material.SIGN, 1));
 				event.setCancelled(true);
 			}
 		}
 	}
+
 	public void registerEvents(PluginManager pm) {
 		pm.registerEvents(this, plugin);
 	}
