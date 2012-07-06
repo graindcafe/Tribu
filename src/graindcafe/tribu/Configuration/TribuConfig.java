@@ -312,9 +312,9 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					{
 						 PlayersStoreInventory=(Boolean) config.getBoolean(key);
 					}
-					else if(keyNode[1].equalsIgnoreCase("RevertBlocksChanges"))
+					else if(keyNode[1].equalsIgnoreCase("Rollback"))
 					{
-						 PlayersRevertBlocksChanges=(Boolean) config.getBoolean(key);
+						 PlayersRollback=(Boolean) config.getBoolean(key);
 					}
 				}
 			}

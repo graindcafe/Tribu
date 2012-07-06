@@ -832,7 +832,7 @@ public class Tribu extends JavaPlugin {
 								&& !(e instanceof Wolf) && !(e instanceof Villager))
 							e.damage(Integer.MAX_VALUE);
 					}
-				if(config.PlayersRevertBlocksChanges)
+				if(config.PlayersRollback)
 				{
 					// If there is a restoring operation currently, do it
 					// quickly
@@ -884,7 +884,7 @@ public class Tribu extends JavaPlugin {
 			getWaveStarter().cancelWave();
 			getSpawner().clearZombies();
 			getLevelSelector().cancelVote();
-			if(config.PlayersRevertBlocksChanges)
+			if(config.PlayersRollback)
 				memory.startRestoring(this, config.AdvancedRestoringSpeed);
 			if (TollSign.getAllowedPlayer() != null)
 				TollSign.getAllowedPlayer().clear();

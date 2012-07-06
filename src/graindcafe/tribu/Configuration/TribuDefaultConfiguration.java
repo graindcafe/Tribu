@@ -97,7 +97,9 @@ public class TribuDefaultConfiguration {
 	 */
 	public boolean PlayersDontLooseItem = false;
 	public boolean PlayersStoreInventory = false;
-	public boolean PlayersRevertBlocksChanges = true;
+	public boolean PlayersRollback = true;
+	public boolean PlayersAllowBreak = true;
+	public boolean PlayersAllowPlace = true;
 	
 	/* Default Packages */
 	public LinkedList<Package> DefaultPackages=null;
@@ -138,7 +140,9 @@ public class TribuDefaultConfiguration {
 				put("Stats.RewardOnlyAlive",StatsRewardOnlyAlive);
 				put("Players.DontLooseItem", PlayersDontLooseItem);
 				put("Players.StoreInventory", PlayersStoreInventory);
-				put("Players.RevertBlocksChanges", PlayersRevertBlocksChanges);
+				put("Players.RevertBlocksChanges", PlayersRollback);
+				put("Players.AllowBreak", PlayersAllowBreak);
+				put("Players.AllowPlace", PlayersAllowPlace);
 				//put("Signs.ShopSign.DropItem", true);
 				put("DefaultPackages", DefaultPackages);
 			}

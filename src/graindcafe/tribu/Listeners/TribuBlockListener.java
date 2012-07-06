@@ -43,6 +43,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
@@ -56,16 +57,29 @@ public class TribuBlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockBreak(BlockBreakEvent event) {
-		if (TribuSign.isIt(plugin, event.getBlock())) {
-			if (event.getPlayer().hasPermission("tribu.signs.break")) {
-				plugin.getLevel().removeSign(event.getBlock().getLocation());
-			} else {
-				if (event.getPlayer() != null)
-					Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.ProtectedBlock"));
-				TribuSign.update((Sign) event.getBlock().getState());
+		if (!event.isCancelled())
+			if (TribuSign.isIt(plugin, event.getBlock())) {
+				if (event.getPlayer().hasPermission("tribu.signs.break")) {
+					plugin.getLevel().removeSign(event.getBlock().getLocation());
+				} else {
+					if (event.getPlayer() != null)
+						Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.ProtectedBlock"));
+					TribuSign.update((Sign) event.getBlock().getState());
+					event.setCancelled(true);
+				}
+			} else if (plugin.isRunning() && plugin.isPlaying(event.getPlayer())
+					&& !(event.getPlayer().hasPermission("tribu.super.break") || plugin.config().PlayersAllowBreak)) {
 				event.setCancelled(true);
 			}
-		}
+	}
+
+	@EventHandler
+	public void onBlockPlace(BlockPlaceEvent event) {
+		if (!event.isCancelled())
+			if (plugin.isRunning() && plugin.isPlaying(event.getPlayer())
+					&& !(event.getPlayer().hasPermission("tribu.super.place") || plugin.config().PlayersAllowPlace)) {
+				event.setCancelled(true);
+			}
 	}
 
 	@EventHandler
