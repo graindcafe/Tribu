@@ -93,7 +93,6 @@ public class CmdTribu implements CommandExecutor {
 						plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 					} else 
 					{
-						Tribu.messagePlayer(sender,plugin.getLocale("Message.YouJoined"));
 						if(!plugin.isPlaying((Player) sender))
 						{
 							plugin.addPlayer((Player) sender);
@@ -140,7 +139,6 @@ public class CmdTribu implements CommandExecutor {
 					plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 				} else 
 				{
-					Tribu.messagePlayer(sender,plugin.getLocale("Message.YouLeft"));
 					plugin.removePlayer((Player) sender);
 				}
 			}
