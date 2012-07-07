@@ -717,7 +717,8 @@ public class Tribu extends JavaPlugin {
 		if (config.PluginModeDefaultLevel != "")
 			setLevel(levelLoader.loadLevel(config.PluginModeDefaultLevel));
 		// After loading the level from main file
-		this.loadCustomConf();
+		else 
+			this.loadCustomConf();
 	}
 
 	/**
