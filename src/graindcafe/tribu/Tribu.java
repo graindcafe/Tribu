@@ -571,7 +571,7 @@ public class Tribu extends JavaPlugin {
 				this.addPlayer(d);
 			}
 		}
-		if (config.PluginModeAutoStart)
+		if (config.PluginModeAutoStart && this.isEnabled())
 			startRunning();
 	}
 
@@ -641,6 +641,7 @@ public class Tribu extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		setEnabled(false);
 		log = Logger.getLogger("Minecraft");
 		rnd = new Random();
 		Constants.rebuildPath(getDataFolder().getPath() + File.separatorChar);
@@ -655,7 +656,6 @@ public class Tribu extends JavaPlugin {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			setEnabled(false);
 			return;
 		}
 		isRunning = false;
@@ -695,8 +695,10 @@ public class Tribu extends JavaPlugin {
 		getCommand("zspawn").setExecutor(new CmdZspawn(this));
 		getCommand("ispawn").setExecutor(new CmdIspawn(this));
 		getCommand("tribu").setExecutor(new CmdTribu(this));
-
 		LogInfo(language.get("Info.Enable"));
+		if (config.PluginModeAutoStart)
+			startRunning();
+		setEnabled(true);
 	}
 
 	public void reloadConf() {
