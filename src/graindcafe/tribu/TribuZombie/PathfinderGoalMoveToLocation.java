@@ -47,12 +47,27 @@ import net.minecraft.server.Vec3D;
 
 public class PathfinderGoalMoveToLocation extends PathfinderGoal {
 
+	/**
+	 * The controlled creature
+	 */
 	private EntityCreature a;
+	/**
+	 * Speed of the creature
+	 */
 	private float b;
+	/**
+	 * The path to use
+	 */
 	private PathEntity c;
+	/**
+	 * Can break wooden door ?
+	 */
 	private boolean e;
 	@SuppressWarnings("rawtypes")
 	private List f = new ArrayList();
+	/**
+	 * The location to go
+	 */
 	private Location loc;
 
 	public PathfinderGoalMoveToLocation(EntityCreature entitycreature,Location loc,  float f, boolean flag) {
@@ -62,29 +77,41 @@ public class PathfinderGoalMoveToLocation extends PathfinderGoal {
 		this.loc = loc;
 		this.a(1);
 	}
-
+	
+	/** Does the goal succeed ?
+	 * @see net.minecraft.server.PathfinderGoal#a()
+	 * 
+	 */
 	public boolean a() {
 		this.f();
 		if (this.e && this.a.world.e()) {
 			return false;
 		} else {
-
+			// Get the flag
 			boolean flag = this.a.al().b();
-
+			// Don't go thru wooden door
 			this.a.al().b(false);
+			// Try to go directly to the location
 			this.c = this.a.al().a(this.loc.getX(), this.loc.getY(), this.loc.getZ());
+			// Set back the flag
 			this.a.al().b(flag);
+			// if it's possible, then the goal succeed
 			if (this.c != null) {
 				return true;
 			} else {
-				Vec3D vec3d = RandomPositionGenerator.a(this.a, 10, 7, Vec3D.create(this.loc.getX(), this.loc.getY(), this.loc.getZ()));
+				// creature, x/z gap, y gap, location
+				Vec3D vec3d = RandomPositionGenerator.a(this.a, 2, 10, Vec3D.create(this.loc.getX(), this.loc.getY(), this.loc.getZ()));
 
 				if (vec3d == null) {
 					return false;
 				} else {
+					// Don't go thru wooden door
 					this.a.al().b(false);
+					// Try to get to the new location
 					this.c = this.a.al().a(vec3d.a, vec3d.b, vec3d.c);
+					// Set back the flag
 					this.a.al().b(flag);
+					// If there is a path
 					return this.c != null;
 				}
 			}
@@ -92,19 +119,33 @@ public class PathfinderGoalMoveToLocation extends PathfinderGoal {
 		}
 	}
 
+	/**
+	 * Is the goal useless ?
+	 * @see net.minecraft.server.PathfinderGoal#b()
+	 */
 	public boolean b() {
+		// Is the path ended ?
 		if (this.a.al().e()) {
+			// False : we gonna give a new path
 			return false;
 		} else {
-			float f = this.a.width + 4.0F;
+			float f = this.a.width + 10.0F;
+			// this.a.e : square distance of the entity from the point
 			return this.a.e(this.loc.getX(), this.loc.getY(), this.loc.getZ()) > (double) (f * f);
 		}
 	}
 
+	/** 
+	 * Try to move to use the path
+	 * @see net.minecraft.server.PathfinderGoal#c()
+	 */
 	public void c() {
 		this.a.al().a(this.c, this.b);
 	}
 
+	/**
+	 * If there is more than 15 elements in f remove the first one
+	 */
 	private void f() {
 		if (this.f.size() > 15) {
 			this.f.remove(0);
