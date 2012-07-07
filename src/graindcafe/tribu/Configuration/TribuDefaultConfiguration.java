@@ -80,6 +80,7 @@ public class TribuDefaultConfiguration {
 	 */
 	public List<Double> ZombiesQuantity=Arrays.asList(0.5, 1.0, 1.0);
 	public List<Double> ZombiesHealth=Arrays.asList(0.5, 4.0);
+	public List<Double> ZombiesDamage=Arrays.asList(4.0);
 	public boolean ZombiesFireResistant=false;
 	public FocusType ZombiesFocus=FocusType.None;
 	public List<Double> ZombiesTimeToSpawn=Arrays.asList(1.0);
@@ -129,6 +130,7 @@ public class TribuDefaultConfiguration {
 				put("WaveStart.MinPlayers", WaveStartMinPlayers);
 				put("Zombies.Quantity", ZombiesQuantity);
 				put("Zombies.Health", ZombiesHealth);
+				put("Zombies.Health", ZombiesDamage);
 				put("Zombies.FireResistant", ZombiesFireResistant);
 				put("Zombies.Focus", ZombiesFocus);
 				put("Zombies.TimeToSpawn",ZombiesTimeToSpawn);

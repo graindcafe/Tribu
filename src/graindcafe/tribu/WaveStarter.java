@@ -44,6 +44,7 @@ public class WaveStarter implements Runnable {
 	private boolean scheduled;
 	private int taskID;
 	private int waveNumber;
+	private int zombieDamage;
 	public WaveStarter(Tribu instance) {
 		plugin = instance;
 		waveNumber = 1;
@@ -102,7 +103,9 @@ public class WaveStarter implements Runnable {
 				plugin.getLevel().getInitialSpawn().getWorld().setTime(plugin.config().WaveStartSetTimeTo);
 			int max = calcPolynomialFunction(waveNumber, plugin.config().ZombiesQuantity);
 			int health = calcPolynomialFunction(waveNumber, plugin.config().ZombiesHealth);
+			this.zombieDamage =calcPolynomialFunction(waveNumber, plugin.config().ZombiesDamage);
 			int timeToSpawn = Math.round((float)Constants.TicksBySecond*((float)calcPolynomialFunction(waveNumber, plugin.config().ZombiesTimeToSpawn)/(float)max));
+			
 			scheduled = false;
 			plugin.revivePlayers(false);
 			plugin.getLevel().onWaveStart();
@@ -122,6 +125,10 @@ public class WaveStarter implements Runnable {
 					"Broadcast.Wave", String.valueOf(plugin.getWaveStarter().getWaveNumber()),
 							String.valueOf(delay / Constants.TicksBySecond));
 		}
+	}
+
+	public int getCurrentDamage() {
+		return this.zombieDamage;
 	}
 
 }

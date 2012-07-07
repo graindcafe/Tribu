@@ -98,6 +98,7 @@ public class TribuConfig extends TribuDefaultConfiguration {
 		return DefaultPackages;
 	}
 
+
 	public TribuConfig(FileConfiguration config) {
 		this(config, new TribuDefaultConfiguration());
 
@@ -165,10 +166,8 @@ public class TribuConfig extends TribuDefaultConfiguration {
 		debugMsg(key);
 		if(nodeCount>=2)
 		{
-		//	info(keyNode[0] + " - "+keyNode[1] );
 			if(keyNode[0].equalsIgnoreCase("PluginMode"))
 			{
-				//if(nodeCount>2)
 				{
 					if(keyNode[1].equalsIgnoreCase("ServerExclusive"))
 					{
@@ -193,7 +192,6 @@ public class TribuConfig extends TribuDefaultConfiguration {
 				}
 			}else if(keyNode[0].equalsIgnoreCase("Level"))
 			{
-				//if(nodeCount>2)
 				{
 					if(keyNode[1].equalsIgnoreCase("Jail"))
 					{
@@ -211,7 +209,6 @@ public class TribuConfig extends TribuDefaultConfiguration {
 			}
 			else if(keyNode[0].equalsIgnoreCase("WaveStart"))
 			{
-				//if(nodeCount>2)
 				{
 					if(keyNode[1].equalsIgnoreCase("SetTime"))
 					{
@@ -246,7 +243,6 @@ public class TribuConfig extends TribuDefaultConfiguration {
 			}
 			else if(keyNode[0].equalsIgnoreCase("Zombies"))
 			{
-				//if(nodeCount>2)
 				{
 					if(keyNode[1].equalsIgnoreCase("Quantity"))
 					{
@@ -255,6 +251,10 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					else if(keyNode[1].equalsIgnoreCase("Health"))
 					{
 						 ZombiesHealth=(List<Double>) config.getDoubleList(key);
+					}
+					else if(keyNode[1].equalsIgnoreCase("Damage"))
+					{
+						 ZombiesDamage=(List<Double>) config.getDoubleList(key);
 					}
 					else if(keyNode[1].equalsIgnoreCase("FireResistant"))
 					{
@@ -302,7 +302,6 @@ public class TribuConfig extends TribuDefaultConfiguration {
 			}
 			else if(keyNode[0].equalsIgnoreCase("Players"))
 			{
-				//if(nodeCount>2)
 				{
 					if(keyNode[1].equalsIgnoreCase("DontLooseItem"))
 					{

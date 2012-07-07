@@ -49,20 +49,22 @@ public class EntityTribuZombie extends EntityZombie {
 		this(world, d0, d1, d2);
 		fireResistant=plugin.config().ZombiesFireResistant;
 		this.texture = "/mob/zombie.png";
+		// Speed: 0.23 normal speed
 		this.bb = 0.23F;
-		this.damage = 4;
+		this.damage = plugin.getWaveStarter().getCurrentDamage();
 		this.al().b(true);
 		this.goalSelector.a(0, new PathfinderGoalFloat(this));
 		this.goalSelector.a(1, new PathfinderGoalBreakDoor(this));
 		this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, EntityHuman.class, this.bb, false));
 		this.goalSelector.a(3, new PathfinderGoalMeleeAttack(this, EntityVillager.class, this.bb, true));
 		FocusType focus = plugin.config().ZombiesFocus;
+
 		if (focus.equals(FocusType.None))
 			this.goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this, this.bb));
 		else if (focus.equals(FocusType.NearestPlayer) || focus.equals(FocusType.RandomPlayer)) {
 			if (focus.equals(FocusType.RandomPlayer))
 				this.setTarget(((CraftPlayer) plugin.getRandomPlayer()).getHandle());
-			this.goalSelector.a(4, new PathfinderGoalMoveTowardsTarget(this, this.bb, 1000f));
+			this.goalSelector.a(4, new PathfinderGoalMoveTowardsTarget(this, this.bb, Float.MAX_VALUE));
 		} else if (focus.equals(FocusType.InitialSpawn) || focus.equals(FocusType.DeathSpawn)) {
 			this.goalSelector.a(4, new PathfinderGoalMoveToLocation(this, focus.equals(FocusType.DeathSpawn) ? plugin.getLevel().getDeathSpawn() : plugin
 					.getLevel().getInitialSpawn(), this.bb, false));
@@ -74,7 +76,7 @@ public class EntityTribuZombie extends EntityZombie {
 		this.goalSelector.a(7, new PathfinderGoalRandomLookaround(this));
 		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
 		this.targetSelector.a(2,
-				new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, focus.equals(FocusType.NearestPlayer) ? 100.0F : 16.0F, 0, true));
+				new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, (float) (focus.equals(FocusType.NearestPlayer) ? plugin.config().LevelClearZone : 16.0F), 0, true));
 		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityVillager.class, 16.0F, 0, false));
 		this.plugin = plugin;
 	}
