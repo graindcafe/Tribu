@@ -266,6 +266,15 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					}
 					else if(keyNode[1].equalsIgnoreCase("TimeToSpawn"))
 						ZombiesTimeToSpawn=(List<Double>) config.getDoubleList(key);
+					else if(keyNode[1].equalsIgnoreCase("Speed") && nodeCount > 2)
+					{
+						if(keyNode[2].equalsIgnoreCase("Random"))
+							ZombiesSpeedRandom= config.getBoolean(key);
+						if(keyNode[2].equalsIgnoreCase("Base"))
+							ZombiesSpeedBase= (float) config.getDouble(key);
+						if(keyNode[2].equalsIgnoreCase("Rush"))
+							ZombiesSpeedRush= (float) config.getDouble(key);
+					}
 				}
 			}
 			else if(keyNode[0].equalsIgnoreCase("Stats"))

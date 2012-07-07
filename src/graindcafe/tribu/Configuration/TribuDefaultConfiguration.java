@@ -84,6 +84,9 @@ public class TribuDefaultConfiguration {
 	public boolean ZombiesFireResistant=false;
 	public FocusType ZombiesFocus=FocusType.None;
 	public List<Double> ZombiesTimeToSpawn=Arrays.asList(1.0);
+	public boolean ZombiesSpeedRandom = true;
+	public float ZombiesSpeedBase = 1f;
+	public float ZombiesSpeedRush = 1f;
 	/*
 	 * Stats
 	 */
@@ -134,6 +137,9 @@ public class TribuDefaultConfiguration {
 				put("Zombies.FireResistant", ZombiesFireResistant);
 				put("Zombies.Focus", ZombiesFocus);
 				put("Zombies.TimeToSpawn",ZombiesTimeToSpawn);
+				put("Zombies.Speed.Random",ZombiesSpeedRandom);
+				put("Zombies.Speed.Base",ZombiesSpeedBase);
+				put("Zombies.Speed.Rush",ZombiesSpeedRush);
 				put("Stats.OnZombieKill.Money", StatsOnZombieKillMoney);
 				put("Stats.OnZombieKill.Points", StatsOnZombieKillPoints);
 				put("Stats.OnPlayerDeath.Money", StatsOnPlayerDeathMoney);
