@@ -61,7 +61,7 @@ public class TopPointsSign extends HighscoreSign {
 		LinkedList<PlayerStats> stats = plugin.getSortedStats();
 		Iterator<PlayerStats> i = stats.iterator();
 		int count = 3;
-		for (byte j = 1; j <= count; j++)
+		for (byte j = 1; j <= count && i.hasNext(); j++)
 			lines[j] = String.valueOf(i.next().getPoints());
 		return lines;
 	}
