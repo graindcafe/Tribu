@@ -262,7 +262,7 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					}
 					else if(keyNode[1].equalsIgnoreCase("Focus"))
 					{
-						ZombiesFocus = FocusType.fromString(config.getString("key"));
+						ZombiesFocus = FocusType.fromString(config.getString(key));
 					}
 					else if(keyNode[1].equalsIgnoreCase("TimeToSpawn"))
 						ZombiesTimeToSpawn=(List<Double>) config.getDoubleList(key);
