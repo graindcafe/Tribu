@@ -571,7 +571,7 @@ public class Tribu extends JavaPlugin {
 				this.addPlayer(d);
 			}
 		}
-		if (config.PluginModeAutoStart && this.isEnabled())
+		if (config.PluginModeAutoStart)
 			startRunning();
 	}
 
@@ -641,7 +641,6 @@ public class Tribu extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		setEnabled(false);
 		log = Logger.getLogger("Minecraft");
 		rnd = new Random();
 		Constants.rebuildPath(getDataFolder().getPath() + File.separatorChar);
@@ -655,10 +654,12 @@ public class Tribu extends JavaPlugin {
 			a.invoke(a, EntityZombie.class, "Zombie", 54, '\uafaf', 7969893);
 
 		} catch (Exception e) {
+			setEnabled(false);
 			e.printStackTrace();
 			return;
 		}
-		isRunning = false;
+		// isRunning set to true to prevent start running at "loadCustomConf"
+		isRunning = true;
 		aliveCount = 0;
 		level = null;
 		// A language should be loaded BEFORE levelLoader uses
@@ -666,6 +667,7 @@ public class Tribu extends JavaPlugin {
 		levelLoader = new LevelFileLoader(this);
 		// The level loader have to be ready
 		this.reloadConf();
+		isRunning=false;
 		tempInventories = new HashMap<Player, TribuTempInventory>();
 		inventorySave = new TribuInventory();
 		players = new HashMap<Player, PlayerStats>();
@@ -698,7 +700,6 @@ public class Tribu extends JavaPlugin {
 		LogInfo(language.get("Info.Enable"));
 		if (config.PluginModeAutoStart)
 			startRunning();
-		setEnabled(true);
 	}
 
 	public void reloadConf() {
