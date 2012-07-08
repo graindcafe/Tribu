@@ -69,16 +69,24 @@ public class PathfinderGoalMoveToLocation extends PathfinderGoal {
 	 * The location to go
 	 */
 	private Location loc;
-
-	public PathfinderGoalMoveToLocation(EntityCreature entitycreature,Location loc,  float f, boolean flag) {
+	
+	/**
+	 * Move the entity to the location  
+	 * @param entitycreature
+	 * @param loc Location
+	 * @param speed Speed of the entity
+	 * @param flag Can break wooden door
+	 */
+	public PathfinderGoalMoveToLocation(EntityCreature entitycreature,Location loc,  float speed, boolean flag) {
 		this.a = entitycreature;
-		this.b = f;
+		this.b = speed;
 		this.e = flag;
 		this.loc = loc;
 		this.a(1);
 	}
 	
-	/** Does the goal succeed ?
+	/** 
+	 * Does the goal succeed ?
 	 * @see net.minecraft.server.PathfinderGoal#a()
 	 * 
 	 */
