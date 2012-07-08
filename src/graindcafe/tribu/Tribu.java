@@ -82,7 +82,6 @@ import org.bukkit.plugin.java.JavaPlugin;
  * 
  */
 public class Tribu extends JavaPlugin {
-	private static String messagePrefix;
 
 	public static String getExceptionMessage(Exception e) {
 		String message = e.getLocalizedMessage() + "\n";
@@ -102,18 +101,16 @@ public class Tribu extends JavaPlugin {
 	public static void messagePlayer(CommandSender sender, String message) {
 		if (!message.isEmpty())
 			if (sender == null)
-				Logger.getLogger("Minecraft").info(ChatColor.stripColor(messagePrefix + message));
+				Logger.getLogger("Minecraft").info(ChatColor.stripColor(message));
 			else
-				sender.sendMessage(messagePrefix + message);
+				sender.sendMessage(message);
 	}
 
 	private int aliveCount;
 	private TribuBlockListener blockListener;
 	
-	private String broadcastPrefix;
 	private TribuConfig config;
 	private TribuEntityListener entityListener;
-	private String infoPrefix;
 	private TribuInventory inventorySave;
 	private boolean isRunning;
 	private Language language;
@@ -127,7 +124,6 @@ public class Tribu extends JavaPlugin {
 	private TribuPlayerListener playerListener;
 	private HashMap<Player, PlayerStats> players;
 	private Random rnd;
-	private String severePrefix;
 
 	private LinkedList<PlayerStats> sortedStats;
 	private TribuSpawner spawner;
@@ -136,7 +132,6 @@ public class Tribu extends JavaPlugin {
 	private SpawnTimer spawnTimer;
 	private HashMap<Player, TribuTempInventory> tempInventories;
 	private int waitingPlayers = 0;
-	private String warningPrefix;
 	private WaveStarter waveStarter;
 
 	private TribuWorldListener worldListener;
@@ -204,7 +199,7 @@ public class Tribu extends JavaPlugin {
 	 */
 	public void broadcast(String msg) {
 		if (msg.isEmpty())
-			getServer().broadcastMessage(broadcastPrefix + msg);
+			getServer().broadcastMessage(msg);
 	}
 
 	/**
@@ -230,7 +225,7 @@ public class Tribu extends JavaPlugin {
 	 */
 	public void broadcast(String message, String permission) {
 		if (message.isEmpty())
-			getServer().broadcast(broadcastPrefix + message, permission);
+			getServer().broadcast(message, permission);
 	}
 
 	/**
@@ -462,22 +457,29 @@ public class Tribu extends JavaPlugin {
 
 				put("Severe.PlayerDidntGetInvBack", ChatColor.RED
 						+ "didn't get his inventory back because he was returned null. (Maybe he was not in server?)");
-				put("Prefix.Broadcast", "[Tribu]");
+				put("Prefix.Broadcast", "[Tribu] ");
 				put("Prefix.Message", "");
-				put("Prefix.Info", "[Tribu]");
-				put("Prefix.Warning", "[Tribu]");
-				put("Prefix.Severe", "[Tribu]");
+				put("Prefix.Info", "[Tribu] ");
+				put("Prefix.Warning", "[Tribu] ");
+				put("Prefix.Severe", "[Tribu] ");
 			}
 		});
 		if(config!=null)
-			language = Language.init(log, config.PluginModeLanguage);
+		{
+			language = Language.init(config.PluginModeLanguage);
+			if(language.isLoaded())
+				LogWarning(language.get("Warning.LanguageFileMissing"));
+			if(language.isOutdated())
+				LogWarning(language.get("Warning.LanguageOutdated"));
+			LogInfo(String.format(language.get("Info.ChosenLanguage"),language.getName(),language.getAuthor()));
+		}
 		else
-			language = Language.init(log, "English");
-		messagePrefix = language.get("Prefix.Message");
-		broadcastPrefix = language.get("Prefix.Broadcast");
-		infoPrefix = language.get("Prefix.Info");
-		warningPrefix = language.get("Prefix.Warning");
-		severePrefix = language.get("Prefix.Severe");
+			language = new DefaultLanguage();
+		language.setPrefix("Message.", language.get("Prefix.Message"));
+		language.setPrefix("Broadcast.", language.get("Prefix.Broadcast"));
+		language.setPrefix("Info.", language.get("Prefix.Info"));
+		language.setPrefix("Warning.", language.get("Prefix.Warning"));
+		language.setPrefix("Severe.", language.get("Prefix.Severe"));
 		Constants.MessageMoneyPoints = language.get("Message.MoneyPoints");
 		Constants.MessageZombieSpawnList = language.get("Message.ZombieSpawnList");
 	}
@@ -576,15 +578,15 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public void LogInfo(String message) {
-		log.info(infoPrefix + message);
+		log.info(message);
 	}
 
 	public void LogSevere(String message) {
-		log.severe(severePrefix + message);
+		log.severe(message);
 	}
 
 	public void LogWarning(String message) {
-		log.warning(warningPrefix + message);
+		log.warning(message);
 
 	}
 	
@@ -611,7 +613,7 @@ public class Tribu extends JavaPlugin {
 	public void messagePlayers(String msg) {
 		if (!msg.isEmpty())
 			for (Player p : players.keySet()) {
-				p.sendMessage(messagePrefix + msg);
+				p.sendMessage(msg);
 			}
 	}
 
