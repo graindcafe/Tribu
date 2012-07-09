@@ -35,17 +35,24 @@ public class ChunkMemory implements Runnable {
 					y = 0;
 					while (y < yMax) {
 						currentB = currentChunk.getBlock(x, y, z);
-						snapId = snap.getBlockTypeId(x, y, z);
-						snapData = (byte) snap.getBlockData(x, y, z);
-						if (currentB.getTypeId() != snapId || currentB.getData() != snapData) {
-							currentB.setTypeIdAndData(snapId, (byte) snapData, false);
-						}
+							snapId = snap.getBlockTypeId(x, y, z);
+							snapData = (byte) snap.getBlockData(x, y, z);
+							if (currentB.getTypeId() != snapId || currentB.getData() != snapData) {
+								synchronized(currentB)
+								{
+									currentB.setTypeIdAndData(snapId, (byte) snapData, false);
+								}
+							}
+						
 						y++;
 					}
 					while (y < 255) {
 						currentB = currentChunk.getBlock(x, y, z);
 						if (currentB.getTypeId() != 0)
-							currentB.setTypeId(0);
+							synchronized(currentB)
+							{
+								currentB.setTypeId(0);
+							}
 						y++;
 					}
 				}
