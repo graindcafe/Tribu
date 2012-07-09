@@ -144,7 +144,10 @@ public class TribuConfig extends TribuDefaultConfiguration {
 		}
 		// Add missing keys
 		for (Entry<String, Object> e : DefaultConfiguration.entrySet()) {
-			config.set(e.getKey(), e.getValue());
+			if(e.getValue() instanceof TribuEnum)
+				config.set(e.getKey(), e.getValue().toString());
+			else
+				config.set(e.getKey(), e.getValue());
 		}
 	}
 	public void reload(FileConfiguration config)

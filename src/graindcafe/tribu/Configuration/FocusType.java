@@ -1,6 +1,6 @@
 package graindcafe.tribu.Configuration;
 
-public enum FocusType {
+public enum FocusType implements TribuEnum {
 	None,
 	NearestPlayer,
 	RandomPlayer,
@@ -10,7 +10,7 @@ public enum FocusType {
 	public String toString(){
 		return name().toString();
 	}
-	
+
 	public static FocusType fromString(String name)
 	{
 		if(name==null)

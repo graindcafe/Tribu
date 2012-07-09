@@ -708,7 +708,7 @@ public class Tribu extends JavaPlugin {
 		// Reload the main config file from disk
 		this.reloadConfig();
 		// Parse again the file
-		this.config=new TribuConfig();
+		this.config=new TribuConfig(getConfig());
 		// Create the file if it doesn't exist
 		try {
 			getConfig().save(Constants.configFile);
