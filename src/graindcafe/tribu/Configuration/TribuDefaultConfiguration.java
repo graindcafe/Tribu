@@ -51,9 +51,7 @@ public class TribuDefaultConfiguration {
 	 * Plugin mode
 	 */
 	public boolean PluginModeServerExclusive=false;
-	//Not used yet
 	public boolean PluginModeWorldExclusive=false;
-	
 	public String PluginModeLanguage="english";
 	public boolean PluginModeAutoStart=false;
 	public String PluginModeDefaultLevel="";
@@ -148,7 +146,7 @@ public class TribuDefaultConfiguration {
 				put("Stats.RewardOnlyAlive",StatsRewardOnlyAlive);
 				put("Players.DontLooseItem", PlayersDontLooseItem);
 				put("Players.StoreInventory", PlayersStoreInventory);
-				put("Players.RevertBlocksChanges", PlayersRollback);
+				put("Players.Rollback", PlayersRollback);
 				put("Players.AllowBreak", PlayersAllowBreak);
 				put("Players.AllowPlace", PlayersAllowPlace);
 				//put("Signs.ShopSign.DropItem", true);
