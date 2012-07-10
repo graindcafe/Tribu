@@ -64,7 +64,7 @@ public class LevelFileLoader {
 		levels = new HashSet<String>();
 		levels.clear();
 		File dir = new File(Constants.levelFolder);
-		if (!dir.exists()) {
+		/*if (!dir.exists()) {
 			plugin.LogInfo(plugin.getLocale("Info.LevelFolderDoesntExist"));
 			String[] levelFolders = Constants.levelFolder.split("/");
 			String tmplevelFolder = "";
@@ -74,7 +74,7 @@ public class LevelFileLoader {
 				if(!dir.mkdir())
 					plugin.LogSevere(plugin.getLocale("Severe.TribuCantMkdir"));
 			}
-		}
+		}*/
 		File[] files = dir.listFiles();
 		plugin.LogInfo(String.format(plugin.getLocale("Info.LevelFound"), String.valueOf(files == null ? 0 :files.length)));
 		if (files != null) {
@@ -86,7 +86,7 @@ public class LevelFileLoader {
 	}
 
 	public boolean deleteLevel(String name) {
-		File file = new File(Constants.levelFolder + "/" + name + ".lvl");
+		File file = new File(Constants.levelFolder + name + ".lvl");
 		if (file.exists()) {
 			boolean result = file.delete();
 			if (!result) {
@@ -100,7 +100,7 @@ public class LevelFileLoader {
 	}
 
 	public boolean exists(String name) {
-		File file = new File(Constants.levelFolder + "/" + name + ".lvl");
+		File file = new File(Constants.levelFolder + name + ".lvl");
 		return (file.exists());
 	}
 
@@ -112,7 +112,7 @@ public class LevelFileLoader {
 		TribuLevel level = null;
 		try {
 
-			File file = new File(Constants.levelFolder + "/" + name + ".lvl");
+			File file = new File(Constants.levelFolder + name + ".lvl");
 			if (!file.exists()) {
 				return null;
 			}
@@ -123,13 +123,13 @@ public class LevelFileLoader {
 			if (version == 1) {
 				fstream.close();
 				in.close();
-				if(file.renameTo(new File(Constants.levelFolder + "/" + name + "."+version)))
+				if(file.renameTo(new File(Constants.levelFolder +  name + "."+version)))
 				{
-					file=new File(Constants.levelFolder + "/" + name + "."+version);
+					file=new File(Constants.levelFolder + name + "."+version);
 					fstream = new FileInputStream(file);
 					in = new DataInputStream(fstream);
 					
-					File tempFile=new File(Constants.levelFolder + "/" + name + ".lvl");
+					File tempFile=new File(Constants.levelFolder + name + ".lvl");
 					version = 3;
 					DataOutputStream out=new DataOutputStream(new FileOutputStream(tempFile));
 					// set the file version
@@ -159,13 +159,13 @@ public class LevelFileLoader {
 			{
 				fstream.close();
 				in.close();
-				if(file.renameTo(new File(Constants.levelFolder + "/" + name + "."+version)))
+				if(file.renameTo(new File(Constants.levelFolder +  name + "."+version)))
 				{
-					file=new File(Constants.levelFolder + "/" + name + "."+version);
+					file=new File(Constants.levelFolder +  name + "."+version);
 					fstream = new FileInputStream(file);
 					in = new DataInputStream(fstream);
 					
-					File tempFile=new File(Constants.levelFolder + "/" + name + ".lvl");
+					File tempFile=new File(Constants.levelFolder +  name + ".lvl");
 					version = 3;
 					DataOutputStream out=new DataOutputStream(new FileOutputStream(tempFile));
 					// set the file version
@@ -339,7 +339,7 @@ public class LevelFileLoader {
 		FileOutputStream out;
 		DataOutputStream o;
 		try {
-			out = new FileOutputStream(Constants.levelFolder + "/" + level.getName() + ".lvl", false);
+			out = new FileOutputStream(Constants.levelFolder + level.getName() + ".lvl", false);
 			o = new DataOutputStream(out);
 			Location spawn = level.getInitialSpawn();
 			Location death = level.getDeathSpawn();

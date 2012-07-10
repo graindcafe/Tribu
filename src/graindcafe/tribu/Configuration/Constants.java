@@ -43,7 +43,7 @@ public class Constants {
 	public static final byte LanguageFileVersion = 1;
 	public static String dataFolder="plugins"+File.separator+"Tribu"+File.separator;
 	public static String languagesFolder = dataFolder+"languages"+File.separator;
-	public static String levelFolder = dataFolder+"levels";
+	public static String levelFolder = dataFolder+"levels"+File.separator;
 	public static String perLevelFolder = dataFolder+"per-level"+File.separator;
 	public static String perWorldFolder = dataFolder+"per-world"+File.separator;
 	public static String configFile = dataFolder+"config.yml";
@@ -57,13 +57,30 @@ public class Constants {
 
 	public static final int VoteDelay = TicksBySecond * 30;
 	
-	public static void rebuildPath(String dataFolder)
+	public static boolean rebuildPath(String dataFolder)
 	{
 		Constants.dataFolder=dataFolder;
 		languagesFolder = dataFolder+"languages"+File.separator;
-		levelFolder = dataFolder+"levels";
+		levelFolder = dataFolder+"levels"+File.separator;
 		perLevelFolder = dataFolder+"per-level"+File.separator;
 		perWorldFolder = dataFolder+"per-world"+File.separator;
 		configFile = dataFolder+"config.yml";
+		File file=(new File(languagesFolder));
+		boolean success=true;
+		if(!file.exists())
+			success&=file.mkdirs();
+		file=(new File(languagesFolder));
+		if(!file.exists())
+			success&=file.mkdirs();
+		file=(new File(levelFolder));
+		if(!file.exists())
+			success&=file.mkdirs();
+		file=(new File(perLevelFolder));
+		if(!file.exists())
+			success&=file.mkdirs();
+		file=(new File(perWorldFolder));
+		if(!file.exists())
+			success&=file.mkdirs();
+		return success;
 	}
 }

@@ -645,7 +645,7 @@ public class Tribu extends JavaPlugin {
 	public void onEnable() {
 		log = Logger.getLogger("Minecraft");
 		rnd = new Random();
-		Constants.rebuildPath(getDataFolder().getPath() + File.separatorChar);
+		boolean mkdirs=Constants.rebuildPath(getDataFolder().getPath() + File.separatorChar);
 		try {
 			@SuppressWarnings("rawtypes")
 			Class[] args = { Class.class, String.class, Integer.TYPE, Integer.TYPE, Integer.TYPE };
@@ -699,6 +699,8 @@ public class Tribu extends JavaPlugin {
 		getCommand("zspawn").setExecutor(new CmdZspawn(this));
 		getCommand("ispawn").setExecutor(new CmdIspawn(this));
 		getCommand("tribu").setExecutor(new CmdTribu(this));
+		if(!mkdirs)
+			LogSevere(getLocale("Severe.TribuCantMkdir"));
 		LogInfo(language.get("Info.Enable"));
 		if (config.PluginModeAutoStart)
 			startRunning();
