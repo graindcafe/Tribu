@@ -4,10 +4,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
+import net.minecraft.server.WorldServer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.CraftWorld;
 
 public class ChunkMemory implements Runnable {
 	private boolean restoring = false;
@@ -22,42 +25,50 @@ public class ChunkMemory implements Runnable {
 		busy = true;
 		int baseX = snap.getX(), baseZ = snap.getZ(), y, yMax;
 		Chunk currentChunk = Bukkit.getWorld(snap.getWorldName()).getChunkAt(baseX, baseZ);
-		synchronized (currentChunk) {
-			debugMsg("Restoring : " + baseX + "," + baseZ);
+		WorldServer world= ((CraftWorld) Bukkit.getWorld(snap.getWorldName())).getHandle();
+		world.suppressPhysics=true;
+		// Lock the world
+		synchronized (world) 
+		{
+			// Lock the chunk
+			//synchronized (currentChunk) 
+			{
+				debugMsg("Restoring : " + baseX + "," + baseZ);
 
-			Block currentB;
-			int snapId;
-			byte snapData;
+				Block currentB;
+				int snapId;
+				byte snapData;
 
-			for (int x = 0; x < 16; x++) {
-				for (int z = 0; z < 16; z++) {
-					yMax = snap.getHighestBlockYAt(x, z);
-					y = 0;
-					while (y < yMax) {
-						currentB = currentChunk.getBlock(x, y, z);
+				for (int x = 0; x < 16; x++) {
+					for (int z = 0; z < 16; z++) {
+						yMax = snap.getHighestBlockYAt(x, z);
+						y = 0;
+						while (y < yMax) {
+							currentB = currentChunk.getBlock(x, y, z);
 							snapId = snap.getBlockTypeId(x, y, z);
 							snapData = (byte) snap.getBlockData(x, y, z);
 							if (currentB.getTypeId() != snapId || currentB.getData() != snapData) {
-								synchronized(currentB)
-								{
+								// Lock the block
+								//synchronized (currentB) {
+									//currentB.breakNaturally();
 									currentB.setTypeIdAndData(snapId, (byte) snapData, false);
-								}
+								//}
 							}
-						
-						y++;
-					}
-					while (y < 255) {
-						currentB = currentChunk.getBlock(x, y, z);
-						if (currentB.getTypeId() != 0)
-							synchronized(currentB)
-							{
-								currentB.setTypeId(0);
-							}
-						y++;
+							y++;
+						}
+						while (y < 255) {
+							currentB = currentChunk.getBlock(x, y, z);
+							if (currentB.getTypeId() != 0)
+								//synchronized (currentB) {
+									currentB.setTypeId(0, false);
+								//}
+							y++;
+						}
 					}
 				}
 			}
 		}
+		world.suppressPhysics=true;
 		busy = false;
 	}
 
@@ -121,7 +132,6 @@ public class ChunkMemory implements Runnable {
 		if (capturing && chunk.isLoaded() && chunkMemory.add(chunk)) {
 			debugMsg("Adding : " + chunk.getX() + "," + chunk.getZ());
 			snapMemory.add(chunk.getChunkSnapshot(true, false, false));
-
 		}
 	}
 
