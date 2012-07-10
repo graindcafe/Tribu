@@ -53,7 +53,9 @@ import graindcafe.tribu.Signs.TollSign;
 import graindcafe.tribu.TribuZombie.EntityTribuZombie;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
@@ -108,7 +110,7 @@ public class Tribu extends JavaPlugin {
 
 	private int aliveCount;
 	private TribuBlockListener blockListener;
-	
+
 	private TribuConfig config;
 	private TribuEntityListener entityListener;
 	private TribuInventory inventorySave;
@@ -136,7 +138,7 @@ public class Tribu extends JavaPlugin {
 
 	private TribuWorldListener worldListener;
 	private ChunkMemory memory;
-	
+
 	/**
 	 * Add packages from config file to the level
 	 */
@@ -149,7 +151,9 @@ public class Tribu extends JavaPlugin {
 
 	/**
 	 * Add a player to the game
-	 * @param player player to add
+	 * 
+	 * @param player
+	 *            player to add
 	 */
 	public void addPlayer(Player player) {
 		if (player != null && !players.containsKey(player)) {
@@ -161,7 +165,7 @@ public class Tribu extends JavaPlugin {
 			PlayerStats stats = new PlayerStats(player);
 			players.put(player, stats);
 			sortedStats.add(stats);
-			messagePlayer(player,this.getLocale("Message.YouJoined"));
+			messagePlayer(player, this.getLocale("Message.YouJoined"));
 			if (waitingPlayers != 0) {
 				waitingPlayers--;
 				if (waitingPlayers == 0) {
@@ -179,9 +183,12 @@ public class Tribu extends JavaPlugin {
 	}
 
 	/**
-	 * Add a player to the game in timeout seconds 
-	 * @param player Player to add
-	 * @param timeout Time to wait in seconds
+	 * Add a player to the game in timeout seconds
+	 * 
+	 * @param player
+	 *            Player to add
+	 * @param timeout
+	 *            Time to wait in seconds
 	 */
 	public void addPlayer(final Player player, final double timeout) {
 		this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
@@ -255,6 +262,7 @@ public class Tribu extends JavaPlugin {
 
 	/**
 	 * Get the current TribuConfig
+	 * 
 	 * @return
 	 */
 	public TribuConfig config() {
@@ -263,15 +271,17 @@ public class Tribu extends JavaPlugin {
 
 	/**
 	 * Get the number of players that are not dead
+	 * 
 	 * @return
 	 */
 	public int getAliveCount() {
 		return aliveCount;
 	}
-	public ChunkMemory getChunkMemory()
-	{
+
+	public ChunkMemory getChunkMemory() {
 		return memory;
 	}
+
 	public TribuLevel getLevel() {
 		return level;
 	}
@@ -410,7 +420,7 @@ public class Tribu extends JavaPlugin {
 				put("Message.LevelNotReady", ChatColor.YELLOW
 						+ "The level is not ready to run. Make sure you create/load a level and that it contains zombie spawns.");
 				put("Message.Deny", ChatColor.RED + "A zombie denied your action, sorry.");
-				put("Message.PlayerDied", ChatColor.LIGHT_PURPLE + "%s"+ ChatColor.RED + " has died.");
+				put("Message.PlayerDied", ChatColor.LIGHT_PURPLE + "%s" + ChatColor.RED + " has died.");
 				put("Message.PlayerRevive", ChatColor.GREEN + "You have been revived.");
 				put("Message.PlayerDSpawnLeaveWarning", ChatColor.GOLD + "You cannot leave until a new round starts.");
 
@@ -444,6 +454,7 @@ public class Tribu extends JavaPlugin {
 						ChatColor.RED
 								+ "The string given for the configuration Zombies.Focus is not recognized : %s . It could be 'None','Nearest','Random','DeathSpawn','InitialSpawn'.");
 				put("Warning.NoSpawns", ChatColor.RED + "You didn't set any zombie spawn.");
+				put("Severe.CannotCopyLanguages", ChatColor.RED + "Cannot copy languages files.");
 				put("Severe.TribuCantMkdir",
 						ChatColor.RED
 								+ "Tribu can't make dirs so it cannot create the level directory, you would not be able to save levels ! You can't use Tribu !");
@@ -464,16 +475,14 @@ public class Tribu extends JavaPlugin {
 				put("Prefix.Severe", "[Tribu] ");
 			}
 		});
-		if(config!=null)
-		{
+		if (config != null) {
 			language = Language.init(config.PluginModeLanguage);
-			if(language.isLoaded())
+			if (language.isLoaded())
 				LogWarning(language.get("Warning.LanguageFileMissing"));
-			if(language.isOutdated())
+			if (language.isOutdated())
 				LogWarning(language.get("Warning.LanguageOutdated"));
-			LogInfo(String.format(language.get("Info.ChosenLanguage"),language.getName(),language.getAuthor()));
-		}
-		else
+			LogInfo(String.format(language.get("Info.ChosenLanguage"), language.getName(), language.getAuthor()));
+		} else
 			language = new DefaultLanguage();
 		language.setPrefix("Message.", language.get("Prefix.Message"));
 		language.setPrefix("Broadcast.", language.get("Prefix.Broadcast"));
@@ -489,10 +498,12 @@ public class Tribu extends JavaPlugin {
 	}
 
 	/**
-	 * Check if Tribu is running and there is a level
-	 * if it's server exclusive or world exclusive & in the good world 
-	 * or if it's near the initial spawn (radius "LevelClearZone")
-	 * @param loc  Location to check
+	 * Check if Tribu is running and there is a level if it's server exclusive
+	 * or world exclusive & in the good world or if it's near the initial spawn
+	 * (radius "LevelClearZone")
+	 * 
+	 * @param loc
+	 *            Location to check
 	 * @return is inside level
 	 */
 	public boolean isInsideLevel(Location loc) {
@@ -506,6 +517,7 @@ public class Tribu extends JavaPlugin {
 
 	/**
 	 * Is this player playing Tribu ?
+	 * 
 	 * @param player
 	 * @return Is this player playing Tribu ?
 	 */
@@ -515,7 +527,8 @@ public class Tribu extends JavaPlugin {
 
 	/**
 	 * Is the plugin running ? (not waiting for players but really running)
-	 * @return Is the plugin running ? 
+	 * 
+	 * @return Is the plugin running ?
 	 */
 	public boolean isRunning() {
 		return isRunning;
@@ -528,7 +541,7 @@ public class Tribu extends JavaPlugin {
 	}
 
 	/**
-	 * Load the custom config files, "per-world" and "per-level" 
+	 * Load the custom config files, "per-world" and "per-level"
 	 */
 	protected void loadCustomConf() {
 		TribuLevel level = this.getLevel();
@@ -589,7 +602,7 @@ public class Tribu extends JavaPlugin {
 		log.warning(message);
 
 	}
-	
+
 	/**
 	 * Send a message after formating the given languageNode with given
 	 * arguments
@@ -637,7 +650,7 @@ public class Tribu extends JavaPlugin {
 		sortedStats.clear();
 		memory.restoreAll();
 		stopRunning();
-		
+
 		LogInfo(language.get("Info.Disable"));
 	}
 
@@ -645,7 +658,36 @@ public class Tribu extends JavaPlugin {
 	public void onEnable() {
 		log = Logger.getLogger("Minecraft");
 		rnd = new Random();
-		boolean mkdirs=Constants.rebuildPath(getDataFolder().getPath() + File.separatorChar);
+		boolean mkdirs = Constants.rebuildPath(getDataFolder().getPath() + File.separatorChar);
+		boolean langCopy = true;
+		for (String name : Constants.languages) {
+			InputStream fis = this.getClass().getResourceAsStream("/res/languages/" + name + ".yml");
+			FileOutputStream fos = null;
+			File f = new File(Constants.languagesFolder + name + ".yml");
+			if (!f.exists()) {
+				try {
+					fos = new FileOutputStream(f);
+					byte[] buf = new byte[1024];
+					int i = 0;
+					while ((i = fis.read(buf)) != -1) {
+						fos.write(buf, 0, i);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					langCopy = false;
+				} finally {
+					try {
+						if (fis != null) {
+							fis.close();
+						}
+						if (fos != null) {
+							fos.close();
+						}
+					} catch (Exception e) {
+					}
+				}
+			}
+		}
 		try {
 			@SuppressWarnings("rawtypes")
 			Class[] args = { Class.class, String.class, Integer.TYPE, Integer.TYPE, Integer.TYPE };
@@ -665,17 +707,17 @@ public class Tribu extends JavaPlugin {
 		aliveCount = 0;
 		level = null;
 		// A language should be loaded BEFORE levelLoader uses
-		initLanguage();		
+		initLanguage();
 		levelLoader = new LevelFileLoader(this);
 		// The level loader have to be ready
 		this.reloadConf();
-		isRunning=false;
+		isRunning = false;
 		tempInventories = new HashMap<Player, TribuTempInventory>();
 		inventorySave = new TribuInventory();
 		players = new HashMap<Player, PlayerStats>();
 		spawnPoint = new HashMap<Player, Location>();
 		sortedStats = new LinkedList<PlayerStats>();
-		
+
 		levelSelector = new LevelSelector(this);
 
 		spawner = new TribuSpawner(this);
@@ -687,7 +729,7 @@ public class Tribu extends JavaPlugin {
 		entityListener = new TribuEntityListener(this);
 		blockListener = new TribuBlockListener(this);
 		worldListener = new TribuWorldListener(this);
-		
+
 		memory = new ChunkMemory();
 
 		getServer().getPluginManager().registerEvents(playerListener, this);
@@ -699,8 +741,10 @@ public class Tribu extends JavaPlugin {
 		getCommand("zspawn").setExecutor(new CmdZspawn(this));
 		getCommand("ispawn").setExecutor(new CmdIspawn(this));
 		getCommand("tribu").setExecutor(new CmdTribu(this));
-		if(!mkdirs)
+		if (!mkdirs)
 			LogSevere(getLocale("Severe.TribuCantMkdir"));
+		if (!langCopy)
+			LogSevere(getLocale("Severe.CannotCopyLanguages"));
 		LogInfo(language.get("Info.Enable"));
 		if (config.PluginModeAutoStart)
 			startRunning();
@@ -710,7 +754,7 @@ public class Tribu extends JavaPlugin {
 		// Reload the main config file from disk
 		this.reloadConfig();
 		// Parse again the file
-		this.config=new TribuConfig(getConfig());
+		this.config = new TribuConfig(getConfig());
 		// Create the file if it doesn't exist
 		try {
 			getConfig().save(Constants.configFile);
@@ -721,7 +765,7 @@ public class Tribu extends JavaPlugin {
 		if (config.PluginModeDefaultLevel != "")
 			setLevel(levelLoader.loadLevel(config.PluginModeDefaultLevel));
 		// After loading the level from main file
-		else 
+		else
 			this.loadCustomConf();
 	}
 
@@ -738,7 +782,7 @@ public class Tribu extends JavaPlugin {
 			sortedStats.remove(players.get(player));
 			inventorySave.restoreInventory(player);
 			players.remove(player);
-			Tribu.messagePlayer(player,"Message.YouLeft");
+			Tribu.messagePlayer(player, "Message.YouLeft");
 			if (player.isOnline() && spawnPoint.containsKey(player)) {
 				player.setBedSpawnLocation(spawnPoint.remove(player));
 			}
@@ -807,7 +851,6 @@ public class Tribu extends JavaPlugin {
 		}
 	}
 
-
 	/**
 	 * Mark a player as dead and do all necessary stuff
 	 * 
@@ -822,7 +865,7 @@ public class Tribu extends JavaPlugin {
 				p.subtractmoney(config.StatsOnPlayerDeathMoney);
 				p.subtractPoints(config.StatsOnPlayerDeathPoints);
 				p.msgStats();
-				messagePlayers("Message.Died",player.getName());
+				messagePlayers("Message.Died", player.getName());
 			}
 			players.get(player).kill();
 			if (getLevel() != null && isRunning) {
@@ -878,8 +921,7 @@ public class Tribu extends JavaPlugin {
 								&& !(e instanceof Wolf) && !(e instanceof Villager))
 							e.damage(Integer.MAX_VALUE);
 					}
-				if(config.PlayersRollback)
-				{
+				if (config.PlayersRollback) {
 					// If there is a restoring operation currently, do it
 					// quickly
 					memory.getReady();
@@ -930,30 +972,27 @@ public class Tribu extends JavaPlugin {
 			getWaveStarter().cancelWave();
 			getSpawner().clearZombies();
 			getLevelSelector().cancelVote();
-			if(config.PlayersRollback)
+			if (config.PlayersRollback)
 				memory.startRestoring(this, config.AdvancedRestoringSpeed);
 			if (TollSign.getAllowedPlayer() != null)
 				TollSign.getAllowedPlayer().clear();
-			if(config.PlayersStoreInventory)
+			if (config.PlayersStoreInventory)
 				inventorySave.restoreInventories();
 			// Teleports all players to spawn when game ends
 			for (Player p : players.keySet()) {
 				p.teleport(level.getInitialSpawn());
 			}
 			if (!config.PluginModeServerExclusive && !config.PluginModeWorldExclusive) {
-				/*if(config.PluginModeWorldExclusive)
-				{
-					TreeMap<Player,PlayerStats> toKeep=new TreeMap<Player,PlayerStats>();
-					for(Player p : players.keySet())
-					{
-						if(p.getWorld().equals(getLevel().getInitialSpawn().getWorld()))
-							toKeep.put(p, players.get(p));
-					}
-					players.clear();
-					players.putAll(toKeep);
-				}
-				else*/
-					players.clear();
+				/*
+				 * if(config.PluginModeWorldExclusive) {
+				 * TreeMap<Player,PlayerStats> toKeep=new
+				 * TreeMap<Player,PlayerStats>(); for(Player p :
+				 * players.keySet()) {
+				 * if(p.getWorld().equals(getLevel().getInitialSpawn
+				 * ().getWorld())) toKeep.put(p, players.get(p)); }
+				 * players.clear(); players.putAll(toKeep); } else
+				 */
+				players.clear();
 			}
 		}
 
