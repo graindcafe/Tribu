@@ -1,0 +1,61 @@
+# This is your default language file 
+# You should not edit it !
+# Create another language file (custom.yml) 
+# and put 'Default: english' if your default language is english
+# Your language file is complete
+
+Message:
+    InitialSpawnSet: §aErster Spawnpunkt gesetzt.
+    Levels: '§aVorhandene Level: %s'
+    YouDontHaveEnoughMoney: §4Dafür hast du nicht genug Geld!
+    MoneyPoints: '§aGeld: §5%s $§a Punkte: §c%s'
+    LevelUnloaded: §aLevel erfolgreich entladen
+    UnableToGiveYouThatItem: Das kann ich dir leider nicht geben...
+    TribuSignAdded: §aTribu Schild erfolgreich hinzugefügt.
+    NoLevelLoaded2: oder  mit '/tribu create' ein neues Level erstellen.
+    ZombieModeEnabled: Zombie Modus aktiviert!
+    YouCannotVoteAtThisTime: §cDu kannst zur Zeit nicht voten
+    InvalidVote: §cUngültiger Vote
+    UnableToSaveCurrentLevel: §cLevel kann nicht gespeichert werden.
+    SpawnpointRemoved: §aSpawnpoint entfernt
+    ThisOperationIsNotCancellable: §cDiese Aktion ist nicht abbrechbar!
+    MaybeNotSaved: §eScheinbar hast du das Level nicht gespeichert, oder nichts in das Level gesetzt.
+    LevelSaveSuccessful: §aLevel erfolgreich gespeichert.
+    UnableToDeleteLevel: §cLevel kann nicht gelöscht werden.
+    TeleportedToDeathSpawn: §aTeleportiert zum Respawn-Punkt (death spawn)
+    TeleportedToZombieSpawn: §aTeleportiert zum Zombiespawnpunkt §d%s
+    ThankyouForYourVote: §aDanke für deinen Vote.
+    LevelDeleted: §aLevel erfolgreich gespeichert.
+    PurchaseSuccessfulMoney: '§aKauf erfolgreich. Übriges Geld: §5%s $'
+    UnableToSaveLevel: §cDas Level konnte nicht gepspeichert werden, bitte versuch's später nochmal.
+    YouJoined: §aDu bist dem Kampf gegen die Zombies beigetreten.
+    ConfirmDeletion: §eBitte bestätige die Löschung des Levels %s indem du die Eingabe wiederholst.
+    NoLevelLoaded: Es ist kein Level geladen. Bitte mit '/tribu load' ein Level laden,
+    LevelCreated: §aLevel §d%s§a erstellt
+    ZombieSpawnList: §a%s
+    UnknownItem: §eUnbekanntes Item
+    YouHaveReachedWave: §aDu hast es bis zur §d%s Welle geschafft.
+    SpawnpointAdded: §aZombiespawnpunkt hinzugefügt
+    LevelLoadedSuccessfully: §aLevel erfolgreich geladen
+    DeathSpawnSet: §aRespawn (death spawn) gesetzt.
+    YouLeft: §aDu hast den Kampf gegen die Zombies verlassen.
+    UnknownLevel: '§cUnbekanntes Level: %s'
+    ZombieModeDisabled: Zombie Modus deaktiviert!
+    TeleportedToInitialSpawn: §aTeleportiert zum ersten Spawnpunkt
+    GameInProgress: §eRunde läuft, du steigst in der nächste Runde ein.
+    ZombieHavePrevailed: §aDie Zombies haben dich überrant!
+    TribuSignRemoved: §aTribu Schild erfolgreich entfernt.
+    InvalidSpawnName: §cUngültiger Spawn Name
+    LevelIsAlreadyTheCurrentLevel: §cDas Level %s ist bereits geladen.
+    UnableToLoadLevel: §cLevel konnte nicht geladen werden.
+Broadcast:
+    VoteClosingInSeconds: §aVote beendet in §d%s§a Sekunden
+    MapVoteStarting: §aLevel Vote startet,
+    MapChosen: §aLevel §d%s§a wurde ausgewählt
+    WaveComplete: §aWelle überstanden
+    SlashVoteForMap: §6'/tribu vote %s'§a für Level §d%s
+    Type: '§aType '
+    StartingWave: '§aWelle §d%s§a startet: §d%s§a Zombies mit §d%s§a Lebenspunkten'
+    Wave: §aWelle §d%s§a startet in §d%s§a Sekunden.
+Version: 1
+Default: german

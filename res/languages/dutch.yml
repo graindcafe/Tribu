@@ -1,0 +1,134 @@
+# # This is your default language file 
+# # You should not edit it !
+# # Create another language file (custom.yml) 
+# # and put 'Default: english' if your default language is english
+# # Translations to do in this language file LanguageFileComplete: # - Prefix.Severe: [Tribu]
+# # - Message.PckSaved: §aThe package %s has been saved and closed.
+# # - File.LanguageFileComplete: # Your language file is complete
+# 
+# # - Message.AlreadyIn: §eYou are already in.
+# # - Message.PckList: §aPackages of this level : %s.
+# # - Message.PckNeedOpen: §eYou have to open or create a package first.
+# # - Message.PckCreated: §aThe package %s has been created.
+# # - Warning.NoSpawns: §cYou didn't set any zombie spawn.
+# # - Message.PlayerDied: §d%s§c has died.
+# # - Message.PckRemoved: §aThe package has been removed.
+# # - Message.PckItemAdded: §aThe item "%s" has been successfully added.
+# # - Prefix.Info: [Tribu]
+# # - Message.PckNotFound: §ePackage %s not found in this level.
+# # - Message.PlayerRevive: §aYou have been revived.
+# # - Message.PckNeedId: §eYou have to specify the at least the id.
+# # - Prefix.Broadcast: [Tribu]
+# # - Severe.PlayerDidntGetInvBack: §cdidn't get his inventory back because he was returned null. (Maybe he was not in server?)
+# # - Message.PckOpened: §aThe package %s has been opened.
+# # - Message.Died: §7%s died.
+# # - Message.UnableToCreatePackage: §cUnable to create package, try again later
+# # - Message.PackageCreated: §cPackage created successfully
+# # - Message.PckNeedIdSubid: §eYou have to specify the id and subid.
+# # - Message.ConfigFileReloaded: §aConfig files have been reloaded.
+# # - Message.PckNoneOpened: §enone opened/specified
+# # - Prefix.Message: 
+# # - Message.PckItemDeleted: §aThe item has been deleted.
+# # - Message.PckNeedName: §eYou have to specify the name of the package.
+# # - Message.PlayerDSpawnLeaveWarning: §6You cannot leave until a new round starts.
+# # - Message.PckItemAddFailed: §eThe item "%s" could not be added.
+# # - Message.LevelNotReady: §eThe level is not ready to run. Make sure you create/load a level and that it contains zombie spawns.
+# # - Message.Deny: §cA zombie denied your action, sorry.
+# # - Prefix.Warning: [Tribu]
+
+Author: Bennie3211
+Version: 1
+Severe:
+  WorldDoesntExist: Wereld bestaat niet
+  TribuCantMkdir: Tribu kan geen path's maken. Hierdoor kan het geen level path aanmaken, waardoor je geen levels kunt opslaan! Je kunt Tribu niet gebruiken!
+  Exception: 'Uitzondering: %s'
+  PlayerHaveNotRetrivedHisItems: 'Speler %s heeft zijn items niet gekregen, ze worden
+    vernietigd! Items : %s'
+  ErrorDuringLevelSaving: 'Er ontstond een error bij het opslaan : %s'
+  ErrorDuringLevelLoading: 'Er onstond een error bij het laden : %s'
+  WorldInvalidFileVersion: Ongeldige wereld versie
+Broadcast:
+  MapChosen: §1Level §d%s§1 is gekozen
+  SlashVoteForMap: §6'/tribu vote %s'§3 voor map §9%s
+  Wave: §8Wave §4%s§8 start over §4%s§8 seconden.
+  MapVoteStarting: §3Level vote starten,
+  StartingWave: §7Start wave §4%s§7, §4%s§7 Zombies @ §4%s§7 gezondheid
+  Type: '§3Type '
+  VoteClosingInSeconds: §3Vote stopt over %s seconden
+  WaveComplete: §6Wave Gehaald
+Message:
+  TeleportedToInitialSpawn: §aGeteleporteerd naar initial spawn
+  UnknownLevel: '§cOnbekend level: %s'
+  MaybeNotSaved: §eHet kan zijn dat je het level niet hebt opgeslagen of je hebt nog niks ingesteld.
+  ProtectedBlock: §eSorry, deze sign is protected, vraag de Owner of hij het wil verwijderen.
+  LevelCreated: §aLevel §d%s§a aangemaakt
+  UnableToGiveYouThatItem: Niet in staat om je dit item te geven.
+  InitialSpawnSet: §aInitial spawn ingesteld.
+  ThankyouForYourVote: §aBedankt voor het stemmen
+  DeathSpawnSet: §aDeath spawn ingesteld.
+  LevelIsAlreadyTheCurrentLevel: §cLevel %s is al ingeladen
+  LevelLoadedSuccessfully: §aLevel is geladen
+  InvalidSpawnName: §cOngeldige spawn naam
+  PurchaseSuccessfulMoney: '§aSucces vol gekocht.§8 Geld: §7%s $'
+  LevelDeleted: §aLevel succes vol gedelete.
+  TribuSignAdded: §aTribu sign succes vol toegevoegd.
+  ZombieSpawnList: §a%s
+  YouCannotVoteAtThisTime: §cOp dit moment kun je niet stemmen
+  YouHaveReachedWave: §cJe hebt het gehaald tot wave §e%s
+  TeleportedToDeathSpawn: §aGeteleporteerd naar death spawn
+  TribuSignRemoved: §aTribu sign succes vol verwijderd.
+  InvalidVote: §cOngeldige stem
+  NoLevelLoaded2: of '/tribu create' om een nieuw level te maken,
+  Levels: '§aLevels: %s'
+  UnableToSaveCurrentLevel: §cNiet in staat om het huidige level op te slaan.
+  YouJoined: §6Je hebt je aangemeld om tegen de zombies te strijden.
+  GameInProgress: §eGame is bezig, je wordt volgende wave gespawnd
+  UnableToSaveLevel: §cNiet in staat om het level te saven, probeer het later nog eens
+  LevelUnloaded: §aLevel succes vol gelost
+  SpawnpointAdded: §aSpawnpunt toegevoegd
+  MoneyPoints: '§8Geld: §7%s $§8 Punten: §7%s'
+  YouDontHaveEnoughMoney: §4Je hebt niet genoeg geld voor dit!
+  YouLeft: §6Je hebt de strijd tegen de zombies verlaten.
+  ThisOperationIsNotCancellable: §cDeze handeling kan niet ongedaan gemaakt worden!
+  CannotPlaceASpecialSign: §eSorry, je kunt geen speciale sign plaatsen, vraag het aan de Owner.
+  UnableToLoadLevel: §cNiet in staat om het level te laden
+  TeleportedToZombieSpawn: §aGeteleporteerd naar zombie spawn §d%s
+  Stats: '§aHighscore voor beste zombie killer : '
+  ZombieModeDisabled: Zombie mode uitgezet!
+  UnknownItem: §eSorry, onbekend item
+  ConfirmDeletion: §eAstublieft, bevestig de verwijdering van het level %s door dit command te herhalen
+  UnableToDeleteLevel: §cNiet in staan om het huidige level te deleten.
+  LevelSaveSuccessful: §aLevel is succes vol opgeslagen
+  SpawnpointRemoved: §aSpawnpoint verwijderd
+  ZombieModeEnabled: Zombie Mode aangezet!
+  ZombieHavePrevailed: §4Zombies hebben de overhand!
+  NoLevelLoaded: Er is geen level geladen, type '/tribu load' om er een te laden,
+Warning:
+  UnableToSaveLevel: Niet in staat om het level te saven
+  ThisCommandCannotBeUsedFromTheConsole: Deze command is niet te gebruiken in het console
+  UnknownFocus: 'De opgegeven instellingen bij Zombie.Focus is onbekend : %s . Het
+    moet zijn ''None'',''Nearest'',''Random'',''DeathSpawn'',''InitialSpawn''.'
+  LanguageFileOutdated: Je huidige taal file is verouderd
+  AllSpawnsCurrentlyUnloaded: Alle zombie spawns zijn niet geladen.
+  IOErrorOnFileDelete: IO error bij file delete
+  UnableToAddSign: Niet in staat zijn om sign toe te voegen, misschien heb je de instellingen veranderd.
+  LanguageFileMissing: Het gekozen taal bestand bestaat niet
+Info:
+  LevelSaved: Level opgeslagen
+  Disable: Tribu is gestopt
+  ChosenLanguage: 'Gekozen taal : %s. Gemaakt door %s.'
+  Enable: '§fStart §4Tribu§f door Graindcafe, orginele author : samp20'
+  LevelFound: '%s levels gevonden'
+  LevelFolderDoesntExist: Level folder bestaat niet
+Sign:
+  ToggleSpawner: Spawn's knop
+  HighscoreNames: Top Namen
+  TollSign: Betalen
+  Buy: Kopen
+  HighscorePoints: Top Punten
+  Spawner: Zombie Spawner
+File:
+  DefaultLanguageFile: "# This is your default language file \n# You should not edit\
+    \ it !\n# Create another language file (custom.yml) \n# and put 'Default: english'\
+    \ if your default language is english\n"
+  TranslationsToDo: '# Translations to do in this language file LanguageFileComplete: '
