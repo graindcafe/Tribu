@@ -208,6 +208,10 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					{
 						LevelClearZone=(Double) config.getDouble(key);
 					}
+					else if(keyNode[1].equalsIgnoreCase("StartDelay"))
+					{
+						LevelStartDelay= config.getInt(key);
+					}
 				}
 			}
 			else if(keyNode[0].equalsIgnoreCase("WaveStart"))

@@ -122,7 +122,7 @@ public class TribuDefaultConfiguration {
 				put("Level.ClearZone", LevelClearZone);
 				put("Level.Jail", LevelJail);
 				put("Level.JailRadius", LevelJailRadius);
-				put("Level.StartDelay", LevelJailRadius);
+				put("Level.StartDelay", LevelStartDelay);
 				put("WaveStart.SetTime", WaveStartSetTime);
 				put("WaveStart.SetTimeTo", WaveStartSetTimeTo);
 				put("WaveStart.Delay", WaveStartDelay);
