@@ -121,9 +121,12 @@ public class TollSign extends TribuSign {
 					
 					Tribu.messagePlayer(p,plugin.getLocale("Message.YouDontHaveEnoughMoney"));
 					e.setCancelled(true);
-					if(linkedButton instanceof Door)
-						if(linkedButton.getState().getType() != Material.IRON_DOOR)
-							((Door)linkedButton).setOpen(false);
+					if(linkedButton.getType() == Material.WOODEN_DOOR)
+					{
+						Door d=new Door(linkedButton.getData());
+						d.setOpen(!d.isOpen());
+						linkedButton.setData(d.getData());	
+					}
 				} else
 				{
 					getAllowedPlayer().add(p);
