@@ -49,6 +49,7 @@ import graindcafe.tribu.Listeners.TribuBlockListener;
 import graindcafe.tribu.Listeners.TribuEntityListener;
 import graindcafe.tribu.Listeners.TribuPlayerListener;
 import graindcafe.tribu.Listeners.TribuWorldListener;
+import graindcafe.tribu.Rollback.ChunkMemory;
 import graindcafe.tribu.Signs.TollSign;
 import graindcafe.tribu.TribuZombie.EntityTribuZombie;
 
