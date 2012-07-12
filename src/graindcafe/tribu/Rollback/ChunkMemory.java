@@ -136,7 +136,7 @@ public class ChunkMemory implements Runnable {
 			stopCapturing();
 			debugMsg("Start restoring : " + snapMemory.size());
 			restoring = true;
-			speed = 33 - speed / 3;
+			speed = 21 - speed / 5;
 			iterator = snapMemory.iterator();
 			if (chunkMemory.size() > 0)
 				((CraftWorld) chunkMemory.iterator().next().getWorld()).getHandle().suppressPhysics = true;
