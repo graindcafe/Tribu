@@ -1,7 +1,5 @@
 package graindcafe.tribu.Rollback;
 
-import graindcafe.tribu.Tribu;
-
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.logging.Logger;
@@ -21,6 +19,7 @@ import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class ChunkMemory implements Runnable {
 	private boolean restoring = false;
@@ -31,8 +30,12 @@ public class ChunkMemory implements Runnable {
 	Iterator<ChunkSnapshot> iterator;
 	int taskId;
 	private HashSet<EntryBlockState> tileEntityMemory;
-	private static HashSet<EntryBlock> failedRestore;
+	private HashSet<EntryBlock> failedRestore;
 
+	/**
+	 * Try restoring blocks which failed last time
+	 * @return
+	 */
 	protected boolean tryRestoreFails() {
 		if (!failedRestore.isEmpty()) {
 			Iterator<EntryBlock> fails = failedRestore.iterator();
@@ -46,6 +49,10 @@ public class ChunkMemory implements Runnable {
 		return failedRestore.isEmpty();
 	}
 
+	/**
+	 * Restore a chunk 
+	 * @param snap
+	 */
 	public void restore(ChunkSnapshot snap) {
 		busy = true;
 		int baseX = snap.getX(), baseZ = snap.getZ(), y;
@@ -87,6 +94,9 @@ public class ChunkMemory implements Runnable {
 		busy = false;
 	}
 
+	/**
+	 * Init memories
+	 */
 	public ChunkMemory() {
 		snapMemory = new HashSet<ChunkSnapshot>();
 		chunkMemory = new HashSet<Chunk>();
@@ -94,6 +104,10 @@ public class ChunkMemory implements Runnable {
 		tileEntityMemory = new HashSet<EntryBlockState>();
 	}
 
+	/**
+	 * Restore everything as quick as possible. 
+	 * Warning ! This use a lot of resource in one time. 
+	 */
 	public void restoreAll() {
 		if (restoring) {
 			Bukkit.getScheduler().cancelTask(taskId);
@@ -112,31 +126,45 @@ public class ChunkMemory implements Runnable {
 		stopRestoring();
 	}
 
-	public void startRestoring(Tribu plugin, int speed) {
+	/**
+	 * Start the delayed restoring of chunks
+	 * @param plugin a Java Plugin (for scheluding) 
+	 * @param speed The speed of restoring
+	 */
+	public void startRestoring(JavaPlugin plugin, int speed) {
 		if (!restoring) {
 			stopCapturing();
 			debugMsg("Start restoring : " + snapMemory.size());
 			restoring = true;
 			speed = 33 - speed / 3;
 			iterator = snapMemory.iterator();
-			((CraftWorld) plugin.getLevel().getInitialSpawn().getWorld()).getHandle().suppressPhysics = true;
+			if (chunkMemory.size() > 0)
+				((CraftWorld) chunkMemory.iterator().next().getWorld()).getHandle().suppressPhysics = true;
 			taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this, 0, speed);
 		}
 	}
 
+	/**
+	 * Send a message for debug purpose
+	 * @param msg
+	 */
 	protected static void debugMsg(String msg) {
 		Logger.getLogger("Minecraft").info(msg);
 	}
 
-	public void stopRestoring() {
+	/**
+	 * Finish restoring
+	 */
+	protected void stopRestoring() {
 		// Triple try
 		if (!tryRestoreFails() && !tryRestoreFails() && !tryRestoreFails())
+		{
 			debugMsg(failedRestore.size() + " failed");
+			failedRestore.clear();
+		}
 		else
 			debugMsg("All blocks has been restored");
-
-		if (chunkMemory.size() > 0)
-			((CraftWorld) chunkMemory.iterator().next().getWorld()).getHandle().suppressPhysics = false;
+		
 		debugMsg("Restoring tile entities");
 		Iterator<EntryBlockState> iterator = tileEntityMemory.iterator();
 		while (iterator.hasNext())
@@ -145,10 +173,12 @@ public class ChunkMemory implements Runnable {
 				iterator.remove();
 			} catch (WrongBlockException e) {
 				debugMsg(e.getMessage());
+				// Try placing the desired block, we'll try again later (2nd loop)
 				e.getWorld().getBlockAt(e.getX(), e.getY(), e.getZ()).setTypeId(e.getExpected());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		// Try again failed restores
 		while (iterator.hasNext())
 			try {
 				iterator.next().restore();
@@ -157,9 +187,15 @@ public class ChunkMemory implements Runnable {
 				iterator.remove();
 			}
 		debugMsg("Stop restoring tile entities");
+		// Reset suppres physics 
+		if (chunkMemory.size() > 0)
+			((CraftWorld) chunkMemory.iterator().next().getWorld()).getHandle().suppressPhysics = false;
+		// Restoring is over
 		restoring = false;
+		// Clear memories
 		snapMemory.clear();
 		chunkMemory.clear();
+		// End task if there is a task
 		if (taskId != -1) {
 			Bukkit.getScheduler().cancelTask(taskId);
 			taskId = -1;
@@ -167,14 +203,24 @@ public class ChunkMemory implements Runnable {
 		debugMsg("Stop restoring !");
 	}
 
+	/**
+	 * Enabling capturing
+	 */
 	public void startCapturing() {
 		capturing = true;
 	}
 
+	/**
+	 * Disabling capturing
+	 */
 	public void stopCapturing() {
 		capturing = false;
 	}
 
+	/**
+	 * Really add a chunk
+	 * @param chunk
+	 */
 	private void addNoRecursion(Chunk chunk) {
 		if (capturing && chunk.isLoaded() && chunkMemory.add(chunk)) {
 			debugMsg("Adding : " + chunk.getX() + "," + chunk.getZ());
@@ -207,6 +253,9 @@ public class ChunkMemory implements Runnable {
 		}
 	}
 
+	/**
+	 * Finish or start restoring quickly 
+	 */
 	public void getReady() {
 		if (capturing || restoring) {
 			capturing = false;
@@ -216,6 +265,10 @@ public class ChunkMemory implements Runnable {
 
 	}
 
+	/**
+	 * Add a chunk (and nearly chunks)
+	 * @param chunk
+	 */
 	public void add(Chunk chunk) {
 		int baseX = chunk.getX(), baseZ = chunk.getZ();
 		addNoRecursion(chunk);
@@ -225,6 +278,9 @@ public class ChunkMemory implements Runnable {
 		addNoRecursion(chunk.getWorld().getChunkAt(baseX, baseZ - 1));
 	}
 
+	/** Run run run ! (call restoring of a chunk)
+	 * @see java.lang.Runnable#run()
+	 */
 	public void run() {
 		if (restoring && !busy)
 			if (iterator.hasNext()) {
