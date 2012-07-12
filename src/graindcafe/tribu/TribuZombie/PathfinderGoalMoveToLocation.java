@@ -68,7 +68,7 @@ public class PathfinderGoalMoveToLocation extends PathfinderGoal {
 	/**
 	 * The location to go
 	 */
-	private Location loc;
+	protected Location loc;
 	
 	/**
 	 * Move the entity to the location  
@@ -92,7 +92,7 @@ public class PathfinderGoalMoveToLocation extends PathfinderGoal {
 	 */
 	public boolean a() {
 		this.f();
-		if (this.e && this.a.world.e()) {
+		if (this.e && this.a.world.e() && loc==null) {
 			return false;
 		} else {
 			// Get the flag
