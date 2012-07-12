@@ -42,7 +42,9 @@ package graindcafe.tribu.TribuZombie;
 import graindcafe.tribu.Tribu;
 import graindcafe.tribu.Configuration.FocusType;
 
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 import net.minecraft.server.EntityHuman;
@@ -101,23 +103,27 @@ public class EntityTribuZombie extends EntityZombie {
 		this.goalSelector.a(1, new PathfinderGoalMeleeAttack(this, EntityHuman.class, this.bb*rushSpeedCoef, false));
 		this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, EntityVillager.class, this.bb*rushSpeedCoef, true));
 		this.goalSelector.a(3, new PathfinderGoalBreakDoor(this));
+		this.goalSelector.a(4, new PathfinderGoalMoveTowardsTarget(this, this.bb*rushSpeedCoef, Float.MAX_VALUE));
 		FocusType focus = plugin.config().ZombiesFocus;
 
 		if (focus.equals(FocusType.None))
-			this.goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this, this.bb));
+			this.goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction(this, this.bb));
 		else if (focus.equals(FocusType.NearestPlayer) || focus.equals(FocusType.RandomPlayer)) {
+			Player target;
 			if (focus.equals(FocusType.RandomPlayer))
-				this.setTarget(((CraftPlayer) plugin.getRandomPlayer()).getHandle());
-			this.goalSelector.a(4, new PathfinderGoalMoveTowardsTarget(this, this.bb*rushSpeedCoef, Float.MAX_VALUE));
+				target=plugin.getRandomPlayer();
+			else
+				target=plugin.getNearestPlayer(new Location(this.world.getWorld(),this.locX,this.locY,this.locZ));
+			this.goalSelector.a(5, new PathfinderGoalTrackPlayer(this, target, this.bb, true));
 		} else if (focus.equals(FocusType.InitialSpawn) || focus.equals(FocusType.DeathSpawn)) {
-			this.goalSelector.a(4, new PathfinderGoalMoveToLocation(this, focus.equals(FocusType.DeathSpawn) ? plugin.getLevel().getDeathSpawn() : plugin
+			this.goalSelector.a(5, new PathfinderGoalMoveToLocation(this, focus.equals(FocusType.DeathSpawn) ? plugin.getLevel().getDeathSpawn() : plugin
 					.getLevel().getInitialSpawn(), this.bb, true));
 		}
 		
-		this.goalSelector.a(5, new PathfinderGoalMoveThroughVillage(this, this.bb, false));
-		this.goalSelector.a(6, new PathfinderGoalRandomStroll(this, this.bb));
-		this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-		this.goalSelector.a(7, new PathfinderGoalRandomLookaround(this));
+		this.goalSelector.a(6, new PathfinderGoalMoveThroughVillage(this, this.bb, false));
+		this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, this.bb));
+		this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+		this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
 		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
 		this.targetSelector.a(2,
 				new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, (float) (focus.equals(FocusType.NearestPlayer) ? plugin.config().LevelClearZone : 16.0F), 0, true));
