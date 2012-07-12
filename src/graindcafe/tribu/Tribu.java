@@ -508,7 +508,21 @@ public class Tribu extends JavaPlugin {
 	 */
 	public boolean isInsideLevel(Location loc) {
 
-		if (isRunning && level != null)
+		return isInsideLevel(loc,false);
+	}
+	/**
+	 * Check if Tribu is running and there is a level if it's server exclusive
+	 * or world exclusive & in the good world or if it's near the initial spawn
+	 * (radius "LevelClearZone")
+	 * 
+	 * @param loc
+	 *            Location to check
+	 * @param dontCheckRunning Do not check if the plugin is running
+	 * @return is inside level
+	 */
+	public boolean isInsideLevel(Location loc,boolean dontCheckRunning) {
+
+		if ((dontCheckRunning || isRunning) && level != null)
 			return config.PluginModeServerExclusive || config.PluginModeWorldExclusive && loc.getWorld().equals(level.getInitialSpawn().getWorld())
 					|| (loc.distance(level.getInitialSpawn()) < config.LevelClearZone);
 		else

@@ -107,7 +107,7 @@ public class TribuPlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		if (plugin.config().PluginModeServerExclusive || plugin.config().PluginModeWorldExclusive
-				&& plugin.isInsideLevel(event.getPlayer().getLocation())) {
+				&& plugin.isInsideLevel(event.getPlayer().getLocation(),true)) {
 			plugin.addPlayer(event.getPlayer());
 		}
 	}
