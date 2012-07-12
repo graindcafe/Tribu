@@ -124,21 +124,21 @@ public class Tribu extends JavaPlugin {
 	private LevelSelector levelSelector;
 	private Logger log;
 
+	private ChunkMemory memory;
 	private TribuPlayerListener playerListener;
 	private HashMap<Player, PlayerStats> players;
+
 	private Random rnd;
-
 	private LinkedList<PlayerStats> sortedStats;
-	private TribuSpawner spawner;
 
+	private TribuSpawner spawner;
 	private HashMap<Player, Location> spawnPoint;
 	private SpawnTimer spawnTimer;
 	private HashMap<Player, TribuTempInventory> tempInventories;
 	private int waitingPlayers = 0;
-	private WaveStarter waveStarter;
 
+	private WaveStarter waveStarter;
 	private TribuWorldListener worldListener;
-	private ChunkMemory memory;
 
 	/**
 	 * Add packages from config file to the level
@@ -297,6 +297,27 @@ public class Tribu extends JavaPlugin {
 
 	public String getLocale(String key) {
 		return language.get(key);
+	}
+
+	/**
+	 * Get the nearest player from a location
+	 * @param location
+	 * @return nearest player
+	 */
+	public Player getNearestPlayer(Location location) {
+		Player minPlayer=null;
+		double minVal=-1d;
+		double d;
+		for(Player p : players.keySet())
+		{
+			d=location.distanceSquared(p.getLocation());
+			if(minVal>d)
+			{
+				minVal=d;
+				minPlayer=p;
+			}
+		}
+		return minPlayer;
 	}
 
 	public Set<Player> getPlayers() {
@@ -497,7 +518,6 @@ public class Tribu extends JavaPlugin {
 	public boolean isAlive(Player player) {
 		return players.get(player).isalive();
 	}
-
 	/**
 	 * Check if Tribu is running and there is a level if it's server exclusive
 	 * or world exclusive & in the good world or if it's near the initial spawn
@@ -511,6 +531,7 @@ public class Tribu extends JavaPlugin {
 
 		return isInsideLevel(loc,false);
 	}
+
 	/**
 	 * Check if Tribu is running and there is a level if it's server exclusive
 	 * or world exclusive & in the good world or if it's near the initial spawn
