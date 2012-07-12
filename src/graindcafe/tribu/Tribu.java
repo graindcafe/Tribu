@@ -782,7 +782,7 @@ public class Tribu extends JavaPlugin {
 			sortedStats.remove(players.get(player));
 			inventorySave.restoreInventory(player);
 			players.remove(player);
-			Tribu.messagePlayer(player, "Message.YouLeft");
+			Tribu.messagePlayer(player, getLocale("Message.YouLeft"));
 			if (player.isOnline() && spawnPoint.containsKey(player)) {
 				player.setBedSpawnLocation(spawnPoint.remove(player));
 			}
