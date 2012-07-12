@@ -92,7 +92,8 @@ public class TollSign extends TribuSign {
 
 				if (current.getRelative(bf2).getType() == Material.LEVER || current.getRelative(bf2).getType() == Material.STONE_BUTTON
 						|| current.getRelative(bf2).getType() == Material.STONE_PLATE || current.getRelative(bf2).getType() == Material.WOOD_PLATE
-						|| current.getRelative(bf2).getType() == Material.WOOD_DOOR || current.getRelative(bf2).getType() == Material.TRAP_DOOR) {
+						|| current.getRelative(bf2).getType() == Material.WOODEN_DOOR || current.getRelative(bf2).getType() == Material.TRAP_DOOR 
+						) {
 					linkedButton = current.getRelative(bf2);
 					return;
 				}
