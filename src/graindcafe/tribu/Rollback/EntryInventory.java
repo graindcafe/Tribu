@@ -20,7 +20,7 @@ public class EntryInventory extends EntryBlockState {
 
 		if (inventoryHolder instanceof InventoryHolder) {
 			InventoryHolder inventory = (InventoryHolder) inventoryHolder;
-
+			
 			org.bukkit.inventory.ItemStack[] bItems = inventory.getInventory().getContents();
 			this.items = new CraftItemStack[bItems.length];
 			for (int i = 0; i < bItems.length; i++)
@@ -45,7 +45,7 @@ public class EntryInventory extends EntryBlockState {
 	@Override
 	public void restore() throws WrongBlockException {
 		Validate.notNull(world, "World is null");
-		Validate.notNull(items, "Items are empty");
+		Validate.notNull(items, "Items are null");
 		IInventory inventory = ((IInventory) world.getTileEntity(x, y, z));
 		if (inventory == null) {
 			ChunkMemory.debugMsg("Null inventory tile entity");
@@ -58,6 +58,8 @@ public class EntryInventory extends EntryBlockState {
 				inventory = new TileEntityDispenser();
 			else
 				throw new WrongBlockException(Block.CHEST.id,world.getTypeId(x,y,z),x,y,z,world.getWorld());
+			if (typeId == Block.CHEST.id)
+				((TileEntityChest) inventory).i();
 			fillContainer(inventory);
 			world.setTileEntity(x, y, z, (TileEntity) inventory);
 		} else
