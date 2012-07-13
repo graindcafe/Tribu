@@ -1,5 +1,6 @@
 package graindcafe.tribu.Rollback;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 
@@ -21,10 +22,8 @@ public class EntrySign extends EntryBlockState {
 
 	@Override
 	public void restore() throws WrongBlockException {
-		if (world == null)
-			ChunkMemory.debugMsg("Null world");
-		if (lines == null)
-			ChunkMemory.debugMsg("Null lines");
+		Validate.notNull(world,"World is null");
+		Validate.notNull(lines,"Lines are null");
 		if(world.getTypeId(x,y,z)!=Block.SIGN_POST.id && world.getTypeId(x,y,z)!=Block.WALL_SIGN.id)
 			throw new WrongBlockException(Block.SIGN_POST.id,world.getTypeId(x,y,z),x,y,z,world.getWorld());
 		TileEntitySign sign = ((TileEntitySign) world.getTileEntity(x, y, z));
