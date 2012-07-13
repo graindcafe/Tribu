@@ -19,7 +19,8 @@ public class EntryBlock {
 
 	public boolean restore() {
 		if (world.setRawTypeIdAndData(x, y, z, typeId, data))
-			if (world.getTypeId(x, y, z) == typeId && world.getData(x, y, z) == data)
+			// Maybe the data is modified by something else...
+			if (world.getTypeId(x, y, z) == typeId /*&& world.getData(x, y, z) == data*/)
 				return true;
 		return false;
 	}
