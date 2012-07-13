@@ -42,8 +42,6 @@ package graindcafe.tribu.TribuZombie;
 import graindcafe.tribu.Tribu;
 import graindcafe.tribu.Configuration.FocusType;
 
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 import net.minecraft.server.EntityHuman;

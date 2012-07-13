@@ -1,7 +1,6 @@
 package graindcafe.tribu.TribuZombie;
 
 import graindcafe.tribu.Tribu;
-import graindcafe.tribu.Configuration.FocusType;
 import net.minecraft.server.EntityCreature;
 
 import org.bukkit.Location;
