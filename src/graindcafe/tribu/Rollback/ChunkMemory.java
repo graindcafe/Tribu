@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import net.minecraft.server.TileEntityMobSpawner;
 import net.minecraft.server.TileEntityNote;
+import net.minecraft.server.TileEntityPiston;
 import net.minecraft.server.TileEntityRecordPlayer;
 import net.minecraft.server.WorldServer;
 
@@ -251,6 +252,8 @@ public class ChunkMemory implements Runnable {
 					} else if (bs instanceof TileEntityMobSpawner) {
 						tileEntityMemory.add(new EntrySpawner(bs));
 					}
+					else if(bs instanceof TileEntityPiston)
+						tileEntityMemory.add(new EntryPiston(bs));
 				} catch (Exception e) {
 					debugMsg("Exception : " + e.getMessage());
 					e.printStackTrace();
