@@ -29,7 +29,19 @@ public class EntryInventory extends EntryBlockState {
 		} else
 			throw new Exception("Not an inventory holder");
 	}
-
+	private void fillContainer(IInventory inventory)
+	{
+		int max;
+		if(inventory.getSize()<items.length)
+		{
+			ChunkMemory.debugMsg("Container is too short !");
+			max=inventory.getSize();
+		}else
+			max=items.length;
+		for (int i = 0; i < max ; i++)
+			if(items[i]!=null)
+				inventory.setItem(i, items[i].getHandle());
+	}
 	@Override
 	public void restore() throws WrongBlockException {
 		Validate.notNull(world, "World is null");
@@ -46,24 +58,10 @@ public class EntryInventory extends EntryBlockState {
 				inventory = new TileEntityDispenser();
 			else
 				throw new WrongBlockException(Block.CHEST.id,world.getTypeId(x,y,z),x,y,z,world.getWorld());
-			inventory.setMaxStackSize(items.length);
-			for (int i = 0; i < items.length; i++)
-				if(items[i]!=null)
-					inventory.setItem(i, items[i].getHandle());
+			fillContainer(inventory);
 			world.setTileEntity(x, y, z, (TileEntity) inventory);
 		} else
-		{
-			int max;
-			if(inventory.getMaxStackSize()<items.length)
-			{
-				ChunkMemory.debugMsg("Container is too short !");
-				max=inventory.getMaxStackSize();
-			}else
-				max=items.length;
-			for (int i = 0; i < max ; i++)
-				if(items[i]!=null)
-					inventory.setItem(i, items[i].getHandle());
-		}
+			fillContainer(inventory);
 		world.notify(x, y, z);
 	}
 
