@@ -1,30 +1,53 @@
 package graindcafe.tribu.TribuZombie;
 
+import graindcafe.tribu.Tribu;
+import graindcafe.tribu.Configuration.FocusType;
 import net.minecraft.server.EntityCreature;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-public class PathfinderGoalTrackPlayer extends PathfinderGoalMoveToLocation{
+public class PathfinderGoalTrackPlayer extends PathfinderGoalMoveToLocation {
 	Player tracked;
+	Tribu plugin;
+	boolean randomOrNearest;
+
 	/**
-	 * Make the creature tracks a player 
+	 * Make the creature tracks a player
+	 * 
 	 * @param entitycreature
 	 * @param p
 	 * @param speed
-	 * @param can break door ?
+	 * @param can
+	 *            break door ?
 	 */
-	public PathfinderGoalTrackPlayer(EntityCreature entitycreature, Player p, float speed, boolean canBreakDoor) {
-		super(entitycreature, p.getLocation(), speed, canBreakDoor);
-		tracked=p;
+	public PathfinderGoalTrackPlayer(EntityCreature entitycreature, Tribu plugin, boolean randomOrNearest, float speed, boolean canBreakDoor) {
+		super(entitycreature, null, speed, canBreakDoor);
+		this.plugin = plugin;
+		this.randomOrNearest = randomOrNearest;
+		tracked = this.getTrackedPlayer();
+		this.loc = tracked.getLocation();
 	}
-	/* (non-Javadoc)
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see graindcafe.tribu.TribuZombie.PathfinderGoalMoveToLocation#a()
 	 */
 	public boolean a() {
-		if(tracked==null)
-			return false;
-		
-		this.loc=tracked.getLocation();
-		return super.a();
+		return this.getTrackedPlayer()!=null && super.a();
 	}
+
+	protected Player getTrackedPlayer() {
+		if (tracked == null|| !plugin.isAlive(tracked)) {
+			if (randomOrNearest)
+				tracked = plugin.getRandomPlayer();
+			else
+				tracked = plugin.getNearestPlayer(new Location(this.a.world.getWorld(), this.a.locX, this.a.locY, this.a.locZ));
+		}
+		if(tracked!=null)
+			this.loc=tracked.getLocation();
+		return tracked;
+	}
+
 }

@@ -108,12 +108,8 @@ public class EntityTribuZombie extends EntityZombie {
 		if (focus.equals(FocusType.None))
 			this.goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction(this, this.bb));
 		else if (focus.equals(FocusType.NearestPlayer) || focus.equals(FocusType.RandomPlayer)) {
-			Player target;
-			if (focus.equals(FocusType.RandomPlayer))
-				target=plugin.getRandomPlayer();
-			else
-				target=plugin.getNearestPlayer(new Location(this.world.getWorld(),this.locX,this.locY,this.locZ));
-			this.goalSelector.a(5, new PathfinderGoalTrackPlayer(this, target, this.bb, true));
+			
+			this.goalSelector.a(5, new PathfinderGoalTrackPlayer(this, plugin, focus.equals(FocusType.RandomPlayer), this.bb, true));
 		} else if (focus.equals(FocusType.InitialSpawn) || focus.equals(FocusType.DeathSpawn)) {
 			this.goalSelector.a(5, new PathfinderGoalMoveToLocation(this, focus.equals(FocusType.DeathSpawn) ? plugin.getLevel().getDeathSpawn() : plugin
 					.getLevel().getInitialSpawn(), this.bb, true));

@@ -50,21 +50,21 @@ public class PathfinderGoalMoveToLocation extends PathfinderGoal {
 	/**
 	 * The controlled creature
 	 */
-	private EntityCreature a;
+	protected EntityCreature a;
 	/**
 	 * Speed of the creature
 	 */
-	private float b;
+	protected float b;
 	/**
 	 * The path to use
 	 */
-	private PathEntity c;
+	protected PathEntity c;
 	/**
 	 * Can break wooden door ?
 	 */
-	private boolean e;
+	protected boolean e;
 	@SuppressWarnings("rawtypes")
-	private List f = new ArrayList();
+	protected List f = new ArrayList();
 	/**
 	 * The location to go
 	 */
