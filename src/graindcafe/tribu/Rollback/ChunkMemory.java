@@ -20,6 +20,7 @@ import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.material.Directional;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class ChunkMemory implements Runnable {
@@ -254,6 +255,10 @@ public class ChunkMemory implements Runnable {
 					}
 					else if(bs instanceof TileEntityPiston)
 						tileEntityMemory.add(new EntryPiston(bs));
+					else if(bs.getData() instanceof Directional)
+					{
+						tileEntityMemory.add(new EntryDirectional(bs));
+					}
 				} catch (Exception e) {
 					debugMsg("Exception : " + e.getMessage());
 					e.printStackTrace();
