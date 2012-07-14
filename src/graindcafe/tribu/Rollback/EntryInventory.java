@@ -15,19 +15,18 @@ import org.bukkit.inventory.InventoryHolder;
 public class EntryInventory extends EntryBlockState {
 	CraftItemStack[] items;
 
-	public EntryInventory(BlockState inventoryHolder) throws Exception {
+	public EntryInventory(BlockState inventoryHolder) throws WrongBlockException {
 		super(inventoryHolder);
-
+		
 		if (inventoryHolder instanceof InventoryHolder) {
 			InventoryHolder inventory = (InventoryHolder) inventoryHolder;
-			
 			org.bukkit.inventory.ItemStack[] bItems = inventory.getInventory().getContents();
 			this.items = new CraftItemStack[bItems.length];
 			for (int i = 0; i < bItems.length; i++)
 				if (bItems[i] != null)
 					this.items[i] = new CraftItemStack(bItems[i]);
 		} else
-			throw new Exception("Not an inventory holder");
+			throw new WrongBlockException(Block.CHEST.id, world.getTypeId(x, y, z), x, y, z, world.getWorld());
 	}
 	private void fillContainer(IInventory inventory)
 	{
