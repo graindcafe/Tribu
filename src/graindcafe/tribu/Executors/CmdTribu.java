@@ -265,7 +265,6 @@ public class CmdTribu implements CommandExecutor {
 						Tribu.messagePlayer(sender, String.format(plugin.getLocale("Message.PckItemAddFailed"), args[2]));
 				}
 			} else if (args[1].equals("del") || args[1].equals("delete")) {
-
 				if (pck == null)
 					Tribu.messagePlayer(sender, plugin.getLocale("Message.PckNeedOpen"));
 				else if (args.length == 4) {
@@ -282,6 +281,7 @@ public class CmdTribu implements CommandExecutor {
 				else {
 					plugin.getLevel().removePackage(args[2]);
 					Tribu.messagePlayer(sender, plugin.getLocale("Message.PckRemoved"));
+					pck=null;
 				}
 			} else if (args[1].equals("list")) {
 				Tribu.messagePlayer(sender, String.format(plugin.getLocale("Message.PckList"), plugin.getLevel().listPackages()));
