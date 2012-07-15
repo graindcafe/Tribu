@@ -429,7 +429,7 @@ public class Tribu extends JavaPlugin {
 				put("Message.PckNeedName", ChatColor.YELLOW + "You have to specify the name of the package.");
 				put("Message.PckNeedOpen", ChatColor.YELLOW + "You have to open or create a package first.");
 				put("Message.PckNeedId", ChatColor.YELLOW + "You have to specify the at least the id.");
-				put("Message.PckNeedIdSubid", ChatColor.YELLOW + "You have to specify the id and subid.");
+				put("Message.PckNeedSubId", ChatColor.YELLOW + "You have to specify the id and subid.");
 				put("Message.PckCreated", ChatColor.GREEN + "The package %s has been created.");
 				put("Message.PckOpened", ChatColor.GREEN + "The package %s has been opened.");
 				put("Message.PckSaved", ChatColor.GREEN + "The package %s has been saved and closed.");
@@ -686,7 +686,6 @@ public class Tribu extends JavaPlugin {
 		sortedStats.clear();
 		memory.restoreAll();
 		stopRunning();
-
 		LogInfo(language.get("Info.Disable"));
 	}
 
