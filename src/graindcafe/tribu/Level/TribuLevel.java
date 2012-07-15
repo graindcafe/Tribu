@@ -157,7 +157,7 @@ public class TribuLevel {
 	}
 
 	public boolean removePackage(String name) {
-		return this.Packages.add(this.getPackage(name));
+		return removePackage(this.getPackage(name));
 	}
 
 	public String listPackages() {
