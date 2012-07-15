@@ -270,7 +270,7 @@ public class CmdTribu implements CommandExecutor {
 				else if (args.length == 4) {
 					pck.deleteItem(TribuSign.parseInt(args[2]), (short) TribuSign.parseInt(args[3]));
 					Tribu.messagePlayer(sender, plugin.getLocale("Message.PckItemDeleted"));
-				} else if (pck.deleteItem(TribuSign.parseInt(args[2]), (short) TribuSign.parseInt(args[3])))
+				} else if (args.length==3 && pck.deleteItem(TribuSign.parseInt(args[2])))
 					Tribu.messagePlayer(sender, plugin.getLocale("Message.PckItemDeleted"));
 				else
 					Tribu.messagePlayer(sender, plugin.getLocale("Message.PckNeedSubId"));
