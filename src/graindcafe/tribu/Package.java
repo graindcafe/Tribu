@@ -49,7 +49,11 @@ public class Package {
 	public Package() {
 		pck = new LinkedList<ItemStack>();
 	}
-
+	public void clear()
+	{
+		this.pck.clear();
+		this.name="";
+	}
 	public Package(String name) {
 		this();
 		setName(name);
