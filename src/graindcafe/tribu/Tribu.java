@@ -545,8 +545,9 @@ public class Tribu extends JavaPlugin {
 	public boolean isInsideLevel(Location loc, boolean dontCheckRunning) {
 
 		if ((dontCheckRunning || isRunning) && level != null)
-			return config.PluginModeServerExclusive || config.PluginModeWorldExclusive && loc.getWorld().equals(level.getInitialSpawn().getWorld())
-					|| (loc.distance(level.getInitialSpawn()) < config.LevelClearZone);
+			return config.PluginModeServerExclusive || 
+					loc.getWorld().equals(level.getInitialSpawn().getWorld()) && 
+					(config.PluginModeWorldExclusive|| loc.distance(level.getInitialSpawn()) < config.LevelClearZone);
 		else
 			return false;
 	}
