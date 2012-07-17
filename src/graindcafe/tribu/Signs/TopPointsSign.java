@@ -76,4 +76,9 @@ public class TopPointsSign extends HighscoreSign {
 		s.setLine(3, lines[3]);
 		s.update();
 	}
+
+	@Override
+	public void finish() {
+		
+	}
 }

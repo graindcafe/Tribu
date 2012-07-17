@@ -50,7 +50,6 @@ import graindcafe.tribu.Listeners.TribuEntityListener;
 import graindcafe.tribu.Listeners.TribuPlayerListener;
 import graindcafe.tribu.Listeners.TribuWorldListener;
 import graindcafe.tribu.Rollback.ChunkMemory;
-import graindcafe.tribu.Signs.TollSign;
 import graindcafe.tribu.TribuZombie.EntityTribuZombie;
 
 import java.io.File;
@@ -1009,8 +1008,7 @@ public class Tribu extends JavaPlugin {
 			getLevelSelector().cancelVote();
 			if (config.PlayersRollback)
 				memory.startRestoring(this, config.AdvancedRestoringSpeed);
-			if (TollSign.getAllowedPlayer() != null)
-				TollSign.getAllowedPlayer().clear();
+			this.level.finishSigns();
 			if (config.PlayersStoreInventory)
 				inventorySave.restoreInventories();
 			// Teleports all players to spawn when game ends

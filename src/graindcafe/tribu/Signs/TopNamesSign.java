@@ -77,4 +77,9 @@ public class TopNamesSign extends HighscoreSign {
 		s.update();
 	}
 
+	@Override
+	public void finish() {
+		
+	}
+
 }

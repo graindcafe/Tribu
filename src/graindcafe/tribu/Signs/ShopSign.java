@@ -236,4 +236,9 @@ public class ShopSign extends TribuSign {
 
 	}
 
+	@Override
+	public void finish() {
+		
+	}
+
 }

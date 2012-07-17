@@ -85,4 +85,8 @@ public class SpawnControlSign extends TribuSign {
 	public void raiseEvent(Event e) {
 		raiseEvent();
 	}
+
+	@Override
+	public void finish() {		
+	}
 }

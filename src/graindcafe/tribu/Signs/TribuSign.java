@@ -226,4 +226,6 @@ public abstract class TribuSign {
 		s.update();
 	}
 
+	public abstract void finish();
+
 }
