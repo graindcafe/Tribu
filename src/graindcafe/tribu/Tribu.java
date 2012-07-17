@@ -254,7 +254,7 @@ public class Tribu extends JavaPlugin {
 		if (this.aliveCount == 0 && isRunning) {
 			messagePlayers(language.get("Message.ZombieHavePrevailed"));
 			messagePlayers(String.format(language.get("Message.YouHaveReachedWave"), String.valueOf(getWaveStarter().getWaveNumber())));
-			stopRunning();
+			stopRunning(true);
 			if (getPlayersCount() != 0)
 				getLevelSelector().startVote(Constants.VoteDelay);
 		}
@@ -300,20 +300,19 @@ public class Tribu extends JavaPlugin {
 
 	/**
 	 * Get the nearest player from a location
+	 * 
 	 * @param location
 	 * @return nearest player
 	 */
 	public Player getNearestPlayer(Location location) {
-		Player minPlayer=null;
-		double minVal=-1d;
+		Player minPlayer = null;
+		double minVal = -1d;
 		double d;
-		for(Player p : players.keySet())
-		{
-			d=location.distanceSquared(p.getLocation());
-			if(minVal>d)
-			{
-				minVal=d;
-				minPlayer=p;
+		for (Player p : players.keySet()) {
+			d = location.distanceSquared(p.getLocation());
+			if (minVal > d) {
+				minVal = d;
+				minPlayer = p;
 			}
 		}
 		return minPlayer;
@@ -517,6 +516,7 @@ public class Tribu extends JavaPlugin {
 	public boolean isAlive(Player player) {
 		return players.get(player).isalive();
 	}
+
 	/**
 	 * Check if Tribu is running and there is a level if it's server exclusive
 	 * or world exclusive & in the good world or if it's near the initial spawn
@@ -528,7 +528,7 @@ public class Tribu extends JavaPlugin {
 	 */
 	public boolean isInsideLevel(Location loc) {
 
-		return isInsideLevel(loc,false);
+		return isInsideLevel(loc, false);
 	}
 
 	/**
@@ -538,10 +538,11 @@ public class Tribu extends JavaPlugin {
 	 * 
 	 * @param loc
 	 *            Location to check
-	 * @param dontCheckRunning Do not check if the plugin is running
+	 * @param dontCheckRunning
+	 *            Do not check if the plugin is running
 	 * @return is inside level
 	 */
-	public boolean isInsideLevel(Location loc,boolean dontCheckRunning) {
+	public boolean isInsideLevel(Location loc, boolean dontCheckRunning) {
 
 		if ((dontCheckRunning || isRunning) && level != null)
 			return config.PluginModeServerExclusive || config.PluginModeWorldExclusive && loc.getWorld().equals(level.getInitialSpawn().getWorld())
@@ -1000,33 +1001,31 @@ public class Tribu extends JavaPlugin {
 	 * End the game
 	 */
 	public void stopRunning() {
+		stopRunning(false);
+	}
+
+	public void stopRunning(boolean rerun) {
 		getLevelSelector().cancelVote();
 		if (isRunning) {
 			isRunning = false;
 			getSpawnTimer().Stop();
 			getWaveStarter().cancelWave();
 			getSpawner().clearZombies();
-			
+
 			if (config.PlayersRollback)
 				memory.startRestoring(this, config.AdvancedRestoringSpeed);
 			this.level.finishSigns();
-			if (config.PlayersStoreInventory)
-				inventorySave.restoreInventories();
 			// Teleports all players to spawn when game ends
 			for (Player p : players.keySet()) {
 				p.teleport(level.getInitialSpawn());
 			}
-			if (!config.PluginModeServerExclusive && !config.PluginModeWorldExclusive) {
-				/*
-				 * if(config.PluginModeWorldExclusive) {
-				 * TreeMap<Player,PlayerStats> toKeep=new
-				 * TreeMap<Player,PlayerStats>(); for(Player p :
-				 * players.keySet()) {
-				 * if(p.getWorld().equals(getLevel().getInitialSpawn
-				 * ().getWorld())) toKeep.put(p, players.get(p)); }
-				 * players.clear(); players.putAll(toKeep); } else
-				 */
-				players.clear();
+			if (!rerun) {
+				if (config.PlayersStoreInventory)
+					inventorySave.restoreInventories();
+
+				if (!config.PluginModeServerExclusive && !config.PluginModeWorldExclusive) {
+					players.clear();
+				}
 			}
 		}
 
