@@ -1000,12 +1000,13 @@ public class Tribu extends JavaPlugin {
 	 * End the game
 	 */
 	public void stopRunning() {
+		getLevelSelector().cancelVote();
 		if (isRunning) {
 			isRunning = false;
 			getSpawnTimer().Stop();
 			getWaveStarter().cancelWave();
 			getSpawner().clearZombies();
-			getLevelSelector().cancelVote();
+			
 			if (config.PlayersRollback)
 				memory.startRestoring(this, config.AdvancedRestoringSpeed);
 			this.level.finishSigns();
