@@ -53,15 +53,14 @@ public class TollSign extends TribuSign {
 	private int cost;
 	// private boolean clicked = false;
 	private Block linkedButton;
-	// TODO: remove static
-	private static LinkedList<Player> allowedPlayer;
+	private LinkedList<Player> allowedPlayer;
 	private Player lastPlayerTry;
 	private boolean preventSpam = false;
 
 	public TollSign(Tribu plugin, Location pos, String[] lines) {
 		super(plugin, pos);
 		cost = TribuSign.parseInt(lines[1]);
-		setAllowedPlayer(new LinkedList<Player>());
+		this.allowedPlayer=new LinkedList<Player>();
 	}
 
 	@Override
@@ -110,7 +109,7 @@ public class TollSign extends TribuSign {
 				Player p = e.getPlayer();
 				if (!preventSpam || !lastPlayerTry.equals(p)) {
 					PlayerStats stats = plugin.getStats(p);
-					if (!getAllowedPlayer().contains(p) && !stats.subtractmoney(cost)) {
+					if (!allowedPlayer.contains(p) && !stats.subtractmoney(cost)) {
 
 						Tribu.messagePlayer(p, plugin.getLocale("Message.YouDontHaveEnoughMoney"));
 						e.setCancelled(true);
@@ -120,7 +119,7 @@ public class TollSign extends TribuSign {
 							linkedButton.setData(d.getData());
 						}
 					} else {
-						getAllowedPlayer().add(p);
+						allowedPlayer.add(p);
 						Tribu.messagePlayer(p, String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));
 					}
 				}
@@ -130,12 +129,14 @@ public class TollSign extends TribuSign {
 
 	}
 
-	public static LinkedList<Player> getAllowedPlayer() {
+	public LinkedList<Player> getAllowedPlayer() {
 		return allowedPlayer;
 	}
 
-	public static void setAllowedPlayer(LinkedList<Player> allowedPlayer) {
-		TollSign.allowedPlayer = allowedPlayer;
+	@Override
+	public void finish() {
+		if(this.allowedPlayer!=null)
+			this.allowedPlayer.clear();
 	}
 
 }

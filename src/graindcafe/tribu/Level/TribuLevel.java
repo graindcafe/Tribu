@@ -203,6 +203,12 @@ public class TribuLevel {
 		for (TribuSign s : Signs.values())
 			s.init();
 	}
+	
+	public void finishSigns()
+	{
+		for (TribuSign s : Signs.values())
+			s.finish();
+	}
 
 	/**
 	 * Is this sign part of this level ?
