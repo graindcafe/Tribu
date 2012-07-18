@@ -76,9 +76,8 @@ public class TribuSpawner {
 		for (CraftTribuZombie e : zombies)
 			if (e.isDead())
 				toDelete.push(e);
-		if (finished && !toDelete.isEmpty())
-			finished = false;
-		while (!toDelete.isEmpty())
+		finished = toDelete.isEmpty();
+		while (!finished) // aka if not empty
 			removedZombieCallback(toDelete.pop(),false);
 
 	}
@@ -95,9 +94,12 @@ public class TribuSpawner {
 		if (zombies.remove(zombie)) {
 			drops.clear();
 			tryStartNextWave();
-		} else {
+		} 
+		// Else The zombie may have been deleted by "removedZombieCallback"
+		/*else {
+			
 			plugin.LogWarning("Unreferenced zombie despawned");
-		}
+		}*/
 	}
 
 	public void finishCallback() {
@@ -179,7 +181,11 @@ public class TribuSpawner {
 		totalToSpawn = count;
 	}
 
-	public void spawnZombie() {
+	/**
+	 * Try to spawn a zombie
+	 * @return if zombies still have to spawn (before spawning it)
+	 */
+	public boolean spawnZombie() {
 		if (alreadySpawned < totalToSpawn && !finished) {
 			Location pos = plugin.getLevel().getRandomZombieSpawn();
 			if (pos != null) {
@@ -206,7 +212,8 @@ public class TribuSpawner {
 					justspawned = false;
 				}
 			}
-		}
+		}else return false;
+		return true;
 	}
 
 	public void startingCallback() {
