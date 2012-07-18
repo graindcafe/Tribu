@@ -35,10 +35,9 @@
 package graindcafe.tribu.Listeners;
 
 import graindcafe.tribu.Tribu;
+import graindcafe.tribu.TribuZombie.CraftTribuZombie;
 
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkUnloadEvent;
@@ -55,8 +54,8 @@ public class TribuWorldListener implements Listener {
 	@EventHandler 
 	public void onChunkUnload(ChunkUnloadEvent event) {
 		for (Entity e : event.getChunk().getEntities()) {
-			if (e instanceof Zombie && plugin.getSpawner().isSpawned((LivingEntity) e))
-				plugin.getSpawner().removedZombieCallback((LivingEntity) e);
+			if (e instanceof CraftTribuZombie)
+				plugin.getSpawner().removedZombieCallback((CraftTribuZombie) e);
 		}
 
 	}
