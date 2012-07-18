@@ -48,6 +48,7 @@ public class CraftTribuZombie extends CraftZombie implements Zombie {
     {
     	playerDamage.clear();
     	bestAttacker=null;
+    	this.setTarget(null);
     }
     public void setBestAttacker(Player p)
     {
