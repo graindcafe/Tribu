@@ -72,7 +72,7 @@ public class TribuSpawner {
 	// check if a zombie has been despawned (too far, killed but not caught by
 	// event,...)
 	public void checkZombies() {
-		Stack<LivingEntity> toDelete = new Stack<LivingEntity>();
+		Stack<CraftTribuZombie> toDelete = new Stack<CraftTribuZombie>();
 		for (CraftTribuZombie e : zombies)
 			if (e.isDead())
 				toDelete.push(e);
@@ -160,7 +160,8 @@ public class TribuSpawner {
 		return justspawned;
 	}
 
-	public void removedZombieCallback(LivingEntity e) {
+	public void removedZombieCallback(CraftTribuZombie e) {
+		e.setNoAttacker();
 		e.damage(Integer.MAX_VALUE);
 		zombies.remove(e);
 		alreadySpawned--;
