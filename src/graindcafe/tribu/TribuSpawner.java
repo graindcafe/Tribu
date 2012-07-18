@@ -52,17 +52,17 @@ public class TribuSpawner {
 
 	private boolean justspawned;
 	// number of zombies to spawn
-	private int maxSpawn;
+	private int totalToSpawn;
 	private final Tribu plugin;
 	private boolean starting;
 	// spawned zombies
-	private int totalSpawned;
+	private int alreadySpawned;
 	private LinkedList<CraftTribuZombie> zombies;
 
 	public TribuSpawner(Tribu instance) {
 		plugin = instance;
-		totalSpawned = 0;
-		maxSpawn = 5;
+		alreadySpawned = 0;
+		totalToSpawn = 5;
 		finished = false;
 		starting = true;
 		health = 10;
@@ -107,7 +107,7 @@ public class TribuSpawner {
 
 	// Debug command
 	public Location getFirstZombieLocation() {
-		if (totalSpawned > 0)
+		if (alreadySpawned > 0)
 			if (!zombies.isEmpty()) {
 				plugin.LogInfo("Health : " + zombies.get(0).getHealth());
 				plugin.LogInfo("LastDamage : " + zombies.get(0).getLastDamage());
@@ -115,7 +115,7 @@ public class TribuSpawner {
 				return zombies.get(0).getLocation();
 			} else {
 				plugin.getSpawnTimer().getState();
-				plugin.LogSevere("There is " + zombies.size() + " zombie alive of " + totalSpawned + "/" + maxSpawn + " spawned . The wave is "
+				plugin.LogSevere("There is " + zombies.size() + " zombie alive of " + alreadySpawned + "/" + totalToSpawn + " spawned . The wave is "
 						+ (finished ? "finished" : "in progress"));
 				return null;
 			}
@@ -124,7 +124,7 @@ public class TribuSpawner {
 	}
 
 	public int getTotal() {
-		return totalSpawned;
+		return alreadySpawned;
 	}
 
 	// get the first spawn that is loaded
@@ -141,11 +141,11 @@ public class TribuSpawner {
 	}
 
 	public int getMaxSpawn() {
-		return this.maxSpawn;
+		return this.totalToSpawn;
 	}
 
 	public boolean haveZombieToSpawn() {
-		return totalSpawned != maxSpawn;
+		return alreadySpawned != totalToSpawn;
 	}
 
 	public boolean isSpawned(LivingEntity ent) {
@@ -163,11 +163,11 @@ public class TribuSpawner {
 	public void removedZombieCallback(LivingEntity e) {
 		e.damage(Integer.MAX_VALUE);
 		zombies.remove(e);
-		totalSpawned--;
+		alreadySpawned--;
 	}
 
 	public void resetTotal() {
-		totalSpawned = 0;
+		alreadySpawned = 0;
 		finished = false;
 	}
 
@@ -176,11 +176,11 @@ public class TribuSpawner {
 	}
 
 	public void setMaxSpawn(int count) {
-		maxSpawn = count;
+		totalToSpawn = count;
 	}
 
 	public void SpawnZombie() {
-		if (totalSpawned < maxSpawn && !finished) {
+		if (alreadySpawned < totalToSpawn && !finished) {
 			Location pos = plugin.getLevel().getRandomZombieSpawn();
 			if (pos != null) {
 				if (!pos.getWorld().isChunkLoaded(pos.getWorld().getChunkAt(pos))) {
@@ -197,7 +197,7 @@ public class TribuSpawner {
 						zombie = (CraftTribuZombie) CraftTribuZombie.spawn(plugin, pos);
 						zombies.add(zombie);
 						zombie.setHealth(health);
-						totalSpawned++;
+						alreadySpawned++;
 					} catch (CannotSpawnException e) {
 						// Impossible to spawn the zombie, maybe because of lack
 						// of
