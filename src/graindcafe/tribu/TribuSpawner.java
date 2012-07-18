@@ -79,7 +79,7 @@ public class TribuSpawner {
 		if (finished && !toDelete.isEmpty())
 			finished = false;
 		while (!toDelete.isEmpty())
-			removedZombieCallback(toDelete.pop());
+			removedZombieCallback(toDelete.pop(),false);
 
 	}
 
@@ -129,7 +129,6 @@ public class TribuSpawner {
 	// get the first spawn that is loaded
 	public Location getValidSpawn() {
 		for (Location curPos : plugin.getLevel().getSpawns().values()) {
-
 			if (curPos.getWorld().isChunkLoaded(curPos.getWorld().getChunkAt(curPos))) {
 				return curPos;
 			}
@@ -159,8 +158,9 @@ public class TribuSpawner {
 		return justspawned;
 	}
 
-	public void removedZombieCallback(CraftTribuZombie e) {
-		e.setNoAttacker();
+	public void removedZombieCallback(CraftTribuZombie e,boolean removeReward) {
+		if(removeReward)
+			e.setNoAttacker();
 		e.damage(Integer.MAX_VALUE);
 		zombies.remove(e);
 		alreadySpawned--;

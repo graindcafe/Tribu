@@ -69,7 +69,7 @@ public class SpawnTimer implements Runnable {
 	public void run() {
 		if (plugin.isRunning() && plugin.getAliveCount() > 0 && !plugin.getSpawner().isWaveCompleted()) {
 			if (plugin.getSpawner().haveZombieToSpawn())
-				plugin.getSpawner().SpawnZombie();
+				plugin.getSpawner().spawnZombie();
 			else {
 				plugin.getSpawner().finishCallback();
 				plugin.getSpawner().checkZombies();

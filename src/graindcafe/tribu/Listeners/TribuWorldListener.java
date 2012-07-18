@@ -55,7 +55,7 @@ public class TribuWorldListener implements Listener {
 	public void onChunkUnload(ChunkUnloadEvent event) {
 		for (Entity e : event.getChunk().getEntities()) {
 			if (e instanceof CraftTribuZombie)
-				plugin.getSpawner().removedZombieCallback((CraftTribuZombie) e);
+				plugin.getSpawner().removedZombieCallback((CraftTribuZombie) e,true);
 		}
 
 	}
