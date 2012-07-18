@@ -24,8 +24,6 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoalMoveToLocation {
 		super(entitycreature, null, speed, canBreakDoor);
 		this.plugin = plugin;
 		this.randomOrNearest = randomOrNearest;
-		tracked = this.getTrackedPlayer();
-		this.loc = tracked.getLocation();
 	}
 
 	/*
