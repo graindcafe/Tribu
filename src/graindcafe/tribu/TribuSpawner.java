@@ -115,8 +115,8 @@ public class TribuSpawner {
 				return zombies.get(0).getLocation();
 			} else {
 				plugin.getSpawnTimer().getState();
-				plugin.LogSevere("There is " + zombies.size() + " zombie alive of " + totalSpawned + "/" + maxSpawn
-						+ " spawned . The wave is " + (finished ? "finished" : "in progress"));
+				plugin.LogSevere("There is " + zombies.size() + " zombie alive of " + totalSpawned + "/" + maxSpawn + " spawned . The wave is "
+						+ (finished ? "finished" : "in progress"));
 				return null;
 			}
 		else
@@ -180,35 +180,33 @@ public class TribuSpawner {
 	}
 
 	public void SpawnZombie() {
-		if (totalSpawned >= maxSpawn || finished) {
-			return;
-		}
+		if (totalSpawned < maxSpawn && !finished) {
+			Location pos = plugin.getLevel().getRandomZombieSpawn();
+			if (pos != null) {
+				if (!pos.getWorld().isChunkLoaded(pos.getWorld().getChunkAt(pos))) {
+					this.checkZombies();
 
-		Location pos = plugin.getLevel().getRandomZombieSpawn();
-		if (pos == null) {
-			return;
+					pos = this.getValidSpawn();
+				}
+				if (pos != null) {
+					// Surrounded with justspawned so that the zombie isn't
+					// removed in the entity spawn listener
+					justspawned = true;
+					CraftTribuZombie zombie;
+					try {
+						zombie = (CraftTribuZombie) CraftTribuZombie.spawn(plugin, pos);
+						zombies.add(zombie);
+						zombie.setHealth(health);
+						totalSpawned++;
+					} catch (CannotSpawnException e) {
+						// Impossible to spawn the zombie, maybe because of lack
+						// of
+						// space
+					}
+					justspawned = false;
+				}
+			}
 		}
-		if (!pos.getWorld().isChunkLoaded(pos.getWorld().getChunkAt(pos))) {
-			this.checkZombies();
-
-			pos = this.getValidSpawn();
-			if (pos == null)
-				return;
-
-		}
-		// Surrounded with justspawned so that the zombie isn't
-		// removed in the entity spawn listener
-		justspawned = true;
-		CraftTribuZombie zombie;
-		try {
-			zombie = (CraftTribuZombie) CraftTribuZombie.spawn(plugin, pos);
-			zombies.add(zombie);
-			zombie.setHealth(health);
-			totalSpawned++;
-		} catch (CannotSpawnException e) {
-			// Impossible to spawn the zombie, maybe because of lack of space
-		}
-		justspawned = false;
 	}
 
 	public void startingCallback() {
