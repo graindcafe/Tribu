@@ -92,8 +92,7 @@ public class TribuSpawner {
 	}
 
 	public void despawnZombie(CraftTribuZombie zombie, List<ItemStack> drops) {
-		if (zombies.contains(zombie)) {
-			zombies.remove(zombie);
+		if (zombies.remove(zombie)) {
 			drops.clear();
 			tryStartNextWave();
 		} else {
