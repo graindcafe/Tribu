@@ -145,7 +145,7 @@ public class TribuSpawner {
 	}
 
 	public boolean haveZombieToSpawn() {
-		return alreadySpawned != totalToSpawn;
+		return alreadySpawned < totalToSpawn;
 	}
 
 	public boolean isSpawned(LivingEntity ent) {
