@@ -179,7 +179,7 @@ public class TribuSpawner {
 		totalToSpawn = count;
 	}
 
-	public void SpawnZombie() {
+	public void spawnZombie() {
 		if (alreadySpawned < totalToSpawn && !finished) {
 			Location pos = plugin.getLevel().getRandomZombieSpawn();
 			if (pos != null) {
