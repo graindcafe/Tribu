@@ -47,18 +47,44 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
 public class TribuSpawner {
+	/**
+	 * Is the round finish
+	 */
 	private boolean finished;
+	
+	/**
+	 * Health of zombie to spawn
+	 */
 	private int health;
-
+	/**
+	 *  A zombie just spawned
+	 */
 	private boolean justspawned;
-	// number of zombies to spawn
+	/**
+	 * number of zombies to spawn
+	 */
 	private int totalToSpawn;
+	/**
+	 * Tribu
+	 */
 	private final Tribu plugin;
+	/**
+	 * Gonna start
+	 */
 	private boolean starting;
-	// spawned zombies
+	/**
+	 * spawned zombies
+	 */
 	private int alreadySpawned;
+	/**
+	 * Referenced zombies
+	 */
 	private LinkedList<CraftTribuZombie> zombies;
 
+	/**
+	 * Init the spawner
+	 * @param instance of Tribu
+	 */
 	public TribuSpawner(Tribu instance) {
 		plugin = instance;
 		alreadySpawned = 0;
@@ -69,8 +95,11 @@ public class TribuSpawner {
 		zombies = new LinkedList<CraftTribuZombie>();
 	}
 
-	// check if a zombie has been despawned (too far, killed but not caught by
-	// event,...)
+	/**
+	 * Check that all referenced zombies are alive
+	 * Useful to check if a zombie has been despawned (too far away, killed but not caught) 
+	 * set finished if they are all dead
+	 */
 	public void checkZombies() {
 		Stack<CraftTribuZombie> toDelete = new Stack<CraftTribuZombie>();
 		for (CraftTribuZombie e : zombies)
@@ -82,6 +111,9 @@ public class TribuSpawner {
 
 	}
 
+	/**
+	 * Delete all zombies and prevent the spawner to continue spawning
+	 */
 	public void clearZombies() {
 		for (CraftTribuZombie zombie : zombies) {
 			zombie.remove();
@@ -90,6 +122,11 @@ public class TribuSpawner {
 		zombies.clear();
 	}
 
+	/**
+	 * Despawn a killed zombie
+	 * @param zombie zombie to unreference
+	 * @param drops drops to clear
+	 */
 	public void despawnZombie(CraftTribuZombie zombie, List<ItemStack> drops) {
 		if (zombies.remove(zombie)) {
 			drops.clear();
@@ -102,11 +139,19 @@ public class TribuSpawner {
 		}*/
 	}
 
+	/**
+	 * Set that it's finish
+	 */
 	public void finishCallback() {
 		finished = true;
 	}
 
 	// Debug command
+	/**
+	 * This is a debug command returning the location of a living zombie
+	 * It prints info of this zombie on the console or a severe error
+	 * @return location of a living zombie
+	 */
 	public Location getFirstZombieLocation() {
 		if (alreadySpawned > 0)
 			if (!zombies.isEmpty()) {
@@ -124,11 +169,18 @@ public class TribuSpawner {
 			return null;
 	}
 
+	/**
+	 * Get the number of zombie already spawned
+	 * @return number of zombie already spawned
+	 */
 	public int getTotal() {
 		return alreadySpawned;
 	}
 
-	// get the first spawn that is loaded
+	/**
+	 * Get the first spawn in a loaded chunk
+	 * @return
+	 */
 	public Location getValidSpawn() {
 		for (Location curPos : plugin.getLevel().getSpawns().values()) {
 			if (curPos.getWorld().isChunkLoaded(curPos.getWorld().getChunkAt(curPos))) {
@@ -140,26 +192,53 @@ public class TribuSpawner {
 
 	}
 
+	/**
+	 * Get the total quantity of zombie to spawn
+	 * (Not counting zombies killed)
+	 * @return total to spawn
+	 */
 	public int getMaxSpawn() {
 		return this.totalToSpawn;
 	}
 
+	/**
+	 * If the spawner should continue spawning
+	 * @return
+	 */
 	public boolean haveZombieToSpawn() {
 		return alreadySpawned < totalToSpawn;
 	}
 
+	/**
+	 * Check if the living entity is referenced here
+	 * @param ent
+	 * @return if the living entity was spawned by this
+	 */
 	public boolean isSpawned(LivingEntity ent) {
 		return zombies.contains(ent);
 	}
 
+	/**
+	 * The wave is completed if there is no zombie to spawn and zombies spawned are dead
+	 * @return is wave completed 
+	 */
 	public boolean isWaveCompleted() {
 		return !haveZombieToSpawn() && zombies.isEmpty();
 	}
 
+	/**
+	 * Is currently spawning a zombie ?
+	 * @return
+	 */
 	public boolean justSpawned() {
 		return justspawned;
 	}
 
+	/**
+	 * Kill & unreference a zombie 
+	 * @param e Zombie to despawn
+	 * @param removeReward Reward attakers ?
+	 */
 	public void removedZombieCallback(CraftTribuZombie e,boolean removeReward) {
 		if(removeReward)
 			e.setNoAttacker();
@@ -168,15 +247,26 @@ public class TribuSpawner {
 		alreadySpawned--;
 	}
 
+	/**
+	 * Prevent spawner to continue spawning but do not set it as finished
+	 */
 	public void resetTotal() {
 		alreadySpawned = 0;
 		finished = false;
 	}
 
+	/**
+	 * Set health of zombie to spawn
+	 * @param value Health
+	 */
 	public void setHealth(int value) {
 		health = value;
 	}
 
+	/**
+	 * Set the number of zombie to spawn
+	 * @param count
+	 */
 	public void setMaxSpawn(int count) {
 		totalToSpawn = count;
 	}
@@ -216,11 +306,17 @@ public class TribuSpawner {
 		return true;
 	}
 
+	/**
+	 * Set that the spawner has started
+	 */
 	public void startingCallback() {
 		starting = false;
 	}
 
-	// Try to start the next wave if possible and return if it's starting
+	/**
+	 * Try to start the next wave if possible and return if it's starting 
+	 * @return
+	 */
 	public boolean tryStartNextWave() {
 		if (zombies.isEmpty() && finished && !starting) {
 			starting = true;
