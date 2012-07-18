@@ -24,12 +24,12 @@ import org.bukkit.entity.Zombie;
 
 public class CraftTribuZombie extends CraftZombie implements Zombie {
 	private HashMap<Player, Integer> playerDamage;
-	private Integer max,total,maxDamage;
+	private Integer maxAccrued,total,maxDamage;
 	private Player bestAttacker;
     public CraftTribuZombie(CraftServer server, EntityTribuZombie entity) {
         super(server, entity);
         playerDamage=new HashMap<Player,Integer>();
-        max=0;
+        maxAccrued=0;
         total=0;
         maxDamage=0;
     }
@@ -43,6 +43,27 @@ public class CraftTribuZombie extends CraftZombie implements Zombie {
     @Override
     public String toString() {
         return "CraftTribuZombie";
+    }
+    public void setNoAttacker()
+    {
+    	playerDamage.clear();
+    	bestAttacker=null;
+    }
+    public void setBestAttacker(Player p)
+    {
+    	bestAttacker=p;
+    }
+    public void setMaxAttack(int m)
+    {
+    	this.maxAccrued=m;
+    }
+    public void setTotalAttack(int t)
+    {
+    	this.total=t;
+    }
+    public void setMaxAccruedAttack(int accrued)
+    {
+    	this.maxAccrued=accrued;
     }
     public void addAttack(Player p, int damage)
     {
@@ -60,9 +81,9 @@ public class CraftTribuZombie extends CraftZombie implements Zombie {
     		i=new Integer(damage);
     		this.playerDamage.put(p, i);
     	}
-    	if(max<i)
+    	if(maxAccrued<i)
     	{
-    		max=i;
+    		maxAccrued=i;
     		bestAttacker=p;
     	}
     	total+=damage;
