@@ -1009,7 +1009,7 @@ public class Tribu extends JavaPlugin {
 		getLevelSelector().cancelVote();
 		if (isRunning) {
 			isRunning = false;
-			getSpawnTimer().Stop();
+			getSpawnTimer().stop();
 			getWaveStarter().cancelWave();
 			getSpawner().clearZombies();
 

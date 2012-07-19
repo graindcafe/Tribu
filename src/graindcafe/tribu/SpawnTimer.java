@@ -73,7 +73,7 @@ public class SpawnTimer implements Runnable {
 		} else {
 			plugin.getSpawner().finishCallback();
 			if (plugin.getSpawner().tryStartNextWave())
-				Stop();
+				stop();
 		}
 
 	}
@@ -92,7 +92,7 @@ public class SpawnTimer implements Runnable {
 	 * plugin.getSpawner().setHealth(health); Start(); } }
 	 */
 
-	public void Stop() {
+	public void stop() {
 		if (taskID > 0) {
 			plugin.getServer().getScheduler().cancelTask(taskID);
 			taskID = -1;
