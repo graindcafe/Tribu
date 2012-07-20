@@ -1,38 +1,3 @@
-# # Ceci est votre fichier de langue par défaut\n# Vous ne devez pas l'éditer !\n# Créer un autre fichier de langue (perso.yml) \n# et mettez 'Default: french' si votre langue par défaut est le français\n" LanguageFileComplete: # Traductions à faire dans ce fichier
-# - Prefix.Severe: [Tribu] 
-# - Message.PckSaved: �aThe package %s has been saved and closed.
-# - Message.AlreadyIn: �eYou are already in.
-# - Message.PckList: �aPackages of this level : %s.
-# - Message.PckNeedOpen: �eYou have to open or create a package first.
-# - Message.PckCreated: �aThe package %s has been created.
-# - Warning.NoSpawns: �cYou didn't set any zombie spawn.
-# - Message.PlayerDied: �d%s�c has died.
-# - Message.PckRemoved: �aThe package has been removed.
-# - Message.PckItemAdded: �aThe item "%s" has been successfully added.
-# - Prefix.Info: [Tribu] 
-# - Warning.LanguageOutdated: Your language file is outdated!
-# - Message.PckNotFound: �ePackage %s not found in this level.
-# - Message.PckNeedId: �eYou have to specify the at least the id.
-# - Message.PlayerRevive: �aYou have been revived.
-# - Prefix.Broadcast: [Tribu] 
-# - Severe.PlayerDidntGetInvBack: �cdidn't get his inventory back because he was returned null. (Maybe he was not in server?)
-# - Message.PckOpened: �aThe package %s has been opened.
-# - Message.Died: �7%s died.
-# - Message.UnableToCreatePackage: �cUnable to create package, try again later
-# - Message.PackageCreated: �cPackage created successfully
-# - Message.PckNeedIdSubid: �eYou have to specify the id and subid.
-# - Message.ConfigFileReloaded: �aConfig files have been reloaded.
-# - Message.PckNoneOpened: �enone opened/specified
-# - Prefix.Message: 
-# - Message.PckItemDeleted: �aThe item has been deleted.
-# - Message.PckNeedName: �eYou have to specify the name of the package.
-# - Message.PlayerDSpawnLeaveWarning: �6You cannot leave until a new round starts.
-# - Message.PckItemAddFailed: �eThe item "%s" could not be added.
-# - Message.LevelNotReady: �eThe level is not ready to run. Make sure you create/load a level and that it contains zombie spawns.
-# - Severe.TribuCantMkdir: �cTribu can't make dirs so it cannot create the level directory, you would not be able to save levels ! You can't use Tribu !
-# - Message.Deny: �cA zombie denied your action, sorry.
-# - Prefix.Warning: [Tribu] 
-
 Version: 1
 Author: Graindcafe
 Sign:
@@ -45,8 +10,7 @@ Sign:
 Message:
   UnknownItem: '&EObjet inconnu, désolé'
   ZombieSpawnList: '&A%s'
-  ConfirmDeletion: '&EMerci de confirmer la suppression du niveau %s en refaisant
-    la commande.'
+  ConfirmDeletion: '&EMerci de confirmer la suppression du niveau %s en refaisant la commande.'
   ThisOperationIsNotCancellable: '&CCette opération n''est pas annulable !'
   LevelUnloaded: '&ALe niveau a été déchargé avec succès'
   InvalidVote: '&CVote invalide'
@@ -68,8 +32,7 @@ Message:
   UnableToDeleteLevel: '&CImpossible de supprimer le niveau actuel.'
   LevelDeleted: '&ALe niveau a été supprimé avec succès.'
   UnknownLevel: '&ENiveau inconnu : %s'
-  MaybeNotSaved: '&EPeut-être n''avez-vous pas sauvegardé le niveau ou bien vous
-    n''avez rien mis dedans.'
+  MaybeNotSaved: '&EPeut-être n''avez-vous pas sauvegardé le niveau ou bien vous n''avez rien mis dedans.'
   Levels: '&ANiveaux : %s'
   ZombieModeEnabled: Mode survie de zombie activé !
   ZombieModeDisabled: Mode survie de zombie désactivé !
@@ -92,6 +55,30 @@ Message:
     supprimer'
   CannotPlaceASpecialSign: Désolé, vous ne pouvez pas placé une pancarte spéciale, demandez à un opérateur de le faire.
   Stats: '&eClassement des meilleurs tueurs de zombies'
+  PckSaved: �aLe paquet %s a été sauvegardé et fermé.
+  AlreadyIn: �eVous êtes déjà dedans.
+  PckList: �aPaquets pour ce niveau : %s.
+  PckNeedOpen: �eVous devez créer ou ouvrir un paquet d'abord.
+  PckCreated: �aLe paquet %s a été crée.
+  PlayerDied: �d%s�c est mort.
+  PckRemoved: �aLe paquet a été supprimé.
+  PckItemAdded: �aL'objet "%s" a été ajouté avec succès.
+  PckNotFound: �eLe paquet %s n'a pas été trouvé dans ce niveau.
+  PckNeedId: �eVous devez spécifié au moins l'id.
+  PlayerRevive: �aVous avez été ressucité.
+  Deny: �cUn zombie a empêché votre action, désolé.
+  PckOpened: �aLe paquet %s a été ouvert.
+  Died: �7%s est mort.
+  UnableToCreatePackage: �cImpossible de créer le paquet, essayez plus tard.
+  PackageCreated: �cLe paquet a été créer avec succès.
+  PckNeedIdSubid: �eVous devez spécifier l'id et le sous id.
+  ConfigFileReloaded: �aLes fichiers de configuration ont été rechargés.
+  PckNoneOpened: �eAucun ouvert ou spécifié.
+  PckItemDeleted: �aL'objet a été supprimé.
+  PckNeedName: �eVous devez préciser le nom du paquet.
+  PlayerDSpawnLeaveWarning: �6Vous ne pouvez pas sortir jusqu'à la prochaine vague.
+  PckItemAddFailed: �eL'objet "%s" ne peut pas être ajouté.
+  LevelNotReady: �eLe niveau n'est pas prêt à être lancé. Assurez vous d'avoir créer ou charger un niveau et qu'il contient des spawns de zombies.
 Broadcast:
   MapChosen: '&1Le niveau &d%s&1 a été choisi'
   MapVoteStarting: '&ADébut du vote pour le niveau,'
@@ -115,21 +102,29 @@ Warning:
   ThisCommandCannotBeUsedFromTheConsole: Cette commande ne peut pas être utilisé à la console.
   IOErrorOnFileDelete: Erreur E/S à la suppression du fichier
   LanguageFileOutdated: Votre fichier de langue actuel n'est pas à jour
-  UnknownFocus: 'Le mot donné pour la configuration Zombies.Focus n''est pas reconnu
-    : %s . Cela peut être  ''None'',''Nearest'',''Random'',''DeathSpawn'',''InitialSpawn''.'
+  UnknownFocus: 'Le mot donné pour la configuration Zombies.Focus n''est pas reconnu : %s . Cela peut être  ''None'',''Nearest'',''Random'',''DeathSpawn'',''InitialSpawn''.'
   LanguageFileMissing: Le fichier de langue choisi est inexistant
   UnableToAddSign: Impossible d'ajouter la pancarte, peut être que vous avez changé vos fichiers de langues ou les repères de pancartes.
+  NoSpawns: �cVous n'avez pas régler de spawn de zombie.
+  LanguageOutdated: Votre fichier de langue n'est pas à jour!
 Severe:
   WorldInvalidFileVersion: Version du fichier de monde invalide
   WorldDoesntExist: Le monde n'existe pas
   ErrorDuringLevelLoading: 'Erreur durant le chargement du niveau : %s'
   ErrorDuringLevelSaving: 'Erreur durant la sauvegarde du niveau : %s'
   Exception: 'Exception : %s'
-  PlayerHaveNotRetrivedHisItems: 'Le joueur %s n''a pas récupérer ses objets, ils
-    vont être supprimés ! Liste des objets : %s'
+  PlayerHaveNotRetrivedHisItems: 'Le joueur %s n''a pas récupérer ses objets, ils vont être supprimés ! Liste des objets : %s'
+  TribuCantMkdir: �cTribu ne peut pas créer les répertoires, il ne peut pas créer le répertoire des niveaux, vous ne pourrez pas sauvegarder les niveaux, vous ne pouvez pas utiliser Tribu !
+  PlayerDidntGetInvBack: �cn'a pas pu récupérer son inventaire parce qu'il était "null".
 Name: french
 File:
   DefaultLanguageFile: '# Ceci est votre fichier de langue par défaut\n# Vous ne
     devez pas l''éditer !\n# Créer un autre fichier de langue (perso.yml) \n# et
     mettez ''Default: french'' si votre langue par défaut est le français\n" LanguageFileComplete: '
   TranslationsToDo: '# Traductions à faire dans ce fichier'
+Prefix: 
+ Severe: [Tribu] 
+ Info: [Tribu] 
+ Broadcast: [Tribu] 
+ Warning: [Tribu]
+ Message: 
