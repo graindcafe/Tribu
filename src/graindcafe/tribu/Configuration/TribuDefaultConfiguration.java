@@ -55,6 +55,7 @@ public class TribuDefaultConfiguration {
 	public String PluginModeLanguage="english";
 	public boolean PluginModeAutoStart=false;
 	public String PluginModeDefaultLevel="";
+	public int LevelMinPlayers=1;
 	
 	/*
 	 * Level related
@@ -71,7 +72,7 @@ public class TribuDefaultConfiguration {
 	public int WaveStartDelay=10;
 	public boolean WaveStartTeleportPlayers=false;
 	public boolean WaveStartHealPlayers=false;
-	public int WaveStartMinPlayers=1;
+	
 	
 	/*
 	 * Zombies
@@ -128,7 +129,7 @@ public class TribuDefaultConfiguration {
 				put("WaveStart.Delay", WaveStartDelay);
 				put("WaveStart.TeleportPlayers", WaveStartTeleportPlayers);
 				put("WaveStart.HealPlayers", WaveStartHealPlayers);
-				put("WaveStart.MinPlayers", WaveStartMinPlayers);
+				put("WaveStart.MinPlayers", LevelMinPlayers);
 				put("Zombies.Quantity", ZombiesQuantity);
 				put("Zombies.Health", ZombiesHealth);
 				put("Zombies.Health", ZombiesDamage);

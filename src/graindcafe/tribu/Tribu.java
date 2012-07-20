@@ -623,8 +623,10 @@ public class Tribu extends JavaPlugin {
 				this.addPlayer(d);
 			}
 		}
+		waitingPlayers = config.LevelMinPlayers;
 		if (config.PluginModeAutoStart)
 			startRunning();
+		
 	}
 
 	public void LogInfo(String message) {
@@ -815,6 +817,8 @@ public class Tribu extends JavaPlugin {
 			if (isAlive(player)) {
 				aliveCount--;
 			}
+			if(!isRunning)
+				waitingPlayers++;
 			sortedStats.remove(players.get(player));
 			inventorySave.restoreInventory(player);
 			players.remove(player);
@@ -926,10 +930,10 @@ public class Tribu extends JavaPlugin {
 	 * @return if the game can start
 	 */
 	public boolean startRunning() {
-		if (!isRunning && getLevel() != null) {
-			if (players.isEmpty()) {
-				waitingPlayers = config.WaveStartMinPlayers;
-			} else {
+		if (!isRunning && getLevel() != null && waitingPlayers==0) {
+			/*if (players.isEmpty()) {
+				waitingPlayers = config.LevelMinPlayers;
+			} else */{
 				// Before (next instruction) it will saves current default
 				// packages to the level, saving theses packages with the level
 				this.addDefaultPackages();

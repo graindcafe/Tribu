@@ -212,6 +212,12 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					{
 						LevelStartDelay= config.getInt(key);
 					}
+					else if(keyNode[1].equalsIgnoreCase("MinPlayers"))
+					{
+						LevelMinPlayers= config.getInt(key);
+						if(LevelMinPlayers<1)
+							LevelMinPlayers= 1;
+					}
 				}
 			}
 			else if(keyNode[0].equalsIgnoreCase("WaveStart"))
@@ -239,12 +245,7 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					{
 						 WaveStartHealPlayers=(Boolean) config.getBoolean(key);
 					}
-					else if(keyNode[1].equalsIgnoreCase("MinPlayers"))
-					{
-						WaveStartMinPlayers= config.getInt(key);
-						if(WaveStartMinPlayers<1)
-							WaveStartMinPlayers= 1;
-					}
+					
 						
 				}
 			}
