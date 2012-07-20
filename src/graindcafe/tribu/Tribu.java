@@ -817,7 +817,7 @@ public class Tribu extends JavaPlugin {
 			if (isAlive(player)) {
 				aliveCount--;
 			}
-			if(!isRunning)
+			if(!isRunning && waitingPlayers<config.LevelMinPlayers)
 				waitingPlayers++;
 			sortedStats.remove(players.get(player));
 			inventorySave.restoreInventory(player);
