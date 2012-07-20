@@ -79,10 +79,10 @@ public class ShopSign extends TribuSign {
 		// If the item is inexistent, let's try with
 		// only the second line
 		if (i.isEmpty())
-			i = new Package(Material.getMaterial(signLines[1].toUpperCase()));
+			i = new Package(Material.matchMaterial(signLines[1]));
 		// Still not ? With the third one, so
 		if (i.isEmpty())
-			i = new Package(Material.getMaterial(signLines[2].toUpperCase()));
+			i = new Package(Material.matchMaterial(signLines[2]));
 		return i;
 	}
 
