@@ -163,7 +163,7 @@ public class ChunkMemory implements Runnable {
 	 * @param msg
 	 */
 	protected static void debugMsg(String msg) {
-		Logger.getLogger("Minecraft").info(msg);
+		//Logger.getLogger("Minecraft").info(msg);
 	}
 
 	/**
