@@ -106,7 +106,7 @@ public class TribuSpawner {
 			if (e.isDead())
 				toDelete.push(e);
 		finished = toDelete.isEmpty();
-		while (!finished) // aka if not empty
+		while (!toDelete.isEmpty())
 			removedZombieCallback(toDelete.pop(),false);
 
 	}
