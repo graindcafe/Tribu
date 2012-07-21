@@ -55,30 +55,30 @@ Message:
     supprimer'
   CannotPlaceASpecialSign: Désolé, vous ne pouvez pas placé une pancarte spéciale, demandez à un opérateur de le faire.
   Stats: '&eClassement des meilleurs tueurs de zombies'
-  PckSaved: �aLe paquet %s a été sauvegardé et fermé.
-  AlreadyIn: �eVous êtes déjà dedans.
-  PckList: �aPaquets pour ce niveau : %s.
-  PckNeedOpen: �eVous devez créer ou ouvrir un paquet d'abord.
-  PckCreated: �aLe paquet %s a été crée.
-  PlayerDied: �d%s�c est mort.
-  PckRemoved: �aLe paquet a été supprimé.
-  PckItemAdded: �aL'objet "%s" a été ajouté avec succès.
-  PckNotFound: �eLe paquet %s n'a pas été trouvé dans ce niveau.
-  PckNeedId: �eVous devez spécifié au moins l'id.
-  PlayerRevive: �aVous avez été ressucité.
-  Deny: �cUn zombie a empêché votre action, désolé.
-  PckOpened: �aLe paquet %s a été ouvert.
-  Died: �7%s est mort.
-  UnableToCreatePackage: �cImpossible de créer le paquet, essayez plus tard.
-  PackageCreated: �cLe paquet a été créer avec succès.
-  PckNeedIdSubid: �eVous devez spécifier l'id et le sous id.
-  ConfigFileReloaded: �aLes fichiers de configuration ont été rechargés.
-  PckNoneOpened: �eAucun ouvert ou spécifié.
-  PckItemDeleted: �aL'objet a été supprimé.
-  PckNeedName: �eVous devez préciser le nom du paquet.
-  PlayerDSpawnLeaveWarning: �6Vous ne pouvez pas sortir jusqu'à la prochaine vague.
-  PckItemAddFailed: �eL'objet "%s" ne peut pas être ajouté.
-  LevelNotReady: �eLe niveau n'est pas prêt à être lancé. Assurez vous d'avoir créer ou charger un niveau et qu'il contient des spawns de zombies.
+  PckSaved: ȡLe paquet %s a été sauvegardé et fermé.
+  AlreadyIn: ȥVous êtes déjà dedans.
+  PckList: 'ȡPaquets pour ce niveau : %s.'
+  PckNeedOpen: ȥVous devez créer ou ouvrir un paquet d'abord.
+  PckCreated: ȡLe paquet %s a été crée.
+  PlayerDied: Ȥ%sȣ est mort.
+  PckRemoved: ȡLe paquet a été supprimé.
+  PckItemAdded: ȡL'objet "%s" a été ajouté avec succès.
+  PckNotFound: ȥLe paquet %s n'a pas été trouvé dans ce niveau.
+  PckNeedId: ȥVous devez spécifié au moins l'id.
+  PlayerRevive: ȡVous avez été ressucité.
+  Deny: ȣUn zombie a empêché votre action, désolé.
+  PckOpened: ȡLe paquet %s a été ouvert.
+  Died: Ƿ%s est mort.
+  UnableToCreatePackage: ȣImpossible de créer le paquet, essayez plus tard.
+  PackageCreated: ȣLe paquet a été créer avec succès.
+  PckNeedIdSubId: ȥVous devez spécifier l'id et le sous id.
+  ConfigFileReloaded: ȡLes fichiers de configuration ont été rechargés.
+  PckNoneOpened: ȥAucun ouvert ou spécifié.
+  PckItemDeleted: ȡL'objet a été supprimé.
+  PckNeedName: ȥVous devez préciser le nom du paquet.
+  PlayerDSpawnLeaveWarning: ǶVous ne pouvez pas sortir jusqu'à la prochaine vague.
+  PckItemAddFailed: ȥL'objet "%s" ne peut pas être ajouté.
+  LevelNotReady: ȥLe niveau n'est pas prêt à être lancé. Assurez vous d'avoir créer ou charger un niveau et qu'il contient des spawns de zombies.
 Broadcast:
   MapChosen: '&1Le niveau &d%s&1 a été choisi'
   MapVoteStarting: '&ADébut du vote pour le niveau,'
@@ -105,7 +105,7 @@ Warning:
   UnknownFocus: 'Le mot donné pour la configuration Zombies.Focus n''est pas reconnu : %s . Cela peut être  ''None'',''Nearest'',''Random'',''DeathSpawn'',''InitialSpawn''.'
   LanguageFileMissing: Le fichier de langue choisi est inexistant
   UnableToAddSign: Impossible d'ajouter la pancarte, peut être que vous avez changé vos fichiers de langues ou les repères de pancartes.
-  NoSpawns: �cVous n'avez pas régler de spawn de zombie.
+  NoSpawns: ȣVous n'avez pas régler de spawn de zombie.
   LanguageOutdated: Votre fichier de langue n'est pas à jour!
 Severe:
   WorldInvalidFileVersion: Version du fichier de monde invalide
@@ -114,8 +114,9 @@ Severe:
   ErrorDuringLevelSaving: 'Erreur durant la sauvegarde du niveau : %s'
   Exception: 'Exception : %s'
   PlayerHaveNotRetrivedHisItems: 'Le joueur %s n''a pas récupérer ses objets, ils vont être supprimés ! Liste des objets : %s'
-  TribuCantMkdir: �cTribu ne peut pas créer les répertoires, il ne peut pas créer le répertoire des niveaux, vous ne pourrez pas sauvegarder les niveaux, vous ne pouvez pas utiliser Tribu !
-  PlayerDidntGetInvBack: �cn'a pas pu récupérer son inventaire parce qu'il était "null".
+  TribuCantMkdir: ȣTribu ne peut pas créer les répertoires, il ne peut pas créer le répertoire des niveaux, vous ne pourrez pas sauvegarder les niveaux, vous ne pouvez pas utiliser Tribu !
+  PlayerDidntGetInvBack: ȣn'a pas pu récupérer son inventaire parce qu'il était "null".
+  CannotCopyLanguages: ȣImpossible de copier les fichiers de langues.
 Name: french
 File:
   DefaultLanguageFile: '# Ceci est votre fichier de langue par défaut\n# Vous ne
@@ -127,4 +128,4 @@ Prefix:
  Info: [Tribu] 
  Broadcast: [Tribu] 
  Warning: [Tribu]
- Message: 
+ Message: ''
