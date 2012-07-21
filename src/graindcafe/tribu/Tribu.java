@@ -706,7 +706,7 @@ public class Tribu extends JavaPlugin {
 					fos = new FileOutputStream(f);
 					byte[] buf = new byte[1024];
 					int i = 0;
-					if(fis.available()>0)
+					if(f.canWrite() && fis.available()>0)
 					{
 						while ((i = fis.read(buf)) != -1) {
 							fos.write(buf, 0, i);
