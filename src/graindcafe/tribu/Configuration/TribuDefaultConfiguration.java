@@ -56,7 +56,6 @@ public class TribuDefaultConfiguration {
 	public boolean PluginModeAutoStart=false;
 	public String PluginModeDefaultLevel="";
 	public int LevelMinPlayers=1;
-	
 	/*
 	 * Level related
 	 */
@@ -72,8 +71,6 @@ public class TribuDefaultConfiguration {
 	public int WaveStartDelay=10;
 	public boolean WaveStartTeleportPlayers=false;
 	public boolean WaveStartHealPlayers=false;
-	
-	
 	/*
 	 * Zombies
 	 */
@@ -103,17 +100,16 @@ public class TribuDefaultConfiguration {
 	public boolean PlayersRollback = true;
 	public boolean PlayersAllowBreak = true;
 	public boolean PlayersAllowPlace = true;
-	
 	/* Default Packages */
 	public LinkedList<Package> DefaultPackages=null;
-	/* Advanced */
+	
+	/* Advanced : Advanced config are "invisible" but still usable */
 	public int AdvancedRestoringSpeed=85;
+	
 	public Map<String, Object> toMap()
 	{
 		HashMap<String, Object> map = new HashMap<String, Object>() {
 			private static final long serialVersionUID = 1L;
-		
-
 			{
 				put("PluginMode.WorldExclusive", PluginModeWorldExclusive);
 				put("PluginMode.ServerExclusive", PluginModeServerExclusive);
@@ -156,6 +152,4 @@ public class TribuDefaultConfiguration {
 		};
 		return map;
 	}
-	
-	
 }
