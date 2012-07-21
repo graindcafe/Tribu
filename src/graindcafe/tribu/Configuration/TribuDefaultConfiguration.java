@@ -61,7 +61,7 @@ public class TribuDefaultConfiguration {
 	 */
 	public double LevelClearZone=50d;
 	public boolean LevelJail=true;
-	public double LevelJailRadius=5.0;
+	public double LevelJailRadius=25.0;
 	public int LevelStartDelay=10;
 	/*
 	 * Wave related

@@ -132,7 +132,7 @@ public class TribuPlayerListener implements Listener {
 		if (plugin.isRunning() && plugin.isPlaying(player)) {
 			plugin.getChunkMemory().add(player.getLocation().getChunk());
 			if (plugin.config().LevelJail && !plugin.isAlive(player)
-					&& plugin.getLevel().getDeathSpawn().distance(player.getLocation()) > plugin.config().LevelJailRadius) {
+					&& plugin.getLevel().getDeathSpawn().distanceSquared(player.getLocation()) > plugin.config().LevelJailRadius) {
 				player.teleport(plugin.getLevel().getDeathSpawn());
 				Tribu.messagePlayer(player, plugin.getLocale("Message.PlayerDSpawnLeaveWarning"));
 			}

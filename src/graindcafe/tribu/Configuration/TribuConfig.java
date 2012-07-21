@@ -203,6 +203,7 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					else if(keyNode[1].equalsIgnoreCase("JailRadius"))
 					{
 						LevelJailRadius=config.getDouble(key);
+						LevelJailRadius*=LevelJailRadius;
 					}
 					else if(keyNode[1].equalsIgnoreCase("ClearZone"))
 					{
