@@ -701,7 +701,7 @@ public class Tribu extends JavaPlugin {
 			InputStream fis = this.getClass().getResourceAsStream("/res/languages/" + name + ".yml");
 			FileOutputStream fos = null;
 			File f = new File(Constants.languagesFolder + name + ".yml");
-			if (!f.exists()) {
+			 {
 				try {
 					fos = new FileOutputStream(f);
 					byte[] buf = new byte[1024];
@@ -872,6 +872,8 @@ public class Tribu extends JavaPlugin {
 		players.get(player).revive();
 		if (config.WaveStartHealPlayers)
 			player.setHealth(20);
+		if(config.WaveStartFeedPlayers)
+			player.setFoodLevel(20);
 		restoreTempInv(player);
 		aliveCount++;
 
