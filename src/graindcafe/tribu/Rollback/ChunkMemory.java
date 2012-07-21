@@ -2,7 +2,6 @@ package graindcafe.tribu.Rollback;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.logging.Logger;
 
 import net.minecraft.server.TileEntityMobSpawner;
 import net.minecraft.server.TileEntityNote;
