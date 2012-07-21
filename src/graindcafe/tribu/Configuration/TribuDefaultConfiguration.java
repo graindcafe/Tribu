@@ -71,6 +71,7 @@ public class TribuDefaultConfiguration {
 	public int WaveStartDelay=10;
 	public boolean WaveStartTeleportPlayers=false;
 	public boolean WaveStartHealPlayers=false;
+	public boolean WaveStartFeedPlayers=true;
 	/*
 	 * Zombies
 	 */
@@ -126,6 +127,7 @@ public class TribuDefaultConfiguration {
 				put("WaveStart.Delay", WaveStartDelay);
 				put("WaveStart.TeleportPlayers", WaveStartTeleportPlayers);
 				put("WaveStart.HealPlayers", WaveStartHealPlayers);
+				put("WaveStart.FeedPlayers", WaveStartFeedPlayers);
 				put("Zombies.Quantity", ZombiesQuantity);
 				put("Zombies.Health", ZombiesHealth);
 				put("Zombies.Damage", ZombiesDamage);
