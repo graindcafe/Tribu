@@ -81,25 +81,30 @@ public class TribuEntityListener implements Listener {
 				if (plugin.isPlaying(p)) {
 					if (p.getHealth() - dam.getDamage() <= 0) {
 						dam.setCancelled(true);
-						if (!plugin.config().PlayersDontLooseItem)
-						{
-							for(ItemStack is : p.getInventory())
-							{
-								if(is != null)
-									p.getLocation().getWorld().dropItemNaturally(p.getLocation(), is.clone());
-							}
-							p.getInventory().clear();
-						}
-						p.teleport(plugin.getLevel().getDeathSpawn());
-						p.setNoDamageTicks(5);
+						p.setNoDamageTicks(20+p.getFireTicks());
 						p.setFireTicks(0);
+						p.setFallDistance(0f);
+						p.teleport(plugin.getLevel().getDeathSpawn());
 						p.setHealth(1);
-						plugin.setDead(p);
+						if(plugin.isAlive(p))
+						{
+							if (!plugin.config().PlayersDontLooseItem)
+							{
+								for(ItemStack is : p.getInventory())
+								{
+									if(is != null)
+										p.getLocation().getWorld().dropItemNaturally(p.getLocation(), is.clone());
+								}
+								p.getInventory().clear();
+							}
+							plugin.setDead(p);
+						}
+						
 					}
 				} else
 					plugin.restoreInventory(p);
 			}
-			if (dam.getEntity() instanceof CraftTribuZombie) {
+			else if (dam.getEntity() instanceof CraftTribuZombie) {
 				if (dam.getCause().equals(DamageCause.FIRE_TICK) && plugin.config().ZombiesFireResistant) {
 					dam.setCancelled(true);
 					dam.getEntity().setFireTicks(0);
