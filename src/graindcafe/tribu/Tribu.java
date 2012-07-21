@@ -623,7 +623,6 @@ public class Tribu extends JavaPlugin {
 				this.addPlayer(d);
 			}
 		}
-		waitingPlayers = config.LevelMinPlayers;
 		if (config.PluginModeAutoStart)
 			startRunning();
 		
@@ -817,7 +816,7 @@ public class Tribu extends JavaPlugin {
 			if (isAlive(player)) {
 				aliveCount--;
 			}
-			if(!isRunning && waitingPlayers<config.LevelMinPlayers)
+			if(!isRunning && waitingPlayers!=-1 && waitingPlayers<config.LevelMinPlayers)
 				waitingPlayers++;
 			sortedStats.remove(players.get(player));
 			inventorySave.restoreInventory(player);
@@ -930,6 +929,12 @@ public class Tribu extends JavaPlugin {
 	 * @return if the game can start
 	 */
 	public boolean startRunning() {
+		if(waitingPlayers==-1)
+		{
+			waitingPlayers=config.LevelMinPlayers-players.size();
+			if(waitingPlayers<0)
+				waitingPlayers=0;
+		}
 		if (!isRunning && getLevel() != null && waitingPlayers==0) {
 			/*if (players.isEmpty()) {
 				waitingPlayers = config.LevelMinPlayers;
@@ -1032,6 +1037,7 @@ public class Tribu extends JavaPlugin {
 					players.clear();
 				}
 			}
+			waitingPlayers=-1;
 		}
 
 	}
