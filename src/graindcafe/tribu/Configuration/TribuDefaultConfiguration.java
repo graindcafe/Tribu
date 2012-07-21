@@ -124,15 +124,15 @@ public class TribuDefaultConfiguration {
 				put("Level.Jail", LevelJail);
 				put("Level.JailRadius", LevelJailRadius);
 				put("Level.StartDelay", LevelStartDelay);
+				put("Level.MinPlayers", LevelMinPlayers);
 				put("WaveStart.SetTime", WaveStartSetTime);
 				put("WaveStart.SetTimeTo", WaveStartSetTimeTo);
 				put("WaveStart.Delay", WaveStartDelay);
 				put("WaveStart.TeleportPlayers", WaveStartTeleportPlayers);
 				put("WaveStart.HealPlayers", WaveStartHealPlayers);
-				put("WaveStart.MinPlayers", LevelMinPlayers);
 				put("Zombies.Quantity", ZombiesQuantity);
 				put("Zombies.Health", ZombiesHealth);
-				put("Zombies.Health", ZombiesDamage);
+				put("Zombies.Damage", ZombiesDamage);
 				put("Zombies.FireResistant", ZombiesFireResistant);
 				put("Zombies.Focus", ZombiesFocus);
 				put("Zombies.TimeToSpawn",ZombiesTimeToSpawn);
