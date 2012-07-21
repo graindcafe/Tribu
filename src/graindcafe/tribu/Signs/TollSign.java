@@ -60,7 +60,7 @@ public class TollSign extends TribuSign {
 	public TollSign(Tribu plugin, Location pos, String[] lines) {
 		super(plugin, pos);
 		cost = TribuSign.parseInt(lines[1]);
-		this.allowedPlayer=new LinkedList<Player>();
+		this.allowedPlayer = new LinkedList<Player>();
 	}
 
 	@Override
@@ -119,8 +119,11 @@ public class TollSign extends TribuSign {
 							linkedButton.setData(d.getData());
 						}
 					} else {
-						allowedPlayer.add(p);
-						Tribu.messagePlayer(p, String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));
+						if (!allowedPlayer.contains(p)) {
+							allowedPlayer.add(p);
+							Tribu.messagePlayer(p,
+									String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));
+						}
 					}
 				}
 				lastPlayerTry = p;
@@ -135,7 +138,7 @@ public class TollSign extends TribuSign {
 
 	@Override
 	public void finish() {
-		if(this.allowedPlayer!=null)
+		if (this.allowedPlayer != null)
 			this.allowedPlayer.clear();
 	}
 
