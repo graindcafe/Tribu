@@ -64,10 +64,21 @@ public class LevelSelector implements Runnable {
 		if (taskID >= 0) {
 			plugin.getServer().getScheduler().cancelTask(taskID);
 		}
+		votingEnabled=false;
 	}
-
+	public void removeVote(Player p)
+	{
+		if(votingEnabled)
+		{
+			votes.remove(p);
+			if (votes.size() == plugin.getPlayersCount()) {
+				cancelVote();
+				run();
+			}
+		}
+	}
 	public void castVote(Player player, int v) {
-		if (votingEnabled) {
+		if (votingEnabled && plugin.isPlaying(player)) {
 
 			if (v > 2 || v < 1) {
 				Tribu.messagePlayer(player,plugin.getLocale("Message.InvalidVote"));

@@ -818,6 +818,7 @@ public class Tribu extends JavaPlugin {
 			}
 			if(!isRunning && waitingPlayers!=-1 && waitingPlayers<config.LevelMinPlayers)
 				waitingPlayers++;
+			
 			sortedStats.remove(players.get(player));
 			inventorySave.restoreInventory(player);
 			players.remove(player);
@@ -827,9 +828,11 @@ public class Tribu extends JavaPlugin {
 			}
 			// check alive AFTER player remove
 			checkAliveCount();
+			// remove vote AFTER player remove
+			levelSelector.removeVote(player);
 			if (!player.isDead())
 				restoreInventory(player);
-
+			
 		}
 	}
 
