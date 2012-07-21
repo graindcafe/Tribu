@@ -134,7 +134,7 @@ public class Tribu extends JavaPlugin {
 	private HashMap<Player, Location> spawnPoint;
 	private SpawnTimer spawnTimer;
 	private HashMap<Player, TribuTempInventory> tempInventories;
-	private int waitingPlayers = 0;
+	private int waitingPlayers = -1;
 
 	private WaveStarter waveStarter;
 	private TribuWorldListener worldListener;
