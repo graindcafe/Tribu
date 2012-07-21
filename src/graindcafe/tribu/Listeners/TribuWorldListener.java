@@ -41,7 +41,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.plugin.PluginManager;
 
 public class TribuWorldListener implements Listener {
@@ -57,13 +56,6 @@ public class TribuWorldListener implements Listener {
 			if (e instanceof CraftTribuZombie)
 				plugin.getSpawner().removedZombieCallback((CraftTribuZombie) e,true);
 		}
-
-	}
-
-	@EventHandler
-	public void onWorldUnload(WorldUnloadEvent event) {
-		if(plugin.config().PluginModeWorldExclusive && plugin.getLevel().getInitialSpawn().getWorld().equals(event.getWorld()))
-			plugin.stopRunning();
 	}
 
 	public void registerEvents(PluginManager pm) {
