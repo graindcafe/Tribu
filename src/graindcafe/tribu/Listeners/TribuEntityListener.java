@@ -91,6 +91,8 @@ public class TribuEntityListener implements Listener {
 							p.getInventory().clear();
 						}
 						p.teleport(plugin.getLevel().getDeathSpawn());
+						p.setNoDamageTicks(5);
+						p.setFireTicks(0);
 						p.setHealth(1);
 						plugin.setDead(p);
 					}
