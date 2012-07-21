@@ -98,9 +98,9 @@ public class LevelSelector implements Runnable {
 		boolean restart = false;
 		if (plugin.isRunning()) {
 			restart = true;
+			plugin.stopRunning(true);
 		}
 
-		plugin.stopRunning();
 
 		TribuLevel temp = plugin.getLevelLoader().loadLevelIgnoreCase(name);
 
