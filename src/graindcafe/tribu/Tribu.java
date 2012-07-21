@@ -936,9 +936,6 @@ public class Tribu extends JavaPlugin {
 				waitingPlayers=0;
 		}
 		if (!isRunning && getLevel() != null && waitingPlayers==0) {
-			/*if (players.isEmpty()) {
-				waitingPlayers = config.LevelMinPlayers;
-			} else */{
 				// Before (next instruction) it will saves current default
 				// packages to the level, saving theses packages with the level
 				this.addDefaultPackages();
@@ -988,7 +985,6 @@ public class Tribu extends JavaPlugin {
 				getWaveStarter().resetWave();
 				revivePlayers(true);
 				getWaveStarter().scheduleWave(Constants.TicksBySecond * config.WaveStartDelay);
-			}
 		}
 		return true;
 	}
