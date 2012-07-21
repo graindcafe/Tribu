@@ -82,7 +82,7 @@ public class TribuEntityListener implements Listener {
 					if (p.getHealth() - dam.getDamage() <= 0) {
 						dam.setCancelled(true);
 						p.setNoDamageTicks(20+p.getFireTicks());
-						p.setFireTicks(0);
+						p.setFireTicks(1);
 						p.setFallDistance(0f);
 						p.teleport(plugin.getLevel().getDeathSpawn());
 						p.setHealth(1);
@@ -100,6 +100,11 @@ public class TribuEntityListener implements Listener {
 							plugin.setDead(p);
 						}
 						
+					}
+					else if(!plugin.isAlive(p))
+					{
+						dam.setCancelled(true);
+						p.setNoDamageTicks(5);
 					}
 				} else
 					plugin.restoreInventory(p);
