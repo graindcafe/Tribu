@@ -44,6 +44,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
@@ -80,6 +81,15 @@ public class TribuBlockListener implements Listener {
 					&& !(event.getPlayer().hasPermission("tribu.super.place") || plugin.config().PlayersAllowPlace)) {
 				event.setCancelled(true);
 			}
+	}
+
+	@EventHandler
+	public void onBlockRedstoneChange(BlockRedstoneEvent event) {
+		if (plugin.isRunning()) {
+			// plugin.getBlockTrace().pushRedstoneChanged(event.getBlock());
+			if (plugin.getLevel() != null)
+				plugin.getLevel().onRedstoneChange(event);
+		}
 	}
 
 	@EventHandler
