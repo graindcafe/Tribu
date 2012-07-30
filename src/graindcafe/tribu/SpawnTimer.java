@@ -83,7 +83,7 @@ public class SpawnTimer implements Runnable {
 			plugin.getSpawner().setMaxSpawn(max);
 			plugin.getSpawner().resetTotal();
 			plugin.getSpawner().setHealth(health);
-			taskID = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, this, 0, timeToSpawn);
+			taskID = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, this, 0, timeToSpawn);
 		}
 	}/*
 	 * public void StartWave(int total, int max, int health) { if
