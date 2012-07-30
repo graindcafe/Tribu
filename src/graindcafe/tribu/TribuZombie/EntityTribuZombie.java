@@ -90,7 +90,7 @@ public class EntityTribuZombie extends EntityZombie {
 		// from 1 to 1.77
 		// .85 * 1.18 = 1 and we'll have normalSpeed * rushSpeed * speed, if
 		// normalSpeed=.85 * rushSpeed=1 = 1
-		float rushSpeedCoef = (1.18f * (((plugin.config().ZombiesSpeedRandom) ? (this.an().nextFloat() / 2f) : .25f) + (plugin.config().ZombiesSpeedRush - .25f)));
+		float rushSpeedCoef = ((1/normalSpeedCoef) * (((plugin.config().ZombiesSpeedRandom) ? (this.an().nextFloat() / 2f) : .25f) + (plugin.config().ZombiesSpeedRush - .25f)));
 		// Speed: 0.23 normal speed
 		this.bb = 0.23F * normalSpeedCoef;
 		this.damage = plugin.getWaveStarter().getCurrentDamage();
