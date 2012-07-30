@@ -103,7 +103,7 @@ public class TribuSpawner {
 	public void checkZombies() {
 		Stack<CraftTribuZombie> toDelete = new Stack<CraftTribuZombie>();
 		for (CraftTribuZombie e : zombies)
-			if (e.isDead())
+			if (e==null||e.isDead())
 				toDelete.push(e);
 		finished = toDelete.isEmpty();
 		while (!toDelete.isEmpty())
@@ -240,9 +240,12 @@ public class TribuSpawner {
 	 * @param removeReward Reward attakers ?
 	 */
 	public void removedZombieCallback(CraftTribuZombie e,boolean removeReward) {
-		if(removeReward)
-			e.setNoAttacker();
-		e.damage(Integer.MAX_VALUE);
+		if(e!=null)
+		{
+			if(removeReward)
+				e.setNoAttacker();
+			e.damage(Integer.MAX_VALUE);
+		}
 		zombies.remove(e);
 		alreadySpawned--;
 	}
