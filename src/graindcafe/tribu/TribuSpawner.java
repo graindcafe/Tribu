@@ -182,7 +182,7 @@ public class TribuSpawner {
 	 * @return
 	 */
 	public Location getValidSpawn() {
-		for (Location curPos : plugin.getLevel().getSpawns().values()) {
+		for (Location curPos : plugin.getLevel().getActiveSpawns()) {
 			if (curPos.getWorld().isChunkLoaded(curPos.getWorld().getChunkAt(curPos))) {
 				return curPos;
 			}

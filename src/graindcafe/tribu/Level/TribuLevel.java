@@ -102,7 +102,7 @@ public class TribuLevel {
 		for (String sname : zombieSpawns.keySet()) {
 			if (sname.equalsIgnoreCase(name)) {
 				Location spawn = zombieSpawns.get(sname);
-				if (this.activeZombieSpawns.contains(spawn))
+				//if (this.activeZombieSpawns.contains(spawn))
 					this.activeZombieSpawns.remove(spawn);
 				return;
 			}
@@ -122,7 +122,7 @@ public class TribuLevel {
 	}
 
 	public Location getRandomZombieSpawn() {
-		if (activeZombieSpawns.size() == 0) {
+		if (activeZombieSpawns.isEmpty()) {
 			return null;
 		}
 		return activeZombieSpawns.get(rnd.nextInt(activeZombieSpawns.size()));
@@ -357,6 +357,10 @@ public class TribuLevel {
 	 */
 	public void setSaved() {
 		changed = false;
+	}
+
+	public ArrayList<Location> getActiveSpawns() {
+		return this.activeZombieSpawns;
 	}
 
 }
