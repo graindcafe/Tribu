@@ -64,25 +64,52 @@ public class LevelFileLoader {
 		levels = new HashSet<String>();
 		levels.clear();
 		File dir = new File(Constants.levelFolder);
-		/*if (!dir.exists()) {
-			plugin.LogInfo(plugin.getLocale("Info.LevelFolderDoesntExist"));
-			String[] levelFolders = Constants.levelFolder.split("/");
-			String tmplevelFolder = "";
-			for (byte i = 0; i < levelFolders.length; i++) {
-				tmplevelFolder = tmplevelFolder.concat(levelFolders[i] + File.separatorChar);
-				dir = new File(tmplevelFolder);
-				if(!dir.mkdir())
-					plugin.LogSevere(plugin.getLocale("Severe.TribuCantMkdir"));
-			}
-		}*/
+		/*
+		 * if (!dir.exists()) {
+		 * plugin.LogInfo(plugin.getLocale("Info.LevelFolderDoesntExist"));
+		 * String[] levelFolders = Constants.levelFolder.split("/"); String
+		 * tmplevelFolder = ""; for (byte i = 0; i < levelFolders.length; i++) {
+		 * tmplevelFolder = tmplevelFolder.concat(levelFolders[i] +
+		 * File.separatorChar); dir = new File(tmplevelFolder); if(!dir.mkdir())
+		 * plugin.LogSevere(plugin.getLocale("Severe.TribuCantMkdir")); } }
+		 */
 		File[] files = dir.listFiles();
-		plugin.LogInfo(String.format(plugin.getLocale("Info.LevelFound"), String.valueOf(files == null ? 0 :files.length)));
+		plugin.LogInfo(String.format(plugin.getLocale("Info.LevelFound"), String.valueOf(files == null ? 0 : files.length)));
 		if (files != null) {
 			for (File file : files) {
 				levels.add(file.getName().substring(0, file.getName().lastIndexOf(".")));
 			}
 		}
 
+	}
+
+	public String getWorldName(String levelName) {
+		for (String level : levels) {
+			if (level.equalsIgnoreCase(levelName))
+				levelName = level;
+		}
+		File file = new File(Constants.levelFolder + levelName + ".lvl");
+		if (!file.exists()) {
+			return null;
+		}
+		FileInputStream fstream;
+		try {
+			fstream = new FileInputStream(file);
+			DataInputStream in = new DataInputStream(fstream);
+			in.skipBytes(1);
+			if (in.available() < 2) {
+				fstream.close();
+				in.close();
+				plugin.LogSevere("Something wrong happened ... Level is empty");
+				return null;
+			}
+			String worldName=in.readUTF();
+			fstream.close();
+			in.close();
+			return worldName;
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	public boolean deleteLevel(String name) {
@@ -123,64 +150,59 @@ public class LevelFileLoader {
 			if (version == 1) {
 				fstream.close();
 				in.close();
-				if(file.renameTo(new File(Constants.levelFolder +  name + "."+version)))
-				{
-					file=new File(Constants.levelFolder + name + "."+version);
+				if (file.renameTo(new File(Constants.levelFolder + name + "." + version))) {
+					file = new File(Constants.levelFolder + name + "." + version);
 					fstream = new FileInputStream(file);
 					in = new DataInputStream(fstream);
-					
-					File tempFile=new File(Constants.levelFolder + name + ".lvl");
+
+					File tempFile = new File(Constants.levelFolder + name + ".lvl");
 					version = 3;
-					DataOutputStream out=new DataOutputStream(new FileOutputStream(tempFile));
+					DataOutputStream out = new DataOutputStream(new FileOutputStream(tempFile));
 					// set the file version
 					out.writeByte(version);
-					int i=in.available()-1;
+					int i = in.available() - 1;
 					in.skipBytes(1);
-					while(i>0)
-					{
+					while (i > 0) {
 						// Copy data
 						out.write(in.read());
 						i--;
 					}
 					// set sign count = 0
 					out.writeInt(0);
-					out.close(); //close data
+					out.close(); // close data
 					in.close();
 					fstream.close();
 					file.delete();
 					file = tempFile;
-					
+
 				}
 				fstream = new FileInputStream(file);
 				in = new DataInputStream(fstream);
 				version = in.readByte();
 			}
-			if(version == 2 )
-			{
+			if (version == 2) {
 				fstream.close();
 				in.close();
-				if(file.renameTo(new File(Constants.levelFolder +  name + "."+version)))
-				{
-					file=new File(Constants.levelFolder +  name + "."+version);
+				if (file.renameTo(new File(Constants.levelFolder + name + "." + version))) {
+					file = new File(Constants.levelFolder + name + "." + version);
 					fstream = new FileInputStream(file);
 					in = new DataInputStream(fstream);
-					
-					File tempFile=new File(Constants.levelFolder +  name + ".lvl");
+
+					File tempFile = new File(Constants.levelFolder + name + ".lvl");
 					version = 3;
-					DataOutputStream out=new DataOutputStream(new FileOutputStream(tempFile));
+					DataOutputStream out = new DataOutputStream(new FileOutputStream(tempFile));
 					// set the file version
 					out.writeByte(version);
-					int i=in.available()-1;
+					int i = in.available() - 1;
 					in.skipBytes(1);
-					while(i>0)
-					{
+					while (i > 0) {
 						// Copy data
 						out.write(in.read());
 						i--;
 					}
 					// set sign count = 0
 					out.writeInt(0);
-					out.close(); //close data
+					out.close(); // close data
 					in.close();
 					fstream.close();
 					file.delete();
@@ -196,8 +218,7 @@ public class LevelFileLoader {
 				plugin.LogSevere(plugin.getLocale("Severe.WorldInvalidFileVersion"));
 				return null;
 			}
-			if(in.available()<2)
-			{
+			if (in.available() < 2) {
 				fstream.close();
 				in.close();
 				plugin.LogSevere("Something wrong happened ... Level is empty");
@@ -249,62 +270,60 @@ public class LevelFileLoader {
 					plugin.LogWarning(plugin.getLocale("Warning.UnableToAddSign"));
 				}
 			}
-			
+
 			byte iCount;
 			Package n;
-			HashMap<Enchantment,Integer> ench=new HashMap<Enchantment, Integer>();
+			HashMap<Enchantment, Integer> ench = new HashMap<Enchantment, Integer>();
 			int id;
 			int enchNumber;
 			short amount;
 			short data;
 			// Number of packages
-			count= in.readShort();
+			count = in.readShort();
 			// Each packages
 			for (int i = 0; i < count; i++) {
 				// Init a new package
-				n= new Package();
+				n = new Package();
 				// Package name length
-				int strC=in.readByte();
-				char[] c=new char[strC];
-				byte k=0;
+				int strC = in.readByte();
+				char[] c = new char[strC];
+				byte k = 0;
 				// Read each char
-				while(k<strC){
-					c[k]=in.readChar();
+				while (k < strC) {
+					c[k] = in.readChar();
 					k++;
 				}
 				// Set the package name
 				n.setName(new String(c));
 				// Number of items
-				iCount=in.readByte();
+				iCount = in.readByte();
 				// Each item
 				for (k = 0; k < iCount; k++) {
-					
+
 					// Item type
-					id=in.readInt();
+					id = in.readInt();
 					// Item data
-					data=in.readShort();
+					data = in.readShort();
 					// Amount of item
-					amount=in.readShort();
+					amount = in.readShort();
 					// Number of enchantments
-					enchNumber=in.readByte();
+					enchNumber = in.readByte();
 					// Clear previous enchantments
 					ench.clear();
 					// Each enchantment
-					while(enchNumber!=0)
-					{
+					while (enchNumber != 0) {
 						// Read enchantment type and enchantment level
 						ench.put(Enchantment.getById(in.readInt()), in.readInt());
 						enchNumber--;
 					}
 					// Add this item to the package with enchantments
-					n.addItem(id,data,amount,ench);
-						
+					n.addItem(id, data, amount, ench);
+
 				}
 				// Add this package to the level
 				level.addPackage(n);
-					
+
 			}
-			
 
 		} catch (Exception e) {
 			plugin.LogSevere(String.format(plugin.getLocale("Severe.ErrorDuringLevelLoading"), Tribu.getExceptionMessage(e)));
@@ -378,30 +397,28 @@ public class LevelFileLoader {
 				}
 			}
 			// Number of packages
-			o.writeShort((short)level.getPackages().size());
+			o.writeShort((short) level.getPackages().size());
 			// Each package
-			for(Package n : level.getPackages())
-			{
+			for (Package n : level.getPackages()) {
 				// Pck name length
 				o.write(n.getName().length());
 				// Pck name chars
 				o.writeChars(n.getName());
-				// Pck number of items 
+				// Pck number of items
 				o.write(n.getItemStacks().size());
 				// Each item
-				for(ItemStack is : n.getItemStacks())
-				{
+				for (ItemStack is : n.getItemStacks()) {
 					// Item id
 					o.writeInt(is.getTypeId());
-					// Durability = subid (getData() but on short (useful for potions)
+					// Durability = subid (getData() but on short (useful for
+					// potions)
 					o.writeShort(is.getDurability());
-					// Amount 
+					// Amount
 					o.writeShort(is.getAmount());
 					// Number of enchantments for this item
 					o.write(is.getEnchantments().size());
 					// Each enchantment
-					for(Entry<Enchantment,Integer> ench: is.getEnchantments().entrySet())
-					{
+					for (Entry<Enchantment, Integer> ench : is.getEnchantments().entrySet()) {
 						// Enchantment type
 						o.writeInt(ench.getKey().getId());
 						// Enchantment level

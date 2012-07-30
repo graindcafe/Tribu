@@ -581,14 +581,15 @@ public class Tribu extends JavaPlugin {
 	 * Load the custom config files, "per-world" and "per-level"
 	 */
 	protected void loadCustomConf() {
+		loadCustomConf(level.getName() + ".yml",level.getInitialSpawn().getWorld().getName() + ".yml");
+	}
+	protected void loadCustomConf(String levelName, String worldName) {
 		TribuLevel level = this.getLevel();
 		if (level == null)
 			return;
 		File worldFile = null, levelFile = null, worldDir, levelDir;
 		worldDir = new File(Constants.perWorldFolder);
 		levelDir = new File(Constants.perLevelFolder);
-		String levelName = level.getName() + ".yml";
-		String worldName = level.getInitialSpawn().getWorld().getName() + ".yml";
 		if (!levelDir.exists())
 			levelDir.mkdirs();
 		if (!worldDir.exists())
@@ -742,6 +743,8 @@ public class Tribu extends JavaPlugin {
 			e.printStackTrace();
 			return;
 		}
+		// Before loading conf
+		players = new HashMap<Player, PlayerStats>();
 		// isRunning set to true to prevent start running at "loadCustomConf"
 		isRunning = true;
 		aliveCount = 0;
@@ -754,7 +757,6 @@ public class Tribu extends JavaPlugin {
 		isRunning = false;
 		tempInventories = new HashMap<Player, TribuTempInventory>();
 		inventorySave = new TribuInventory();
-		players = new HashMap<Player, PlayerStats>();
 		spawnPoint = new HashMap<Player, Location>();
 		sortedStats = new LinkedList<PlayerStats>();
 
@@ -803,7 +805,11 @@ public class Tribu extends JavaPlugin {
 		}
 		// Before "loadCustom"
 		if (config.PluginModeDefaultLevel != "")
+		{
+			String worldName=levelLoader.getWorldName(config.PluginModeDefaultLevel);
+			this.loadCustomConf(config.PluginModeDefaultLevel,worldName);
 			setLevel(levelLoader.loadLevel(config.PluginModeDefaultLevel));
+		}
 		// After loading the level from main file
 		else
 			this.loadCustomConf();
