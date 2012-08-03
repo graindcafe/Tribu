@@ -306,7 +306,7 @@ public class Tribu extends JavaPlugin {
 	 */
 	public Player getNearestPlayer(Location location) {
 		Player minPlayer = null;
-		double minVal = -1d;
+		double minVal = Double.MAX_VALUE;
 		double d;
 		for (Player p : players.keySet()) {
 			d = location.distanceSquared(p.getLocation());
