@@ -100,17 +100,18 @@ public class EntityTribuZombie extends EntityZombie {
 		this.goalSelector.a(1, new PathfinderGoalMeleeAttack(this, EntityHuman.class, this.bb * rushSpeedCoef, false));
 		this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, EntityVillager.class, this.bb * rushSpeedCoef, true));
 		this.goalSelector.a(3, new PathfinderGoalBreakDoor(this));
-		this.goalSelector.a(4, new PathfinderGoalMoveTowardsTarget(this, this.bb * rushSpeedCoef, Float.MAX_VALUE));
+		this.goalSelector.a(4, new PathfinderGoalMoveTowardsTarget(this, this.bb * rushSpeedCoef, 16f));
 		FocusType focus = plugin.config().ZombiesFocus;
 
 		if (focus.equals(FocusType.None))
 			this.goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction(this, this.bb));
 		else if (focus.equals(FocusType.NearestPlayer) || focus.equals(FocusType.RandomPlayer)) {
-
-			this.goalSelector.a(5, new PathfinderGoalTrackPlayer(this, plugin, focus.equals(FocusType.RandomPlayer), this.bb, true));
+			this.goalSelector.a(5, new PathfinderGoalTrackPlayer(plugin,focus.equals(FocusType.RandomPlayer),this,this.bb * rushSpeedCoef, 8f));
+			//this.goalSelector.a(5, new PathfinderGoalTrackPlayer(this, plugin, focus.equals(FocusType.RandomPlayer), this.bb, true));
 		} else if (focus.equals(FocusType.InitialSpawn) || focus.equals(FocusType.DeathSpawn)) {
-			this.goalSelector.a(5, new PathfinderGoalMoveToLocation(this, focus.equals(FocusType.DeathSpawn) ? plugin.getLevel().getDeathSpawn()
-					: plugin.getLevel().getInitialSpawn(), this.bb, true));
+			this.goalSelector.a(5, new PathfinderGoalMoveTo(this,
+					focus.equals(FocusType.InitialSpawn)?  plugin.getLevel().getInitialSpawn():plugin.getLevel().getDeathSpawn(), // 
+							 this.bb * normalSpeedCoef,4f));
 		}
 
 		this.goalSelector.a(6, new PathfinderGoalMoveThroughVillage(this, this.bb, false));
@@ -119,19 +120,25 @@ public class EntityTribuZombie extends EntityZombie {
 		this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
 		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
 		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class,
-				(float) (focus.equals(FocusType.NearestPlayer) ? plugin.config().LevelClearZone : 16.0F), 0, true));
+				16f
+				, 0, true));
 		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityVillager.class, 16.0F, 0, false));
 		this.plugin = plugin;
 	}
 
 	public int getMaxHealth() {
+		//TODO : change that
 		return 20;
 	}
-
+	/**
+	 * Impact damage with an armor ... not sure what it is
+	 */
 	public int T() {
 		return 2;
 	}
-
+	/**
+	 * New AI marker ?
+	 */
 	protected boolean c_() {
 		return true;
 	}
@@ -169,7 +176,7 @@ public class EntityTribuZombie extends EntityZombie {
 
 	public MonsterType getMonsterType() {
 		return MonsterType.UNDEAD;
-	}
+	} 
 
 	// CraftBukkit start - return rare dropped item instead of dropping it
 	protected ItemStack b(int i) {

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 
 import graindcafe.tribu.Tribu;
 import net.minecraft.server.WorldServer;
@@ -18,6 +19,7 @@ import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.craftbukkit.entity.CraftZombie;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 
@@ -50,6 +52,12 @@ public class CraftTribuZombie extends CraftZombie implements Zombie {
     	bestAttacker=null;
     	this.setTarget(null);
     }
+    @Override
+    public void setTarget(LivingEntity target)
+    {
+    	Logger.getLogger("Minecraft").info("Fuck you, you and your "+target);
+    }
+    
     public void setBestAttacker(Player p)
     {
     	bestAttacker=p;
