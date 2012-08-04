@@ -317,6 +317,9 @@ public class Tribu extends JavaPlugin {
 		}
 		return minPlayer;
 	}
+	public Player getNearestPlayer(double x,double  y, double z) {
+		return getNearestPlayer(new Location(level.getInitialSpawn().getWorld(), x, y, z));
+	}
 
 	public Set<Player> getPlayers() {
 		return this.players.keySet();
