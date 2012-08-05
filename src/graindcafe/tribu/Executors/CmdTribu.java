@@ -401,10 +401,14 @@ public class CmdTribu implements CommandExecutor {
 			Tribu.messagePlayer(sender, plugin.getLocale("Message.ZombieModeDisabled"));
 			return true;
 		} else if (args[0].equals("tpfz")) {
-			final Location loc = plugin.getSpawner().getFirstZombieLocation();
-			if (loc != null) if (sender instanceof Player)
-				((Player) sender).teleport(loc);
-			else if (args.length > 1) plugin.getServer().getPlayer(args[1]).teleport(loc);
+			if (!sender.hasPermission("tribu.debug"))
+				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
+			else {
+				final Location loc = plugin.getSpawner().getFirstZombieLocation();
+				if (loc != null) if (sender instanceof Player)
+					((Player) sender).teleport(loc);
+				else if (args.length > 1) plugin.getServer().getPlayer(args[1]).teleport(loc);
+			}
 			return true;
 
 		} else if (args[0].equals("reload")) {

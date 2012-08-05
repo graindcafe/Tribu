@@ -118,3 +118,6 @@ permissions:
         description: Override "AllowPlace"
     tribu.super.break:
         description: Override "AllowBreak"
+    tribu.debug:
+        description: Debug command
+        default: op
