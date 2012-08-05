@@ -115,9 +115,11 @@ permissions:
         description: Reload config
         default: op
     tribu.super.place:
-        description: Override "AllowPlace"
+        description: Override AllowPlace
+        default: op
     tribu.super.break:
-        description: Override "AllowBreak"
+        description: Override AllowBreak
+        default: op
     tribu.debug:
         description: Debug command
         default: op

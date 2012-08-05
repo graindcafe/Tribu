@@ -67,6 +67,7 @@ public class TribuBlockListener implements Listener {
 				event.setCancelled(true);
 			}
 		} else if (plugin.isRunning() && plugin.isPlaying(event.getPlayer()) && !(event.getPlayer().hasPermission("tribu.super.break") || plugin.config().PlayersAllowBreak)) event.setCancelled(true);
+		//else Logger.getLogger("Minecraft").info(event.getPlayer().hasPermission("tribu.super.break") ? "has permission" : plugin.config().PlayersAllowBreak ? "allowed" : "disallowed");
 	}
 
 	@EventHandler

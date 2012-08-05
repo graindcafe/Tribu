@@ -50,7 +50,7 @@ import org.bukkit.enchantments.Enchantment;
 public class TribuConfig extends TribuDefaultConfiguration {
 
 	protected static void debugMsg(final String info) {
-		// Logger.getLogger("Minecraft").info("[Tribu] " + info);
+		//Logger.getLogger("Minecraft").info("[Tribu] " + info);
 	}
 
 	protected static LinkedList<Package> getDefaultPackages(final FileConfiguration config) {
@@ -233,7 +233,12 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					PlayersDontLooseItem = config.getBoolean(key);
 				else if (keyNode[1].equalsIgnoreCase("StoreInventory"))
 					PlayersStoreInventory = config.getBoolean(key);
-				else if (keyNode[1].equalsIgnoreCase("Rollback")) PlayersRollback = config.getBoolean(key);
+				else if (keyNode[1].equalsIgnoreCase("Rollback"))
+					PlayersRollback = config.getBoolean(key);
+				else if (keyNode[1].equalsIgnoreCase("AllowPlace"))
+					PlayersAllowPlace = config.getBoolean(key);
+				else if (keyNode[1].equalsIgnoreCase("AllowBreak")) PlayersAllowBreak = config.getBoolean(key);
+				//debugMsg(keyNode[1] +": "+ config.getBoolean(key));
 			} else if (keyNode[0].equalsIgnoreCase("DefaultPackages"))
 				return;
 			else {
