@@ -89,6 +89,8 @@ Broadcast:
     de vie'
   Wave: '&8La vague numéro &4%s&8 arrivera dans &4%s&8 secondes.'
   WaveComplete: '&6Vague terminée'
+  GameStartingSoon: '&8Le jeu va commencer dans %.0f secondes !'
+  GameStarting: '&4Le jeu commence maintenant !'
 Info:
   LevelFound: '%s niveaux trouvés'
   Enable: 'Activation de Tribu par Graindcafe, auteur original : samp20'
