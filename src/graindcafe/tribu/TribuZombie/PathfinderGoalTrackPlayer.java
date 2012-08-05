@@ -15,7 +15,6 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
  *
  */
 
-@SuppressWarnings("unused")
 public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 	/**
 	 * The controlled entity
