@@ -77,11 +77,11 @@ public class EntityTribuZombie extends EntityZombie {
 
 	@SuppressWarnings("unused")
 	private Tribu	plugin;
-
+	private int maxHealth;
 	private boolean	fireResistant;
 
-	public EntityTribuZombie(final Tribu plugin, final World world, final double d0, final double d1, final double d2) {
-		this(world, d0, d1, d2);
+	public EntityTribuZombie(final Tribu plugin, final World world, final double x, final double y, final double z) {
+		this(world, x, y, z);
 		fireResistant = plugin.config().ZombiesFireResistant;
 		texture = "/mob/zombie.png";
 		// from 0.85 to 1.18
@@ -93,6 +93,7 @@ public class EntityTribuZombie extends EntityZombie {
 		// Speed: 0.23 normal speed
 		bb = 0.23F * normalSpeedCoef;
 		damage = plugin.getWaveStarter().getCurrentDamage();
+		maxHealth=plugin.getWaveStarter().getCurrentHealth();
 		// Can break wooden door ?
 		al().b(true);
 		goalSelector.a(0, new PathfinderGoalFloat(this));
@@ -165,8 +166,7 @@ public class EntityTribuZombie extends EntityZombie {
 
 	@Override
 	public int getMaxHealth() {
-		// TODO : change that
-		return 20;
+		return maxHealth;
 	}
 
 	@Override
