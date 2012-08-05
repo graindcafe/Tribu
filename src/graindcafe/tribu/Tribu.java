@@ -441,7 +441,7 @@ public class Tribu extends JavaPlugin {
 
 				put("Message.AlreadyIn", ChatColor.YELLOW + "You are already in.");
 				put("Message.Died", ChatColor.GRAY + "%s died.");
-				put("Broadcast.GameStartingSoon", ChatColor.GRAY + "Game is starting in +" + ChatColor.RED + "%.0f" + ChatColor.GRAY + " seconds!");
+				put("Broadcast.GameStartingSoon", ChatColor.GRAY + "Game is starting in " + ChatColor.RED + "%.0f" + ChatColor.GRAY + " seconds!");
 				put("Broadcast.GameStarting", ChatColor.DARK_RED + "Fight!");
 				put("Broadcast.MapChosen", ChatColor.DARK_BLUE + "Level " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.DARK_BLUE + " has been chosen");
 				put("Broadcast.MapVoteStarting", ChatColor.DARK_AQUA + "Level vote starting,");
