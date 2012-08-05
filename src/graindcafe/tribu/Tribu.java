@@ -82,13 +82,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * @author Graindcafe
- * 
  */
 public class Tribu extends JavaPlugin {
 
-	public static String getExceptionMessage(Exception e) {
+	public static String getExceptionMessage(final Exception e) {
 		String message = e.getLocalizedMessage() + "\n";
-		for (StackTraceElement st : e.getStackTrace())
+		for (final StackTraceElement st : e.getStackTrace())
 			message += "[" + st.getFileName() + ":" + st.getLineNumber() + "] " + st.getClassName() + "->" + st.getMethodName() + "\n";
 		return message;
 	}
@@ -101,7 +100,7 @@ public class Tribu extends JavaPlugin {
 	 * @param message
 	 *            The message
 	 */
-	public static void messagePlayer(CommandSender sender, String message) {
+	public static void messagePlayer(final CommandSender sender, final String message) {
 		if (!message.isEmpty()) if (sender == null)
 			Logger.getLogger("Minecraft").info(ChatColor.stripColor(message));
 		else
@@ -143,9 +142,8 @@ public class Tribu extends JavaPlugin {
 	 * Add packages from config file to the level
 	 */
 	public void addDefaultPackages() {
-		if (level != null && this.config.DefaultPackages != null) for (Package pck : this.config.DefaultPackages) {
+		if (level != null && config.DefaultPackages != null) for (final Package pck : config.DefaultPackages)
 			level.addPackage(pck);
-		}
 	}
 
 	/**
@@ -154,26 +152,25 @@ public class Tribu extends JavaPlugin {
 	 * @param player
 	 *            player to add
 	 */
-	public void addPlayer(Player player) {
+	public void addPlayer(final Player player) {
 		if (player != null && !players.containsKey(player)) {
 
 			if (config.PlayersStoreInventory) {
 				inventorySave.addInventory(player);
 				player.getInventory().clear();
 			}
-			PlayerStats stats = new PlayerStats(player);
+			final PlayerStats stats = new PlayerStats(player);
 			players.put(player, stats);
 			sortedStats.add(stats);
-			messagePlayer(player, this.getLocale("Message.YouJoined"));
+			messagePlayer(player, getLocale("Message.YouJoined"));
 			if (waitingPlayers != 0) {
 				waitingPlayers--;
-				if (waitingPlayers == 0) {
-					// No need to delay if everyone is playing
+				if (waitingPlayers == 0) // No need to delay if everyone is
+											// playing
 					if (config.PluginModeServerExclusive)
 						startRunning();
 					else
 						startRunning(config.LevelStartDelay);
-				}
 			} else if (getLevel() != null && isRunning) {
 				player.teleport(level.getDeathSpawn());
 				messagePlayer(player, language.get("Message.GameInProgress"));
@@ -190,7 +187,8 @@ public class Tribu extends JavaPlugin {
 	 *            Time to wait in seconds
 	 */
 	public void addPlayer(final Player player, final double timeout) {
-		this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			@Override
 			public void run() {
 				addPlayer(player);
 			}
@@ -203,7 +201,7 @@ public class Tribu extends JavaPlugin {
 	 * @param message
 	 *            Message to broadcast
 	 */
-	public void broadcast(String msg) {
+	public void broadcast(final String msg) {
 		if (msg.isEmpty()) getServer().broadcastMessage(msg);
 	}
 
@@ -216,7 +214,7 @@ public class Tribu extends JavaPlugin {
 	 * @param params
 	 *            The arguments to pass to the language node
 	 */
-	public void broadcast(String languageNode, Object... params) {
+	public void broadcast(final String languageNode, final Object... params) {
 		broadcast(String.format(getLocale(languageNode), params));
 	}
 
@@ -228,7 +226,7 @@ public class Tribu extends JavaPlugin {
 	 * @param permission
 	 *            Permission to have
 	 */
-	public void broadcast(String message, String permission) {
+	public void broadcast(final String message, final String permission) {
 		if (message.isEmpty()) getServer().broadcast(message, permission);
 	}
 
@@ -241,14 +239,14 @@ public class Tribu extends JavaPlugin {
 	 * @param params
 	 *            The arguments to pass to the language node
 	 */
-	public void broadcast(String languageNode, String permission, Object... params) {
+	public void broadcast(final String languageNode, final String permission, final Object... params) {
 		broadcast(String.format(getLocale(languageNode), params), permission);
 	}
 
 	public void checkAliveCount() {
 		// log.info("checking alive count " + aliveCount);
 
-		if (this.aliveCount == 0 && isRunning) {
+		if (aliveCount == 0 && isRunning) {
 			messagePlayers(language.get("Message.ZombieHavePrevailed"));
 			messagePlayers(String.format(language.get("Message.YouHaveReachedWave"), String.valueOf(getWaveStarter().getWaveNumber())));
 			stopRunning(true);
@@ -290,8 +288,12 @@ public class Tribu extends JavaPlugin {
 		return levelSelector;
 	}
 
-	public String getLocale(String key) {
+	public String getLocale(final String key) {
 		return language.get(key);
+	}
+
+	public Player getNearestPlayer(final double x, final double y, final double z) {
+		return getNearestPlayer(new Location(level.getInitialSpawn().getWorld(), x, y, z));
 	}
 
 	/**
@@ -300,11 +302,11 @@ public class Tribu extends JavaPlugin {
 	 * @param location
 	 * @return nearest player
 	 */
-	public Player getNearestPlayer(Location location) {
+	public Player getNearestPlayer(final Location location) {
 		Player minPlayer = null;
 		double minVal = Double.MAX_VALUE;
 		double d;
-		for (Player p : players.keySet()) {
+		for (final Player p : players.keySet()) {
 			d = location.distanceSquared(p.getLocation());
 			if (minVal > d) {
 				minVal = d;
@@ -314,16 +316,12 @@ public class Tribu extends JavaPlugin {
 		return minPlayer;
 	}
 
-	public Player getNearestPlayer(double x, double y, double z) {
-		return getNearestPlayer(new Location(level.getInitialSpawn().getWorld(), x, y, z));
-	}
-
 	public Set<Player> getPlayers() {
-		return this.players.keySet();
+		return players.keySet();
 	}
 
 	public int getPlayersCount() {
-		return this.players.size();
+		return players.size();
 	}
 
 	public Player getRandomPlayer() {
@@ -331,8 +329,8 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public LinkedList<PlayerStats> getSortedStats() {
-		Collections.sort(this.sortedStats);
-		return this.sortedStats;
+		Collections.sort(sortedStats);
+		return sortedStats;
 	}
 
 	public TribuSpawner getSpawner() {
@@ -343,7 +341,7 @@ public class Tribu extends JavaPlugin {
 		return spawnTimer;
 	}
 
-	public PlayerStats getStats(Player player) {
+	public PlayerStats getStats(final Player player) {
 		return players.get(player);
 	}
 
@@ -443,7 +441,7 @@ public class Tribu extends JavaPlugin {
 
 				put("Message.AlreadyIn", ChatColor.YELLOW + "You are already in.");
 				put("Message.Died", ChatColor.GRAY + "%s died.");
-				put("Broadcast.GameStartingSoon", ChatColor.GRAY + "Game is starting in +"+ChatColor.RED+"%.0f"+ChatColor.GRAY+" seconds!");
+				put("Broadcast.GameStartingSoon", ChatColor.GRAY + "Game is starting in +" + ChatColor.RED + "%.0f" + ChatColor.GRAY + " seconds!");
 				put("Broadcast.GameStarting", ChatColor.DARK_RED + "Fight!");
 				put("Broadcast.MapChosen", ChatColor.DARK_BLUE + "Level " + ChatColor.LIGHT_PURPLE + "%s" + ChatColor.DARK_BLUE + " has been chosen");
 				put("Broadcast.MapVoteStarting", ChatColor.DARK_AQUA + "Level vote starting,");
@@ -502,7 +500,7 @@ public class Tribu extends JavaPlugin {
 		Constants.MessageZombieSpawnList = language.get("Message.ZombieSpawnList");
 	}
 
-	public boolean isAlive(Player player) {
+	public boolean isAlive(final Player player) {
 		return players.get(player).isalive();
 	}
 
@@ -515,7 +513,7 @@ public class Tribu extends JavaPlugin {
 	 *            Location to check
 	 * @return is inside level
 	 */
-	public boolean isInsideLevel(Location loc) {
+	public boolean isInsideLevel(final Location loc) {
 
 		return isInsideLevel(loc, false);
 	}
@@ -531,7 +529,7 @@ public class Tribu extends JavaPlugin {
 	 *            Do not check if the plugin is running
 	 * @return is inside level
 	 */
-	public boolean isInsideLevel(Location loc, boolean dontCheckRunning) {
+	public boolean isInsideLevel(final Location loc, final boolean dontCheckRunning) {
 
 		if ((dontCheckRunning || isRunning) && level != null)
 			return config.PluginModeServerExclusive || loc.getWorld().equals(level.getInitialSpawn().getWorld()) && (config.PluginModeWorldExclusive || loc.distance(level.getInitialSpawn()) < config.LevelClearZone);
@@ -545,7 +543,7 @@ public class Tribu extends JavaPlugin {
 	 * @param player
 	 * @return Is this player playing Tribu ?
 	 */
-	public boolean isPlaying(Player p) {
+	public boolean isPlaying(final Player p) {
 		return players.containsKey(p);
 	}
 
@@ -558,7 +556,7 @@ public class Tribu extends JavaPlugin {
 		return isRunning;
 	}
 
-	public void keepTempInv(Player p, ItemStack[] items) {
+	public void keepTempInv(final Player p, final ItemStack[] items) {
 		// log.info("Keep " + items.length + " items for " +
 		// p.getDisplayName());
 		tempInventories.put(p, new TribuTempInventory(p, items));
@@ -571,8 +569,8 @@ public class Tribu extends JavaPlugin {
 		loadCustomConf(level.getName() + ".yml", level.getInitialSpawn().getWorld().getName() + ".yml");
 	}
 
-	protected void loadCustomConf(String levelName, String worldName) {
-		TribuLevel level = this.getLevel();
+	protected void loadCustomConf(final String levelName, final String worldName) {
+		final TribuLevel level = getLevel();
 		if (level == null) return;
 		File worldFile = null, levelFile = null, worldDir, levelDir;
 		worldDir = new File(Constants.perWorldFolder);
@@ -580,48 +578,41 @@ public class Tribu extends JavaPlugin {
 		if (!levelDir.exists()) levelDir.mkdirs();
 		if (!worldDir.exists()) worldDir.mkdirs();
 
-		for (File file : levelDir.listFiles()) {
+		for (final File file : levelDir.listFiles())
 			if (file.getName().equalsIgnoreCase(levelName)) {
 				levelFile = file;
 				break;
 			}
-		}
-		for (File file : worldDir.listFiles()) {
+		for (final File file : worldDir.listFiles())
 			if (file.getName().equalsIgnoreCase(worldName)) {
 				worldFile = file;
 				break;
 			}
-		}
 		if (levelFile != null)
 			if (worldFile != null)
-				this.config = new TribuConfig(levelFile, new TribuConfig(worldFile));
+				config = new TribuConfig(levelFile, new TribuConfig(worldFile));
 			else
-				this.config = new TribuConfig(levelFile);
+				config = new TribuConfig(levelFile);
 		else
-			this.config = new TribuConfig();
-		this.initLanguage();
-		if (config.PluginModeServerExclusive) {
-			for (Player p : this.getServer().getOnlinePlayers())
-				this.addPlayer(p);
-		}
-		if (config.PluginModeWorldExclusive && level != null) {
-			for (Player d : level.getInitialSpawn().getWorld().getPlayers()) {
-				this.addPlayer(d);
-			}
-		}
+			config = new TribuConfig();
+		initLanguage();
+		if (config.PluginModeServerExclusive) for (final Player p : getServer().getOnlinePlayers())
+			this.addPlayer(p);
+		if (config.PluginModeWorldExclusive && level != null) for (final Player d : level.getInitialSpawn().getWorld().getPlayers())
+			this.addPlayer(d);
 		if (config.PluginModeAutoStart) startRunning();
 
 	}
 
-	public void LogInfo(String message) {
+	public void LogInfo(final String message) {
 		log.info(message);
 	}
 
-	public void LogSevere(String message) {
+	public void LogSevere(final String message) {
 		log.severe(message);
 	}
 
-	public void LogWarning(String message) {
+	public void LogWarning(final String message) {
 		log.warning(message);
 
 	}
@@ -637,7 +628,7 @@ public class Tribu extends JavaPlugin {
 	 * @param params
 	 *            The arguments to pass to the language node
 	 */
-	public void messagePlayer(CommandSender sender, String languageNode, Object... params) {
+	public void messagePlayer(final CommandSender sender, final String languageNode, final Object... params) {
 		messagePlayer(sender, String.format(getLocale(languageNode), params));
 	}
 
@@ -646,10 +637,9 @@ public class Tribu extends JavaPlugin {
 	 * 
 	 * @param msg
 	 */
-	public void messagePlayers(String msg) {
-		if (!msg.isEmpty()) for (Player p : players.keySet()) {
+	public void messagePlayers(final String msg) {
+		if (!msg.isEmpty()) for (final Player p : players.keySet())
 			p.sendMessage(msg);
-		}
 	}
 
 	/**
@@ -661,7 +651,7 @@ public class Tribu extends JavaPlugin {
 	 * @param params
 	 *            The arguments to pass to the language node
 	 */
-	public void messagePlayers(String languageNode, Object... params) {
+	public void messagePlayers(final String languageNode, final Object... params) {
 		messagePlayers(String.format(getLocale(languageNode), params));
 	}
 
@@ -679,48 +669,41 @@ public class Tribu extends JavaPlugin {
 	public void onEnable() {
 		log = Logger.getLogger("Minecraft");
 		rnd = new Random();
-		boolean mkdirs = Constants.rebuildPath(getDataFolder().getPath() + File.separatorChar);
+		final boolean mkdirs = Constants.rebuildPath(getDataFolder().getPath() + File.separatorChar);
 		boolean langCopy = true;
-		for (String name : Constants.languages) {
-			InputStream fis = this.getClass().getResourceAsStream("/res/languages/" + name + ".yml");
+		for (final String name : Constants.languages) {
+			final InputStream fis = this.getClass().getResourceAsStream("/res/languages/" + name + ".yml");
 			FileOutputStream fos = null;
-			File f = new File(Constants.languagesFolder + name + ".yml");
+			final File f = new File(Constants.languagesFolder + name + ".yml");
 			{
 				try {
 					fos = new FileOutputStream(f);
-					byte[] buf = new byte[1024];
+					final byte[] buf = new byte[1024];
 					int i = 0;
-					if (f.canWrite() && fis.available() > 0) {
-						while ((i = fis.read(buf)) != -1) {
-							fos.write(buf, 0, i);
-						}
-					}
-				} catch (Exception e) {
+					if (f.canWrite() && fis.available() > 0) while ((i = fis.read(buf)) != -1)
+						fos.write(buf, 0, i);
+				} catch (final Exception e) {
 					e.printStackTrace();
 					langCopy = false;
 				} finally {
 					try {
-						if (fis != null) {
-							fis.close();
-						}
-						if (fos != null) {
-							fos.close();
-						}
-					} catch (Exception e) {
+						if (fis != null) fis.close();
+						if (fos != null) fos.close();
+					} catch (final Exception e) {
 					}
 				}
 			}
 		}
 		try {
 			@SuppressWarnings("rawtypes")
-			Class[] args = { Class.class, String.class, Integer.TYPE, Integer.TYPE, Integer.TYPE };
-			Method a = EntityTypes.class.getDeclaredMethod("a", args);
+			final Class[] args = { Class.class, String.class, Integer.TYPE, Integer.TYPE, Integer.TYPE };
+			final Method a = EntityTypes.class.getDeclaredMethod("a", args);
 			a.setAccessible(true);
 
 			a.invoke(a, EntityTribuZombie.class, "Zombie", 54, '\uafaf', 7969893);
 			a.invoke(a, EntityZombie.class, "Zombie", 54, '\uafaf', 7969893);
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			setEnabled(false);
 			e.printStackTrace();
 			return;
@@ -735,7 +718,7 @@ public class Tribu extends JavaPlugin {
 		initLanguage();
 		levelLoader = new LevelFileLoader(this);
 		// The level loader have to be ready
-		this.reloadConf();
+		reloadConf();
 		isRunning = false;
 		tempInventories = new HashMap<Player, TribuTempInventory>();
 		inventorySave = new TribuInventory();
@@ -773,18 +756,18 @@ public class Tribu extends JavaPlugin {
 
 	public void reloadConf() {
 		// Reload the main config file from disk
-		this.reloadConfig();
+		reloadConfig();
 		// Parse again the file
-		this.config = new TribuConfig(getConfig());
+		config = new TribuConfig(getConfig());
 		// Create the file if it doesn't exist
 		try {
 			getConfig().save(Constants.configFile);
-		} catch (IOException e1) {
+		} catch (final IOException e1) {
 			e1.printStackTrace();
 		}
 		// Before "loadCustom"
 		if (config.PluginModeDefaultLevel != "") {
-			String worldName = levelLoader.getWorldName(config.PluginModeDefaultLevel);
+			final String worldName = levelLoader.getWorldName(config.PluginModeDefaultLevel);
 			this.loadCustomConf(config.PluginModeDefaultLevel, worldName);
 			setLevel(levelLoader.loadLevel(config.PluginModeDefaultLevel));
 		}
@@ -798,20 +781,16 @@ public class Tribu extends JavaPlugin {
 	 * 
 	 * @param player
 	 */
-	public void removePlayer(Player player) {
+	public void removePlayer(final Player player) {
 		if (player != null && players.containsKey(player)) {
-			if (isAlive(player)) {
-				aliveCount--;
-			}
+			if (isAlive(player)) aliveCount--;
 			if (!isRunning && waitingPlayers != -1 && waitingPlayers < config.LevelMinPlayers) waitingPlayers++;
 
 			sortedStats.remove(players.get(player));
 			inventorySave.restoreInventory(player);
 			players.remove(player);
 			Tribu.messagePlayer(player, getLocale("Message.YouLeft"));
-			if (player.isOnline() && spawnPoint.containsKey(player)) {
-				player.setBedSpawnLocation(spawnPoint.remove(player));
-			}
+			if (player.isOnline() && spawnPoint.containsKey(player)) player.setBedSpawnLocation(spawnPoint.remove(player));
 			// check alive AFTER player remove
 			checkAliveCount();
 			// remove vote AFTER player remove
@@ -830,16 +809,16 @@ public class Tribu extends JavaPlugin {
 	 * @param point
 	 *            The previous spawn
 	 */
-	public void resetedSpawnAdd(Player p, Location point) {
+	public void resetedSpawnAdd(final Player p, final Location point) {
 		spawnPoint.put(p, point);
 	}
 
-	public void restoreInventory(Player p) {
+	public void restoreInventory(final Player p) {
 		// log.info("Restore items for " + p.getDisplayName());
 		inventorySave.restoreInventory(p);
 	}
 
-	public void restoreTempInv(Player p) {
+	public void restoreTempInv(final Player p) {
 		// log.info("Restore items for " + p.getDisplayName());
 		if (tempInventories.containsKey(p)) tempInventories.remove(p).restore();
 	}
@@ -849,10 +828,8 @@ public class Tribu extends JavaPlugin {
 	 * 
 	 * @param player
 	 */
-	public void revivePlayer(Player player) {
-		if (spawnPoint.containsKey(player)) {
-			player.setBedSpawnLocation(spawnPoint.remove(player));
-		}
+	public void revivePlayer(final Player player) {
+		if (spawnPoint.containsKey(player)) player.setBedSpawnLocation(spawnPoint.remove(player));
 		players.get(player).revive();
 		if (config.WaveStartHealPlayers) player.setHealth(20);
 		if (config.WaveStartFeedPlayers) player.setFoodLevel(20);
@@ -867,13 +844,11 @@ public class Tribu extends JavaPlugin {
 	 * @param teleportAll
 	 *            Teleport everyone or just dead people
 	 */
-	public void revivePlayers(boolean teleportAll) {
+	public void revivePlayers(final boolean teleportAll) {
 		aliveCount = 0;
-		for (Player player : players.keySet()) {
+		for (final Player player : players.keySet()) {
 			revivePlayer(player);
-			if (isRunning && level != null && (teleportAll || !isAlive(player))) {
-				player.teleport(level.getInitialSpawn());
-			}
+			if (isRunning && level != null && (teleportAll || !isAlive(player))) player.teleport(level.getInitialSpawn());
 		}
 	}
 
@@ -882,11 +857,11 @@ public class Tribu extends JavaPlugin {
 	 * 
 	 * @param player
 	 */
-	public void setDead(Player player) {
+	public void setDead(final Player player) {
 		if (players.containsKey(player)) {
 			if (isAlive(player)) {
 				aliveCount--;
-				PlayerStats p = players.get(player);
+				final PlayerStats p = players.get(player);
 				p.resetMoney();
 				p.subtractmoney(config.StatsOnPlayerDeathMoney);
 				p.subtractPoints(config.StatsOnPlayerDeathPoints);
@@ -894,9 +869,7 @@ public class Tribu extends JavaPlugin {
 				messagePlayers("Message.Died", player.getName());
 			}
 			players.get(player).kill();
-			if (getLevel() != null && isRunning) {
-				checkAliveCount();
-			}
+			if (getLevel() != null && isRunning) checkAliveCount();
 		}
 	}
 
@@ -905,7 +878,7 @@ public class Tribu extends JavaPlugin {
 	 * 
 	 * @param level
 	 */
-	public void setLevel(TribuLevel level) {
+	public void setLevel(final TribuLevel level) {
 		this.level = level;
 		this.loadCustomConf();
 	}
@@ -923,28 +896,26 @@ public class Tribu extends JavaPlugin {
 		if (!isRunning && getLevel() != null && waitingPlayers == 0) {
 			// Before (next instruction) it will saves current default
 			// packages to the level, saving theses packages with the level
-			this.addDefaultPackages();
+			addDefaultPackages();
 			// Make sure no data is lost if server decides to die
 			// during a game and player forgot to /level save
-			if (!getLevelLoader().saveLevel(getLevel())) {
+			if (!getLevelLoader().saveLevel(getLevel()))
 				LogWarning(language.get("Warning.UnableToSaveLevel"));
-			} else {
+			else
 				LogInfo(language.get("Info.LevelSaved"));
-			}
-			if (this.getLevel().getSpawns().isEmpty()) {
+			if (getLevel().getSpawns().isEmpty()) {
 				LogWarning(language.get("Warning.NoSpawns"));
 				return false;
 			}
 
 			isRunning = true;
 			if (config.PluginModeServerExclusive || config.PluginModeWorldExclusive)
-				for (LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
+				for (final LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
 					if (!(e instanceof Player) && !(e instanceof Wolf) && !(e instanceof Villager)) e.damage(Integer.MAX_VALUE);
 				}
 			else
-				for (LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
+				for (final LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities())
 					if ((e.getLocation().distance(level.getInitialSpawn())) < config.LevelClearZone && !(e instanceof Player) && !(e instanceof Wolf) && !(e instanceof Villager)) e.damage(Integer.MAX_VALUE);
-				}
 			if (config.PlayersRollback) {
 				// If there is a restoring operation currently, do it
 				// quickly
@@ -953,16 +924,16 @@ public class Tribu extends JavaPlugin {
 				// Pre-cache level
 				memory.add(level.getInitialSpawn().getChunk());
 				memory.add(level.getDeathSpawn().getChunk());
-				for (Location l : level.getZombieSpawns())
+				for (final Location l : level.getZombieSpawns())
 					memory.add(l.getChunk());
 			}
 			getLevel().initSigns();
-			this.sortedStats.clear();
+			sortedStats.clear();
 
-			for (PlayerStats stat : players.values()) {
+			for (final PlayerStats stat : players.values()) {
 				stat.resetPoints();
 				stat.resetMoney();
-				this.sortedStats.add(stat);
+				sortedStats.add(stat);
 			}
 			getWaveStarter().resetWave();
 			revivePlayers(true);
@@ -989,21 +960,21 @@ public class Tribu extends JavaPlugin {
 			i += 5f;
 		}
 		broadcastTime.push(timeout);
-		final int taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+		final int taskId = getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 			private float	counter	= timeout;
 
+			@Override
 			public void run() {
 				if (counter <= 0f)
 					startRunning();
-				else {
-					if (broadcastTime.isEmpty())
-						messagePlayers(getLocale("Broadcast.GameStarting"));
-					else if (broadcastTime.peek() >= counter) messagePlayers("Broadcast.GameStartingSoon", broadcastTime.pop());
-				}
+				else if (broadcastTime.isEmpty())
+					messagePlayers(getLocale("Broadcast.GameStarting"));
+				else if (broadcastTime.peek() >= counter) messagePlayers("Broadcast.GameStartingSoon", broadcastTime.pop());
 				counter -= step;
 			}
 		}, 0, Math.round(step * Constants.TicksBySecond));
-		this.getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			@Override
 			public void run() {
 				getServer().getScheduler().cancelTask(taskId);
 			}
@@ -1018,7 +989,7 @@ public class Tribu extends JavaPlugin {
 		stopRunning(false);
 	}
 
-	public void stopRunning(boolean rerun) {
+	public void stopRunning(final boolean rerun) {
 		getLevelSelector().cancelVote();
 		if (isRunning) {
 			isRunning = false;
@@ -1027,17 +998,14 @@ public class Tribu extends JavaPlugin {
 			getSpawner().clearZombies();
 
 			if (config.PlayersRollback) memory.startRestoring(this, config.AdvancedRestoringSpeed);
-			this.level.finishSigns();
+			level.finishSigns();
 			// Teleports all players to spawn when game ends
-			for (Player p : players.keySet()) {
+			for (final Player p : players.keySet())
 				p.teleport(level.getInitialSpawn());
-			}
 			if (!rerun) {
 				if (config.PlayersStoreInventory) inventorySave.restoreInventories();
 
-				if (!config.PluginModeServerExclusive && !config.PluginModeWorldExclusive) {
-					players.clear();
-				}
+				if (!config.PluginModeServerExclusive && !config.PluginModeWorldExclusive) players.clear();
 			}
 			waitingPlayers = -1;
 		}

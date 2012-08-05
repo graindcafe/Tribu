@@ -35,30 +35,31 @@
 package graindcafe.tribu;
 
 import graindcafe.tribu.Configuration.Constants;
+
 import org.bukkit.entity.Player;
 
 public class PlayerStats implements Comparable<PlayerStats> {
-	private boolean alive;
-	private int money;
-	private Player player;
-	private int points;
+	private boolean			alive;
+	private int				money;
+	private final Player	player;
+	private int				points;
 
-	public PlayerStats(Player player) {
+	public PlayerStats(final Player player) {
 		this.player = player;
 		alive = false;
 	}
 
-	public void addMoney(int amount) {
+	public void addMoney(final int amount) {
 		money += amount;
 	}
 
-	public void addPoints(int amount) {
+	public void addPoints(final int amount) {
 		points += amount;
 	}
 
 	// Order reversed to sort list desc
 	@Override
-	public int compareTo(PlayerStats o) {
+	public int compareTo(final PlayerStats o) {
 		if (o.getPoints() == points)
 			return 0;
 		else if (o.getPoints() > points)
@@ -68,10 +69,9 @@ public class PlayerStats implements Comparable<PlayerStats> {
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof PlayerStats))
-			return false;
-		PlayerStats ps = (PlayerStats) o;
+	public boolean equals(final Object o) {
+		if (!(o instanceof PlayerStats)) return false;
+		final PlayerStats ps = (PlayerStats) o;
 		return ps.getPlayer().equals(player) && ps.getMoney() == money && ps.getPoints() == points;
 	}
 
@@ -111,7 +111,7 @@ public class PlayerStats implements Comparable<PlayerStats> {
 		alive = true;
 	}
 
-	public boolean subtractmoney(int amount) {
+	public boolean subtractmoney(final int amount) {
 		if (money >= amount) {
 			money -= amount;
 			return true;
@@ -119,11 +119,9 @@ public class PlayerStats implements Comparable<PlayerStats> {
 		return false;
 	}
 
-	public void subtractPoints(int val) {
+	public void subtractPoints(final int val) {
 		points -= val;
-		if (points < 0) {
-			points = 0;
-		}
+		if (points < 0) points = 0;
 	}
 
 }

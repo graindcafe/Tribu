@@ -45,22 +45,27 @@ import org.bukkit.block.Sign;
 
 public class TopPointsSign extends HighscoreSign {
 
-	public TopPointsSign(Tribu plugin) {
+	public TopPointsSign(final Tribu plugin) {
 		super(plugin);
 	}
 
-	public TopPointsSign(Tribu plugin, Location pos) {
+	public TopPointsSign(final Tribu plugin, final Location pos) {
 		super(plugin, pos);
 
 	}
 
 	@Override
+	public void finish() {
+
+	}
+
+	@Override
 	protected String[] getSpecificLines() {
-		String[] lines = new String[4];
-		lines[0]=lines[1]=lines[2]=lines[3]="";
-		LinkedList<PlayerStats> stats = plugin.getSortedStats();
-		Iterator<PlayerStats> i = stats.iterator();
-		int count = 3;
+		final String[] lines = new String[4];
+		lines[0] = lines[1] = lines[2] = lines[3] = "";
+		final LinkedList<PlayerStats> stats = plugin.getSortedStats();
+		final Iterator<PlayerStats> i = stats.iterator();
+		final int count = 3;
 		for (byte j = 1; j <= count && i.hasNext(); j++)
 			lines[j] = String.valueOf(i.next().getPoints());
 		return lines;
@@ -68,17 +73,12 @@ public class TopPointsSign extends HighscoreSign {
 
 	@Override
 	public void raiseEvent() {
-		Sign s = ((Sign) pos.getBlock().getState());
-		String[] lines = getSpecificLines();
+		final Sign s = ((Sign) pos.getBlock().getState());
+		final String[] lines = getSpecificLines();
 		// s.setLine(0, plugin.getLocale("Sign.HighscorePoints"));
 		s.setLine(1, lines[1]);
 		s.setLine(2, lines[2]);
 		s.setLine(3, lines[3]);
 		s.update();
-	}
-
-	@Override
-	public void finish() {
-		
 	}
 }

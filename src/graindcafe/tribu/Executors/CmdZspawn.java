@@ -43,17 +43,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CmdZspawn implements CommandExecutor {
-	private Tribu plugin;
+	private final Tribu	plugin;
 
-	public CmdZspawn(Tribu instance) {
+	public CmdZspawn(final Tribu instance) {
 		plugin = instance;
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if(!sender.hasPermission("tribu.game.zspawn"))
-		{
-			Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
+	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+		if (!sender.hasPermission("tribu.game.zspawn")) {
+			Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
 			return true;
 		}
 
@@ -61,12 +60,12 @@ public class CmdZspawn implements CommandExecutor {
 			plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 			return true;
 		}
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 
 		// Make sure a level is loaded
 		if (plugin.getLevel() == null) {
-			Tribu.messagePlayer(player,plugin.getLocale("Message.NoLevelLoaded"));
-			Tribu.messagePlayer(player,plugin.getLocale("Message.NoLevelLoaded2"));
+			Tribu.messagePlayer(player, plugin.getLocale("Message.NoLevelLoaded"));
+			Tribu.messagePlayer(player, plugin.getLocale("Message.NoLevelLoaded2"));
 			return true;
 		}
 
@@ -75,24 +74,23 @@ public class CmdZspawn implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("set")) {
 
 				plugin.getLevel().addZombieSpawn(player.getLocation(), args[1]);
-				Tribu.messagePlayer(player,plugin.getLocale("Message.SpawnpointAdded"));
+				Tribu.messagePlayer(player, plugin.getLocale("Message.SpawnpointAdded"));
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("remove")) {
 
 				plugin.getLevel().removeZombieSpawn(args[1]);
-				Tribu.messagePlayer(player,plugin.getLocale("Message.SpawnpointRemoved"));
+				Tribu.messagePlayer(player, plugin.getLocale("Message.SpawnpointRemoved"));
 				return true;
 
 			} else if (args[0].equalsIgnoreCase("jump")) {
 
-				Location zspawn = plugin.getLevel().getZombieSpawn(args[1]);
+				final Location zspawn = plugin.getLevel().getZombieSpawn(args[1]);
 				if (zspawn != null) {
 					player.teleport(zspawn);
-					Tribu.messagePlayer(player,String.format(plugin.getLocale("Message.TeleportedToZombieSpawn"), args[1]));
-				} else {
-					Tribu.messagePlayer(player,plugin.getLocale("Message.InvalidSpawnName"));
-				}
+					Tribu.messagePlayer(player, String.format(plugin.getLocale("Message.TeleportedToZombieSpawn"), args[1]));
+				} else
+					Tribu.messagePlayer(player, plugin.getLocale("Message.InvalidSpawnName"));
 				return true;
 
 			}

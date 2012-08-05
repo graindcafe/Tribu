@@ -41,9 +41,12 @@ import org.bukkit.entity.Player;
 
 public interface ITribuBoss {
 
-	public List<Player> getPlayers();
 	public double getElapsedTime();
+
 	public int getHealth();
+
+	public List<Player> getPlayers();
+
 	public Location getPositon();
-	
+
 }

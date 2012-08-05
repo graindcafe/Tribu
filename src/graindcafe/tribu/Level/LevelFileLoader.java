@@ -56,14 +56,14 @@ import org.bukkit.inventory.ItemStack;
 
 public class LevelFileLoader {
 
-	private Set<String> levels;
-	private Tribu plugin;
+	private final Set<String>	levels;
+	private final Tribu			plugin;
 
-	public LevelFileLoader(Tribu instance) {
+	public LevelFileLoader(final Tribu instance) {
 		plugin = instance;
 		levels = new HashSet<String>();
 		levels.clear();
-		File dir = new File(Constants.levelFolder);
+		final File dir = new File(Constants.levelFolder);
 		/*
 		 * if (!dir.exists()) {
 		 * plugin.LogInfo(plugin.getLocale("Info.LevelFolderDoesntExist"));
@@ -73,61 +73,28 @@ public class LevelFileLoader {
 		 * File.separatorChar); dir = new File(tmplevelFolder); if(!dir.mkdir())
 		 * plugin.LogSevere(plugin.getLocale("Severe.TribuCantMkdir")); } }
 		 */
-		File[] files = dir.listFiles();
+		final File[] files = dir.listFiles();
 		plugin.LogInfo(String.format(plugin.getLocale("Info.LevelFound"), String.valueOf(files == null ? 0 : files.length)));
-		if (files != null) {
-			for (File file : files) {
-				levels.add(file.getName().substring(0, file.getName().lastIndexOf(".")));
-			}
-		}
+		if (files != null) for (final File file : files)
+			levels.add(file.getName().substring(0, file.getName().lastIndexOf(".")));
 
 	}
 
-	public String getWorldName(String levelName) {
-		for (String level : levels) {
-			if (level.equalsIgnoreCase(levelName))
-				levelName = level;
-		}
-		File file = new File(Constants.levelFolder + levelName + ".lvl");
-		if (!file.exists()) {
-			return null;
-		}
-		FileInputStream fstream;
-		try {
-			fstream = new FileInputStream(file);
-			DataInputStream in = new DataInputStream(fstream);
-			in.skipBytes(1);
-			if (in.available() < 2) {
-				fstream.close();
-				in.close();
-				plugin.LogSevere("Something wrong happened ... Level is empty");
-				return null;
-			}
-			String worldName=in.readUTF();
-			fstream.close();
-			in.close();
-			return worldName;
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-	public boolean deleteLevel(String name) {
-		File file = new File(Constants.levelFolder + name + ".lvl");
+	public boolean deleteLevel(final String name) {
+		final File file = new File(Constants.levelFolder + name + ".lvl");
 		if (file.exists()) {
-			boolean result = file.delete();
-			if (!result) {
+			final boolean result = file.delete();
+			if (!result)
 				plugin.LogWarning(plugin.getLocale("Warning.IOErrorOnFileDelete"));
-			} else {
+			else
 				levels.remove(name);
-			}
 			return result;
 		}
 		return false;
 	}
 
-	public boolean exists(String name) {
-		File file = new File(Constants.levelFolder + name + ".lvl");
+	public boolean exists(final String name) {
+		final File file = new File(Constants.levelFolder + name + ".lvl");
 		return (file.exists());
 	}
 
@@ -135,14 +102,37 @@ public class LevelFileLoader {
 		return levels;
 	}
 
-	public TribuLevel loadLevel(String name) {
+	public String getWorldName(String levelName) {
+		for (final String level : levels)
+			if (level.equalsIgnoreCase(levelName)) levelName = level;
+		final File file = new File(Constants.levelFolder + levelName + ".lvl");
+		if (!file.exists()) return null;
+		FileInputStream fstream;
+		try {
+			fstream = new FileInputStream(file);
+			final DataInputStream in = new DataInputStream(fstream);
+			in.skipBytes(1);
+			if (in.available() < 2) {
+				fstream.close();
+				in.close();
+				plugin.LogSevere("Something wrong happened ... Level is empty");
+				return null;
+			}
+			final String worldName = in.readUTF();
+			fstream.close();
+			in.close();
+			return worldName;
+		} catch (final Exception e) {
+			return null;
+		}
+	}
+
+	public TribuLevel loadLevel(final String name) {
 		TribuLevel level = null;
 		try {
 
 			File file = new File(Constants.levelFolder + name + ".lvl");
-			if (!file.exists()) {
-				return null;
-			}
+			if (!file.exists()) return null;
 			FileInputStream fstream = new FileInputStream(file);
 			DataInputStream in = new DataInputStream(fstream);
 			int version = in.readByte();
@@ -155,9 +145,9 @@ public class LevelFileLoader {
 					fstream = new FileInputStream(file);
 					in = new DataInputStream(fstream);
 
-					File tempFile = new File(Constants.levelFolder + name + ".lvl");
+					final File tempFile = new File(Constants.levelFolder + name + ".lvl");
 					version = 3;
-					DataOutputStream out = new DataOutputStream(new FileOutputStream(tempFile));
+					final DataOutputStream out = new DataOutputStream(new FileOutputStream(tempFile));
 					// set the file version
 					out.writeByte(version);
 					int i = in.available() - 1;
@@ -188,9 +178,9 @@ public class LevelFileLoader {
 					fstream = new FileInputStream(file);
 					in = new DataInputStream(fstream);
 
-					File tempFile = new File(Constants.levelFolder + name + ".lvl");
+					final File tempFile = new File(Constants.levelFolder + name + ".lvl");
 					version = 3;
-					DataOutputStream out = new DataOutputStream(new FileOutputStream(tempFile));
+					final DataOutputStream out = new DataOutputStream(new FileOutputStream(tempFile));
 					// set the file version
 					out.writeByte(version);
 					int i = in.available() - 1;
@@ -224,7 +214,7 @@ public class LevelFileLoader {
 				plugin.LogSevere("Something wrong happened ... Level is empty");
 				return null;
 			}
-			World world = plugin.getServer().getWorld(in.readUTF());
+			final World world = plugin.getServer().getWorld(in.readUTF());
 			if (world == null) {
 				fstream.close();
 				in.close();
@@ -244,13 +234,13 @@ public class LevelFileLoader {
 			dz = in.readDouble();
 			dYaw = in.readFloat();
 
-			Location spawn = new Location(world, sx, sy, sz, sYaw, 0.0f);
-			Location death = new Location(world, dx, dy, dz, dYaw, 0.0f);
+			final Location spawn = new Location(world, sx, sy, sz, sYaw, 0.0f);
+			final Location death = new Location(world, dx, dy, dz, dYaw, 0.0f);
 
 			level = new TribuLevel(name, spawn);
 			level.setDeathSpawn(death);
 
-			int spawncount = in.readInt();
+			final int spawncount = in.readInt();
 
 			Location pos;
 			String spawnName;
@@ -265,15 +255,12 @@ public class LevelFileLoader {
 				level.addZombieSpawn(pos, spawnName);
 			}
 			int count = in.readInt();
-			for (int i = 0; i < count; i++) {
-				if (!level.addSign(TribuSign.LoadFromStream(plugin, world, in))) {
-					plugin.LogWarning(plugin.getLocale("Warning.UnableToAddSign"));
-				}
-			}
+			for (int i = 0; i < count; i++)
+				if (!level.addSign(TribuSign.LoadFromStream(plugin, world, in))) plugin.LogWarning(plugin.getLocale("Warning.UnableToAddSign"));
 
 			byte iCount;
 			Package n;
-			HashMap<Enchantment, Integer> ench = new HashMap<Enchantment, Integer>();
+			final HashMap<Enchantment, Integer> ench = new HashMap<Enchantment, Integer>();
 			int id;
 			int enchNumber;
 			short amount;
@@ -285,8 +272,8 @@ public class LevelFileLoader {
 				// Init a new package
 				n = new Package();
 				// Package name length
-				int strC = in.readByte();
-				char[] c = new char[strC];
+				final int strC = in.readByte();
+				final char[] c = new char[strC];
 				byte k = 0;
 				// Read each char
 				while (k < strC) {
@@ -325,7 +312,7 @@ public class LevelFileLoader {
 
 			}
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			plugin.LogSevere(String.format(plugin.getLocale("Severe.ErrorDuringLevelLoading"), Tribu.getExceptionMessage(e)));
 			level = null;
 		}
@@ -334,34 +321,30 @@ public class LevelFileLoader {
 	}
 
 	public TribuLevel loadLevelIgnoreCase(String name) {
-		for (String level : levels) {
-			if (level.equalsIgnoreCase(name))
-				name = level;
-		}
+		for (final String level : levels)
+			if (level.equalsIgnoreCase(name)) name = level;
 		return loadLevel(name);
 	}
 
-	public TribuLevel newLevel(String name, Location spawn) {
+	public TribuLevel newLevel(final String name, final Location spawn) {
 		return new TribuLevel(name, spawn);
 	}
 
-	public boolean saveLevel(TribuLevel level) {
-		if (level == null) {
-			return true; // Sorta successful since a save isn't really needed
-							// and nothing failed
-		}
+	public boolean saveLevel(final TribuLevel level) {
+		if (level == null) return true; // Sorta successful since a save isn't
+										// really needed
+		// and nothing failed
 
-		if (!level.hasChanged()) {
-			return true; // No need to save since the level hasn't changed
-		}
+		if (!level.hasChanged()) return true; // No need to save since the level
+												// hasn't changed
 
 		FileOutputStream out;
 		DataOutputStream o;
 		try {
 			out = new FileOutputStream(Constants.levelFolder + level.getName() + ".lvl", false);
 			o = new DataOutputStream(out);
-			Location spawn = level.getInitialSpawn();
-			Location death = level.getDeathSpawn();
+			final Location spawn = level.getInitialSpawn();
+			final Location death = level.getDeathSpawn();
 
 			o.writeByte(Constants.LevelFileVersion);
 
@@ -376,30 +359,29 @@ public class LevelFileLoader {
 			o.writeDouble(death.getZ());
 			o.writeFloat(death.getYaw());
 
-			HashMap<String, Location> zombieSpawns = level.getSpawns();
-			Set<Entry<String, Location>> set = zombieSpawns.entrySet();
+			final HashMap<String, Location> zombieSpawns = level.getSpawns();
+			final Set<Entry<String, Location>> set = zombieSpawns.entrySet();
 
 			o.writeInt(set.size());
-			for (Entry<String, Location> zspawn : set) {
+			for (final Entry<String, Location> zspawn : set) {
 				o.writeDouble(zspawn.getValue().getX());
 				o.writeDouble(zspawn.getValue().getY());
 				o.writeDouble(zspawn.getValue().getZ());
 				o.writeFloat(zspawn.getValue().getYaw());
 				o.writeUTF(zspawn.getKey());
 			}
-			TribuSign[] signs = level.getSigns();
-			if (signs == null) {
+			final TribuSign[] signs = level.getSigns();
+			if (signs == null)
 				o.writeInt(0);
-			} else {
+			else {
 				o.writeInt(signs.length);
-				for (int i = 0; i < signs.length; i++) {
-					signs[i].SaveToStream(o);
-				}
+				for (final TribuSign sign : signs)
+					sign.SaveToStream(o);
 			}
 			// Number of packages
 			o.writeShort((short) level.getPackages().size());
 			// Each package
-			for (Package n : level.getPackages()) {
+			for (final Package n : level.getPackages()) {
 				// Pck name length
 				o.write(n.getName().length());
 				// Pck name chars
@@ -407,7 +389,7 @@ public class LevelFileLoader {
 				// Pck number of items
 				o.write(n.getItemStacks().size());
 				// Each item
-				for (ItemStack is : n.getItemStacks()) {
+				for (final ItemStack is : n.getItemStacks()) {
 					// Item id
 					o.writeInt(is.getTypeId());
 					// Durability = subid (getData() but on short (useful for
@@ -418,7 +400,7 @@ public class LevelFileLoader {
 					// Number of enchantments for this item
 					o.write(is.getEnchantments().size());
 					// Each enchantment
-					for (Entry<Enchantment, Integer> ench : is.getEnchantments().entrySet()) {
+					for (final Entry<Enchantment, Integer> ench : is.getEnchantments().entrySet()) {
 						// Enchantment type
 						o.writeInt(ench.getKey().getId());
 						// Enchantment level
@@ -429,7 +411,7 @@ public class LevelFileLoader {
 			o.flush();
 			o.close();
 			out.close();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			plugin.LogSevere(String.format(plugin.getLocale("Severe.ErrorDuringLevelSaving"), Tribu.getExceptionMessage(e)));
 			return false;
 		}

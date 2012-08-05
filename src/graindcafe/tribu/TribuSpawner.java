@@ -50,42 +50,42 @@ public class TribuSpawner {
 	/**
 	 * Is the round finish
 	 */
-	private boolean finished;
-	
+	private boolean								finished;
+
 	/**
 	 * Health of zombie to spawn
 	 */
-	private int health;
+	private int									health;
 	/**
 	 *  A zombie just spawned
 	 */
-	private boolean justspawned;
+	private boolean								justspawned;
 	/**
 	 * number of zombies to spawn
 	 */
-	private int totalToSpawn;
+	private int									totalToSpawn;
 	/**
 	 * Tribu
 	 */
-	private final Tribu plugin;
+	private final Tribu							plugin;
 	/**
 	 * Gonna start
 	 */
-	private boolean starting;
+	private boolean								starting;
 	/**
 	 * spawned zombies
 	 */
-	private int alreadySpawned;
+	private int									alreadySpawned;
 	/**
 	 * Referenced zombies
 	 */
-	private LinkedList<CraftTribuZombie> zombies;
+	private final LinkedList<CraftTribuZombie>	zombies;
 
 	/**
 	 * Init the spawner
 	 * @param instance of Tribu
 	 */
-	public TribuSpawner(Tribu instance) {
+	public TribuSpawner(final Tribu instance) {
 		plugin = instance;
 		alreadySpawned = 0;
 		totalToSpawn = 5;
@@ -101,13 +101,12 @@ public class TribuSpawner {
 	 * set finished if they are all dead
 	 */
 	public void checkZombies() {
-		Stack<CraftTribuZombie> toDelete = new Stack<CraftTribuZombie>();
-		for (CraftTribuZombie e : zombies)
-			if (e==null||e.isDead())
-				toDelete.push(e);
+		final Stack<CraftTribuZombie> toDelete = new Stack<CraftTribuZombie>();
+		for (final CraftTribuZombie e : zombies)
+			if (e == null || e.isDead()) toDelete.push(e);
 		finished = toDelete.isEmpty();
 		while (!toDelete.isEmpty())
-			removedZombieCallback(toDelete.pop(),false);
+			removedZombieCallback(toDelete.pop(), false);
 
 	}
 
@@ -115,9 +114,8 @@ public class TribuSpawner {
 	 * Delete all zombies and prevent the spawner to continue spawning
 	 */
 	public void clearZombies() {
-		for (CraftTribuZombie zombie : zombies) {
+		for (final CraftTribuZombie zombie : zombies)
 			zombie.remove();
-		}
 		resetTotal();
 		zombies.clear();
 	}
@@ -127,11 +125,11 @@ public class TribuSpawner {
 	 * @param zombie zombie to unreference
 	 * @param drops drops to clear
 	 */
-	public void despawnZombie(CraftTribuZombie zombie, List<ItemStack> drops) {
+	public void despawnZombie(final CraftTribuZombie zombie, final List<ItemStack> drops) {
 		if (zombies.remove(zombie)) {
 			drops.clear();
 			tryStartNextWave();
-		} 
+		}
 		// Else The zombie may have been deleted by "removedZombieCallback"
 		/*else {
 			
@@ -161,12 +159,20 @@ public class TribuSpawner {
 				return zombies.get(0).getLocation();
 			} else {
 				plugin.getSpawnTimer().getState();
-				plugin.LogSevere("There is " + zombies.size() + " zombie alive of " + alreadySpawned + "/" + totalToSpawn + " spawned . The wave is "
-						+ (finished ? "finished" : "in progress"));
+				plugin.LogSevere("There is " + zombies.size() + " zombie alive of " + alreadySpawned + "/" + totalToSpawn + " spawned . The wave is " + (finished ? "finished" : "in progress"));
 				return null;
 			}
 		else
 			return null;
+	}
+
+	/**
+	 * Get the total quantity of zombie to spawn
+	 * (Not counting zombies killed)
+	 * @return total to spawn
+	 */
+	public int getMaxSpawn() {
+		return totalToSpawn;
 	}
 
 	/**
@@ -182,23 +188,11 @@ public class TribuSpawner {
 	 * @return
 	 */
 	public Location getValidSpawn() {
-		for (Location curPos : plugin.getLevel().getActiveSpawns()) {
-			if (curPos.getWorld().isChunkLoaded(curPos.getWorld().getChunkAt(curPos))) {
-				return curPos;
-			}
-		}
+		for (final Location curPos : plugin.getLevel().getActiveSpawns())
+			if (curPos.getWorld().isChunkLoaded(curPos.getWorld().getChunkAt(curPos))) return curPos;
 		plugin.LogInfo(plugin.getLocale("Warning.AllSpawnsCurrentlyUnloaded"));
 		return null;
 
-	}
-
-	/**
-	 * Get the total quantity of zombie to spawn
-	 * (Not counting zombies killed)
-	 * @return total to spawn
-	 */
-	public int getMaxSpawn() {
-		return this.totalToSpawn;
 	}
 
 	/**
@@ -214,7 +208,7 @@ public class TribuSpawner {
 	 * @param ent
 	 * @return if the living entity was spawned by this
 	 */
-	public boolean isSpawned(LivingEntity ent) {
+	public boolean isSpawned(final LivingEntity ent) {
 		return zombies.contains(ent);
 	}
 
@@ -239,11 +233,9 @@ public class TribuSpawner {
 	 * @param e Zombie to despawn
 	 * @param removeReward Reward attakers ?
 	 */
-	public void removedZombieCallback(CraftTribuZombie e,boolean removeReward) {
-		if(e!=null)
-		{
-			if(removeReward)
-				e.setNoAttacker();
+	public void removedZombieCallback(final CraftTribuZombie e, final boolean removeReward) {
+		if (e != null) {
+			if (removeReward) e.setNoAttacker();
 			e.damage(Integer.MAX_VALUE);
 		}
 		zombies.remove(e);
@@ -262,7 +254,7 @@ public class TribuSpawner {
 	 * Set health of zombie to spawn
 	 * @param value Health
 	 */
-	public void setHealth(int value) {
+	public void setHealth(final int value) {
 		health = value;
 	}
 
@@ -270,7 +262,7 @@ public class TribuSpawner {
 	 * Set the number of zombie to spawn
 	 * @param count
 	 */
-	public void setMaxSpawn(int count) {
+	public void setMaxSpawn(final int count) {
 		totalToSpawn = count;
 	}
 
@@ -283,9 +275,9 @@ public class TribuSpawner {
 			Location pos = plugin.getLevel().getRandomZombieSpawn();
 			if (pos != null) {
 				if (!pos.getWorld().isChunkLoaded(pos.getWorld().getChunkAt(pos))) {
-					this.checkZombies();
+					checkZombies();
 
-					pos = this.getValidSpawn();
+					pos = getValidSpawn();
 				}
 				if (pos != null) {
 					// Surrounded with justspawned so that the zombie isn't
@@ -297,7 +289,7 @@ public class TribuSpawner {
 						zombies.add(zombie);
 						zombie.setHealth(health);
 						alreadySpawned++;
-					} catch (CannotSpawnException e) {
+					} catch (final CannotSpawnException e) {
 						// Impossible to spawn the zombie, maybe because of lack
 						// of
 						// space
@@ -305,7 +297,8 @@ public class TribuSpawner {
 					justspawned = false;
 				}
 			}
-		}else return false;
+		} else
+			return false;
 		return true;
 	}
 

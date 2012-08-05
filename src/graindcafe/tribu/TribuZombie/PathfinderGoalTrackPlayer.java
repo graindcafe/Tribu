@@ -1,16 +1,13 @@
 package graindcafe.tribu.TribuZombie;
 
 import graindcafe.tribu.Tribu;
-
-import java.util.logging.Logger;
-
-import org.bukkit.craftbukkit.entity.CraftPlayer;
-
 import net.minecraft.server.Entity;
 import net.minecraft.server.EntityCreature;
 import net.minecraft.server.PathfinderGoal;
 import net.minecraft.server.RandomPositionGenerator;
 import net.minecraft.server.Vec3D;
+
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 
 /**
  * Based on LookAtPlayer added MoveTowardsTarget
@@ -23,35 +20,36 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 	/**
 	 * The controlled entity
 	 */
-	private EntityCreature	creature;
+	private final EntityCreature	creature;
 	/**
 	 * The entity to look at and move towards
 	 */
-	private Entity			target;
-	private Entity			lastTarget;
+	private Entity					target;
+	private Entity					lastTarget;
 	/**
 	 * Distance
 	 */
-	private float			squaredActiveDistance;
+	private final float				squaredActiveDistance;
 
 	/**
 	 * Default : 0.02
 	 */
-	private float			chance;
+	private final float				chance;
 
-	private double			x=0, y=0, z=0;
-	private float			speed;
-	private boolean			doLookAt	= true;
-	private boolean	getRandomPlayer=false;
-	private Tribu plugin;
+	private double					x				= 0, y = 0, z = 0;
+	private final float				speed;
+	private boolean					doLookAt		= true;
+	private boolean					getRandomPlayer	= false;
+	private final Tribu				plugin;
+
 	/**
 	 * 
 	 * @param creature
 	 * @param targetClass
 	 * @param distance
 	 */
-	public PathfinderGoalTrackPlayer(Tribu plugin,boolean getRandomPlayer,EntityCreature creature,float speed, float distance) {
-		this(plugin,getRandomPlayer,creature,speed,distance,0.02f);
+	public PathfinderGoalTrackPlayer(final Tribu plugin, final boolean getRandomPlayer, final EntityCreature creature, final float speed, final float distance) {
+		this(plugin, getRandomPlayer, creature, speed, distance, 0.02f);
 	}
 
 	/**
@@ -61,14 +59,14 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 	 * @param distance
 	 * @param chance (?) default 0.02
 	 */
-	public PathfinderGoalTrackPlayer(Tribu plugin,boolean getRandomPlayer,EntityCreature creature,float speed, float distance, float chance) {
+	public PathfinderGoalTrackPlayer(final Tribu plugin, final boolean getRandomPlayer, final EntityCreature creature, final float speed, final float distance, final float chance) {
 		trueDebugMsg("init");
 		this.creature = creature;
-		this.squaredActiveDistance = distance*distance;
-		this.speed=speed;
+		squaredActiveDistance = distance * distance;
+		this.speed = speed;
 		this.chance = chance;
-		this.plugin=plugin;
-		this.getRandomPlayer=getRandomPlayer;
+		this.plugin = plugin;
+		this.getRandomPlayer = getRandomPlayer;
 		// the goal priority
 		a(1);
 	}
@@ -78,33 +76,31 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 	 *
 	 * if a() true and (?:goalSelector.a(PathfinderGoalSelectorItem)) should be executed, then do c() before adding it
 	 */
+	@Override
 	public boolean a() {
 		// get target
-		lastTarget=target;
-		this.target=this.creature.at();
-		if(this.target==null)
-		this.target = (getRandomPlayer ? ((CraftPlayer)plugin.getRandomPlayer()) :((CraftPlayer)plugin.getNearestPlayer(x,y,z))).getHandle();//
+		lastTarget = target;
+		target = creature.at();
+		if (target == null) target = (getRandomPlayer ? ((CraftPlayer) plugin.getRandomPlayer()) : ((CraftPlayer) plugin.getNearestPlayer(x, y, z))).getHandle();//
 		// if no target, do nothing
 		debugMsg("testing target");
-		if (this.target != null)
-		{
-		// if too far away, do nothing
-		debugMsg("testing distance");
-		// if it's near enough
-		if (this.target.j(this.creature) < this.squaredActiveDistance) return false;
-		Vec3D localVec3D = RandomPositionGenerator.a(this.creature, 16, 7, Vec3D.create(this.target.locX, this.target.locY, this.target.locZ));
-		// if generation failed (improbable) do nothing
-		debugMsg("testing vec");
-		if (localVec3D == null) return false;
-		this.x = localVec3D.a;
-		this.y = localVec3D.b;
-		this.z = localVec3D.c;
-		}
-		else if(lastTarget==null || x==0 && y==0 && z==0) return false;
+		if (target != null) {
+			// if too far away, do nothing
+			debugMsg("testing distance");
+			// if it's near enough
+			if (target.j(creature) < squaredActiveDistance) return false;
+			final Vec3D localVec3D = RandomPositionGenerator.a(creature, 16, 7, Vec3D.create(target.locX, target.locY, target.locZ));
+			// if generation failed (improbable) do nothing
+			debugMsg("testing vec");
+			if (localVec3D == null) return false;
+			x = localVec3D.a;
+			y = localVec3D.b;
+			z = localVec3D.c;
+		} else if (lastTarget == null || x == 0 && y == 0 && z == 0)
+			return false;
 		else
-			target=lastTarget;
-		
-		
+			target = lastTarget;
+
 		return true;
 	}
 
@@ -112,53 +108,57 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 	 * Decide if we should continue doing this
 	 * if b() false and (?:goalSelector.a(PathfinderGoalSelectorItem)) should be executed, then do d() before removing it
 	 */
+	@Override
 	public boolean b() {
 		// lookat stuff
-		doLookAt= (this.creature.an().nextFloat() >= this.chance);
+		doLookAt = (creature.an().nextFloat() >= chance);
 		// move stuff
-		return trueDebugMsg("testing navigation") && (!this.creature.al().e()) && //
-				trueDebugMsg("testing alive") && this.target.isAlive() && //
-				trueDebugMsg("testing distance") && this.creature.j(this.target) < this.squaredActiveDistance;
+		return trueDebugMsg("testing navigation") && (!creature.al().e()) && //
+				trueDebugMsg("testing alive") && target.isAlive() && //
+				trueDebugMsg("testing distance") && creature.j(target) < squaredActiveDistance;
 
 	}
-	private boolean trueDebugMsg(String msg)
-	{
-		debugMsg(msg);
-		return true;
-	}
-	private void debugMsg(String msg)
-	{
-		//if(msg.startsWith("run"))
-		//Logger.getLogger("Minecraft").info(msg);
-	}
+
 	/**
 	 * Before adding it
 	 * if a() true and (?:goalSelector.a(PathfinderGoalSelectorItem)) should be executed, then do this before adding it
 	 */
+	@Override
 	public void c() {
-		debugMsg("gonna add it ! "+((CraftPlayer)this.target.getBukkitEntity()).getDisplayName());
-		this.creature.al().a(this.x, this.y, this.z, this.speed);
+		debugMsg("gonna add it ! " + ((CraftPlayer) target.getBukkitEntity()).getDisplayName());
+		creature.al().a(x, y, z, speed);
 	}
 
 	/**
 	 * Before stop doing this
 	 * if b() false and (?:goalSelector.a(PathfinderGoalSelectorItem)) should be executed, then do this before removing it
 	 */
+	@Override
 	public void d() {
 		debugMsg("gonna delete it");
-		this.target = null;
+		target = null;
+	}
+
+	private void debugMsg(final String msg) {
+		// if(msg.startsWith("run"))
+		// Logger.getLogger("Minecraft").info(msg);
 	}
 
 	/**
 	 * Do the action
 	 */
+	@Override
 	public void e() {
-		
-		if(doLookAt)
-		{
+
+		if (doLookAt) {
 			debugMsg("run + lookAt");
-			this.creature.getControllerLook().a(this.target.locX, this.target.locY + this.target.getHeadHeight(), this.target.locZ, 10.0F, this.creature.D());
-		}
-		else debugMsg("run - lookAt");
+			creature.getControllerLook().a(target.locX, target.locY + target.getHeadHeight(), target.locZ, 10.0F, creature.D());
+		} else
+			debugMsg("run - lookAt");
+	}
+
+	private boolean trueDebugMsg(final String msg) {
+		debugMsg(msg);
+		return true;
 	}
 }

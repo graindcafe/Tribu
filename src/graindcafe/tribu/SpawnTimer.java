@@ -36,13 +36,13 @@ package graindcafe.tribu;
 
 public class SpawnTimer implements Runnable {
 
-	private Tribu plugin;
-	private int taskID;
+	private final Tribu	plugin;
+	private int			taskID;
 
 	// ?? maxSpawn ?
 	// private int totalSpawn;
 
-	SpawnTimer(Tribu instance) {
+	SpawnTimer(final Tribu instance) {
 		plugin = instance;
 		taskID = -1;
 	}
@@ -68,17 +68,15 @@ public class SpawnTimer implements Runnable {
 	@Override
 	public void run() {
 		if (plugin.isRunning() && plugin.getAliveCount() > 0 && !plugin.getSpawner().isWaveCompleted()) {
-			if (!plugin.getSpawner().spawnZombie())
-				plugin.getSpawner().checkZombies();
+			if (!plugin.getSpawner().spawnZombie()) plugin.getSpawner().checkZombies();
 		} else {
 			plugin.getSpawner().finishCallback();
-			if (plugin.getSpawner().tryStartNextWave())
-				stop();
+			if (plugin.getSpawner().tryStartNextWave()) stop();
 		}
 
 	}
 
-	public void StartWave(int max, int health,int timeToSpawn) {
+	public void StartWave(final int max, final int health, final int timeToSpawn) {
 		if (plugin.isRunning()) {
 			plugin.getSpawner().setMaxSpawn(max);
 			plugin.getSpawner().resetTotal();
@@ -86,11 +84,11 @@ public class SpawnTimer implements Runnable {
 			taskID = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, this, 0, timeToSpawn);
 		}
 	}/*
-	 * public void StartWave(int total, int max, int health) { if
-	 * (plugin.isRunning()) { totalSpawn = total;
-	 * plugin.getSpawner().setMaxSpawn(max); plugin.getSpawner().resetTotal();
-	 * plugin.getSpawner().setHealth(health); Start(); } }
-	 */
+		* public void StartWave(int total, int max, int health) { if
+		* (plugin.isRunning()) { totalSpawn = total;
+		* plugin.getSpawner().setMaxSpawn(max); plugin.getSpawner().resetTotal();
+		* plugin.getSpawner().setHealth(health); Start(); } }
+		*/
 
 	public void stop() {
 		if (taskID > 0) {

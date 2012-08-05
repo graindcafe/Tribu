@@ -44,15 +44,15 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class LevelSelector implements Runnable {
-	private Tribu plugin;
-	private String randomLevel1;
-	private String randomLevel2;
-	private Random rnd;
-	private int taskID;
-	private HashMap<Player, Integer> votes;
-	private boolean votingEnabled;
+	private final Tribu						plugin;
+	private String							randomLevel1;
+	private String							randomLevel2;
+	private final Random					rnd;
+	private int								taskID;
+	private final HashMap<Player, Integer>	votes;
+	private boolean							votingEnabled;
 
-	public LevelSelector(Tribu instance) {
+	public LevelSelector(final Tribu instance) {
 		plugin = instance;
 		taskID = -1;
 		rnd = new Random();
@@ -61,48 +61,33 @@ public class LevelSelector implements Runnable {
 	}
 
 	public void cancelVote() {
-		if (taskID >= 0) {
-			plugin.getServer().getScheduler().cancelTask(taskID);
-		}
-		votingEnabled=false;
+		if (taskID >= 0) plugin.getServer().getScheduler().cancelTask(taskID);
+		votingEnabled = false;
 	}
-	public void removeVote(Player p)
-	{
-		if(votingEnabled)
-		{
-			votes.remove(p);
-			if (votes.size() == plugin.getPlayersCount()) {
-				cancelVote();
-				run();
-			}
-		}
-	}
-	public void castVote(Player player, int v) {
+
+	public void castVote(final Player player, final int v) {
 		if (votingEnabled && plugin.isPlaying(player)) {
 
 			if (v > 2 || v < 1) {
-				Tribu.messagePlayer(player,plugin.getLocale("Message.InvalidVote"));
+				Tribu.messagePlayer(player, plugin.getLocale("Message.InvalidVote"));
 				return;
 			}
 
 			votes.put(player, v);
-			Tribu.messagePlayer(player,plugin.getLocale("Message.ThankyouForYourVote"));
+			Tribu.messagePlayer(player, plugin.getLocale("Message.ThankyouForYourVote"));
 			// if all players have voted
 			if (votes.size() == plugin.getPlayersCount()) {
 				cancelVote();
 				run();
 			}
-		} else {
-			Tribu.messagePlayer(player,plugin.getLocale("Message.YouCannotVoteAtThisTime"));
-		}
+		} else
+			Tribu.messagePlayer(player, plugin.getLocale("Message.YouCannotVoteAtThisTime"));
 	}
 
-	public void ChangeLevel(String name, Player player) {
-		if (plugin.getLevel() != null) {
-			if (plugin.getLevel().getName().equalsIgnoreCase(name)) {
-				Tribu.messagePlayer(player, String.format(plugin.getLocale("Message.LevelIsAlreadyTheCurrentLevel"), name));
-				return;
-			}
+	public void ChangeLevel(final String name, final Player player) {
+		if (plugin.getLevel() != null) if (plugin.getLevel().getName().equalsIgnoreCase(name)) {
+			Tribu.messagePlayer(player, String.format(plugin.getLocale("Message.LevelIsAlreadyTheCurrentLevel"), name));
+			return;
 		}
 
 		cancelVote();
@@ -112,49 +97,50 @@ public class LevelSelector implements Runnable {
 			plugin.stopRunning(true);
 		}
 
-
-		TribuLevel temp = plugin.getLevelLoader().loadLevelIgnoreCase(name);
+		final TribuLevel temp = plugin.getLevelLoader().loadLevelIgnoreCase(name);
 
 		if (!plugin.getLevelLoader().saveLevel(plugin.getLevel())) {
-			if (player != null) {
-				Tribu.messagePlayer(player,plugin.getLocale("Message.UnableToSaveLevel"));
-			} else {
+			if (player != null)
+				Tribu.messagePlayer(player, plugin.getLocale("Message.UnableToSaveLevel"));
+			else
 				plugin.LogWarning(ChatColor.stripColor(plugin.getLocale("Message.UnableToSaveLevel")));
-			}
 			return;
 		}
 
 		if (temp == null) {
-			if (player != null) {
-				Tribu.messagePlayer(player,plugin.getLocale("Message.UnableToLoadLevel"));
-			} else {
+			if (player != null)
+				Tribu.messagePlayer(player, plugin.getLocale("Message.UnableToLoadLevel"));
+			else
 				plugin.LogWarning(ChatColor.stripColor(plugin.getLocale("Message.UnableToLoadLevel")));
-			}
 			return;
-		} else {
-			if (player != null) {
-				Tribu.messagePlayer(player,plugin.getLocale("Message.LevelLoadedSuccessfully"));
-			} else {
-				plugin.LogInfo(ChatColor.stripColor(plugin.getLocale("Message.LevelLoadedSuccessfully")));
-			}
-		}
+		} else if (player != null)
+			Tribu.messagePlayer(player, plugin.getLocale("Message.LevelLoadedSuccessfully"));
+		else
+			plugin.LogInfo(ChatColor.stripColor(plugin.getLocale("Message.LevelLoadedSuccessfully")));
 
 		plugin.setLevel(temp);
-		if (restart) {
-			plugin.startRunning();
-		}
+		if (restart) plugin.startRunning();
 
+	}
+
+	public void removeVote(final Player p) {
+		if (votingEnabled) {
+			votes.remove(p);
+			if (votes.size() == plugin.getPlayersCount()) {
+				cancelVote();
+				run();
+			}
+		}
 	}
 
 	@Override
 	public void run() {
 		taskID = -1;
 		votingEnabled = false;
-		int[] voteCounts = new int[2];
-		Collection<Integer> nums = votes.values();
-		for (int vote : nums) {
+		final int[] voteCounts = new int[2];
+		final Collection<Integer> nums = votes.values();
+		for (final int vote : nums)
 			voteCounts[vote - 1]++;
-		}
 		votes.clear();
 		if (voteCounts[0] >= voteCounts[1]) {
 			ChangeLevel(randomLevel1, null);
@@ -166,8 +152,8 @@ public class LevelSelector implements Runnable {
 		plugin.startRunning();
 	}
 
-	public void startVote(int duration) {
-		String[] levels = plugin.getLevelLoader().getLevelList().toArray(new String[0]);
+	public void startVote(final int duration) {
+		final String[] levels = plugin.getLevelLoader().getLevelList().toArray(new String[0]);
 
 		if (levels.length < 2) { // Skip voting since there's only one option
 			plugin.startRunning();
@@ -176,17 +162,16 @@ public class LevelSelector implements Runnable {
 		taskID = plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, this, duration);
 		votingEnabled = true;
 
-		do {
+		do
 			randomLevel1 = levels[rnd.nextInt(levels.length)];
-		} while (randomLevel1 == plugin.getLevel().getName());
+		while (randomLevel1 == plugin.getLevel().getName());
 
-		if (levels.length >= 3) {
-			do {
+		if (levels.length >= 3)
+			do
 				randomLevel2 = levels[rnd.nextInt(levels.length)];
-			} while (randomLevel2 == plugin.getLevel().getName() || randomLevel2 == randomLevel1);
-		} else {
+			while (randomLevel2 == plugin.getLevel().getName() || randomLevel2 == randomLevel1);
+		else
 			randomLevel2 = plugin.getLevel().getName();
-		}
 		plugin.messagePlayers(plugin.getLocale("Broadcast.MapVoteStarting"));
 		plugin.messagePlayers(plugin.getLocale("Broadcast.Type"));
 		plugin.messagePlayers(String.format(plugin.getLocale("Broadcast.SlashVoteForMap"), '1', randomLevel1));

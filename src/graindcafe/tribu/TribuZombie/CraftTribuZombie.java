@@ -4,14 +4,13 @@
 
 package graindcafe.tribu.TribuZombie;
 
+import graindcafe.tribu.Tribu;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
-
-import graindcafe.tribu.Tribu;
-import net.minecraft.server.WorldServer;
 
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.CraftServer;
@@ -23,141 +22,132 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 
-
 public class CraftTribuZombie extends CraftZombie implements Zombie {
-	private HashMap<Player, Integer> playerDamage;
-	private Integer maxAccrued,total,maxDamage;
-	private Player bestAttacker;
-    public CraftTribuZombie(CraftServer server, EntityTribuZombie entity) {
-        super(server, entity);
-        playerDamage=new HashMap<Player,Integer>();
-        maxAccrued=0;
-        total=0;
-        maxDamage=0;
-    }
-    
+	public static Entity spawn(final Tribu plugin, final Location pos) throws CannotSpawnException {
+		if (!pos.getChunk().isLoaded()) pos.getChunk().load();
 
-    @Override
-    public EntityTribuZombie getHandle() {
-        return (EntityTribuZombie) entity;
-    }
+		final EntityTribuZombie tz = EntityTribuZombie.spawn(plugin, ((CraftWorld) pos.getWorld()).getHandle(), pos.getX(), pos.getY(), pos.getZ());
+		if (tz == null)
+			return null;
+		else
+			return tz.getBukkitEntity();
+	}
 
-    @Override
-    public String toString() {
-        return "CraftTribuZombie";
-    }
-    public void setNoAttacker()
-    {
-    	playerDamage.clear();
-    	bestAttacker=null;
-    	this.setTarget(null);
-    }
-    @Override
-    public void setTarget(LivingEntity target)
-    {
-    	Logger.getLogger("Minecraft").info("Fuck you, you and your "+target);
-    }
-    
-    public void setBestAttacker(Player p)
-    {
-    	bestAttacker=p;
-    }
-    public void setMaxAttack(int m)
-    {
-    	this.maxAccrued=m;
-    }
-    public void setTotalAttack(int t)
-    {
-    	this.total=t;
-    }
-    public void setMaxAccruedAttack(int accrued)
-    {
-    	this.maxAccrued=accrued;
-    }
-    public void addAttack(Player p, int damage)
-    {
-    	if(maxDamage<damage)
-    		maxDamage=damage;
-    	Integer i;
-    	if(this.playerDamage.containsKey(p))
-    	{
-    		
-    		i=this.playerDamage.get(p);
-    		i+=damage;
-    	}
-    	else
-    	{
-    		i=new Integer(damage);
-    		this.playerDamage.put(p, i);
-    	}
-    	if(maxAccrued<i)
-    	{
-    		maxAccrued=i;
-    		bestAttacker=p;
-    	}
-    	total+=damage;
-    }
-    public Player getFirstAttacker()
-    {
-    	if(this.playerDamage.isEmpty())
-    		return null;
-    	return this.playerDamage.keySet().iterator().next();
-    }
-    public Player getLastAttacker()
-    {
-    	if(this.playerDamage.isEmpty())
-    		return null;
-    	Iterator<Player> i=this.playerDamage.keySet().iterator();
-    	
-    	Player beforeLast=i.next();
-    	Player p;
-    	do
-    		p=i.next();
-    	while(p!=null);
-    	return beforeLast;
-    	
-    }
-    public Map<Player,Float> getAttackersPercentage()
-    {
-    	HashMap<Player,Float> r=new HashMap<Player,Float>();
-    	
-    	for(Entry<Player,Integer> e : playerDamage.entrySet())
-    	{
-    		r.put(e.getKey(),  ( (float)e.getValue())/ ((float)total));
-    	}
-    	
-    	return r;
-    }
-    public Player getBestAttacker()
-    {
-    	/*
-    	LinkedList<Integer> list = new LinkedList<Integer>();
-    	list.addAll(playerDamage.values());
-    	Collections.sort(list, Collections.reverseOrder());
-    	Player p=null;
-    	Integer max=list.get(0);
-    	for(Entry<Player,Integer> e : playerDamage.entrySet())
-    	{
-    		if(e.getValue().equals(max))
-    		{
-    			p=e.getKey();
-    			break;
-    		}
-    	}
-    	return p;*/
-    	return bestAttacker;
-    }
-    public EntityType getType() {
-        return EntityType.ZOMBIE;
-    }
-    public static Entity spawn(Tribu plugin, Location pos) throws CannotSpawnException {
-    	if(!pos.getChunk().isLoaded())
-    		pos.getChunk().load();
-    			
-    	EntityTribuZombie tz=EntityTribuZombie.spawn(plugin, (WorldServer) ((CraftWorld)pos.getWorld()).getHandle(), pos.getX(), pos.getY(), pos.getZ());
-    	if(tz==null)
-    		return null;
-    	else
-    		return tz.getBukkitEntity();
+	private final HashMap<Player, Integer>	playerDamage;
+	private Integer							maxAccrued, total, maxDamage;
+	private Player							bestAttacker;
+
+	public CraftTribuZombie(final CraftServer server, final EntityTribuZombie entity) {
+		super(server, entity);
+		playerDamage = new HashMap<Player, Integer>();
+		maxAccrued = 0;
+		total = 0;
+		maxDamage = 0;
+	}
+
+	public void addAttack(final Player p, final int damage) {
+		if (maxDamage < damage) maxDamage = damage;
+		Integer i;
+		if (playerDamage.containsKey(p)) {
+
+			i = playerDamage.get(p);
+			i += damage;
+		} else {
+			i = new Integer(damage);
+			playerDamage.put(p, i);
+		}
+		if (maxAccrued < i) {
+			maxAccrued = i;
+			bestAttacker = p;
+		}
+		total += damage;
+	}
+
+	public Map<Player, Float> getAttackersPercentage() {
+		final HashMap<Player, Float> r = new HashMap<Player, Float>();
+
+		for (final Entry<Player, Integer> e : playerDamage.entrySet())
+			r.put(e.getKey(), ((float) e.getValue()) / ((float) total));
+
+		return r;
+	}
+
+	public Player getBestAttacker() {
+		/*
+		LinkedList<Integer> list = new LinkedList<Integer>();
+		list.addAll(playerDamage.values());
+		Collections.sort(list, Collections.reverseOrder());
+		Player p=null;
+		Integer max=list.get(0);
+		for(Entry<Player,Integer> e : playerDamage.entrySet())
+		{
+			if(e.getValue().equals(max))
+			{
+				p=e.getKey();
+				break;
+			}
+		}
+		return p;*/
+		return bestAttacker;
+	}
+
+	public Player getFirstAttacker() {
+		if (playerDamage.isEmpty()) return null;
+		return playerDamage.keySet().iterator().next();
+	}
+
+	@Override
+	public EntityTribuZombie getHandle() {
+		return (EntityTribuZombie) entity;
+	}
+
+	public Player getLastAttacker() {
+		if (playerDamage.isEmpty()) return null;
+		final Iterator<Player> i = playerDamage.keySet().iterator();
+
+		final Player beforeLast = i.next();
+		Player p;
+		do
+			p = i.next();
+		while (p != null);
+		return beforeLast;
+
+	}
+
+	@Override
+	public EntityType getType() {
+		return EntityType.ZOMBIE;
+	}
+
+	public void setBestAttacker(final Player p) {
+		bestAttacker = p;
+	}
+
+	public void setMaxAccruedAttack(final int accrued) {
+		maxAccrued = accrued;
+	}
+
+	public void setMaxAttack(final int m) {
+		maxAccrued = m;
+	}
+
+	public void setNoAttacker() {
+		playerDamage.clear();
+		bestAttacker = null;
+		setTarget(null);
+	}
+
+	@Override
+	public void setTarget(final LivingEntity target) {
+		Logger.getLogger("Minecraft").info("Fuck you, you and your " + target);
+	}
+
+	public void setTotalAttack(final int t) {
+		total = t;
+	}
+
+	@Override
+	public String toString() {
+		return "CraftTribuZombie";
 	}
 }

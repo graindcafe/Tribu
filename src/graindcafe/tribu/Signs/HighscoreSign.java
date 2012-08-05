@@ -41,11 +41,11 @@ import org.bukkit.event.Event;
 
 public abstract class HighscoreSign extends TribuSign {
 
-	public HighscoreSign(Tribu plugin) {
+	public HighscoreSign(final Tribu plugin) {
 		super(plugin);
 	}
 
-	public HighscoreSign(Tribu plugin, Location pos) {
+	public HighscoreSign(final Tribu plugin, final Location pos) {
 		super(plugin, pos);
 
 	}
@@ -56,14 +56,14 @@ public abstract class HighscoreSign extends TribuSign {
 	}
 
 	@Override
-	public boolean isUsedEvent(Event e) {
+	public boolean isUsedEvent(final Event e) {
 		return true;
 	}
 
 	public abstract void raiseEvent();
 
 	@Override
-	public void raiseEvent(Event e) {
+	public void raiseEvent(final Event e) {
 		raiseEvent();
 	}
 }

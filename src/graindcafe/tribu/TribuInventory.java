@@ -39,26 +39,25 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class TribuInventory {
-	private ItemStack[] armor = new ItemStack[4];
-	private ItemStack[] inventory = new ItemStack[36];
-	private Player p;
+	private ItemStack[]		armor		= new ItemStack[4];
+	private ItemStack[]		inventory	= new ItemStack[36];
+	private final Player	p;
 
-	public TribuInventory(Player p) {
+	public TribuInventory(final Player p) {
 		this.p = p;
 	}
 
-	public TribuInventory(Player p, boolean captureNow) {
+	public TribuInventory(final Player p, final boolean captureNow) {
 		this.p = p;
-		if (captureNow)
-			capture();
+		if (captureNow) capture();
 	}
 
-	public TribuInventory(Player p, ItemStack[] items) {
+	public TribuInventory(final Player p, final ItemStack[] items) {
 		this.p = p;
 		add(items);
 	}
 
-	public void add(ItemStack[] items) {
+	public void add(final ItemStack[] items) {
 		if (items.length > 36) {
 			// We have a big problem...
 			// TODO:
@@ -69,7 +68,7 @@ public class TribuInventory {
 			}
 		} else {
 			byte i = 0;
-			for (ItemStack item : items) {
+			for (final ItemStack item : items) {
 				inventory[i] = item;
 				i++;
 			}
@@ -84,10 +83,10 @@ public class TribuInventory {
 		p.getInventory().setArmorContents(null);
 	}
 
-	public void drop(Location dropPlace) {
-		for (ItemStack item : inventory)
+	public void drop(final Location dropPlace) {
+		for (final ItemStack item : inventory)
 			dropPlace.getWorld().dropItem(dropPlace, item);
-		for (ItemStack item : armor)
+		for (final ItemStack item : armor)
 			dropPlace.getWorld().dropItem(dropPlace, item);
 	}
 
@@ -105,13 +104,11 @@ public class TribuInventory {
 	public String toString() {
 		String r;
 		r = "Inventory :\n";
-		for (ItemStack item : inventory) {
+		for (final ItemStack item : inventory)
 			r += item.getType() + "x" + item.getAmount();
-		}
 		r = "Armor :\n";
-		for (ItemStack item : armor) {
+		for (final ItemStack item : armor)
 			r += item.getType() + "(" + item.getDurability() + ")";
-		}
 		return r;
 
 	}

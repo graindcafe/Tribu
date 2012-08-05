@@ -50,74 +50,58 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 
 public class TribuBlockListener implements Listener {
-	private Tribu plugin;
+	private final Tribu	plugin;
 
-	public TribuBlockListener(Tribu instance) {
+	public TribuBlockListener(final Tribu instance) {
 		plugin = instance;
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
-	public void onBlockBreak(BlockBreakEvent event) {
-		if (!event.isCancelled())
-			if (TribuSign.isIt(plugin, event.getBlock())) {
-				if (event.getPlayer().hasPermission("tribu.signs.break")) {
-					plugin.getLevel().removeSign(event.getBlock().getLocation());
-				} else {
-					if (event.getPlayer() != null)
-						Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.ProtectedBlock"));
-					TribuSign.update((Sign) event.getBlock().getState());
-					event.setCancelled(true);
-				}
-			} else if (plugin.isRunning() && plugin.isPlaying(event.getPlayer())
-					&& !(event.getPlayer().hasPermission("tribu.super.break") || plugin.config().PlayersAllowBreak)) {
+	public void onBlockBreak(final BlockBreakEvent event) {
+		if (!event.isCancelled()) if (TribuSign.isIt(plugin, event.getBlock())) {
+			if (event.getPlayer().hasPermission("tribu.signs.break"))
+				plugin.getLevel().removeSign(event.getBlock().getLocation());
+			else {
+				if (event.getPlayer() != null) Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.ProtectedBlock"));
+				TribuSign.update((Sign) event.getBlock().getState());
 				event.setCancelled(true);
 			}
+		} else if (plugin.isRunning() && plugin.isPlaying(event.getPlayer()) && !(event.getPlayer().hasPermission("tribu.super.break") || plugin.config().PlayersAllowBreak)) event.setCancelled(true);
 	}
 
 	@EventHandler
-	public void onBlockPlace(BlockPlaceEvent event) {
-		if (!event.isCancelled())
-			if (plugin.isRunning() && plugin.isPlaying(event.getPlayer())
-					&& !(event.getPlayer().hasPermission("tribu.super.place") || plugin.config().PlayersAllowPlace)) {
-				event.setCancelled(true);
-			}
+	public void onBlockPlace(final BlockPlaceEvent event) {
+		if (!event.isCancelled()) if (plugin.isRunning() && plugin.isPlaying(event.getPlayer()) && !(event.getPlayer().hasPermission("tribu.super.place") || plugin.config().PlayersAllowPlace)) event.setCancelled(true);
 	}
 
 	@EventHandler
-	public void onBlockRedstoneChange(BlockRedstoneEvent event) {
-		if (plugin.isRunning()) {
-			// plugin.getBlockTrace().pushRedstoneChanged(event.getBlock());
-			if (plugin.getLevel() != null)
-				plugin.getLevel().onRedstoneChange(event);
-		}
+	public void onBlockRedstoneChange(final BlockRedstoneEvent event) {
+		if (plugin.isRunning()) // plugin.getBlockTrace().pushRedstoneChanged(event.getBlock());
+			if (plugin.getLevel() != null) plugin.getLevel().onRedstoneChange(event);
 	}
 
 	@EventHandler
-	public void onSignChange(SignChangeEvent event) {
-		if (TribuSign.isIt(plugin, event.getLines())) {
-			if (event.getPlayer().hasPermission("tribu.signs.place")) {
-				TribuSign sign = TribuSign.getObject(plugin, event.getBlock().getLocation(), event.getLines());
-				if (sign != null)
-					if (plugin.getLevel() != null) {
-						if (plugin.getLevel().addSign(sign))
-							Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.TribuSignAdded"));
-					} else {
-						Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.NoLevelLoaded"));
-						Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.NoLevelLoaded2"));
-						event.getBlock().setTypeId(0);
-						event.getBlock().getLocation().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(Material.SIGN, 1));
-						event.setCancelled(true);
-					}
+	public void onSignChange(final SignChangeEvent event) {
+		if (TribuSign.isIt(plugin, event.getLines())) if (event.getPlayer().hasPermission("tribu.signs.place")) {
+			final TribuSign sign = TribuSign.getObject(plugin, event.getBlock().getLocation(), event.getLines());
+			if (sign != null) if (plugin.getLevel() != null) {
+				if (plugin.getLevel().addSign(sign)) Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.TribuSignAdded"));
 			} else {
-				Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.CannotPlaceASpecialSign"));
+				Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.NoLevelLoaded"));
+				Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.NoLevelLoaded2"));
 				event.getBlock().setTypeId(0);
 				event.getBlock().getLocation().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(Material.SIGN, 1));
 				event.setCancelled(true);
 			}
+		} else {
+			Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.CannotPlaceASpecialSign"));
+			event.getBlock().setTypeId(0);
+			event.getBlock().getLocation().getWorld().dropItem(event.getBlock().getLocation(), new ItemStack(Material.SIGN, 1));
+			event.setCancelled(true);
 		}
 	}
 
-	public void registerEvents(PluginManager pm) {
+	public void registerEvents(final PluginManager pm) {
 		pm.registerEvents(this, plugin);
 	}
 }

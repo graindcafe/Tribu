@@ -42,21 +42,25 @@ import org.bukkit.event.block.BlockRedstoneEvent;
 
 public class SpawnControlSign extends TribuSign {
 
-	String ZombieSpawn;
+	String	ZombieSpawn;
 
-	public SpawnControlSign(Tribu plugin) {
+	public SpawnControlSign(final Tribu plugin) {
 		super(plugin);
 	}
 
-	public SpawnControlSign(Tribu plugin, Location pos, String[] Lines) {
+	public SpawnControlSign(final Tribu plugin, final Location pos, final String[] Lines) {
 		super(plugin, pos);
 		ZombieSpawn = Lines[1];
 	}
 
 	@Override
+	public void finish() {
+	}
+
+	@Override
 	protected String[] getSpecificLines() {
-		String[] lines = new String[4];
-		lines[0]=lines[1]=lines[2]=lines[3]="";
+		final String[] lines = new String[4];
+		lines[0] = lines[1] = lines[2] = lines[3] = "";
 		lines[1] = ZombieSpawn;
 		return lines;
 	}
@@ -67,26 +71,19 @@ public class SpawnControlSign extends TribuSign {
 	}
 
 	@Override
-	public boolean isUsedEvent(Event e) {
+	public boolean isUsedEvent(final Event e) {
 		return e instanceof BlockRedstoneEvent;
 	}
 
 	public void raiseEvent() {
-		if (pos.getBlock().isBlockPowered()) {
+		if (pos.getBlock().isBlockPowered())
 			plugin.getLevel().activateZombieSpawn(ZombieSpawn);
-
-		} else {
+		else
 			plugin.getLevel().deactivateZombieSpawn(ZombieSpawn);
-
-		}
 	}
 
 	@Override
-	public void raiseEvent(Event e) {
+	public void raiseEvent(final Event e) {
 		raiseEvent();
-	}
-
-	@Override
-	public void finish() {		
 	}
 }

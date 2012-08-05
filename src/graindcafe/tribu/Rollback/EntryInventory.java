@@ -13,34 +13,32 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.inventory.InventoryHolder;
 
 public class EntryInventory extends EntryBlockState {
-	CraftItemStack[] items;
+	CraftItemStack[]	items;
 
-	public EntryInventory(BlockState inventoryHolder) throws WrongBlockException {
+	public EntryInventory(final BlockState inventoryHolder) throws WrongBlockException {
 		super(inventoryHolder);
-		
+
 		if (inventoryHolder instanceof InventoryHolder) {
-			InventoryHolder inventory = (InventoryHolder) inventoryHolder;
-			org.bukkit.inventory.ItemStack[] bItems = inventory.getInventory().getContents();
-			this.items = new CraftItemStack[bItems.length];
+			final InventoryHolder inventory = (InventoryHolder) inventoryHolder;
+			final org.bukkit.inventory.ItemStack[] bItems = inventory.getInventory().getContents();
+			items = new CraftItemStack[bItems.length];
 			for (int i = 0; i < bItems.length; i++)
-				if (bItems[i] != null)
-					this.items[i] = new CraftItemStack(bItems[i]);
+				if (bItems[i] != null) items[i] = new CraftItemStack(bItems[i]);
 		} else
 			throw new WrongBlockException(Block.CHEST.id, world.getTypeId(x, y, z), x, y, z, world.getWorld());
 	}
-	private void fillContainer(IInventory inventory)
-	{
+
+	private void fillContainer(final IInventory inventory) {
 		int max;
-		if(inventory.getSize()<items.length)
-		{
+		if (inventory.getSize() < items.length) {
 			ChunkMemory.debugMsg("Container is too short !");
-			max=inventory.getSize();
-		}else
-			max=items.length;
-		for (int i = 0; i < max ; i++)
-			if(items[i]!=null)
-				inventory.setItem(i, items[i].getHandle());
+			max = inventory.getSize();
+		} else
+			max = items.length;
+		for (int i = 0; i < max; i++)
+			if (items[i] != null) inventory.setItem(i, items[i].getHandle());
 	}
+
 	@Override
 	public void restore() throws WrongBlockException {
 		Validate.notNull(world, "World is null");
@@ -48,7 +46,7 @@ public class EntryInventory extends EntryBlockState {
 		IInventory inventory = ((IInventory) world.getTileEntity(x, y, z));
 		if (inventory == null) {
 			ChunkMemory.debugMsg("Null inventory tile entity");
-			int typeId = world.getTypeId(x, y, z);
+			final int typeId = world.getTypeId(x, y, z);
 			if (typeId == Block.CHEST.id)
 				inventory = new TileEntityChest();
 			else if (typeId == Block.FURNACE.id)
@@ -56,9 +54,8 @@ public class EntryInventory extends EntryBlockState {
 			else if (typeId == Block.DISPENSER.id)
 				inventory = new TileEntityDispenser();
 			else
-				throw new WrongBlockException(Block.CHEST.id,world.getTypeId(x,y,z),x,y,z,world.getWorld());
-			if (typeId == Block.CHEST.id)
-				((TileEntityChest) inventory).i();
+				throw new WrongBlockException(Block.CHEST.id, world.getTypeId(x, y, z), x, y, z, world.getWorld());
+			if (typeId == Block.CHEST.id) ((TileEntityChest) inventory).i();
 			fillContainer(inventory);
 			world.setTileEntity(x, y, z, (TileEntity) inventory);
 		} else

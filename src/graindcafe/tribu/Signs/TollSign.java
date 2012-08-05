@@ -34,10 +34,10 @@
  ******************************************************************************/
 package graindcafe.tribu.Signs;
 
-import java.util.LinkedList;
-
 import graindcafe.tribu.PlayerStats;
 import graindcafe.tribu.Tribu;
+
+import java.util.LinkedList;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -50,22 +50,31 @@ import org.bukkit.material.Door;
 
 public class TollSign extends TribuSign {
 
-	private int cost;
+	private final int					cost;
 	// private boolean clicked = false;
-	private Block linkedButton;
-	private LinkedList<Player> allowedPlayer;
-	private Player lastPlayerTry;
-	private boolean preventSpam = false;
+	private Block						linkedButton;
+	private final LinkedList<Player>	allowedPlayer;
+	private Player						lastPlayerTry;
+	private boolean						preventSpam	= false;
 
-	public TollSign(Tribu plugin, Location pos, String[] lines) {
+	public TollSign(final Tribu plugin, final Location pos, final String[] lines) {
 		super(plugin, pos);
 		cost = TribuSign.parseInt(lines[1]);
-		this.allowedPlayer = new LinkedList<Player>();
+		allowedPlayer = new LinkedList<Player>();
+	}
+
+	@Override
+	public void finish() {
+		if (allowedPlayer != null) allowedPlayer.clear();
+	}
+
+	public LinkedList<Player> getAllowedPlayer() {
+		return allowedPlayer;
 	}
 
 	@Override
 	protected String[] getSpecificLines() {
-		String[] lines = new String[4];
+		final String[] lines = new String[4];
 		lines[0] = "";
 		lines[1] = String.valueOf(cost);
 		lines[2] = "";
@@ -76,70 +85,53 @@ public class TollSign extends TribuSign {
 	@Override
 	public void init() {
 		Block current;
-		BlockFace[] firstFaces = new BlockFace[] { BlockFace.SELF, BlockFace.UP, BlockFace.DOWN };
-		BlockFace[] secondFaces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST };
-		for (BlockFace bf : firstFaces) {
+		final BlockFace[] firstFaces = new BlockFace[] { BlockFace.SELF, BlockFace.UP, BlockFace.DOWN };
+		final BlockFace[] secondFaces = new BlockFace[] { BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST };
+		for (final BlockFace bf : firstFaces) {
 			current = pos.getBlock().getRelative(bf);
-			for (BlockFace bf2 : secondFaces) {
+			for (final BlockFace bf2 : secondFaces)
 				// if it's a clickable block
-				if (current.getRelative(bf2).getType() == Material.LEVER || current.getRelative(bf2).getType() == Material.STONE_BUTTON
-						|| current.getRelative(bf2).getType() == Material.STONE_PLATE || current.getRelative(bf2).getType() == Material.WOOD_PLATE
-						|| current.getRelative(bf2).getType() == Material.WOODEN_DOOR || current.getRelative(bf2).getType() == Material.TRAP_DOOR) {
+				if (current.getRelative(bf2).getType() == Material.LEVER || current.getRelative(bf2).getType() == Material.STONE_BUTTON || current.getRelative(bf2).getType() == Material.STONE_PLATE
+						|| current.getRelative(bf2).getType() == Material.WOOD_PLATE || current.getRelative(bf2).getType() == Material.WOODEN_DOOR || current.getRelative(bf2).getType() == Material.TRAP_DOOR) {
 					linkedButton = current.getRelative(bf2);
 					preventSpam = linkedButton.getType() == Material.STONE_PLATE || linkedButton.getType() == Material.WOOD_PLATE;
 					return;
 				}
-			}
 		}
 
 	}
 
 	@Override
-	public boolean isUsedEvent(Event e) {
+	public boolean isUsedEvent(final Event e) {
 		return e instanceof PlayerInteractEvent;
 	}
 
 	@Override
-	public void raiseEvent(Event ev) {
-		PlayerInteractEvent e = (PlayerInteractEvent) ev;
+	public void raiseEvent(final Event ev) {
+		final PlayerInteractEvent e = (PlayerInteractEvent) ev;
 		// Wait for the second event of a button
 
-		if (linkedButton != null) {
-			if (e.getClickedBlock().equals(linkedButton)) {
-				Player p = e.getPlayer();
-				if (!preventSpam || !lastPlayerTry.equals(p)) {
-					PlayerStats stats = plugin.getStats(p);
-					if (!allowedPlayer.contains(p) && !stats.subtractmoney(cost)) {
+		if (linkedButton != null) if (e.getClickedBlock().equals(linkedButton)) {
+			final Player p = e.getPlayer();
+			if (!preventSpam || !lastPlayerTry.equals(p)) {
+				final PlayerStats stats = plugin.getStats(p);
+				if (!allowedPlayer.contains(p) && !stats.subtractmoney(cost)) {
 
-						Tribu.messagePlayer(p, plugin.getLocale("Message.YouDontHaveEnoughMoney"));
-						e.setCancelled(true);
-						if (linkedButton.getType() == Material.WOODEN_DOOR) {
-							Door d = new Door(linkedButton.getData());
-							d.setOpen(!d.isOpen());
-							linkedButton.setData(d.getData());
-						}
-					} else {
-						if (!allowedPlayer.contains(p)) {
-							allowedPlayer.add(p);
-							Tribu.messagePlayer(p,
-									String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));
-						}
+					Tribu.messagePlayer(p, plugin.getLocale("Message.YouDontHaveEnoughMoney"));
+					e.setCancelled(true);
+					if (linkedButton.getType() == Material.WOODEN_DOOR) {
+						final Door d = new Door(linkedButton.getData());
+						d.setOpen(!d.isOpen());
+						linkedButton.setData(d.getData());
 					}
+				} else if (!allowedPlayer.contains(p)) {
+					allowedPlayer.add(p);
+					Tribu.messagePlayer(p, String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));
 				}
-				lastPlayerTry = p;
 			}
+			lastPlayerTry = p;
 		}
 
-	}
-
-	public LinkedList<Player> getAllowedPlayer() {
-		return allowedPlayer;
-	}
-
-	@Override
-	public void finish() {
-		if (this.allowedPlayer != null)
-			this.allowedPlayer.clear();
 	}
 
 }

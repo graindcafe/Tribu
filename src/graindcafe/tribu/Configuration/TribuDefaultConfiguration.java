@@ -42,7 +42,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-
 public class TribuDefaultConfiguration {
 	/*
 	 * Configuration
@@ -50,67 +49,66 @@ public class TribuDefaultConfiguration {
 	/*
 	 * Plugin mode
 	 */
-	public boolean PluginModeServerExclusive=false;
-	public boolean PluginModeWorldExclusive=false;
-	public String PluginModeLanguage="english";
-	public boolean PluginModeAutoStart=false;
-	public String PluginModeDefaultLevel="";
-	public int LevelMinPlayers=1;
+	public boolean				PluginModeServerExclusive	= false;
+	public boolean				PluginModeWorldExclusive	= false;
+	public String				PluginModeLanguage			= "english";
+	public boolean				PluginModeAutoStart			= false;
+	public String				PluginModeDefaultLevel		= "";
+	public int					LevelMinPlayers				= 1;
 	/*
 	 * Level related
 	 */
-	public double LevelClearZone=50d;
-	public boolean LevelJail=true;
-	public double LevelJailRadius=25.0;
-	public int LevelStartDelay=10;
+	public double				LevelClearZone				= 50d;
+	public boolean				LevelJail					= true;
+	public double				LevelJailRadius				= 25.0;
+	public int					LevelStartDelay				= 10;
 	/*
 	 * Wave related
 	 */
-	public boolean WaveStartSetTime=true;
-	public int WaveStartSetTimeTo=37000;
-	public int WaveStartDelay=10;
-	public boolean WaveStartTeleportPlayers=false;
-	public boolean WaveStartHealPlayers=false;
-	public boolean WaveStartFeedPlayers=true;
+	public boolean				WaveStartSetTime			= true;
+	public int					WaveStartSetTimeTo			= 37000;
+	public int					WaveStartDelay				= 10;
+	public boolean				WaveStartTeleportPlayers	= false;
+	public boolean				WaveStartHealPlayers		= false;
+	public boolean				WaveStartFeedPlayers		= true;
 	/*
 	 * Zombies
 	 */
-	public List<Double> ZombiesQuantity=Arrays.asList(0.5, 1.0, 1.0);
-	public List<Double> ZombiesHealth=Arrays.asList(0.5, 4.0);
-	public List<Double> ZombiesDamage=Arrays.asList(4.0);
-	public boolean ZombiesFireResistant=false;
-	public FocusType ZombiesFocus=FocusType.None;
-	public List<Double> ZombiesTimeToSpawn=Arrays.asList(1.0);
-	public boolean ZombiesSpeedRandom = true;
-	public float ZombiesSpeedBase = 1f;
-	public float ZombiesSpeedRush = 1f;
+	public List<Double>			ZombiesQuantity				= Arrays.asList(0.5, 1.0, 1.0);
+	public List<Double>			ZombiesHealth				= Arrays.asList(0.5, 4.0);
+	public List<Double>			ZombiesDamage				= Arrays.asList(4.0);
+	public boolean				ZombiesFireResistant		= false;
+	public FocusType			ZombiesFocus				= FocusType.None;
+	public List<Double>			ZombiesTimeToSpawn			= Arrays.asList(1.0);
+	public boolean				ZombiesSpeedRandom			= true;
+	public float				ZombiesSpeedBase			= 1f;
+	public float				ZombiesSpeedRush			= 1f;
 	/*
 	 * Stats
 	 */
-	public int StatsOnZombieKillMoney=15;
-	public int StatsOnZombieKillPoints=10;
-	public int StatsOnPlayerDeathMoney=10000;
-	public int StatsOnPlayerDeathPoints=50;
-	public String StatsRewardMethod="Best";
-	public boolean StatsRewardOnlyAlive=false;
+	public int					StatsOnZombieKillMoney		= 15;
+	public int					StatsOnZombieKillPoints		= 10;
+	public int					StatsOnPlayerDeathMoney		= 10000;
+	public int					StatsOnPlayerDeathPoints	= 50;
+	public String				StatsRewardMethod			= "Best";
+	public boolean				StatsRewardOnlyAlive		= false;
 	/*
 	 * Players
 	 */
-	public boolean PlayersDontLooseItem = false;
-	public boolean PlayersStoreInventory = false;
-	public boolean PlayersRollback = true;
-	public boolean PlayersAllowBreak = true;
-	public boolean PlayersAllowPlace = true;
+	public boolean				PlayersDontLooseItem		= false;
+	public boolean				PlayersStoreInventory		= false;
+	public boolean				PlayersRollback				= true;
+	public boolean				PlayersAllowBreak			= true;
+	public boolean				PlayersAllowPlace			= true;
 	/* Default Packages */
-	public LinkedList<Package> DefaultPackages=null;
-	
+	public LinkedList<Package>	DefaultPackages				= null;
+
 	/* Advanced : Advanced config are "invisible" but still usable */
-	public int AdvancedRestoringSpeed=85;
-	
-	public Map<String, Object> toMap()
-	{
-		HashMap<String, Object> map = new HashMap<String, Object>() {
-			private static final long serialVersionUID = 1L;
+	public int					AdvancedRestoringSpeed		= 85;
+
+	public Map<String, Object> toMap() {
+		final HashMap<String, Object> map = new HashMap<String, Object>() {
+			private static final long	serialVersionUID	= 1L;
 			{
 				put("PluginMode.WorldExclusive", PluginModeWorldExclusive);
 				put("PluginMode.ServerExclusive", PluginModeServerExclusive);
@@ -133,22 +131,22 @@ public class TribuDefaultConfiguration {
 				put("Zombies.Damage", ZombiesDamage);
 				put("Zombies.FireResistant", ZombiesFireResistant);
 				put("Zombies.Focus", ZombiesFocus);
-				put("Zombies.TimeToSpawn",ZombiesTimeToSpawn);
-				put("Zombies.Speed.Random",ZombiesSpeedRandom);
-				put("Zombies.Speed.Base",ZombiesSpeedBase);
-				put("Zombies.Speed.Rush",ZombiesSpeedRush);
+				put("Zombies.TimeToSpawn", ZombiesTimeToSpawn);
+				put("Zombies.Speed.Random", ZombiesSpeedRandom);
+				put("Zombies.Speed.Base", ZombiesSpeedBase);
+				put("Zombies.Speed.Rush", ZombiesSpeedRush);
 				put("Stats.OnZombieKill.Money", StatsOnZombieKillMoney);
 				put("Stats.OnZombieKill.Points", StatsOnZombieKillPoints);
 				put("Stats.OnPlayerDeath.Money", StatsOnPlayerDeathMoney);
 				put("Stats.OnPlayerDeath.Points", StatsOnPlayerDeathPoints);
-				put("Stats.RewardMethod",StatsRewardMethod);
-				put("Stats.RewardOnlyAlive",StatsRewardOnlyAlive);
+				put("Stats.RewardMethod", StatsRewardMethod);
+				put("Stats.RewardOnlyAlive", StatsRewardOnlyAlive);
 				put("Players.DontLooseItem", PlayersDontLooseItem);
 				put("Players.StoreInventory", PlayersStoreInventory);
 				put("Players.Rollback", PlayersRollback);
 				put("Players.AllowBreak", PlayersAllowBreak);
 				put("Players.AllowPlace", PlayersAllowPlace);
-				//put("Signs.ShopSign.DropItem", true);
+				// put("Signs.ShopSign.DropItem", true);
 				put("DefaultPackages", DefaultPackages);
 			}
 		};

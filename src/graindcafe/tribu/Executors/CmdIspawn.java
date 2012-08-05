@@ -42,17 +42,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CmdIspawn implements CommandExecutor {
-	private Tribu plugin;
+	private final Tribu	plugin;
 
-	public CmdIspawn(Tribu instance) {
+	public CmdIspawn(final Tribu instance) {
 		plugin = instance;
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		if(!sender.hasPermission("tribu.level.ispawn"))
-		{
-			Tribu.messagePlayer(sender,plugin.getLocale("Message.Deny"));
+	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+		if (!sender.hasPermission("tribu.level.ispawn")) {
+			Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
 			return true;
 		}
 
@@ -60,12 +59,12 @@ public class CmdIspawn implements CommandExecutor {
 			plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 			return true;
 		}
-		Player player = (Player) sender;
+		final Player player = (Player) sender;
 
 		// Make sure a level is loaded
 		if (plugin.getLevel() == null) {
-			Tribu.messagePlayer(player,plugin.getLocale("Message.NoLevelLoaded"));
-			Tribu.messagePlayer(player,plugin.getLocale("Message.NoLevelLoaded2"));
+			Tribu.messagePlayer(player, plugin.getLocale("Message.NoLevelLoaded"));
+			Tribu.messagePlayer(player, plugin.getLocale("Message.NoLevelLoaded2"));
 			return true;
 		}
 
@@ -73,14 +72,14 @@ public class CmdIspawn implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("jump")) {
 
 				player.teleport(plugin.getLevel().getInitialSpawn());
-				Tribu.messagePlayer(sender,plugin.getLocale("Message.TeleportedToInitialSpawn"));
+				Tribu.messagePlayer(sender, plugin.getLocale("Message.TeleportedToInitialSpawn"));
 				return true;
 
 			}
 		} else {
 
 			plugin.getLevel().setInitialSpawn(player.getLocation());
-			Tribu.messagePlayer(sender,plugin.getLocale("Message.InitialSpawnSet"));
+			Tribu.messagePlayer(sender, plugin.getLocale("Message.InitialSpawnSet"));
 			return true;
 
 		}

@@ -41,9 +41,6 @@ package graindcafe.tribu.TribuZombie;
 
 import graindcafe.tribu.Tribu;
 import graindcafe.tribu.Configuration.FocusType;
-
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-
 import net.minecraft.server.EntityHuman;
 import net.minecraft.server.EntityVillager;
 import net.minecraft.server.EntityZombie;
@@ -64,129 +61,11 @@ import net.minecraft.server.PathfinderGoalRandomStroll;
 import net.minecraft.server.World;
 import net.minecraft.server.WorldServer;
 
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+
 public class EntityTribuZombie extends EntityZombie {
-	@SuppressWarnings("unused")
-	private Tribu plugin;
-	private boolean fireResistant;
-
-	public EntityTribuZombie(World world) {
-		super(world);
-		this.bukkitEntity = new CraftTribuZombie(world.getServer(), this);
-	}
-
-	private EntityTribuZombie(World world, double d0, double d1, double d2) {
-		this(world);
-		this.setPosition(d0, d1, d2);
-
-	}
-
-	public EntityTribuZombie(Tribu plugin, World world, double d0, double d1, double d2) {
-		this(world, d0, d1, d2);
-		fireResistant = plugin.config().ZombiesFireResistant;
-		this.texture = "/mob/zombie.png";
-		// from 0.85 to 1.18
-		float normalSpeedCoef = ((plugin.config().ZombiesSpeedRandom) ? .1f + (this.an().nextFloat() / 3f) : .25f)
-				+ (plugin.config().ZombiesSpeedBase - .25f);
-		// from 1 to 1.77
-		// .85 * 1.18 = 1 and we'll have normalSpeed * rushSpeed * speed, if
-		// normalSpeed=.85 * rushSpeed=1 = 1
-		float rushSpeedCoef = ((1/normalSpeedCoef) * (((plugin.config().ZombiesSpeedRandom) ? (this.an().nextFloat() / 2f) : .25f) + (plugin.config().ZombiesSpeedRush - .25f)));
-		// Speed: 0.23 normal speed
-		this.bb = 0.23F * normalSpeedCoef;
-		this.damage = plugin.getWaveStarter().getCurrentDamage();
-		// Can break wooden door ?
-		this.al().b(true);
-		this.goalSelector.a(0, new PathfinderGoalFloat(this));
-		this.goalSelector.a(1, new PathfinderGoalMeleeAttack(this, EntityHuman.class, this.bb * rushSpeedCoef, false));
-		this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, EntityVillager.class, this.bb * rushSpeedCoef, true));
-		this.goalSelector.a(3, new PathfinderGoalBreakDoor(this));
-		this.goalSelector.a(4, new PathfinderGoalMoveTowardsTarget(this, this.bb * rushSpeedCoef, 16f));
-		FocusType focus = plugin.config().ZombiesFocus;
-
-		if (focus.equals(FocusType.None))
-			this.goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction(this, this.bb));
-		else if (focus.equals(FocusType.NearestPlayer) || focus.equals(FocusType.RandomPlayer)) {
-			this.goalSelector.a(5, new PathfinderGoalTrackPlayer(plugin,focus.equals(FocusType.RandomPlayer),this,this.bb * rushSpeedCoef, 8f));
-			//this.goalSelector.a(5, new PathfinderGoalTrackPlayer(this, plugin, focus.equals(FocusType.RandomPlayer), this.bb, true));
-		} else if (focus.equals(FocusType.InitialSpawn) || focus.equals(FocusType.DeathSpawn)) {
-			this.goalSelector.a(5, new PathfinderGoalMoveTo(this,
-					focus.equals(FocusType.InitialSpawn)?  plugin.getLevel().getInitialSpawn():plugin.getLevel().getDeathSpawn(), // 
-							 this.bb * normalSpeedCoef,4f));
-		}
-
-		this.goalSelector.a(6, new PathfinderGoalMoveThroughVillage(this, this.bb, false));
-		this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, this.bb));
-		this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-		this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
-		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
-		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class,
-				16f
-				, 0, true));
-		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityVillager.class, 16.0F, 0, false));
-		this.plugin = plugin;
-	}
-
-	public int getMaxHealth() {
-		//TODO : change that
-		return 20;
-	}
-	/**
-	 * Impact damage with an armor ... not sure what it is
-	 */
-	public int T() {
-		return 2;
-	}
-	/**
-	 * New AI marker ?
-	 */
-	protected boolean c_() {
-		return true;
-	}
-
-	public void e() {
-		if (this.world.e() && !this.world.isStatic && !fireResistant) {
-			float f = this.b(1.0F);
-
-			if (f > 0.5F && this.world.isChunkLoaded(MathHelper.floor(this.locX), MathHelper.floor(this.locY), MathHelper.floor(this.locZ))
-					&& this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F) {
-
-				this.setOnFire(8);
-
-			}
-		}
-
-		super.e();
-	}
-
-	protected String i() {
-		return "mob.zombie";
-	}
-
-	protected String j() {
-		return "mob.zombiehurt";
-	}
-
-	protected String k() {
-		return "mob.zombiedeath";
-	}
-
-	protected int getLootId() {
-		return -1;
-	}
-
-	public MonsterType getMonsterType() {
-		return MonsterType.UNDEAD;
-	} 
-
-	// CraftBukkit start - return rare dropped item instead of dropping it
-	protected ItemStack b(int i) {
-		return null;
-	}
-
-	// CraftBukkit end
-
-	public static EntityTribuZombie spawn(Tribu plugin, WorldServer world, double x, double y, double z) throws CannotSpawnException {
-		EntityTribuZombie tz = new EntityTribuZombie(plugin, world, x, y, z);
+	public static EntityTribuZombie spawn(final Tribu plugin, final WorldServer world, final double x, final double y, final double z) throws CannotSpawnException {
+		final EntityTribuZombie tz = new EntityTribuZombie(plugin, world, x, y, z);
 		synchronized (tz) {
 			if (world.addEntity(tz, SpawnReason.CUSTOM))
 				return tz;
@@ -194,5 +73,129 @@ public class EntityTribuZombie extends EntityZombie {
 				throw new CannotSpawnException();
 		}
 
+	}
+
+	@SuppressWarnings("unused")
+	private Tribu	plugin;
+
+	private boolean	fireResistant;
+
+	public EntityTribuZombie(final Tribu plugin, final World world, final double d0, final double d1, final double d2) {
+		this(world, d0, d1, d2);
+		fireResistant = plugin.config().ZombiesFireResistant;
+		texture = "/mob/zombie.png";
+		// from 0.85 to 1.18
+		final float normalSpeedCoef = ((plugin.config().ZombiesSpeedRandom) ? .1f + (an().nextFloat() / 3f) : .25f) + (plugin.config().ZombiesSpeedBase - .25f);
+		// from 1 to 1.77
+		// .85 * 1.18 = 1 and we'll have normalSpeed * rushSpeed * speed, if
+		// normalSpeed=.85 * rushSpeed=1 = 1
+		final float rushSpeedCoef = ((1 / normalSpeedCoef) * (((plugin.config().ZombiesSpeedRandom) ? (an().nextFloat() / 2f) : .25f) + (plugin.config().ZombiesSpeedRush - .25f)));
+		// Speed: 0.23 normal speed
+		bb = 0.23F * normalSpeedCoef;
+		damage = plugin.getWaveStarter().getCurrentDamage();
+		// Can break wooden door ?
+		al().b(true);
+		goalSelector.a(0, new PathfinderGoalFloat(this));
+		goalSelector.a(1, new PathfinderGoalMeleeAttack(this, EntityHuman.class, bb * rushSpeedCoef, false));
+		goalSelector.a(2, new PathfinderGoalMeleeAttack(this, EntityVillager.class, bb * rushSpeedCoef, true));
+		goalSelector.a(3, new PathfinderGoalBreakDoor(this));
+		goalSelector.a(4, new PathfinderGoalMoveTowardsTarget(this, bb * rushSpeedCoef, 16f));
+		final FocusType focus = plugin.config().ZombiesFocus;
+
+		if (focus.equals(FocusType.None))
+			goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction(this, bb));
+		else if (focus.equals(FocusType.NearestPlayer) || focus.equals(FocusType.RandomPlayer))
+			goalSelector.a(5, new PathfinderGoalTrackPlayer(plugin, focus.equals(FocusType.RandomPlayer), this, bb * rushSpeedCoef, 8f));
+		// this.goalSelector.a(5, new PathfinderGoalTrackPlayer(this, plugin,
+		// focus.equals(FocusType.RandomPlayer), this.bb, true));
+		else if (focus.equals(FocusType.InitialSpawn) || focus.equals(FocusType.DeathSpawn))
+			goalSelector.a(5, new PathfinderGoalMoveTo(this, focus.equals(FocusType.InitialSpawn) ? plugin.getLevel().getInitialSpawn() : plugin.getLevel().getDeathSpawn(), //
+					bb * normalSpeedCoef, 4f));
+
+		goalSelector.a(6, new PathfinderGoalMoveThroughVillage(this, bb, false));
+		goalSelector.a(7, new PathfinderGoalRandomStroll(this, bb));
+		goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+		goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
+		targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
+		targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, 16f, 0, true));
+		targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityVillager.class, 16.0F, 0, false));
+		this.plugin = plugin;
+	}
+
+	public EntityTribuZombie(final World world) {
+		super(world);
+		bukkitEntity = new CraftTribuZombie(world.getServer(), this);
+	}
+
+	private EntityTribuZombie(final World world, final double d0, final double d1, final double d2) {
+		this(world);
+		setPosition(d0, d1, d2);
+
+	}
+
+	// CraftBukkit start - return rare dropped item instead of dropping it
+	@Override
+	protected ItemStack b(final int i) {
+		return null;
+	}
+
+	/**
+	 * New AI marker ?
+	 */
+	@Override
+	protected boolean c_() {
+		return true;
+	}
+
+	@Override
+	public void e() {
+		if (world.e() && !world.isStatic && !fireResistant) {
+			final float f = this.b(1.0F);
+
+			if (f > 0.5F && world.isChunkLoaded(MathHelper.floor(locX), MathHelper.floor(locY), MathHelper.floor(locZ)) && random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F) setOnFire(8);
+		}
+
+		super.e();
+	}
+
+	@Override
+	protected int getLootId() {
+		return -1;
+	}
+
+	@Override
+	public int getMaxHealth() {
+		// TODO : change that
+		return 20;
+	}
+
+	@Override
+	public MonsterType getMonsterType() {
+		return MonsterType.UNDEAD;
+	}
+
+	@Override
+	protected String i() {
+		return "mob.zombie";
+	}
+
+	@Override
+	protected String j() {
+		return "mob.zombiehurt";
+	}
+
+	@Override
+	protected String k() {
+		return "mob.zombiedeath";
+	}
+
+	// CraftBukkit end
+
+	/**
+	 * Impact damage with an armor ... not sure what it is
+	 */
+	@Override
+	public int T() {
+		return 2;
 	}
 }

@@ -34,10 +34,9 @@
  ******************************************************************************/
 package graindcafe.tribu.Signs;
 
-import graindcafe.tribu.PlayerStats;
-
-import graindcafe.tribu.Tribu;
 import graindcafe.tribu.Package;
+import graindcafe.tribu.PlayerStats;
+import graindcafe.tribu.Tribu;
 import graindcafe.tribu.Level.TribuLevel;
 
 import java.util.HashMap;
@@ -62,47 +61,41 @@ public class ShopSign extends TribuSign {
 	 * @param level	the currentLevel
 	 * @return the found package or an empty one
 	 */
-	private static Package getItem(String[] signLines, TribuLevel level) {
-		if(signLines == null  || level == null)
-			return new Package();
+	private static Package getItem(final String[] signLines, final TribuLevel level) {
+		if (signLines == null || level == null) return new Package();
 		Package i;
-		/* Try to get a package */ 
+		/* Try to get a package */
 		i = level.getPackage((signLines[1] + "_" + signLines[2]));
-		if (i==null || i.isEmpty())
-			i = level.getPackage(signLines[1]);
-		if (i==null || i.isEmpty())
-			i = level.getPackage(signLines[2]);
-		
+		if (i == null || i.isEmpty()) i = level.getPackage(signLines[1]);
+		if (i == null || i.isEmpty()) i = level.getPackage(signLines[2]);
+
 		/* Try to get a single item */
-		if (i==null || i.isEmpty())
-			i = new Package(Material.getMaterial(signLines[1].toUpperCase() + "_" + signLines[2].toUpperCase()));
+		if (i == null || i.isEmpty()) i = new Package(Material.getMaterial(signLines[1].toUpperCase() + "_" + signLines[2].toUpperCase()));
 		// If the item is inexistent, let's try with
 		// only the second line
-		if (i.isEmpty())
-			i = new Package(Material.matchMaterial(signLines[1]));
+		if (i.isEmpty()) i = new Package(Material.matchMaterial(signLines[1]));
 		// Still not ? With the third one, so
-		if (i.isEmpty())
-			i = new Package(Material.matchMaterial(signLines[2]));
+		if (i.isEmpty()) i = new Package(Material.matchMaterial(signLines[2]));
 		return i;
 	}
 
 	/**
 	 * Cost of this sign
 	 */
-	private int cost = 0;
+	private int		cost	= 0;
 
 	/* private Item droppedItem = null; */
 
 	/**
 	 * Items to sell 
 	 */
-	private Package items = null;
+	private Package	items	= null;
 
 	/**
 	 * Default constructor (never used ?)
 	 * @param plugin Tribu
 	 */
-	public ShopSign(Tribu plugin) {
+	public ShopSign(final Tribu plugin) {
 		super(plugin);
 	}
 
@@ -113,9 +106,9 @@ public class ShopSign extends TribuSign {
 	 * @param item Material to be sold
 	 * @param cost 
 	 */
-	public ShopSign(Tribu plugin, Location pos, Material item, int cost) {
+	public ShopSign(final Tribu plugin, final Location pos, final Material item, final int cost) {
 		super(plugin, pos);
-		this.items = new Package(item);
+		items = new Package(item);
 		this.cost = cost;
 	}
 
@@ -125,9 +118,9 @@ public class ShopSign extends TribuSign {
 	 * @param item Package to be sold
 	 * @param cost
 	 */
-	public ShopSign(Tribu plugin, Location pos, Package item, int cost) {
+	public ShopSign(final Tribu plugin, final Location pos, final Package item, final int cost) {
 		super(plugin, pos);
-		this.items = item;
+		items = item;
 		this.cost = cost;
 	}
 
@@ -137,7 +130,7 @@ public class ShopSign extends TribuSign {
 	 * @param item String of the item to sell 
 	 * @param cost
 	 */
-	public ShopSign(Tribu plugin, Location pos, String item, int cost) {
+	public ShopSign(final Tribu plugin, final Location pos, final String item, final int cost) {
 		this(plugin, pos, Material.getMaterial(item), cost);
 	}
 
@@ -146,8 +139,13 @@ public class ShopSign extends TribuSign {
 	 * @param pos Location of the sign
 	 * @param signLines Lines of this sign 
 	 */
-	public ShopSign(Tribu plugin, Location pos, String[] signLines) {
+	public ShopSign(final Tribu plugin, final Location pos, final String[] signLines) {
 		this(plugin, pos, getItem(signLines, plugin.getLevel()), TribuSign.parseInt(signLines[3]));
+	}
+
+	@Override
+	public void finish() {
+
 	}
 
 	/* Get lines specific for this sign (non-Javadoc)
@@ -155,7 +153,7 @@ public class ShopSign extends TribuSign {
 	 */
 	@Override
 	protected String[] getSpecificLines() {
-		String[] lines = new String[4];
+		final String[] lines = new String[4];
 		lines[0] = "";
 		if (items.toString().lastIndexOf('_') < 0) {
 			lines[1] = items.toString();
@@ -173,8 +171,8 @@ public class ShopSign extends TribuSign {
 	 */
 	@Override
 	public void init() {
-		if(pos.getBlock().getState() instanceof Sign)
-			this.items = getItem(((Sign)pos.getBlock().getState() ).getLines(), plugin.getLevel());
+		if (pos.getBlock().getState() instanceof Sign)
+			items = getItem(((Sign) pos.getBlock().getState()).getLines(), plugin.getLevel());
 		else
 			plugin.LogWarning("Missing sign !");
 		// TODO:Fix it, it should just "display" the item but make it not
@@ -193,7 +191,7 @@ public class ShopSign extends TribuSign {
 	 * @see graindcafe.tribu.signs.TribuSign#isUsedEvent(org.bukkit.event.Event)
 	 */
 	@Override
-	public boolean isUsedEvent(Event e) {
+	public boolean isUsedEvent(final Event e) {
 		return e instanceof PlayerInteractEvent && ((PlayerInteractEvent) e).getClickedBlock().getLocation().equals(pos);
 	}
 
@@ -202,21 +200,21 @@ public class ShopSign extends TribuSign {
 	 */
 	@Override
 	@SuppressWarnings("deprecation")
-	public void raiseEvent(Event e) {
-		Player p = ((PlayerInteractEvent) e).getPlayer();
-		PlayerStats stats = plugin.getStats(p);
+	public void raiseEvent(final Event e) {
+		final Player p = ((PlayerInteractEvent) e).getPlayer();
+		final PlayerStats stats = plugin.getStats(p);
 		if (stats.subtractmoney(cost)) {
 			if (!items.isEmpty()) {
 				LinkedList<ItemStack> givenItems = new LinkedList<ItemStack>();
-				for (ItemStack item : items.getItemStacks()) {
+				for (final ItemStack item : items.getItemStacks()) {
 					givenItems.add(item);
-					HashMap<Integer, ItemStack> failed = p.getInventory().addItem(item);
+					final HashMap<Integer, ItemStack> failed = p.getInventory().addItem(item);
 
 					if (failed != null && failed.size() > 0) {
 						// the inventory may be full
 						Tribu.messagePlayer(p, (plugin.getLocale("Message.UnableToGiveYouThatItem")));
 						stats.addMoney(cost);
-						for (ItemStack i : givenItems)
+						for (final ItemStack i : givenItems)
 							p.getInventory().remove(i);
 						givenItems = null;
 						break;
@@ -224,21 +222,15 @@ public class ShopSign extends TribuSign {
 				}
 				p.updateInventory();
 				// Alright
-				Tribu.messagePlayer(p,String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));
+				Tribu.messagePlayer(p, String.format(plugin.getLocale("Message.PurchaseSuccessfulMoney"), String.valueOf(stats.getMoney())));
 			} else {
-				Tribu.messagePlayer(p,plugin.getLocale("Message.UnknownItem"));
+				Tribu.messagePlayer(p, plugin.getLocale("Message.UnknownItem"));
 				stats.addMoney(cost);
 			}
 
-		} else {
-			Tribu.messagePlayer(p,plugin.getLocale("Message.YouDontHaveEnoughMoney"));
-		}
+		} else
+			Tribu.messagePlayer(p, plugin.getLocale("Message.YouDontHaveEnoughMoney"));
 
-	}
-
-	@Override
-	public void finish() {
-		
 	}
 
 }
