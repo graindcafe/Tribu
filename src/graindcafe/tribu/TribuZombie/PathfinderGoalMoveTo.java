@@ -87,7 +87,7 @@ public class PathfinderGoalMoveTo extends PathfinderGoal {
 		y = localVec3D.b;
 		z = localVec3D.c;
 		// lookat stuff
-		doLookAt = (creature.an().nextFloat() >= chance);
+		doLookAt = (creature.au().nextFloat() >= chance);
 		return true;
 	}
 
@@ -100,7 +100,7 @@ public class PathfinderGoalMoveTo extends PathfinderGoal {
 		// lookAt stuff
 		doLookAt = counter > 0;
 		// move stuff
-		return trueDebugMsg("testing navigation") && (!creature.al().e()) && //
+		return trueDebugMsg("testing navigation") && (!creature.getNavigation().e()) && //
 				((trueDebugMsg("testing distance") && (creature.f(x, y, z) < squaredActiveDistance) && trueDebugMsg("distance ok")) || falseDebugMsg("distance ko"));
 
 	}
@@ -113,8 +113,8 @@ public class PathfinderGoalMoveTo extends PathfinderGoal {
 	public void c() {
 		debugMsg("gonna add it ! ");
 
-		if (doLookAt) counter = (40 + creature.an().nextInt(40));
-		creature.al().a(x, y, z, speed);
+		if (doLookAt) counter = (40 + creature.au().nextInt(40));
+		creature.getNavigation().a(x, y, z, speed);
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class PathfinderGoalMoveTo extends PathfinderGoal {
 	public void e() {
 		if (doLookAt) {
 			debugMsg("run + lookAt");
-			creature.getControllerLook().a(x, y, z, 10.0F, creature.D());
+			creature.getControllerLook().a(x, y, z, 10.0F, creature.bf());
 			counter -= 1;
 		} else
 			debugMsg("run - lookAt");

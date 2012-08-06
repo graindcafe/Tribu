@@ -79,7 +79,7 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 	public boolean a() {
 		// get target
 		lastTarget = target;
-		target = creature.at();
+		target = creature.az();
 		if (target == null) target = (getRandomPlayer ? ((CraftPlayer) plugin.getRandomPlayer()) : ((CraftPlayer) plugin.getNearestPlayer(x, y, z))).getHandle();//
 		// if no target, do nothing
 		debugMsg("testing target");
@@ -87,7 +87,7 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 			// if too far away, do nothing
 			debugMsg("testing distance");
 			// if it's near enough
-			if (target.j(creature) < squaredActiveDistance) return false;
+			if (target.e(creature) < squaredActiveDistance) return false;
 			final Vec3D localVec3D = RandomPositionGenerator.a(creature, 16, 7, Vec3D.create(target.locX, target.locY, target.locZ));
 			// if generation failed (improbable) do nothing
 			debugMsg("testing vec");
@@ -110,11 +110,11 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 	@Override
 	public boolean b() {
 		// lookat stuff
-		doLookAt = (creature.an().nextFloat() >= chance);
+		doLookAt = (creature.au().nextFloat() >= chance);
 		// move stuff
-		return trueDebugMsg("testing navigation") && (!creature.al().e()) && //
+		return trueDebugMsg("testing navigation") && (!creature.getNavigation().e()) && //
 				trueDebugMsg("testing alive") && target.isAlive() && //
-				trueDebugMsg("testing distance") && creature.j(target) < squaredActiveDistance;
+				trueDebugMsg("testing distance") && creature.e(target) < squaredActiveDistance;
 
 	}
 
@@ -125,7 +125,7 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 	@Override
 	public void c() {
 		debugMsg("gonna add it ! " + ((CraftPlayer) target.getBukkitEntity()).getDisplayName());
-		creature.al().a(x, y, z, speed);
+		creature.getNavigation().a(x, y, z, speed);
 	}
 
 	/**
@@ -151,7 +151,7 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 
 		if (doLookAt) {
 			debugMsg("run + lookAt");
-			creature.getControllerLook().a(target.locX, target.locY + target.getHeadHeight(), target.locZ, 10.0F, creature.D());
+			creature.getControllerLook().a(target.locX, target.locY + target.getHeadHeight(), target.locZ, 10.0F, creature.bf());
 		} else
 			debugMsg("run - lookAt");
 	}
