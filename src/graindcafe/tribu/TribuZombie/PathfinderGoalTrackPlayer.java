@@ -88,7 +88,7 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 			debugMsg("testing distance");
 			// if it's near enough
 			if (target.e(creature) < squaredActiveDistance) return false;
-			final Vec3D localVec3D = RandomPositionGenerator.a(creature, 16, 7, Vec3D.create(target.locX, target.locY, target.locZ));
+			final Vec3D localVec3D = RandomPositionGenerator.a(creature, 16, 7, Vec3D.a(target.locX, target.locY, target.locZ));
 			// if generation failed (improbable) do nothing
 			debugMsg("testing vec");
 			if (localVec3D == null) return false;
@@ -112,7 +112,7 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 		// lookat stuff
 		doLookAt = (creature.au().nextFloat() >= chance);
 		// move stuff
-		return trueDebugMsg("testing navigation") && (!creature.getNavigation().e()) && //
+		return trueDebugMsg("testing navigation") && (!creature.getNavigation().f()) && //
 				trueDebugMsg("testing alive") && target.isAlive() && //
 				trueDebugMsg("testing distance") && creature.e(target) < squaredActiveDistance;
 

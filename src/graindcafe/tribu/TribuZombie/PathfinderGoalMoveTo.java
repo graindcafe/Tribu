@@ -79,7 +79,7 @@ public class PathfinderGoalMoveTo extends PathfinderGoal {
 		debugMsg("testing distance");
 		// if we are near enough, don't do anything
 		if (creature.f(destX, destY, destZ) < squaredActiveDistance) return false;
-		final Vec3D localVec3D = RandomPositionGenerator.a(creature, 16, 7, Vec3D.create(destX, destY, destZ));
+		final Vec3D localVec3D = RandomPositionGenerator.a(creature, 16, 7, Vec3D.a(destX, destY, destZ));
 		// if generation failed (improbable) do nothing
 		debugMsg("testing vec");
 		if (localVec3D == null) return false;
@@ -100,7 +100,7 @@ public class PathfinderGoalMoveTo extends PathfinderGoal {
 		// lookAt stuff
 		doLookAt = counter > 0;
 		// move stuff
-		return trueDebugMsg("testing navigation") && (!creature.getNavigation().e()) && //
+		return trueDebugMsg("testing navigation") && (!creature.getNavigation().f()) && //
 				((trueDebugMsg("testing distance") && (creature.f(x, y, z) < squaredActiveDistance) && trueDebugMsg("distance ok")) || falseDebugMsg("distance ko"));
 
 	}
