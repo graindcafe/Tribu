@@ -1,6 +1,6 @@
 name: Tribu
 main: graindcafe.tribu.Tribu
-version: 0.6.1.12550
+version: 0.6.1.13110
 commands:
     tribu:
         description: start,stop, join, leave, the game, create, save, load, levels. 
