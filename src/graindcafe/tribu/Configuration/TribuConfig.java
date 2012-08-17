@@ -207,6 +207,7 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					ZombiesHealth = config.getDoubleList(key);
 				else if (keyNode[1].equalsIgnoreCase("Damage"))
 					ZombiesDamage = config.getDoubleList(key);
+				// TODO: Remove this
 				else if (keyNode[1].equalsIgnoreCase("FireResistant"))
 					ZombiesFireProof = config.getBoolean(key);
 				else if (keyNode[1].equalsIgnoreCase("FireProof"))
