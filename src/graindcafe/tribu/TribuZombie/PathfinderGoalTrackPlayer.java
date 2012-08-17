@@ -35,7 +35,9 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 	 */
 	private final float				chance;
 
-	private double					x				= 0, y = 0, z = 0;
+	private double					x				= 0, //
+									y				= 0, //
+									z				= 0;
 	private final float				speed;
 	private boolean					doLookAt		= true;
 	private boolean					getRandomPlayer	= false;
@@ -79,7 +81,7 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 	public boolean a() {
 		// get target
 		lastTarget = target;
-		target = creature.az();
+		//target = creature.az();
 		if (target == null) target = (getRandomPlayer ? ((CraftPlayer) plugin.getRandomPlayer()) : ((CraftPlayer) plugin.getNearestPlayer(x, y, z))).getHandle();//
 		// if no target, do nothing
 		debugMsg("testing target");
@@ -87,7 +89,7 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 			// if too far away, do nothing
 			debugMsg("testing distance");
 			// if it's near enough
-			if (target.e(creature) < squaredActiveDistance) return false;
+			//if (target.e(creature) < squaredActiveDistance) return false;
 			final Vec3D localVec3D = RandomPositionGenerator.a(creature, 16, 7, Vec3D.a(target.locX, target.locY, target.locZ));
 			// if generation failed (improbable) do nothing
 			debugMsg("testing vec");
@@ -95,12 +97,11 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 			x = localVec3D.a;
 			y = localVec3D.b;
 			z = localVec3D.c;
-		} else if (lastTarget == null || x == 0 && y == 0 && z == 0)
+		} else if (lastTarget == null || (x == 0 && y == 0 && z == 0))
 			return false;
 		else
 			target = lastTarget;
-
-		return true;
+		return target!=null;
 	}
 
 	/**
@@ -112,7 +113,8 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 		// lookat stuff
 		doLookAt = (creature.au().nextFloat() >= chance);
 		// move stuff
-		return trueDebugMsg("testing navigation") && (!creature.getNavigation().f()) && //
+		return 	target != null && //
+				trueDebugMsg("testing navigation") && (!creature.getNavigation().f()) && //
 				trueDebugMsg("testing alive") && target.isAlive() && //
 				trueDebugMsg("testing distance") && creature.e(target) < squaredActiveDistance;
 
@@ -124,8 +126,8 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 	 */
 	@Override
 	public void c() {
-		debugMsg("gonna add it ! " + ((CraftPlayer) target.getBukkitEntity()).getDisplayName());
-		creature.getNavigation().a(x, y, z, speed);
+		//debugMsg("gonna add it ! " + ((CraftPlayer) target.getBukkitEntity()).getDisplayName());
+		
 	}
 
 	/**
@@ -150,10 +152,9 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 	public void e() {
 
 		if (doLookAt) {
-			debugMsg("run + lookAt");
 			creature.getControllerLook().a(target.locX, target.locY + target.getHeadHeight(), target.locZ, 10.0F, creature.bf());
-		} else
-			debugMsg("run - lookAt");
+		}
+		creature.getNavigation().a(x, y, z, speed);
 	}
 
 	private boolean trueDebugMsg(final String msg) {

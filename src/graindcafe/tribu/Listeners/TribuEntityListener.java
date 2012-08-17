@@ -95,11 +95,13 @@ public class TribuEntityListener implements Listener {
 			} else
 				plugin.restoreInventory(p);
 		} else if (dam.getEntity() instanceof CraftTribuZombie) {
+			
+			/* // Not needed anymore as we now set "fireProof" to true if needed  
 			if (dam.getCause().equals(DamageCause.FIRE_TICK) && plugin.config().ZombiesFireResistant) {
 				dam.setCancelled(true);
 				dam.getEntity().setFireTicks(0);
 				return;
-			}
+			}*/
 
 			if (plugin.isRunning() && (dam.getCause() == DamageCause.ENTITY_ATTACK || dam.getCause() == DamageCause.PROJECTILE || dam.getCause() == DamageCause.POISON)) {
 				final EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) dam;
@@ -163,12 +165,12 @@ public class TribuEntityListener implements Listener {
 						stats.msgStats();
 						// Removed 24/06 : why is it here ?
 						// plugin.getLevel().onWaveStart();
-		}
-	}
-}
+					}
+				}
+			}
 
-plugin.getSpawner().despawnZombie(zombie, event.getDrops());
-}
+			plugin.getSpawner().despawnZombie(zombie, event.getDrops());
+		}
 	}
 
 	public void registerEvents(final PluginManager pm) {

@@ -15,14 +15,14 @@ import java.util.logging.Logger;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.CraftServer;
 import org.bukkit.craftbukkit.CraftWorld;
-import org.bukkit.craftbukkit.entity.CraftZombie;
+import org.bukkit.craftbukkit.entity.CraftMonster;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 
-public class CraftTribuZombie extends CraftZombie implements Zombie {
+public class CraftTribuZombie extends CraftMonster implements Zombie {
 	public static Entity spawn(final Tribu plugin, final Location pos) throws CannotSpawnException {
 		if (!pos.getChunk().isLoaded()) pos.getChunk().load();
 
@@ -139,7 +139,7 @@ public class CraftTribuZombie extends CraftZombie implements Zombie {
 
 	@Override
 	public void setTarget(final LivingEntity target) {
-		Logger.getLogger("Minecraft").info("Fuck you, you and your " + target);
+		Logger.getLogger("Minecraft").info("Setting target to " + target);
 	}
 
 	public void setTotalAttack(final int t) {

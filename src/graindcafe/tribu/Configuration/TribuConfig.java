@@ -208,7 +208,11 @@ public class TribuConfig extends TribuDefaultConfiguration {
 				else if (keyNode[1].equalsIgnoreCase("Damage"))
 					ZombiesDamage = config.getDoubleList(key);
 				else if (keyNode[1].equalsIgnoreCase("FireResistant"))
-					ZombiesFireResistant = config.getBoolean(key);
+					ZombiesFireProof = config.getBoolean(key);
+				else if (keyNode[1].equalsIgnoreCase("FireProof"))
+					ZombiesFireProof = config.getBoolean(key);
+				else if (keyNode[1].equalsIgnoreCase("SunProof"))
+					ZombiesSunProof = config.getBoolean(key);
 				else if (keyNode[1].equalsIgnoreCase("Focus"))
 					ZombiesFocus = FocusType.fromString(config.getString(key));
 				else if (keyNode[1].equalsIgnoreCase("TimeToSpawn"))

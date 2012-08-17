@@ -171,6 +171,8 @@ public class Tribu extends JavaPlugin {
 						startRunning();
 					else
 						startRunning(config.LevelStartDelay);
+				else
+					broadcast("Broadcast.WaitingPlayers",waitingPlayers);
 			} else if (getLevel() != null && isRunning) {
 				player.teleport(level.getDeathSpawn());
 				messagePlayer(player, language.get("Message.GameInProgress"));
@@ -450,6 +452,7 @@ public class Tribu extends JavaPlugin {
 				put("Broadcast.VoteClosingInSeconds", ChatColor.DARK_AQUA + "Vote closing in %s seconds");
 				put("Broadcast.StartingWave", ChatColor.GRAY + "Starting wave " + ChatColor.DARK_RED + "%s" + ChatColor.GRAY + ", " + ChatColor.DARK_RED + "%s" + ChatColor.GRAY + " Zombies @ " + ChatColor.DARK_RED
 						+ "%s" + ChatColor.GRAY + " health");
+				put("Broadcast.WaitingPlayers",ChatColor.GRAY+"We are still waiting "+ChatColor.RED+" players to start.");
 				put("Broadcast.Wave", ChatColor.DARK_GRAY + "Wave " + ChatColor.DARK_RED + "%s" + ChatColor.DARK_GRAY + " starting in " + ChatColor.DARK_RED + "%s" + ChatColor.DARK_GRAY + " seconds.");
 				put("Broadcast.WaveComplete", ChatColor.GOLD + "Wave Complete");
 				put("Info.LevelFound", ChatColor.YELLOW + "%s levels found");
@@ -566,7 +569,8 @@ public class Tribu extends JavaPlugin {
 	 * Load the custom config files, "per-world" and "per-level"
 	 */
 	protected void loadCustomConf() {
-		loadCustomConf(level.getName() + ".yml", level.getInitialSpawn().getWorld().getName() + ".yml");
+		if(level!=null)
+			loadCustomConf(level.getName() + ".yml", level.getInitialSpawn().getWorld().getName() + ".yml");
 	}
 
 	protected void loadCustomConf(final String levelName, final String worldName) {
@@ -695,13 +699,11 @@ public class Tribu extends JavaPlugin {
 			}
 		}
 		try {
-			@SuppressWarnings("rawtypes")
-			final Class[] args = { Class.class, String.class, Integer.TYPE, Integer.TYPE, Integer.TYPE };
-			final Method a = EntityTypes.class.getDeclaredMethod("a", args);
+			final Method a = EntityTypes.class.getDeclaredMethod("a", Class.class, String.class, Integer.TYPE);
 			a.setAccessible(true);
-
-			a.invoke(a, EntityTribuZombie.class, "Zombie", 54, '\uafaf', 7969893);
-			a.invoke(a, EntityZombie.class, "Zombie", 54, '\uafaf', 7969893);
+			
+			a.invoke(a, EntityTribuZombie.class, "Zombie", 54);
+			a.invoke(a, EntityZombie.class, "Zombie", 54);
 
 		} catch (final Exception e) {
 			setEnabled(false);
@@ -785,7 +787,7 @@ public class Tribu extends JavaPlugin {
 		if (player != null && players.containsKey(player)) {
 			if (isAlive(player)) aliveCount--;
 			if (!isRunning && waitingPlayers != -1 && waitingPlayers < config.LevelMinPlayers) waitingPlayers++;
-
+			broadcast("Broadcast.WaitingPlayers",waitingPlayers);
 			sortedStats.remove(players.get(player));
 			inventorySave.restoreInventory(player);
 			players.remove(player);
@@ -889,7 +891,7 @@ public class Tribu extends JavaPlugin {
 	 * @return if the game can start
 	 */
 	public boolean startRunning() {
-		if (waitingPlayers == -1) {
+		if (waitingPlayers < 0) {
 			waitingPlayers = config.LevelMinPlayers - players.size();
 			if (waitingPlayers < 0) waitingPlayers = 0;
 		}

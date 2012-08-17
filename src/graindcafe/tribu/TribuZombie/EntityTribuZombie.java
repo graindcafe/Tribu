@@ -42,11 +42,11 @@ package graindcafe.tribu.TribuZombie;
 import graindcafe.tribu.Tribu;
 import graindcafe.tribu.Configuration.FocusType;
 import net.minecraft.server.EntityHuman;
+import net.minecraft.server.EntityMonster;
 import net.minecraft.server.EntityVillager;
-import net.minecraft.server.EntityZombie;
+import net.minecraft.server.EnumMonsterType;
 import net.minecraft.server.ItemStack;
 import net.minecraft.server.MathHelper;
-//import net.minecraft.server.EnumMonsterType;
 import net.minecraft.server.PathfinderGoalBreakDoor;
 import net.minecraft.server.PathfinderGoalFloat;
 import net.minecraft.server.PathfinderGoalHurtByTarget;
@@ -54,21 +54,20 @@ import net.minecraft.server.PathfinderGoalLookAtPlayer;
 import net.minecraft.server.PathfinderGoalMeleeAttack;
 import net.minecraft.server.PathfinderGoalMoveThroughVillage;
 import net.minecraft.server.PathfinderGoalMoveTowardsRestriction;
-import net.minecraft.server.PathfinderGoalMoveTowardsTarget;
 import net.minecraft.server.PathfinderGoalNearestAttackableTarget;
 import net.minecraft.server.PathfinderGoalRandomLookaround;
 import net.minecraft.server.PathfinderGoalRandomStroll;
 import net.minecraft.server.World;
 import net.minecraft.server.WorldServer;
 
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
-public class EntityTribuZombie extends EntityZombie {
+public class EntityTribuZombie extends EntityMonster {
 	public static EntityTribuZombie spawn(final Tribu plugin, final WorldServer world, final double x, final double y, final double z) throws CannotSpawnException {
 		final EntityTribuZombie tz = new EntityTribuZombie(plugin, world, x, y, z);
 		synchronized (tz) {
-			if (world.addEntity(tz, SpawnReason.CUSTOM))
+			if (world.addEntity(tz, CreatureSpawnEvent.SpawnReason.CUSTOM))
 				return tz;
 			else
 				throw new CannotSpawnException();
@@ -78,12 +77,13 @@ public class EntityTribuZombie extends EntityZombie {
 
 	@SuppressWarnings("unused")
 	private Tribu	plugin;
-	private int maxHealth;
-	
+	private int		maxHealth	= 20;
+	private boolean	sunProof	= true;
 
 	public EntityTribuZombie(final Tribu plugin, final World world, final double x, final double y, final double z) {
 		this(world, x, y, z);
-		fireProof = plugin.config().ZombiesFireResistant;
+		// fireProof = plugin.config().ZombiesFireResistant;
+		sunProof = plugin.config().ZombiesFireProof || plugin.config().ZombiesSunProof;
 		texture = "/mob/zombie.png";
 		// from 0.85 to 1.18
 		final float normalSpeedCoef = ((plugin.config().ZombiesSpeedRandom) ? .1f + (au().nextFloat() / 3f) : .25f) + (plugin.config().ZombiesSpeedBase - .25f);
@@ -94,31 +94,33 @@ public class EntityTribuZombie extends EntityZombie {
 		// Speed: 0.23 normal speed
 		bw = 0.23F * normalSpeedCoef;
 		damage = plugin.getWaveStarter().getCurrentDamage();
-		maxHealth=plugin.getWaveStarter().getCurrentHealth();
-		this.
+		maxHealth = plugin.getWaveStarter().getCurrentHealth();
 		// Can break wooden door ?
 		getNavigation().b(true);
+		// useful : this.a(width,length) (float,float)
+
 		goalSelector.a(0, new PathfinderGoalFloat(this));
-		goalSelector.a(1, new PathfinderGoalMeleeAttack(this, EntityHuman.class, bw * rushSpeedCoef, false));
-		goalSelector.a(2, new PathfinderGoalMeleeAttack(this, EntityVillager.class, bw * rushSpeedCoef, true));
-		goalSelector.a(3, new PathfinderGoalBreakDoor(this));
-		goalSelector.a(4, new PathfinderGoalMoveTowardsTarget(this, bw * rushSpeedCoef, 16f));
+		goalSelector.a(1, new PathfinderGoalBreakDoor(this));
+		goalSelector.a(2, new PathfinderGoalMeleeAttack(this, EntityHuman.class, bw * rushSpeedCoef, false));
+		goalSelector.a(3, new PathfinderGoalMeleeAttack(this, EntityVillager.class, bw * rushSpeedCoef, true));
+
+		
 		final FocusType focus = plugin.config().ZombiesFocus;
 
 		if (focus.equals(FocusType.None))
-			goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction(this, bw));
+			goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this, bw));
 		else if (focus.equals(FocusType.NearestPlayer) || focus.equals(FocusType.RandomPlayer))
-			goalSelector.a(5, new PathfinderGoalTrackPlayer(plugin, focus.equals(FocusType.RandomPlayer), this, bw * rushSpeedCoef, 8f));
+			goalSelector.a(4, new PathfinderGoalTrackPlayer(plugin, focus.equals(FocusType.RandomPlayer), this, bw * rushSpeedCoef, 8f));
 		// this.goalSelector.a(5, new PathfinderGoalTrackPlayer(this, plugin,
 		// focus.equals(FocusType.RandomPlayer), this.bb, true));
 		else if (focus.equals(FocusType.InitialSpawn) || focus.equals(FocusType.DeathSpawn))
-			goalSelector.a(5, new PathfinderGoalMoveTo(this, focus.equals(FocusType.InitialSpawn) ? plugin.getLevel().getInitialSpawn() : plugin.getLevel().getDeathSpawn(), //
+			goalSelector.a(4, new PathfinderGoalMoveTo(this, focus.equals(FocusType.InitialSpawn) ? plugin.getLevel().getInitialSpawn() : plugin.getLevel().getDeathSpawn(), //
 					bw * normalSpeedCoef, 4f));
 
-		goalSelector.a(6, new PathfinderGoalMoveThroughVillage(this, bw, false));
-		goalSelector.a(7, new PathfinderGoalRandomStroll(this, bw));
-		goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-		goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
+		goalSelector.a(5, new PathfinderGoalMoveThroughVillage(this, bw, false));
+		goalSelector.a(6, new PathfinderGoalRandomStroll(this, bw));
+		goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+		goalSelector.a(7, new PathfinderGoalRandomLookaround(this));
 		targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
 		targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, 16f, 0, true));
 		targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityVillager.class, 16.0F, 0, false));
@@ -127,66 +129,25 @@ public class EntityTribuZombie extends EntityZombie {
 
 	public EntityTribuZombie(final World world) {
 		super(world);
+
 		bukkitEntity = new CraftTribuZombie(world.getServer(), this);
+
 	}
 
-	private EntityTribuZombie(final World world, final double d0, final double d1, final double d2) {
+	private EntityTribuZombie(final World world, final double x, final double y, final double z) {
 		this(world);
-		setPosition(d0, d1, d2);
-
-	}
-
-	// CraftBukkit start - return rare dropped item instead of dropping it
-	@Override
-	protected ItemStack l(final int i) {
-		return null;
+		setPosition(x, y, z);
 	}
 
 	/**
-	 * New AI marker ?
+	 * Impact damage with an armor ... not sure what it is
 	 */
 	@Override
-	protected boolean aV() {
-		return true;
+	public int aO() {
+		return 2;
 	}
 
-	@Override
-	public void d() {
-		if (world.r() && !world.isStatic && !fireProof) {
-			float f = this.c(1.0F);
-
-            if (f > 0.5F && this.world.j(MathHelper.floor(this.locX), MathHelper.floor(this.locY), MathHelper.floor(this.locZ)) && this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F) {
-                // CraftBukkit start
-                EntityCombustEvent event = new EntityCombustEvent(this.getBukkitEntity(), 8);
-                this.world.getServer().getPluginManager().callEvent(event);
-
-                if (!event.isCancelled()) {
-                    this.setOnFire(event.getDuration());
-                }
-                // CraftBukkit end
-            }
-		}
-		boolean save=this.world.isStatic;
-		//prevent EntityZombie.d() (we want EntityZombie.super.d())
-		this.world.isStatic=true;
-		super.d();
-		this.world.isStatic=save;
-	}
-
-	@Override
-	protected int getLootId() {
-		return -1;
-	}
-
-	@Override
-	public int getMaxHealth() {
-		return maxHealth;
-	}
-
-	@Override
-	public net.minecraft.server.EnumMonsterType getMonsterType() {
-		return net.minecraft.server.EnumMonsterType.UNDEAD;
-	}
+	// CraftBukkit end
 
 	@Override
 	protected String aQ() {
@@ -203,13 +164,54 @@ public class EntityTribuZombie extends EntityZombie {
 		return "mob.zombiedeath";
 	}
 
-	// CraftBukkit end
-
 	/**
-	 * Impact damage with an armor ... not sure what it is
+	 * New AI marker ?
 	 */
 	@Override
-	public int aO() {
-		return 2;
+	protected boolean aV() {
+		return true;
+	}
+	/**
+	 * AI running
+	 */
+	@Override
+	public void d() {
+		if (!sunProof && world.r() && !world.isStatic) {
+			final float f = this.c(1.0F);
+
+			if (f > 0.5F && world.j(MathHelper.floor(locX), MathHelper.floor(locY), MathHelper.floor(locZ)) && random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F) {
+				// CraftBukkit start
+			final EntityCombustEvent event = new EntityCombustEvent(getBukkitEntity(), 8);
+			world.getServer().getPluginManager().callEvent(event);
+
+			if (!event.isCancelled()) setOnFire(event.getDuration());
+		}
+	}
+		super.d();
+	}
+
+	@Override
+	protected int getLootId() {
+
+		return -1;
+	}
+
+	@Override
+	public int getMaxHealth() {
+
+		return maxHealth;
+	}
+
+	@Override
+	public EnumMonsterType getMonsterType() {
+
+		return EnumMonsterType.UNDEAD;
+	}
+
+	// CraftBukkit start - return rare dropped item instead of dropping it
+	@Override
+	protected ItemStack l(final int i) {
+
+		return null;
 	}
 }
