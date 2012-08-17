@@ -896,54 +896,72 @@ public class Tribu extends JavaPlugin {
 			if (waitingPlayers < 0) waitingPlayers = 0;
 		}
 		if (!isRunning && getLevel() != null && waitingPlayers == 0) {
-			// Before (next instruction) it will saves current default
-			// packages to the level, saving theses packages with the level
-			addDefaultPackages();
-			// Make sure no data is lost if server decides to die
-			// during a game and player forgot to /level save
-			if (!getLevelLoader().saveLevel(getLevel()))
-				LogWarning(language.get("Warning.UnableToSaveLevel"));
-			else
-				LogInfo(language.get("Info.LevelSaved"));
-			if (getLevel().getSpawns().isEmpty()) {
-				LogWarning(language.get("Warning.NoSpawns"));
-				return false;
-			}
-
-			isRunning = true;
-			if (config.PluginModeServerExclusive || config.PluginModeWorldExclusive)
-				for (final LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
-					if (!(e instanceof Player) && !(e instanceof Wolf) && !(e instanceof Villager)) e.damage(Integer.MAX_VALUE);
-				}
-			else
-				for (final LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities())
-					if ((e.getLocation().distance(level.getInitialSpawn())) < config.LevelClearZone && !(e instanceof Player) && !(e instanceof Wolf) && !(e instanceof Villager)) e.damage(Integer.MAX_VALUE);
-			if (config.PlayersRollback) {
-				// If there is a restoring operation currently, do it
-				// quickly
-				memory.getReady();
-				memory.startCapturing();
-				// Pre-cache level
-				memory.add(level.getInitialSpawn().getChunk());
-				memory.add(level.getDeathSpawn().getChunk());
-				for (final Location l : level.getZombieSpawns())
-					memory.add(l.getChunk());
-			}
-			getLevel().initSigns();
-			sortedStats.clear();
-
-			for (final PlayerStats stat : players.values()) {
-				stat.resetPoints();
-				stat.resetMoney();
-				sortedStats.add(stat);
-			}
-			getWaveStarter().resetWave();
-			revivePlayers(true);
-			getWaveStarter().scheduleWave(Constants.TicksBySecond * config.WaveStartDelay);
+			return forceStart();
 		}
 		return true;
 	}
+	public LinkedList<String> whyNotStarting()
+	{
+		LinkedList<String> resp=new LinkedList<String>();
+		if(isRunning)
+			resp.add("Already running");
+		if(getLevel()==null)
+			resp.add("Level not loaded");
+		if(waitingPlayers!=0)
+			resp.add("Waiting "+waitingPlayers+" players");
+		return resp;
+	}
+	public boolean forceStart()
+	{
+		if(getLevel()==null)
+			return false;
+		// Before (next instruction) it will saves current default
+		// packages to the level, saving theses packages with the level
+		addDefaultPackages();
+		// Make sure no data is lost if server decides to die
+		// during a game and player forgot to /level save
+		if (!getLevelLoader().saveLevel(getLevel()))
+			LogWarning(language.get("Warning.UnableToSaveLevel"));
+		else
+			LogInfo(language.get("Info.LevelSaved"));
+		if (getLevel().getSpawns().isEmpty()) {
+			LogWarning(language.get("Warning.NoSpawns"));
+			return false;
+		}
 
+		isRunning = true;
+		if (config.PluginModeServerExclusive || config.PluginModeWorldExclusive)
+			for (final LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
+				if (!(e instanceof Player) && !(e instanceof Wolf) && !(e instanceof Villager)) e.damage(Integer.MAX_VALUE);
+			}
+		else
+			for (final LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities())
+				if ((e.getLocation().distance(level.getInitialSpawn())) < config.LevelClearZone && !(e instanceof Player) && !(e instanceof Wolf) && !(e instanceof Villager)) e.damage(Integer.MAX_VALUE);
+		if (config.PlayersRollback) {
+			// If there is a restoring operation currently, do it
+			// quickly
+			memory.getReady();
+			memory.startCapturing();
+			// Pre-cache level
+			memory.add(level.getInitialSpawn().getChunk());
+			memory.add(level.getDeathSpawn().getChunk());
+			for (final Location l : level.getZombieSpawns())
+				memory.add(l.getChunk());
+		}
+		getLevel().initSigns();
+		sortedStats.clear();
+
+		for (final PlayerStats stat : players.values()) {
+			stat.resetPoints();
+			stat.resetMoney();
+			sortedStats.add(stat);
+		}
+		getWaveStarter().resetWave();
+		revivePlayers(true);
+		getWaveStarter().scheduleWave(Constants.TicksBySecond * config.WaveStartDelay);
+		return true;
+
+	}
 	/**
 	 * Start the game in n seconds
 	 * 

@@ -120,6 +120,9 @@ permissions:
     tribu.super.break:
         description: Override AllowBreak
         default: op
-    tribu.debug:
-        description: Debug command
+    tribu.debug.tpfz:
+        description: TP on first zombie
+        default: op
+    tribu.debug.forcestart:
+        description: Force start (debug command)
         default: op

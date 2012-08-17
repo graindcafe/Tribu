@@ -400,8 +400,19 @@ public class CmdTribu implements CommandExecutor {
 			plugin.stopRunning();
 			Tribu.messagePlayer(sender, plugin.getLocale("Message.ZombieModeDisabled"));
 			return true;
-		} else if (args[0].equals("tpfz")) {
-			if (!sender.hasPermission("tribu.debug"))
+		}else if (args[0].equals("forcestart")) {
+			if (!sender.hasPermission("tribu.debug.forcestart")) {
+				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
+				return true;
+			}
+			for(String msg: plugin.whyNotStarting())
+				Tribu.messagePlayer(sender, msg);	
+			if(plugin.forceStart())
+			Tribu.messagePlayer(sender, plugin.getLocale("Message.ZombieModeEnabled"));
+			return true;
+		} 
+		else if (args[0].equals("tpfz")) {
+			if (!sender.hasPermission("tribu.debug.tpfz"))
 				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
 			else {
 				final Location loc = plugin.getSpawner().getFirstZombieLocation();
