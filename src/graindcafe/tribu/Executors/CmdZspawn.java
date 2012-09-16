@@ -51,7 +51,7 @@ public class CmdZspawn implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
-		if (!sender.hasPermission("tribu.game.zspawn")) {
+		if (!sender.hasPermission("tribu.level.zspawn")) {
 			Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
 			return true;
 		}
