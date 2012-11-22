@@ -94,9 +94,9 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 			// if generation failed (improbable) do nothing
 			debugMsg("testing vec");
 			if (localVec3D == null) return false;
-			x = localVec3D.a;
-			y = localVec3D.b;
-			z = localVec3D.c;
+			x = localVec3D.c;
+			y = localVec3D.d;
+			z = localVec3D.e;
 		} else if (lastTarget == null || (x == 0 && y == 0 && z == 0))
 			return false;
 		else
@@ -111,7 +111,7 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 	@Override
 	public boolean b() {
 		// lookat stuff
-		doLookAt = (creature.au().nextFloat() >= chance);
+		doLookAt = (creature.aB().nextFloat() >= chance);
 		// move stuff
 		return 	target != null && //
 				trueDebugMsg("testing navigation") && (!creature.getNavigation().f()) && //
@@ -152,7 +152,9 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 	public void e() {
 
 		if (doLookAt) {
-			creature.getControllerLook().a(target.locX, target.locY + target.getHeadHeight(), target.locZ, 10.0F, creature.bf());
+			// 									x 			y									z		   radius	?
+			// cf. PathfinderGoalLookAtPlayer
+			creature.getControllerLook().a(target.locX, target.locY + target.getHeadHeight(), target.locZ, 10.0F, creature.bp());
 		}
 		creature.getNavigation().a(x, y, z, speed);
 	}

@@ -83,11 +83,11 @@ public class PathfinderGoalMoveTo extends PathfinderGoal {
 		// if generation failed (improbable) do nothing
 		debugMsg("testing vec");
 		if (localVec3D == null) return false;
-		x = localVec3D.a;
-		y = localVec3D.b;
-		z = localVec3D.c;
+		x = localVec3D.c;
+		y = localVec3D.d;
+		z = localVec3D.e;
 		// lookat stuff
-		doLookAt = (creature.au().nextFloat() >= chance);
+		doLookAt = (creature.aB().nextFloat() >= chance);
 		return true;
 	}
 
@@ -113,7 +113,7 @@ public class PathfinderGoalMoveTo extends PathfinderGoal {
 	public void c() {
 		debugMsg("gonna add it ! ");
 
-		if (doLookAt) counter = (40 + creature.au().nextInt(40));
+		if (doLookAt) counter = (40 + creature.aB().nextInt(40));
 		creature.getNavigation().a(x, y, z, speed);
 	}
 
@@ -137,7 +137,8 @@ public class PathfinderGoalMoveTo extends PathfinderGoal {
 	public void e() {
 		if (doLookAt) {
 			debugMsg("run + lookAt");
-			creature.getControllerLook().a(x, y, z, 10.0F, creature.bf());
+			// cf. PathfinderGoalLookAtPlayer
+			creature.getControllerLook().a(x, y, z, 10.0F, creature.bp());
 			counter -= 1;
 		} else
 			debugMsg("run - lookAt");

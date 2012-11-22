@@ -31,6 +31,7 @@ public class CraftTribuZombie extends CraftMonster implements Zombie {
 			return null;
 		else
 			return tz.getBukkitEntity();
+
 	}
 
 	private final HashMap<Player, Integer>	playerDamage;
@@ -149,5 +150,25 @@ public class CraftTribuZombie extends CraftMonster implements Zombie {
 	@Override
 	public String toString() {
 		return "CraftTribuZombie";
+	}
+
+	@Override
+	public boolean isBaby() {
+		return getHandle().isBaby();
+	}
+
+	@Override
+	public void setBaby(boolean flag) {
+		getHandle().setBaby(flag);
+	}
+
+	@Override
+	public boolean isVillager() {
+		return getHandle().isVillager();
+	}
+
+	@Override
+	public void setVillager(boolean flag) {
+		getHandle().setVillager(flag);
 	}
 }

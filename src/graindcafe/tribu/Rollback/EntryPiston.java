@@ -22,11 +22,11 @@ public class EntryPiston extends EntryBlockState {
 		super(bs);
 		if (bs instanceof TileEntityPiston) {
 			blockId = ((TileEntityPiston) bs).a();
-			blockData = ((TileEntityPiston) bs).n();
-			extending = ((TileEntityPiston) bs).b();
+			blockData = ((TileEntityPiston) bs).p();
 			facing = ((TileEntityPiston) bs).c();
-			// this.maxProgress=((TileEntityPiston) bs).a(1f);
+			extending = ((TileEntityPiston) bs).b();
 			progress = ((TileEntityPiston) bs).a(0f);
+			// this.maxProgress=((TileEntityPiston) bs).a(1f);
 		} else
 			throw new WrongBlockException(Block.PISTON_MOVING.id, world.getTypeId(x, y, z), x, y, z, world.getWorld());
 	}
