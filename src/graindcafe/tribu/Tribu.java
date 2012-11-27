@@ -131,6 +131,7 @@ public class Tribu extends JavaPlugin {
 
 	private TribuSpawner						spawner;
 	private HashMap<Player, Location>			spawnPoint;
+	private HashMap<Player, Location>			beforePoint;
 	private SpawnTimer							spawnTimer;
 	private HashMap<Player, TribuTempInventory>	tempInventories;
 	private int									waitingPlayers	= -1;
@@ -154,7 +155,7 @@ public class Tribu extends JavaPlugin {
 	 */
 	public void addPlayer(final Player player) {
 		if (player != null && !players.containsKey(player)) {
-
+			beforePoint.put(player, player.getLocation());
 			if (config.PlayersStoreInventory) {
 				inventorySave.addInventory(player);
 				player.getInventory().clear();
@@ -725,6 +726,7 @@ public class Tribu extends JavaPlugin {
 		tempInventories = new HashMap<Player, TribuTempInventory>();
 		inventorySave = new TribuInventory();
 		spawnPoint = new HashMap<Player, Location>();
+		beforePoint = new HashMap<Player, Location>();
 		sortedStats = new LinkedList<PlayerStats>();
 
 		levelSelector = new LevelSelector(this);
@@ -784,6 +786,8 @@ public class Tribu extends JavaPlugin {
 	 * @param player
 	 */
 	public void removePlayer(final Player player) {
+		Location point;
+		
 		if (player != null && players.containsKey(player)) {
 			if (isAlive(player)) aliveCount--;
 			if (!isRunning && waitingPlayers != -1 && waitingPlayers < config.LevelMinPlayers) waitingPlayers++;
@@ -792,7 +796,12 @@ public class Tribu extends JavaPlugin {
 			inventorySave.restoreInventory(player);
 			players.remove(player);
 			Tribu.messagePlayer(player, getLocale("Message.YouLeft"));
-			if (player.isOnline() && spawnPoint.containsKey(player)) player.setBedSpawnLocation(spawnPoint.remove(player));
+			point = spawnPoint.remove(player);
+			if (point != null)
+				player.setBedSpawnLocation(point);
+			point = beforePoint.remove(player);
+			if (point != null)
+				player.teleport(point);
 			// check alive AFTER player remove
 			checkAliveCount();
 			// remove vote AFTER player remove
