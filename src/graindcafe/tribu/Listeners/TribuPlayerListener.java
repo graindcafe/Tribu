@@ -75,12 +75,15 @@ public class TribuPlayerListener implements Listener {
 	public void onPlayerInteract(final PlayerInteractEvent event) {
 		if (!event.isCancelled()) {
 			final Block block = event.getClickedBlock();
-			if (block != null && plugin.isPlaying(event.getPlayer())) if (Sign.class.isInstance(block.getState()) && plugin.getLevel() != null) {
-				if (plugin.isRunning()) {
+			if (block != null && Sign.class.isInstance(block.getState()) && plugin.getLevel() != null) {
+				if (plugin.isRunning() && plugin.isPlaying(event.getPlayer())) {
 					if (event.getAction() == Action.RIGHT_CLICK_BLOCK) plugin.getLevel().onSignClicked(event);
-				} else if (event.getPlayer().hasPermission("tribu.signs.place")) if (plugin.getLevel().removeSign(block.getLocation()))
-					Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.TribuSignRemoved"));
-				else if (plugin.getLevel().addSign(TribuSign.getObject(plugin, block.getLocation()))) Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.TribuSignAdded"));
+				} else if (event.getPlayer().hasPermission("tribu.signs.place")) {
+					if (plugin.getLevel().removeSign(block.getLocation()))
+						Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.TribuSignRemoved"));
+					else if (plugin.getLevel().addSign(TribuSign.getObject(plugin, block.getLocation())))
+						Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.TribuSignAdded"));
+				}
 			} else if (plugin.isRunning()) plugin.getLevel().onClick(event);
 		}
 	}
