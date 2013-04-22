@@ -1,11 +1,12 @@
 package graindcafe.tribu.TribuZombie;
 
 import graindcafe.tribu.Tribu;
-import net.minecraft.server.Entity;
-import net.minecraft.server.EntityCreature;
-import net.minecraft.server.PathfinderGoal;
-import net.minecraft.server.RandomPositionGenerator;
-import net.minecraft.server.Vec3D;
+import net.minecraft.server.v1_4_6.Entity;
+import net.minecraft.server.v1_4_6.EntityCreature;
+import net.minecraft.server.v1_4_6.PathfinderGoal;
+import net.minecraft.server.v1_4_6.RandomPositionGenerator;
+import net.minecraft.server.v1_4_6.Vec3D;
+import net.minecraft.server.v1_4_6.Pathfinder;
 
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 
@@ -15,7 +16,7 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
  *
  */
 
-public class PathfinderGoalTrackPlayer extends PathfinderGoal {
+public class PathfinderGoalTrackPlayer extends Pathfinder {
 	/**
 	 * The controlled entity
 	 */

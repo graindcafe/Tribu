@@ -326,7 +326,7 @@ public class TribuLevel {
 	 * @return success or fail
 	 */
 	public boolean setDeathSpawn(final Location loc) {
-		if (loc.getWorld() == initialSpawn.getWorld()) {
+		if (loc.getWorld().equals(initialSpawn.getWorld())) {
 			deathSpawn = loc;
 			changed = true;
 			return true;
@@ -342,7 +342,7 @@ public class TribuLevel {
 	 * @return success or fail
 	 */
 	public boolean setInitialSpawn(final Location loc) {
-		if (loc.getWorld() == initialSpawn.getWorld()) {
+		if (loc.getWorld().equals(initialSpawn.getWorld())) {
 			initialSpawn = loc;
 			changed = true;
 			return true;
