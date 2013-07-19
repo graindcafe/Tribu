@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright or © or Copr. Quentin Godron (2011)
+ * Copyright or ï¿½ or Copr. Quentin Godron (2011)
  * 
  * cafe.en.grain@gmail.com
  * 
@@ -49,7 +49,6 @@ public class CmdZspawn implements CommandExecutor {
 		plugin = instance;
 	}
 
-	@Override
 	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
 		if (!sender.hasPermission("tribu.level.zspawn")) {
 			Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));

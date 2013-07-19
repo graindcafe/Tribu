@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright or © or Copr. Quentin Godron (2011)
+ * Copyright or ï¿½ or Copr. Quentin Godron (2011)
  * 
  * cafe.en.grain@gmail.com
  * 
@@ -36,13 +36,14 @@ package graindcafe.tribu.Listeners;
 
 import graindcafe.tribu.PlayerStats;
 import graindcafe.tribu.Tribu;
-import graindcafe.tribu.TribuZombie.CraftTribuZombie;
+import graindcafe.tribu.TribuZombie;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -55,6 +56,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 
 public class TribuEntityListener implements Listener {
+
 	private final Tribu	plugin;
 
 	public TribuEntityListener(final Tribu instance) {
@@ -94,26 +96,26 @@ public class TribuEntityListener implements Listener {
 				}
 			} else
 				plugin.restoreInventory(p);
-		} else if (dam.getEntity() instanceof CraftTribuZombie) {
-			
-			/* // Not needed anymore as we now set "fireProof" to true if needed  
-			if (dam.getCause().equals(DamageCause.FIRE_TICK) && plugin.config().ZombiesFireResistant) {
+		} else if (dam.getEntity() instanceof Zombie) {
+			TribuZombie zomb = plugin.getSpawner().getBukkitAssociation().get(dam.getEntity());
+			if (zomb == null) return;
+			if (dam.getCause().equals(DamageCause.FIRE_TICK) && plugin.config().ZombiesFireProof) {
 				dam.setCancelled(true);
 				dam.getEntity().setFireTicks(0);
 				return;
-			}*/
+			}
 
 			if (plugin.isRunning() && (dam.getCause() == DamageCause.ENTITY_ATTACK || dam.getCause() == DamageCause.PROJECTILE || dam.getCause() == DamageCause.POISON)) {
 				final EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) dam;
 
-				final CraftTribuZombie zomb = (CraftTribuZombie) event.getEntity();
 				Player p = null;
 				if (event.getDamager() instanceof Projectile) {
 					final Projectile pj = (Projectile) event.getDamager();
 					if (pj.getShooter() instanceof Player) p = (Player) pj.getShooter();
 				} else if (event.getDamager() instanceof Player)
 					p = (Player) event.getDamager();
-				else if (zomb.getTarget() instanceof Player) p = (Player) zomb.getTarget();
+				else if (zomb.getControl().getEntity().getTarget() instanceof Player) p = (Player) zomb.getControl().getEntity().getTarget();
+
 				if (p != null) zomb.addAttack(p, event.getDamage());
 			}
 
@@ -132,36 +134,37 @@ public class TribuEntityListener implements Listener {
 				event.getDrops().clear();
 			}
 
-		} else if (event.getEntity() instanceof CraftTribuZombie) {
-			final CraftTribuZombie zombie = (CraftTribuZombie) event.getEntity();
-
-			final HashMap<Player, Float> rewards = new HashMap<Player, Float>();
+		} else if (event.getEntity() instanceof Zombie) {
+			// final Zombie zombie = (Zombie) event.getEntity();
+			TribuZombie zombie = plugin.getSpawner().getBukkitAssociation().get(event.getEntity());
+			if (zombie == null) return;
+			final HashMap<Player, Double> rewards = new HashMap<Player, Double>();
 			final String rewardMethod = plugin.config().StatsRewardMethod;
 			final boolean onlyForAlive = plugin.config().StatsRewardOnlyAlive;
 			final float baseMoney = plugin.config().StatsOnZombieKillMoney;
 			final float basePoint = plugin.config().StatsOnZombieKillPoints;
 			if (rewardMethod.equalsIgnoreCase("Last"))
-				rewards.put(zombie.getLastAttacker(), 1f);
+				rewards.put(zombie.getLastAttacker(), 1d);
 			else if (rewardMethod.equalsIgnoreCase("First"))
-				rewards.put(zombie.getFirstAttacker(), 1f);
+				rewards.put(zombie.getFirstAttacker(), 1d);
 			else if (rewardMethod.equalsIgnoreCase("Best"))
-				rewards.put(zombie.getBestAttacker(), 1f);
+				rewards.put(zombie.getBestAttacker(), 1d);
 			else if (rewardMethod.equalsIgnoreCase("Percentage"))
 				rewards.putAll(zombie.getAttackersPercentage());
 			else if (rewardMethod.equalsIgnoreCase("All")) for (final Player p : plugin.getPlayers())
-				rewards.put(p, 1f);
+				rewards.put(p, 1d);
 
 			Player player;
-			Float percentage;
-			for (final Entry<Player, Float> entry : rewards.entrySet()) {
+			Double percentage;
+			for (final Entry<Player, Double> entry : rewards.entrySet()) {
 				player = entry.getKey();
 				percentage = entry.getValue();
-				if (player == null && zombie.getTarget() instanceof Player) player = (Player) zombie.getTarget();
+				if (player == null && zombie.getControl().getEntity().getTarget() instanceof Player) player = (Player) zombie.getControl().getEntity().getTarget();
 				if (player != null && player.isOnline() && !(onlyForAlive && player.isDead())) {
 					final PlayerStats stats = plugin.getStats(player);
 					if (stats != null) {
-						stats.addMoney(Math.round(baseMoney * percentage));
-						stats.addPoints(Math.round(basePoint * percentage));
+						stats.addMoney((int) Math.round(baseMoney * percentage));
+						stats.addPoints((int) Math.round(basePoint * percentage));
 						stats.msgStats();
 						// Removed 24/06 : why is it here ?
 						// plugin.getLevel().onWaveStart();

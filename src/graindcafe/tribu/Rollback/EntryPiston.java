@@ -1,8 +1,9 @@
 package graindcafe.tribu.Rollback;
 
-import net.minecraft.server.Block;
-import net.minecraft.server.NBTTagCompound;
-import net.minecraft.server.TileEntityPiston;
+import net.minecraft.server.v1_6_R2.Block;
+import net.minecraft.server.v1_6_R2.NBTTagCompound;
+import net.minecraft.server.v1_6_R2.TileEntity;
+import net.minecraft.server.v1_6_R2.TileEntityPiston;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.block.BlockState;
@@ -20,7 +21,7 @@ public class EntryPiston extends EntryBlockState {
 
 	public EntryPiston(final BlockState bs) throws WrongBlockException {
 		super(bs);
-		if (bs instanceof TileEntityPiston) {
+		if (bs instanceof TileEntity) {
 			blockId = ((TileEntityPiston) bs).a();
 			blockData = ((TileEntityPiston) bs).p();
 			facing = ((TileEntityPiston) bs).c();

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright or © or Copr. Quentin Godron (2011)
+ * Copyright or ï¿½ or Copr. Quentin Godron (2011)
  * 
  * cafe.en.grain@gmail.com
  * 
@@ -63,7 +63,6 @@ public class CmdTribu implements CommandExecutor {
 	// usage: /tribu ((create | load | delete) <name>) | enter | leave | package
 	// (create |delete | list)
 	// list | start [<name>] | stop | save | stats
-	@Override
 	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
 		if (args.length == 0) return usage(sender);
 		args[0] = args[0].toLowerCase();
@@ -400,18 +399,16 @@ public class CmdTribu implements CommandExecutor {
 			plugin.stopRunning();
 			Tribu.messagePlayer(sender, plugin.getLocale("Message.ZombieModeDisabled"));
 			return true;
-		}else if (args[0].equals("forcestart")) {
+		} else if (args[0].equals("forcestart")) {
 			if (!sender.hasPermission("tribu.debug.forcestart")) {
 				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
 				return true;
 			}
-			for(String msg: plugin.whyNotStarting())
-				Tribu.messagePlayer(sender, msg);	
-			if(plugin.forceStart())
-			Tribu.messagePlayer(sender, plugin.getLocale("Message.ZombieModeEnabled"));
+			for (String msg : plugin.whyNotStarting())
+				Tribu.messagePlayer(sender, msg);
+			if (plugin.forceStart()) Tribu.messagePlayer(sender, plugin.getLocale("Message.ZombieModeEnabled"));
 			return true;
-		} 
-		else if (args[0].equals("tpfz")) {
+		} else if (args[0].equals("tpfz")) {
 			if (!sender.hasPermission("tribu.debug.tpfz"))
 				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
 			else {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright or © or Copr. Quentin Godron (2011)
+ * Copyright or ï¿½ or Copr. Quentin Godron (2011)
  * 
  * cafe.en.grain@gmail.com
  * 
@@ -58,7 +58,6 @@ public class PlayerStats implements Comparable<PlayerStats> {
 	}
 
 	// Order reversed to sort list desc
-	@Override
 	public int compareTo(final PlayerStats o) {
 		if (o.getPoints() == points)
 			return 0;

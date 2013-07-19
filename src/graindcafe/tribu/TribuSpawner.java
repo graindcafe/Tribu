@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright or © or Copr. Quentin Godron (2011)
+ * Copyright or ï¿½ or Copr. Quentin Godron (2011)
  * 
  * cafe.en.grain@gmail.com
  * 
@@ -35,51 +35,59 @@
 package graindcafe.tribu;
 
 import graindcafe.tribu.Configuration.Constants;
-import graindcafe.tribu.TribuZombie.CannotSpawnException;
-import graindcafe.tribu.TribuZombie.CraftTribuZombie;
+import graindcafe.tribu.Configuration.FocusType;
 
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
+import java.util.Map.Entry;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
 
+import de.ntcomputer.minecraft.controllablemobs.api.ControllableMob;
+import de.ntcomputer.minecraft.controllablemobs.api.ControllableMobs;
+import de.ntcomputer.minecraft.controllablemobs.api.ai.behaviors.AITargetNearest;
+
 public class TribuSpawner {
+	HashMap<Entity, TribuZombie>	bukkitAssociation	= new HashMap<Entity, TribuZombie>();	;
 	/**
 	 * Is the round finish
 	 */
-	private boolean								finished;
+	private boolean					finished;
 
 	/**
 	 * Health of zombie to spawn
 	 */
-	private int									health;
+	private int						health;
 	/**
 	 *  A zombie just spawned
 	 */
-	private boolean								justspawned;
+	private boolean					justspawned;
 	/**
 	 * number of zombies to spawn
 	 */
-	private int									totalToSpawn;
+	private int						totalToSpawn;
 	/**
 	 * Tribu
 	 */
-	private final Tribu							plugin;
+	private final Tribu				plugin;
 	/**
 	 * Gonna start
 	 */
-	private boolean								starting;
+	private boolean					starting;
 	/**
 	 * spawned zombies
 	 */
-	private int									alreadySpawned;
+	private int						alreadySpawned;
+
 	/**
 	 * Referenced zombies
 	 */
-	private final LinkedList<CraftTribuZombie>	zombies;
+	// private final LinkedList<ControllableMob<Zombie>> zombies;
 
 	/**
 	 * Init the spawner
@@ -92,7 +100,7 @@ public class TribuSpawner {
 		finished = false;
 		starting = true;
 		health = 10;
-		zombies = new LinkedList<CraftTribuZombie>();
+		// zombies = new LinkedList<ControllableMob<Zombie>>();
 	}
 
 	/**
@@ -101,12 +109,16 @@ public class TribuSpawner {
 	 * set finished if they are all dead
 	 */
 	public void checkZombies() {
-		final Stack<CraftTribuZombie> toDelete = new Stack<CraftTribuZombie>();
-		for (final CraftTribuZombie e : zombies)
-			if (e == null || e.isDead()) toDelete.push(e);
-		finished = toDelete.isEmpty();
-		while (!toDelete.isEmpty())
-			removedZombieCallback(toDelete.pop(), false);
+
+		Iterator<Entry<Entity, TribuZombie>> it = bukkitAssociation.entrySet().iterator();
+		finished = false;
+		while (it.hasNext()) {
+			ControllableMob<Zombie> e = it.next().getValue().getControl();
+			if (e == null || e.getEntity().isDead()) {
+				it.remove();
+				finished = false;
+			}
+		}
 
 	}
 
@@ -114,10 +126,13 @@ public class TribuSpawner {
 	 * Delete all zombies and prevent the spawner to continue spawning
 	 */
 	public void clearZombies() {
-		for (final CraftTribuZombie zombie : zombies)
-			zombie.remove();
+		Iterator<Entity> it = bukkitAssociation.keySet().iterator();
+		while (it.hasNext()) {
+			it.next().remove();
+			it.remove();
+		}
 		resetTotal();
-		zombies.clear();
+		// zombies.clear();
 	}
 
 	/**
@@ -125,8 +140,8 @@ public class TribuSpawner {
 	 * @param zombie zombie to unreference
 	 * @param drops drops to clear
 	 */
-	public void despawnZombie(final CraftTribuZombie zombie, final List<ItemStack> drops) {
-		if (zombies.remove(zombie)) {
+	public void despawnZombie(final TribuZombie zombie, final List<ItemStack> drops) {
+		if (bukkitAssociation.remove(zombie.getControl().getEntity()) != null) {
 			drops.clear();
 			tryStartNextWave();
 		}
@@ -152,14 +167,14 @@ public class TribuSpawner {
 	 */
 	public Location getFirstZombieLocation() {
 		if (alreadySpawned > 0)
-			if (!zombies.isEmpty()) {
-				plugin.LogInfo("Health : " + zombies.get(0).getHealth());
-				plugin.LogInfo("LastDamage : " + zombies.get(0).getLastDamage());
-				plugin.LogInfo("isDead : " + zombies.get(0).isDead());
-				return zombies.get(0).getLocation();
+			if (!bukkitAssociation.isEmpty()) {
+				plugin.LogInfo("Health : " + bukkitAssociation.get(0).getControl().getEntity().getHealth());
+				plugin.LogInfo("LastDamage : " + bukkitAssociation.get(0).getControl().getEntity().getLastDamage());
+				plugin.LogInfo("isDead : " + bukkitAssociation.get(0).getControl().getEntity().isDead());
+				return bukkitAssociation.get(0).getControl().getEntity().getLocation();
 			} else {
 				plugin.getSpawnTimer().getState();
-				plugin.LogSevere("There is " + zombies.size() + " zombie alive of " + alreadySpawned + "/" + totalToSpawn + " spawned . The wave is " + (finished ? "finished" : "in progress"));
+				plugin.LogSevere("There is " + bukkitAssociation.size() + " zombie alive of " + alreadySpawned + "/" + totalToSpawn + " spawned . The wave is " + (finished ? "finished" : "in progress"));
 				return null;
 			}
 		else
@@ -209,7 +224,7 @@ public class TribuSpawner {
 	 * @return if the living entity was spawned by this
 	 */
 	public boolean isSpawned(final LivingEntity ent) {
-		return zombies.contains(ent);
+		return bukkitAssociation.containsKey(ent);
 	}
 
 	/**
@@ -217,7 +232,7 @@ public class TribuSpawner {
 	 * @return is wave completed 
 	 */
 	public boolean isWaveCompleted() {
-		return !haveZombieToSpawn() && zombies.isEmpty();
+		return !haveZombieToSpawn() && bukkitAssociation.isEmpty();
 	}
 
 	/**
@@ -233,13 +248,17 @@ public class TribuSpawner {
 	 * @param e Zombie to despawn
 	 * @param removeReward Reward attakers ?
 	 */
-	public void removedZombieCallback(final CraftTribuZombie e, final boolean removeReward) {
+	public void removedZombieCallback(final Entity e, final boolean removeReward) {
 		if (e != null) {
-			if (removeReward) e.setNoAttacker();
-			e.damage(Integer.MAX_VALUE);
+			TribuZombie zomb = bukkitAssociation.get(e);
+			if (zomb == null) return;
+			bukkitAssociation.remove(e);
+			alreadySpawned--;
+			if (removeReward) zomb.setNoAttacker();
+			e.remove();
+
 		}
-		zombies.remove(e);
-		alreadySpawned--;
+
 	}
 
 	/**
@@ -270,6 +289,7 @@ public class TribuSpawner {
 	 * Try to spawn a zombie
 	 * @return if zombies still have to spawn (before spawning it)
 	 */
+	@SuppressWarnings("deprecation")
 	public boolean spawnZombie() {
 		if (alreadySpawned < totalToSpawn && !finished) {
 			Location pos = plugin.getLevel().getRandomZombieSpawn();
@@ -283,13 +303,25 @@ public class TribuSpawner {
 					// Surrounded with justspawned so that the zombie isn't
 					// removed in the entity spawn listener
 					justspawned = true;
-					CraftTribuZombie zombie;
+					Zombie zombie;
 					try {
-						zombie = (CraftTribuZombie) CraftTribuZombie.spawn(plugin, pos);
-						zombies.add(zombie);
+						zombie = pos.getWorld().spawn(pos, Zombie.class);
 						zombie.setHealth(health);
+						TribuZombie zomb = new TribuZombie(ControllableMobs.assign(zombie, false));
+						if (plugin.config().ZombiesFocus == FocusType.NearestPlayer) zomb.getControl().getAI().addAIBehavior(new AITargetNearest(1, 1000));
+						if (plugin.config().ZombiesFocus == FocusType.DeathSpawn) zomb.getControl().getActions().moveTo(plugin.getLevel().getDeathSpawn());
+						if (plugin.config().ZombiesFocus == FocusType.InitialSpawn) zomb.getControl().getActions().moveTo(plugin.getLevel().getDeathSpawn());
+						if (plugin.config().ZombiesFocus == FocusType.RandomPlayer) //
+							for (int i = 0; i < 5; i++)
+								zomb.getControl().getActions().target(plugin.getRandomPlayer(), true);
+						zomb.getControl().getAttributes().setMaximumNavigationDistance(Double.POSITIVE_INFINITY);
+						zomb.getControl().getProperties().setMovementSpeed(((plugin.config().ZombiesSpeedRandom) ? .1f + (Tribu.getRandom().nextFloat() / 3f) : .25f) + (plugin.config().ZombiesSpeedBase - .25f));
+						bukkitAssociation.put(zombie, zomb);
+						// Rush speed
+						// sun proof
+						// fire proof
 						alreadySpawned++;
-					} catch (final CannotSpawnException e) {
+					} catch (final Exception e) {
 						// Impossible to spawn the zombie, maybe because of lack
 						// of
 						// space
@@ -314,13 +346,17 @@ public class TribuSpawner {
 	 * @return
 	 */
 	public boolean tryStartNextWave() {
-		if (zombies.isEmpty() && finished && !starting) {
+		if (bukkitAssociation.isEmpty() && finished && !starting) {
 			starting = true;
 			plugin.messagePlayers(plugin.getLocale("Broadcast.WaveComplete"));
 			plugin.getWaveStarter().incrementWave();
 			plugin.getWaveStarter().scheduleWave(Constants.TicksBySecond * plugin.config().WaveStartDelay);
 		}
 		return starting;
+	}
+
+	public HashMap<Entity, TribuZombie> getBukkitAssociation() {
+		return bukkitAssociation;
 	}
 
 }

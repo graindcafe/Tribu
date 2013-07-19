@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright or © or Copr. Quentin Godron (2011)
+ * Copyright or ï¿½ or Copr. Quentin Godron (2011)
  * 
  * cafe.en.grain@gmail.com
  * 
@@ -133,7 +133,6 @@ public class LevelSelector implements Runnable {
 		}
 	}
 
-	@Override
 	public void run() {
 		taskID = -1;
 		votingEnabled = false;

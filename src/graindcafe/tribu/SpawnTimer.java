@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright or © or Copr. Quentin Godron (2011)
+ * Copyright or ï¿½ or Copr. Quentin Godron (2011)
  * 
  * cafe.en.grain@gmail.com
  * 
@@ -65,7 +65,6 @@ public class SpawnTimer implements Runnable {
 
 	}
 
-	@Override
 	public void run() {
 		if (plugin.isRunning() && plugin.getAliveCount() > 0 && !plugin.getSpawner().isWaveCompleted()) {
 			if (!plugin.getSpawner().spawnZombie()) plugin.getSpawner().checkZombies();

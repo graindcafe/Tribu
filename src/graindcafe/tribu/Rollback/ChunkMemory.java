@@ -3,11 +3,11 @@ package graindcafe.tribu.Rollback;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import net.minecraft.server.TileEntityMobSpawner;
-import net.minecraft.server.TileEntityNote;
-import net.minecraft.server.TileEntityPiston;
-import net.minecraft.server.TileEntityRecordPlayer;
-import net.minecraft.server.WorldServer;
+import net.minecraft.server.v1_6_R2.TileEntityMobSpawner;
+import net.minecraft.server.v1_6_R2.TileEntityNote;
+import net.minecraft.server.v1_6_R2.TileEntityPiston;
+import net.minecraft.server.v1_6_R2.TileEntityRecordPlayer;
+import net.minecraft.server.v1_6_R2.WorldServer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -15,7 +15,7 @@ import org.bukkit.ChunkSnapshot;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.v1_6_R2.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.InventoryHolder;
@@ -129,7 +129,7 @@ public class ChunkMemory implements Runnable {
 		final WorldServer world = ((CraftWorld) currentChunk.getWorld()).getHandle();
 		final int maxHeight = currentChunk.getWorld().getMaxHeight();
 		// suppress physics to stop falling lava and fire etc...
-		world.suppressPhysics = true;
+		world.isStatic = true;
 		if (!currentChunk.isLoaded()) while (currentChunk.load(false))
 			;
 		for (final Entity e : currentChunk.getEntities())
@@ -173,7 +173,7 @@ public class ChunkMemory implements Runnable {
 			iterator = snapMemory.iterator();
 		final Iterator<CraftWorld> wIterator = worlds.iterator();
 		while (wIterator.hasNext())
-			wIterator.next().getHandle().suppressPhysics = true;
+			wIterator.next().getHandle().isStatic = true;
 		while (iterator.hasNext())
 			restore(iterator.next());
 
@@ -185,7 +185,6 @@ public class ChunkMemory implements Runnable {
 	 * 
 	 * @see java.lang.Runnable#run()
 	 */
-	@Override
 	public void run() {
 		if (restoring && !busy) if (iterator.hasNext()) {
 			restore(iterator.next());
@@ -220,7 +219,7 @@ public class ChunkMemory implements Runnable {
 			iterator = snapMemory.iterator();
 			final Iterator<CraftWorld> wIterator = worlds.iterator();
 			while (wIterator.hasNext())
-				wIterator.next().getHandle().suppressPhysics = true;
+				wIterator.next().getHandle().isStatic = true;
 			taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this, 0, speed);
 		}
 	}
@@ -269,7 +268,7 @@ public class ChunkMemory implements Runnable {
 		// Reset suppress physics
 		final Iterator<CraftWorld> wIterator = worlds.iterator();
 		while (wIterator.hasNext())
-			wIterator.next().getHandle().suppressPhysics = false;
+			wIterator.next().getHandle().isStatic = false;
 		// Restoring is over
 		restoring = false;
 		// Clear memories

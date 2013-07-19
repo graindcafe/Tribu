@@ -1,15 +1,15 @@
 package graindcafe.tribu.Rollback;
 
-import net.minecraft.server.Block;
-import net.minecraft.server.IInventory;
-import net.minecraft.server.TileEntity;
-import net.minecraft.server.TileEntityChest;
-import net.minecraft.server.TileEntityDispenser;
-import net.minecraft.server.TileEntityFurnace;
+import net.minecraft.server.v1_6_R2.Block;
+import net.minecraft.server.v1_6_R2.IInventory;
+import net.minecraft.server.v1_6_R2.TileEntity;
+import net.minecraft.server.v1_6_R2.TileEntityChest;
+import net.minecraft.server.v1_6_R2.TileEntityDispenser;
+import net.minecraft.server.v1_6_R2.TileEntityFurnace;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.block.BlockState;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_6_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.InventoryHolder;
 
 public class EntryInventory extends EntryBlockState {
@@ -23,7 +23,8 @@ public class EntryInventory extends EntryBlockState {
 			final org.bukkit.inventory.ItemStack[] bItems = inventory.getInventory().getContents();
 			items = new CraftItemStack[bItems.length];
 			for (int i = 0; i < bItems.length; i++)
-				if (bItems[i] != null) items[i] = new CraftItemStack(bItems[i]);
+
+				if (bItems[i] != null) items[i] = CraftItemStack.asCraftCopy(bItems[i]);
 		} else
 			throw new WrongBlockException(Block.CHEST.id, world.getTypeId(x, y, z), x, y, z, world.getWorld());
 	}
@@ -36,7 +37,7 @@ public class EntryInventory extends EntryBlockState {
 		} else
 			max = items.length;
 		for (int i = 0; i < max; i++)
-			if (items[i] != null) inventory.setItem(i, items[i].getHandle());
+			if (items[i] != null) inventory.setItem(i, CraftItemStack.asNMSCopy(items[i]));
 	}
 
 	@Override

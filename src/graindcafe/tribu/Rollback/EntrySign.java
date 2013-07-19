@@ -1,7 +1,7 @@
 package graindcafe.tribu.Rollback;
 
-import net.minecraft.server.Block;
-import net.minecraft.server.TileEntitySign;
+import net.minecraft.server.v1_6_R2.Block;
+import net.minecraft.server.v1_6_R2.TileEntitySign;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.block.BlockState;

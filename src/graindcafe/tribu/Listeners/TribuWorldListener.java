@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright or © or Copr. Quentin Godron (2011)
+ * Copyright or ï¿½ or Copr. Quentin Godron (2011)
  * 
  * cafe.en.grain@gmail.com
  * 
@@ -35,9 +35,9 @@
 package graindcafe.tribu.Listeners;
 
 import graindcafe.tribu.Tribu;
-import graindcafe.tribu.TribuZombie.CraftTribuZombie;
 
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkUnloadEvent;
@@ -53,7 +53,7 @@ public class TribuWorldListener implements Listener {
 	@EventHandler
 	public void onChunkUnload(final ChunkUnloadEvent event) {
 		for (final Entity e : event.getChunk().getEntities())
-			if (e instanceof CraftTribuZombie) plugin.getSpawner().removedZombieCallback((CraftTribuZombie) e, true);
+			if (e instanceof Zombie) plugin.getSpawner().removedZombieCallback(e, true);
 	}
 
 	public void registerEvents(final PluginManager pm) {

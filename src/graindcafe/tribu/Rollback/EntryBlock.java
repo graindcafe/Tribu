@@ -1,6 +1,6 @@
 package graindcafe.tribu.Rollback;
 
-import net.minecraft.server.WorldServer;
+import net.minecraft.server.v1_6_R2.WorldServer;
 
 public class EntryBlock {
 	protected int			x, y, z;

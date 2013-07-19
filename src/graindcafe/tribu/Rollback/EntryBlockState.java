@@ -1,9 +1,9 @@
 package graindcafe.tribu.Rollback;
 
-import net.minecraft.server.WorldServer;
+import net.minecraft.server.v1_6_R2.WorldServer;
 
 import org.bukkit.block.BlockState;
-import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.v1_6_R2.CraftWorld;
 
 public abstract class EntryBlockState {
 	protected int			x, y, z;

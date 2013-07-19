@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright or © or Copr. Quentin Godron (2011)
+ * Copyright or ï¿½ or Copr. Quentin Godron (2011)
  * 
  * cafe.en.grain@gmail.com
  * 
@@ -50,13 +50,11 @@ import graindcafe.tribu.Listeners.TribuEntityListener;
 import graindcafe.tribu.Listeners.TribuPlayerListener;
 import graindcafe.tribu.Listeners.TribuWorldListener;
 import graindcafe.tribu.Rollback.ChunkMemory;
-import graindcafe.tribu.TribuZombie.EntityTribuZombie;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -67,8 +65,6 @@ import java.util.logging.Logger;
 
 import me.graindcafe.gls.DefaultLanguage;
 import me.graindcafe.gls.Language;
-import net.minecraft.server.EntityTypes;
-import net.minecraft.server.EntityZombie;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -173,7 +169,7 @@ public class Tribu extends JavaPlugin {
 					else
 						startRunning(config.LevelStartDelay);
 				else
-					broadcast("Broadcast.WaitingPlayers",waitingPlayers);
+					broadcast("Broadcast.WaitingPlayers", waitingPlayers);
 			} else if (getLevel() != null && isRunning) {
 				player.teleport(level.getDeathSpawn());
 				messagePlayer(player, language.get("Message.GameInProgress"));
@@ -191,7 +187,6 @@ public class Tribu extends JavaPlugin {
 	 */
 	public void addPlayer(final Player player, final double timeout) {
 		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-			@Override
 			public void run() {
 				addPlayer(player);
 			}
@@ -453,7 +448,7 @@ public class Tribu extends JavaPlugin {
 				put("Broadcast.VoteClosingInSeconds", ChatColor.DARK_AQUA + "Vote closing in %s seconds");
 				put("Broadcast.StartingWave", ChatColor.GRAY + "Starting wave " + ChatColor.DARK_RED + "%s" + ChatColor.GRAY + ", " + ChatColor.DARK_RED + "%s" + ChatColor.GRAY + " Zombies @ " + ChatColor.DARK_RED
 						+ "%s" + ChatColor.GRAY + " health");
-				put("Broadcast.WaitingPlayers",ChatColor.GRAY+"We are still waiting "+ChatColor.RED+" players to start.");
+				put("Broadcast.WaitingPlayers", ChatColor.GRAY + "We are still waiting " + ChatColor.RED + " players to start.");
 				put("Broadcast.Wave", ChatColor.DARK_GRAY + "Wave " + ChatColor.DARK_RED + "%s" + ChatColor.DARK_GRAY + " starting in " + ChatColor.DARK_RED + "%s" + ChatColor.DARK_GRAY + " seconds.");
 				put("Broadcast.WaveComplete", ChatColor.GOLD + "Wave Complete");
 				put("Info.LevelFound", ChatColor.YELLOW + "%s levels found");
@@ -570,8 +565,7 @@ public class Tribu extends JavaPlugin {
 	 * Load the custom config files, "per-world" and "per-level"
 	 */
 	protected void loadCustomConf() {
-		if(level!=null)
-			loadCustomConf(level.getName() + ".yml", level.getInitialSpawn().getWorld().getName() + ".yml");
+		if (level != null) loadCustomConf(level.getName() + ".yml", level.getInitialSpawn().getWorld().getName() + ".yml");
 	}
 
 	protected void loadCustomConf(final String levelName, final String worldName) {
@@ -699,18 +693,7 @@ public class Tribu extends JavaPlugin {
 				}
 			}
 		}
-		try {
-			final Method a = EntityTypes.class.getDeclaredMethod("a", Class.class, String.class, Integer.TYPE);
-			a.setAccessible(true);
-			
-			a.invoke(a, EntityTribuZombie.class, "Zombie", 54);
-			a.invoke(a, EntityZombie.class, "Zombie", 54);
 
-		} catch (final Exception e) {
-			setEnabled(false);
-			e.printStackTrace();
-			return;
-		}
 		// Before loading conf
 		players = new HashMap<Player, PlayerStats>();
 		// isRunning set to true to prevent start running at "loadCustomConf"
@@ -787,21 +770,19 @@ public class Tribu extends JavaPlugin {
 	 */
 	public void removePlayer(final Player player) {
 		Location point;
-		
+
 		if (player != null && players.containsKey(player)) {
 			if (isAlive(player)) aliveCount--;
 			if (!isRunning && waitingPlayers != -1 && waitingPlayers < config.LevelMinPlayers) waitingPlayers++;
-			broadcast("Broadcast.WaitingPlayers",waitingPlayers);
+			broadcast("Broadcast.WaitingPlayers", waitingPlayers);
 			sortedStats.remove(players.get(player));
 			inventorySave.restoreInventory(player);
 			players.remove(player);
 			Tribu.messagePlayer(player, getLocale("Message.YouLeft"));
 			point = spawnPoint.remove(player);
-			if (point != null)
-				player.setBedSpawnLocation(point);
+			if (point != null) player.setBedSpawnLocation(point);
 			point = beforePoint.remove(player);
-			if (point != null)
-				player.teleport(point);
+			if (point != null) player.teleport(point);
 			// check alive AFTER player remove
 			checkAliveCount();
 			// remove vote AFTER player remove
@@ -909,21 +890,17 @@ public class Tribu extends JavaPlugin {
 		}
 		return true;
 	}
-	public LinkedList<String> whyNotStarting()
-	{
-		LinkedList<String> resp=new LinkedList<String>();
-		if(isRunning)
-			resp.add("Already running");
-		if(getLevel()==null)
-			resp.add("Level not loaded");
-		if(waitingPlayers!=0)
-			resp.add("Waiting "+waitingPlayers+" players");
+
+	public LinkedList<String> whyNotStarting() {
+		LinkedList<String> resp = new LinkedList<String>();
+		if (isRunning) resp.add("Already running");
+		if (getLevel() == null) resp.add("Level not loaded");
+		if (waitingPlayers != 0) resp.add("Waiting " + waitingPlayers + " players");
 		return resp;
 	}
-	public boolean forceStart()
-	{
-		if(getLevel()==null)
-			return false;
+
+	public boolean forceStart() {
+		if (getLevel() == null) return false;
 		// Before (next instruction) it will saves current default
 		// packages to the level, saving theses packages with the level
 		addDefaultPackages();
@@ -971,6 +948,7 @@ public class Tribu extends JavaPlugin {
 		return true;
 
 	}
+
 	/**
 	 * Start the game in n seconds
 	 * 
@@ -992,7 +970,6 @@ public class Tribu extends JavaPlugin {
 		final int taskId = getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 			private float	counter	= timeout;
 
-			@Override
 			public void run() {
 				if (counter <= 0f)
 					startRunning();
@@ -1003,7 +980,6 @@ public class Tribu extends JavaPlugin {
 			}
 		}, 0, Math.round(step * Constants.TicksBySecond));
 		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-			@Override
 			public void run() {
 				getServer().getScheduler().cancelTask(taskId);
 			}
@@ -1039,5 +1015,11 @@ public class Tribu extends JavaPlugin {
 			waitingPlayers = -1;
 		}
 
+	}
+
+	static Random	rand	= new Random();
+
+	public static Random getRandom() {
+		return rand;
 	}
 }

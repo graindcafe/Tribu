@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright or © or Copr. Quentin Godron (2011)
+ * Copyright or ï¿½ or Copr. Quentin Godron (2011)
  * 
  * cafe.en.grain@gmail.com
  * 
@@ -46,7 +46,7 @@ public class WaveStarter implements Runnable {
 	private int			taskID;
 	private int			waveNumber;
 	private int			zombieDamage;
-	private int	health;
+	private int			health;
 
 	public WaveStarter(final Tribu instance) {
 		plugin = instance;
@@ -84,6 +84,7 @@ public class WaveStarter implements Runnable {
 	public int getCurrentDamage() {
 		return zombieDamage;
 	}
+
 	public int getCurrentHealth() {
 		return health;
 	}
@@ -100,7 +101,6 @@ public class WaveStarter implements Runnable {
 		waveNumber = 1;
 	}
 
-	@Override
 	public void run() {
 		if (plugin.isRunning()) {
 			if (plugin.config().WaveStartTeleportPlayers) for (final Player p : plugin.getPlayers())
