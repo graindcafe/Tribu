@@ -168,10 +168,11 @@ public class TribuSpawner {
 	public Location getFirstZombieLocation() {
 		if (alreadySpawned > 0)
 			if (!bukkitAssociation.isEmpty()) {
-				plugin.LogInfo("Health : " + bukkitAssociation.get(0).getControl().getEntity().getHealth());
-				plugin.LogInfo("LastDamage : " + bukkitAssociation.get(0).getControl().getEntity().getLastDamage());
-				plugin.LogInfo("isDead : " + bukkitAssociation.get(0).getControl().getEntity().isDead());
-				return bukkitAssociation.get(0).getControl().getEntity().getLocation();
+				LivingEntity e = bukkitAssociation.entrySet().iterator().next().getValue().getControl().getEntity();
+				plugin.LogInfo("Health : " + e.getHealth());
+				plugin.LogInfo("LastDamage : " + e.getLastDamage());
+				plugin.LogInfo("isDead : " + e.isDead());
+				return e.getLocation();
 			} else {
 				plugin.getSpawnTimer().getState();
 				plugin.LogSevere("There is " + bukkitAssociation.size() + " zombie alive of " + alreadySpawned + "/" + totalToSpawn + " spawned . The wave is " + (finished ? "finished" : "in progress"));
@@ -327,6 +328,7 @@ public class TribuSpawner {
 						// Impossible to spawn the zombie, maybe because of lack
 						// of
 						// space
+						e.printStackTrace();
 					}
 					justspawned = false;
 				}
