@@ -89,14 +89,15 @@
 				<executions>
 					<execution>
 						<id>unpack-dependencies</id>
-						<phase>package</phase>
+						<phase>prepare-package</phase>
 						<goals>
 							<goal>unpack-dependencies</goal>
 						</goals>
 						<configuration>
-							<includeArtifactIds>GLS</includeArtifactIds>
-							<includes>**/*.class</includes>
-							<excludes>**/*.properties</excludes>
+							<includeArtifactIds>GLS,Controllable-Mobs-API</includeArtifactIds>
+							
+							<includes>de/ntcomputer/minecraft/controllablemobs/implementation/*.class,de/ntcomputer/minecraft/controllablemobs/api/*.class,de/ntcomputer/minecraft/controllablemobs/api/**/*.class,de/ntcomputer/minecraft/controllablemobs/implementation/**/*.class,me/graindcafe/*/**.class</includes>
+							<excludes>**/*.properties,**/ControllableMobsAPIPlugin.class,**/plugin.yml</excludes>
 							<outputDirectory>${project.build.directory}/classes/</outputDirectory>
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>true</overWriteSnapshots>
