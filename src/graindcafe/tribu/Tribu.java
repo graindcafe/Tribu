@@ -971,9 +971,9 @@ public class Tribu extends JavaPlugin {
 			private float	counter	= timeout;
 
 			public void run() {
-				if (counter <= 0f)
+				if (counter <= 0f) {
 					startRunning();
-				else if (broadcastTime.isEmpty())
+				} else if (broadcastTime.isEmpty())
 					messagePlayers(getLocale("Broadcast.GameStarting"));
 				else if (broadcastTime.peek() >= counter) messagePlayers("Broadcast.GameStartingSoon", broadcastTime.pop());
 				counter -= step;
@@ -983,7 +983,7 @@ public class Tribu extends JavaPlugin {
 			public void run() {
 				getServer().getScheduler().cancelTask(taskId);
 			}
-		}, (long) (Math.ceil(timeout * Constants.TicksBySecond) + 1));
+		}, (long) (Math.ceil(step * Constants.TicksBySecond) + 1));
 
 	}
 
