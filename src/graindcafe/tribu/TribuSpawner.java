@@ -315,7 +315,7 @@ public class TribuSpawner {
 							for (int i = 0; i < 5; i++)
 								zomb.getControl().getActions().target(plugin.getRandomPlayer(), true);
 						zomb.getControl().getAttributes().setMaximumNavigationDistance(Double.POSITIVE_INFINITY);
-						zomb.getControl().getProperties().setMovementSpeed(((plugin.config().ZombiesSpeedRandom) ? .1f + (Tribu.getRandom().nextFloat() / 3f) : .25f) + (plugin.config().ZombiesSpeedBase - .25f));
+						zomb.getControl().getProperties().setMovementSpeed(((plugin.config().ZombiesSpeedRandom) ? .1f + (.25f * Tribu.getRandom().nextFloat() / 3f) : .25f) + (plugin.config().ZombiesSpeedBase * .25f));
 						bukkitAssociation.put(zombie, zomb);
 						// Rush speed
 						// sun proof
