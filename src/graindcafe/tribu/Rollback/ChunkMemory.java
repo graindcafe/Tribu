@@ -212,6 +212,7 @@ public class ChunkMemory implements Runnable {
 	public void startRestoring(final JavaPlugin plugin, int speed) {
 		if (!restoring) {
 			stopCapturing();
+			if (snapMemory.isEmpty()) return;
 			debugMsg("Start restoring : " + snapMemory.size());
 			restoring = true;
 			speed = 21 - speed / 5;
