@@ -166,20 +166,18 @@ public class TribuSpawner {
 	 * @return location of a living zombie
 	 */
 	public Location getFirstZombieLocation() {
-		if (alreadySpawned > 0)
-			if (!bukkitAssociation.isEmpty()) {
-				LivingEntity e = bukkitAssociation.entrySet().iterator().next().getValue().getControl().getEntity();
-				plugin.LogInfo("Health : " + e.getHealth());
-				plugin.LogInfo("LastDamage : " + e.getLastDamage());
-				plugin.LogInfo("isDead : " + e.isDead());
-				return e.getLocation();
-			} else {
-				plugin.getSpawnTimer().getState();
-				plugin.LogSevere("There is " + bukkitAssociation.size() + " zombie alive of " + alreadySpawned + "/" + totalToSpawn + " spawned . The wave is " + (finished ? "finished" : "in progress"));
-				return null;
-			}
-		else
+		if (alreadySpawned > 0 && !bukkitAssociation.isEmpty()) {
+			LivingEntity e = bukkitAssociation.entrySet().iterator().next().getValue().getControl().getEntity();
+			plugin.LogInfo("Health : " + e.getHealth());
+			plugin.LogInfo("LastDamage : " + e.getLastDamage());
+			plugin.LogInfo("isDead : " + e.isDead());
+			return e.getLocation();
+		} else {
+			plugin.getSpawnTimer().getState();
+			plugin.LogSevere("There is " + bukkitAssociation.size() + " zombie alive of " + alreadySpawned + "/" + totalToSpawn + " spawned . The wave is "
+					+ (starting ? "starting" : (finished ? "finished" : "in progress")));
 			return null;
+		}
 	}
 
 	/**
