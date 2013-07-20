@@ -236,7 +236,7 @@ public class TribuSpawner {
 	public void removedZombieCallback(final CraftTribuZombie e, final boolean removeReward) {
 		if (e != null) {
 			if (removeReward) e.setNoAttacker();
-			e.damage(Integer.MAX_VALUE);
+			e.remove();
 		}
 		zombies.remove(e);
 		alreadySpawned--;

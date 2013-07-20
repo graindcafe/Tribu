@@ -168,7 +168,7 @@ public class Tribu extends JavaPlugin {
 				waitingPlayers--;
 				if (waitingPlayers == 0) // No need to delay if everyone is
 											// playing
-					if (config.PluginModeServerExclusive)
+					if (config.PluginModeServerExclusive || getServer().getOnlinePlayers().length == players.size())
 						startRunning();
 					else
 						startRunning(config.LevelStartDelay);
@@ -284,11 +284,11 @@ public class Tribu extends JavaPlugin {
 		isRunning = true;
 		if (config.PluginModeServerExclusive || config.PluginModeWorldExclusive)
 			for (final LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
-				if (!(e instanceof Player) && !(e instanceof Wolf) && !(e instanceof Villager)) e.damage(Integer.MAX_VALUE);
+				if (!(e instanceof Player) && !(e instanceof Wolf) && !(e instanceof Villager)) e.remove();
 			}
 		else
 			for (final LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities())
-				if ((e.getLocation().distance(level.getInitialSpawn())) < config.LevelClearZone && !(e instanceof Player) && !(e instanceof Wolf) && !(e instanceof Villager)) e.damage(Integer.MAX_VALUE);
+				if ((e.getLocation().distance(level.getInitialSpawn())) < config.LevelClearZone && !(e instanceof Player) && !(e instanceof Wolf) && !(e instanceof Villager)) e.remove();
 		if (config.PlayersRollback) {
 			// If there is a restoring operation currently, do it
 			// quickly
@@ -988,7 +988,7 @@ public class Tribu extends JavaPlugin {
 			public void run() {
 				getServer().getScheduler().cancelTask(taskId);
 			}
-		}, (long) (Math.ceil(step * Constants.TicksBySecond) + 1));
+		}, (long) (Math.ceil((timeout + 1) * Constants.TicksBySecond - 1)));
 
 	}
 

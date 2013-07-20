@@ -108,7 +108,7 @@ public class PathfinderGoalMoveTo extends PathfinderGoal {
 		// move stuff
 		// I have no idea what "g()" is... but it's from
 		// PathfinderGoalMoveTowardsRetriction.b()
-		return trueDebugMsg("testing navigation") && (!creature.getNavigation().g()) && //
+		return trueDebugMsg("testing navigation") && (creature.getNavigation().g()) && //
 				((trueDebugMsg("testing distance") && (creature.f(x, y, z) < squaredActiveDistance) && trueDebugMsg("distance ok")) || falseDebugMsg("distance ko"));
 
 	}

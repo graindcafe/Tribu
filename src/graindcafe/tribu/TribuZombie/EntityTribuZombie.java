@@ -69,9 +69,11 @@ import net.minecraft.server.v1_6_R2.NBTTagCompound;
 import net.minecraft.server.v1_6_R2.PathfinderGoalBreakDoor;
 import net.minecraft.server.v1_6_R2.PathfinderGoalFloat;
 import net.minecraft.server.v1_6_R2.PathfinderGoalHurtByTarget;
+import net.minecraft.server.v1_6_R2.PathfinderGoalLookAtPlayer;
 import net.minecraft.server.v1_6_R2.PathfinderGoalMeleeAttack;
-import net.minecraft.server.v1_6_R2.PathfinderGoalMoveTowardsRestriction;
 import net.minecraft.server.v1_6_R2.PathfinderGoalNearestAttackableTarget;
+import net.minecraft.server.v1_6_R2.PathfinderGoalRandomLookaround;
+import net.minecraft.server.v1_6_R2.PathfinderGoalRandomStroll;
 import net.minecraft.server.v1_6_R2.World;
 import net.minecraft.server.v1_6_R2.WorldServer;
 
@@ -80,7 +82,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 public class EntityTribuZombie extends EntityMonster {
 
 	protected static final IAttribute		bp	= (new AttributeRanged("zombie.spawnReinforcements", 0.0D, 0.0D, 1.0D)).a("Spawn Reinforcements Chance");
-	private static final UUID				bq	= UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
+	private static final UUID				bq	= UUID.randomUUID();
 	private static final AttributeModifier	br	= new AttributeModifier(bq, "Baby speed boost", 0.5D, 1);
 
 	public static EntityTribuZombie spawn(final Tribu plugin, final WorldServer world, final double x, final double y, final double z) throws CannotSpawnException {
@@ -98,12 +100,14 @@ public class EntityTribuZombie extends EntityMonster {
 
 	@SuppressWarnings("unused")
 	private Tribu					plugin;
-	private final int				maxHealth				= 20;
+	private int						maxHealth				= 20;
 	private boolean					sunProof				= true;
 	protected int					d						= 0;
-	private final int				damage					= 4;
-	private float					normalSpeed;
-	private float					rushSpeedCoef;
+	private int						damage					= 3;
+	final double					baseSpeed				= 0.23000000417232513D;
+	private final double			normalSpeed				= 0.23000000417232513D;
+	private double					rushSpeed				= 0.23000000417232513D;
+	private final double			followRange				= 40d;
 	private static final IAttribute	attrMaxHealth			= GenericAttributes.a;
 	private static final IAttribute	attrFollowRange			= GenericAttributes.b;
 	private static final IAttribute	attrKnockbackResistance	= GenericAttributes.c;
@@ -115,39 +119,48 @@ public class EntityTribuZombie extends EntityMonster {
 		// fireProof = plugin.config().ZombiesFireProof;
 		sunProof = plugin.config().ZombiesFireProof || plugin.config().ZombiesSunProof;
 		// from 0.85 to 1.18
-		final float normalSpeedCoef = ((plugin.config().ZombiesSpeedRandom) ? .1f + (random.nextFloat() / 3f) : .25f) + (plugin.config().ZombiesSpeedBase - .25f);
+		final double normalSpeedCoef = ((plugin.config().ZombiesSpeedRandom) ? .1d + (random.nextDouble() / 3d) : .25d) + (plugin.config().ZombiesSpeedBase * .75d);
+		final double rushSpeedCoef = ((plugin.config().ZombiesSpeedRandom) ? (random.nextDouble() / 2d) : .25d) + (plugin.config().ZombiesSpeedRush - .25d);
 		// from 1 to 1.77
 		// .85 * 1.18 = 1 and we'll have normalSpeed * rushSpeed * speed, if
 		// normalSpeed=.85 * rushSpeed=1 = 1
-		normalSpeed = 0.23F * normalSpeedCoef;
-		rushSpeedCoef = ((1 / normalSpeedCoef) * (((plugin.config().ZombiesSpeedRandom) ? (random.nextFloat() / 2f) : .25f) + (plugin.config().ZombiesSpeedRush - .25f)));
-		// Speed: 0.23 normal speed
 
-		getAttributeInstance(attrSpeed).setValue(normalSpeed);
-		getAttributeInstance(attrAttackDamage).setValue(plugin.getWaveStarter().getCurrentDamage());
-		getAttributeInstance(attrMaxHealth).setValue(plugin.getWaveStarter().getCurrentHealth());
+		// normalSpeed *= normalSpeedCoef;// * normalSpeedCoef;
+
+		rushSpeed = rushSpeedCoef;
+		// Speed: 0.23 normal speed
+		damage = plugin.getWaveStarter().getCurrentDamage();
+		maxHealth = plugin.getWaveStarter().getCurrentHealth();
+		this.plugin = plugin;
+		// getAttributeInstance(attrSpeed).setValue(baseSpeed);
+		// getAttributeInstance(attrAttackDamage).setValue(damage);
 		// this.getAttributeInstance(attrKnockbackResistance)
 		// this.getAttributeInstance(attrFollowRange)
-
+		// getAttributeInstance(attrMaxHealth).setValue(maxHealth);
 		// Can break wooden door ?
 		getNavigation().b(true);
 		goalSelector.a(0, new PathfinderGoalFloat(this));
 		goalSelector.a(1, new PathfinderGoalBreakDoor(this));
-		goalSelector.a(2, new PathfinderGoalMeleeAttack(this, EntityHuman.class, normalSpeed * rushSpeedCoef, false));
-		goalSelector.a(3, new PathfinderGoalMeleeAttack(this, EntityVillager.class, normalSpeed * rushSpeedCoef, true));
-
+		goalSelector.a(2, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1d, false));
+		goalSelector.a(3, new PathfinderGoalMeleeAttack(this, EntityVillager.class, rushSpeedCoef, true));
+		// goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this,
+		// 1.0D));
 		final FocusType focus = plugin.config().ZombiesFocus;
-
-		if (focus.equals(FocusType.None))
-			goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this, normalSpeed));
-		else if (focus.equals(FocusType.NearestPlayer) || focus.equals(FocusType.RandomPlayer))
-			goalSelector.a(4, new PathfinderGoalTrackPlayer(plugin, focus.equals(FocusType.RandomPlayer), this, normalSpeed * rushSpeedCoef, 8f));
+		if (focus.equals(FocusType.None)) {
+			// goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this,
+			// normalSpeed));
+			goalSelector.a(5, new PathfinderGoalRandomStroll(this, normalSpeed));
+		} else if (focus.equals(FocusType.NearestPlayer) || focus.equals(FocusType.RandomPlayer)) {
+			goalSelector.a(5, new PathfinderGoalTrackPlayer(plugin, focus.equals(FocusType.RandomPlayer), this, normalSpeedCoef, 4f));
+		}
 		// this.goalSelector.a(5, new PathfinderGoalTrackPlayer(this, plugin,
 		// focus.equals(FocusType.RandomPlayer), this.bb, true));
 		else if (focus.equals(FocusType.InitialSpawn) || focus.equals(FocusType.DeathSpawn))
-			goalSelector.a(4, new PathfinderGoalMoveTo(this, focus.equals(FocusType.InitialSpawn) ? plugin.getLevel().getInitialSpawn() : plugin.getLevel().getDeathSpawn(), normalSpeed * normalSpeedCoef, 4f));
+			goalSelector.a(5, new PathfinderGoalMoveTo(this, focus.equals(FocusType.InitialSpawn) ? plugin.getLevel().getInitialSpawn() : plugin.getLevel().getDeathSpawn(), (float) normalSpeed, 4f));
+		this.goalSelector.a(6, new PathfinderGoalRandomStroll(this, 1.0D));
+		this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+		this.goalSelector.a(7, new PathfinderGoalRandomLookaround(this));
 
-		this.plugin = plugin;
 		targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true));
 		targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, 0, true));
 		targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityVillager.class, 0, false));
@@ -290,7 +303,7 @@ public class EntityTribuZombie extends EntityMonster {
 	@Override
 	protected void ay() {
 		super.ay();
-		getAttributeInstance(attrFollowRange).setValue(40.0D);
+		getAttributeInstance(attrFollowRange).setValue(followRange);
 		getAttributeInstance(attrSpeed).setValue(normalSpeed);
 		getAttributeInstance(attrAttackDamage).setValue(damage);
 		aW().b(bp).setValue(random.nextDouble() * 0.10000000149011612D);
