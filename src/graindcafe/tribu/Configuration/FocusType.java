@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package graindcafe.tribu.Configuration;
 
 public enum FocusType implements TribuEnum {

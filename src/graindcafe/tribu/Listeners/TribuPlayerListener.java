@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright or © or Copr. Quentin Godron (2011)
+ * Copyright or ï¿½ or Copr. Quentin Godron (2011)
  * 
  * cafe.en.grain@gmail.com
  * 
@@ -78,12 +78,9 @@ public class TribuPlayerListener implements Listener {
 			if (block != null && Sign.class.isInstance(block.getState()) && plugin.getLevel() != null) {
 				if (plugin.isRunning() && plugin.isPlaying(event.getPlayer())) {
 					if (event.getAction() == Action.RIGHT_CLICK_BLOCK) plugin.getLevel().onSignClicked(event);
-				} else if (event.getPlayer().hasPermission("tribu.signs.place")) {
-					if (plugin.getLevel().removeSign(block.getLocation()))
-						Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.TribuSignRemoved"));
-					else if (plugin.getLevel().addSign(TribuSign.getObject(plugin, block.getLocation())))
-						Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.TribuSignAdded"));
-				}
+				} else if (event.getPlayer().hasPermission("tribu.signs.place")) if (plugin.getLevel().removeSign(block.getLocation()))
+					Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.TribuSignRemoved"));
+				else if (plugin.getLevel().addSign(TribuSign.getObject(plugin, block.getLocation()))) Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.TribuSignAdded"));
 			} else if (plugin.isRunning()) plugin.getLevel().onClick(event);
 		}
 	}

@@ -404,7 +404,7 @@ public class CmdTribu implements CommandExecutor {
 				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
 				return true;
 			}
-			for (String msg : plugin.whyNotStarting())
+			for (final String msg : plugin.whyNotStarting())
 				Tribu.messagePlayer(sender, msg);
 			if (plugin.forceStart()) Tribu.messagePlayer(sender, plugin.getLocale("Message.ZombieModeEnabled"));
 			return true;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright or � or Copr. Quentin Godron (2011)
+ * Copr. Quentin Godron (2011)
  * 
  * cafe.en.grain@gmail.com
  * 
@@ -36,14 +36,13 @@ package graindcafe.tribu.Listeners;
 
 import graindcafe.tribu.PlayerStats;
 import graindcafe.tribu.Tribu;
-import graindcafe.tribu.TribuZombie;
+import graindcafe.tribu.TribuZombie.CraftTribuZombie;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -56,7 +55,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 
 public class TribuEntityListener implements Listener {
-
 	private final Tribu	plugin;
 
 	public TribuEntityListener(final Tribu instance) {
@@ -71,55 +69,46 @@ public class TribuEntityListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onEntityDamage(final EntityDamageEvent dam) {
-		if (!dam.isCancelled() && plugin.isRunning()) if (dam.getEntity() instanceof Player) {
-			final Player p = (Player) dam.getEntity();
-			if (plugin.isPlaying(p)) {
-				if (p.getHealth() - dam.getDamage() <= 0) {
-					dam.setCancelled(true);
-					p.setNoDamageTicks(20 + p.getFireTicks());
-					p.setFireTicks(1);
-					p.setFallDistance(0f);
-					p.teleport(plugin.getLevel().getDeathSpawn());
-					p.setHealth(1);
-					if (plugin.isAlive(p)) {
-						if (!plugin.config().PlayersDontLooseItem) {
-							for (final ItemStack is : p.getInventory())
-								if (is != null) p.getLocation().getWorld().dropItemNaturally(p.getLocation(), is.clone());
-							p.getInventory().clear();
+		if (!dam.isCancelled() && plugin.isRunning())
+			if (dam.getEntity() instanceof Player) {
+				final Player p = (Player) dam.getEntity();
+				if (plugin.isPlaying(p)) {
+					if (p.getHealth() - dam.getDamage() <= 0) {
+						dam.setCancelled(true);
+						p.setNoDamageTicks(20 + p.getFireTicks());
+						p.setFireTicks(1);
+						p.setFallDistance(0f);
+						p.teleport(plugin.getLevel().getDeathSpawn());
+						p.setHealth(1);
+						if (plugin.isAlive(p)) {
+							if (!plugin.config().PlayersDontLooseItem) {
+								for (final ItemStack is : p.getInventory())
+									if (is != null) p.getLocation().getWorld().dropItemNaturally(p.getLocation(), is.clone());
+								p.getInventory().clear();
+							}
+							plugin.setDead(p);
 						}
-						plugin.setDead(p);
+
+					} else if (!plugin.isAlive(p)) {
+						dam.setCancelled(true);
+						p.setNoDamageTicks(5);
 					}
+				} else
+					plugin.restoreInventory(p);
+			} else if (dam.getEntity() instanceof CraftTribuZombie)
+				if (plugin.isRunning() && (dam.getCause() == DamageCause.ENTITY_ATTACK || dam.getCause() == DamageCause.PROJECTILE || dam.getCause() == DamageCause.POISON)) {
+					final EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) dam;
 
-				} else if (!plugin.isAlive(p)) {
-					dam.setCancelled(true);
-					p.setNoDamageTicks(5);
+					final CraftTribuZombie zomb = (CraftTribuZombie) event.getEntity();
+					Player p = null;
+					if (event.getDamager() instanceof Projectile) {
+						final Projectile pj = (Projectile) event.getDamager();
+						if (pj.getShooter() instanceof Player) p = (Player) pj.getShooter();
+					} else if (event.getDamager() instanceof Player)
+						p = (Player) event.getDamager();
+					else if (zomb.getTarget() instanceof Player) p = (Player) zomb.getTarget();
+					if (p != null) zomb.addAttack(p, event.getDamage());
 				}
-			} else
-				plugin.restoreInventory(p);
-		} else if (dam.getEntity() instanceof Zombie) {
-			TribuZombie zomb = plugin.getSpawner().getBukkitAssociation().get(dam.getEntity());
-			if (zomb == null) return;
-			if (dam.getCause().equals(DamageCause.FIRE_TICK) && plugin.config().ZombiesFireProof) {
-				dam.setCancelled(true);
-				dam.getEntity().setFireTicks(0);
-				return;
-			}
-
-			if (plugin.isRunning() && (dam.getCause() == DamageCause.ENTITY_ATTACK || dam.getCause() == DamageCause.PROJECTILE || dam.getCause() == DamageCause.POISON)) {
-				final EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) dam;
-
-				Player p = null;
-				if (event.getDamager() instanceof Projectile) {
-					final Projectile pj = (Projectile) event.getDamager();
-					if (pj.getShooter() instanceof Player) p = (Player) pj.getShooter();
-				} else if (event.getDamager() instanceof Player)
-					p = (Player) event.getDamager();
-				else if (zomb.getControl().getEntity().getTarget() instanceof Player) p = (Player) zomb.getControl().getEntity().getTarget();
-
-				if (p != null) zomb.addAttack(p, event.getDamage());
-			}
-
-		}
 	}
 
 	@EventHandler
@@ -134,10 +123,9 @@ public class TribuEntityListener implements Listener {
 				event.getDrops().clear();
 			}
 
-		} else if (event.getEntity() instanceof Zombie) {
-			// final Zombie zombie = (Zombie) event.getEntity();
-			TribuZombie zombie = plugin.getSpawner().getBukkitAssociation().get(event.getEntity());
-			if (zombie == null) return;
+		} else if (event.getEntity() instanceof CraftTribuZombie) {
+			final CraftTribuZombie zombie = (CraftTribuZombie) event.getEntity();
+
 			final HashMap<Player, Double> rewards = new HashMap<Player, Double>();
 			final String rewardMethod = plugin.config().StatsRewardMethod;
 			final boolean onlyForAlive = plugin.config().StatsRewardOnlyAlive;
@@ -159,7 +147,7 @@ public class TribuEntityListener implements Listener {
 			for (final Entry<Player, Double> entry : rewards.entrySet()) {
 				player = entry.getKey();
 				percentage = entry.getValue();
-				if (player == null && zombie.getControl().getEntity().getTarget() instanceof Player) player = (Player) zombie.getControl().getEntity().getTarget();
+				if (player == null && zombie.getTarget() instanceof Player) player = (Player) zombie.getTarget();
 				if (player != null && player.isOnline() && !(onlyForAlive && player.isDead())) {
 					final PlayerStats stats = plugin.getStats(player);
 					if (stats != null) {
@@ -168,12 +156,12 @@ public class TribuEntityListener implements Listener {
 						stats.msgStats();
 						// Removed 24/06 : why is it here ?
 						// plugin.getLevel().onWaveStart();
-					}
-				}
-			}
-
-			plugin.getSpawner().despawnZombie(zombie, event.getDrops());
 		}
+	}
+}
+
+plugin.getSpawner().despawnZombie(zombie, event.getDrops());
+}
 	}
 
 	public void registerEvents(final PluginManager pm) {

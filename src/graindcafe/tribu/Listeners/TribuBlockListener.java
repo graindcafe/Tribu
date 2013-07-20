@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright or © or Copr. Quentin Godron (2011)
+ * Copr. Quentin Godron (2011)
  * 
  * cafe.en.grain@gmail.com
  * 
@@ -67,7 +67,10 @@ public class TribuBlockListener implements Listener {
 				event.setCancelled(true);
 			}
 		} else if (plugin.isRunning() && plugin.isPlaying(event.getPlayer()) && !(event.getPlayer().hasPermission("tribu.super.break") || plugin.config().PlayersAllowBreak)) event.setCancelled(true);
-		//else Logger.getLogger("Minecraft").info(event.getPlayer().hasPermission("tribu.super.break") ? "has permission" : plugin.config().PlayersAllowBreak ? "allowed" : "disallowed");
+		// else
+		// Logger.getLogger("Minecraft").info(event.getPlayer().hasPermission("tribu.super.break")
+		// ? "has permission" : plugin.config().PlayersAllowBreak ? "allowed" :
+		// "disallowed");
 	}
 
 	@EventHandler

@@ -12,12 +12,6 @@
 			<type>jar</type>
 		</dependency>
 		<dependency>
-			<groupId>graindcafe</groupId>
-			<artifactId>Controllable-Mobs-API</artifactId>
-			<version>4.0-SNAPSHOT</version>
-			<type>jar</type>
-		</dependency>
-		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
 			<version>1.6.2-R0.1-SNAPSHOT</version>
@@ -94,10 +88,10 @@
 							<goal>unpack-dependencies</goal>
 						</goals>
 						<configuration>
-							<includeArtifactIds>GLS,Controllable-Mobs-API</includeArtifactIds>
+							<includeArtifactIds>GLS</includeArtifactIds>
 							
-							<includes>de/ntcomputer/minecraft/controllablemobs/implementation/*.class,de/ntcomputer/minecraft/controllablemobs/api/*.class,de/ntcomputer/minecraft/controllablemobs/api/**/*.class,de/ntcomputer/minecraft/controllablemobs/implementation/**/*.class,me/graindcafe/*/**.class</includes>
-							<excludes>**/*.properties,**/ControllableMobsAPIPlugin.class,**/plugin.yml</excludes>
+							<includes>me/graindcafe/*/**.class</includes>
+							<excludes>**/*.properties,**/plugin.yml</excludes>
 							<outputDirectory>${project.build.directory}/classes/</outputDirectory>
 							<overWriteReleases>false</overWriteReleases>
 							<overWriteSnapshots>true</overWriteSnapshots>

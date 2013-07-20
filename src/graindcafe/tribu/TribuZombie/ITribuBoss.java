@@ -32,31 +32,21 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package graindcafe.tribu.Listeners;
+package graindcafe.tribu.TribuZombie;
 
-import graindcafe.tribu.Tribu;
-import graindcafe.tribu.TribuZombie.CraftTribuZombie;
+import java.util.List;
 
-import org.bukkit.entity.Entity;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.world.ChunkUnloadEvent;
-import org.bukkit.plugin.PluginManager;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
-public class TribuWorldListener implements Listener {
-	private final Tribu	plugin;
+public interface ITribuBoss {
 
-	public TribuWorldListener(final Tribu instance) {
-		plugin = instance;
-	}
+	public double getElapsedTime();
 
-	@EventHandler
-	public void onChunkUnload(final ChunkUnloadEvent event) {
-		for (final Entity e : event.getChunk().getEntities())
-			if (e instanceof CraftTribuZombie) plugin.getSpawner().removedZombieCallback((CraftTribuZombie) e, true);
-	}
+	public int getHealth();
 
-	public void registerEvents(final PluginManager pm) {
-		pm.registerEvents(this, plugin);
-	}
+	public List<Player> getPlayers();
+
+	public Location getPositon();
+
 }

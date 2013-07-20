@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package graindcafe.tribu.Configuration;
 
 public interface TribuEnum {

@@ -103,9 +103,8 @@ public class WaveStarter implements Runnable {
 
 	public void run() {
 		if (plugin.isRunning()) {
-			if (plugin.config().WaveStartTeleportPlayers) //
-				for (final Player p : plugin.getPlayers())
-					p.teleport(plugin.getLevel().getInitialSpawn());
+			if (plugin.config().WaveStartTeleportPlayers) for (final Player p : plugin.getPlayers())
+				p.teleport(plugin.getLevel().getInitialSpawn());
 			if (plugin.config().WaveStartSetTime) plugin.getLevel().getInitialSpawn().getWorld().setTime(plugin.config().WaveStartSetTimeTo);
 			final int max = calcPolynomialFunction(waveNumber, plugin.config().ZombiesQuantity);
 			health = calcPolynomialFunction(waveNumber, plugin.config().ZombiesHealth);

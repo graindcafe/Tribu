@@ -50,11 +50,13 @@ import graindcafe.tribu.Listeners.TribuEntityListener;
 import graindcafe.tribu.Listeners.TribuPlayerListener;
 import graindcafe.tribu.Listeners.TribuWorldListener;
 import graindcafe.tribu.Rollback.ChunkMemory;
+import graindcafe.tribu.TribuZombie.EntityTribuZombie;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -65,6 +67,8 @@ import java.util.logging.Logger;
 
 import me.graindcafe.gls.DefaultLanguage;
 import me.graindcafe.gls.Language;
+import net.minecraft.server.v1_6_R2.EntityTypes;
+import net.minecraft.server.v1_6_R2.EntityZombie;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -259,6 +263,56 @@ public class Tribu extends JavaPlugin {
 	 */
 	public TribuConfig config() {
 		return config;
+	}
+
+	public boolean forceStart() {
+		if (getLevel() == null) return false;
+		// Before (next instruction) it will saves current default
+		// packages to the level, saving theses packages with the level
+		addDefaultPackages();
+		// Make sure no data is lost if server decides to die
+		// during a game and player forgot to /level save
+		if (!getLevelLoader().saveLevel(getLevel()))
+			LogWarning(language.get("Warning.UnableToSaveLevel"));
+		else
+			LogInfo(language.get("Info.LevelSaved"));
+		if (getLevel().getSpawns().isEmpty()) {
+			LogWarning(language.get("Warning.NoSpawns"));
+			return false;
+		}
+
+		isRunning = true;
+		if (config.PluginModeServerExclusive || config.PluginModeWorldExclusive)
+			for (final LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
+				if (!(e instanceof Player) && !(e instanceof Wolf) && !(e instanceof Villager)) e.damage(Integer.MAX_VALUE);
+			}
+		else
+			for (final LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities())
+				if ((e.getLocation().distance(level.getInitialSpawn())) < config.LevelClearZone && !(e instanceof Player) && !(e instanceof Wolf) && !(e instanceof Villager)) e.damage(Integer.MAX_VALUE);
+		if (config.PlayersRollback) {
+			// If there is a restoring operation currently, do it
+			// quickly
+			memory.getReady();
+			memory.startCapturing();
+			// Pre-cache level
+			memory.add(level.getInitialSpawn().getChunk());
+			memory.add(level.getDeathSpawn().getChunk());
+			for (final Location l : level.getZombieSpawns())
+				memory.add(l.getChunk());
+		}
+		getLevel().initSigns();
+		sortedStats.clear();
+
+		for (final PlayerStats stat : players.values()) {
+			stat.resetPoints();
+			stat.resetMoney();
+			sortedStats.add(stat);
+		}
+		getWaveStarter().resetWave();
+		revivePlayers(true);
+		getWaveStarter().scheduleWave(Constants.TicksBySecond * config.WaveStartDelay);
+		return true;
+
 	}
 
 	/**
@@ -693,7 +747,18 @@ public class Tribu extends JavaPlugin {
 				}
 			}
 		}
+		try {
+			final Method a = EntityTypes.class.getDeclaredMethod("a", Class.class, String.class, Integer.TYPE);
+			a.setAccessible(true);
 
+			a.invoke(a, EntityTribuZombie.class, "Zombie", 54);
+			a.invoke(a, EntityZombie.class, "Zombie", 54);
+
+		} catch (final Exception e) {
+			setEnabled(false);
+			e.printStackTrace();
+			return;
+		}
 		// Before loading conf
 		players = new HashMap<Player, PlayerStats>();
 		// isRunning set to true to prevent start running at "loadCustomConf"
@@ -885,68 +950,8 @@ public class Tribu extends JavaPlugin {
 			waitingPlayers = config.LevelMinPlayers - players.size();
 			if (waitingPlayers < 0) waitingPlayers = 0;
 		}
-		if (!isRunning && getLevel() != null && waitingPlayers == 0) {
-			return forceStart();
-		}
+		if (!isRunning && getLevel() != null && waitingPlayers == 0) return forceStart();
 		return true;
-	}
-
-	public LinkedList<String> whyNotStarting() {
-		LinkedList<String> resp = new LinkedList<String>();
-		if (isRunning) resp.add("Already running");
-		if (getLevel() == null) resp.add("Level not loaded");
-		if (waitingPlayers != 0) resp.add("Waiting " + waitingPlayers + " players");
-		return resp;
-	}
-
-	public boolean forceStart() {
-		if (getLevel() == null) return false;
-		// Before (next instruction) it will saves current default
-		// packages to the level, saving theses packages with the level
-		addDefaultPackages();
-		// Make sure no data is lost if server decides to die
-		// during a game and player forgot to /level save
-		if (!getLevelLoader().saveLevel(getLevel()))
-			LogWarning(language.get("Warning.UnableToSaveLevel"));
-		else
-			LogInfo(language.get("Info.LevelSaved"));
-		if (getLevel().getSpawns().isEmpty()) {
-			LogWarning(language.get("Warning.NoSpawns"));
-			return false;
-		}
-
-		isRunning = true;
-		if (config.PluginModeServerExclusive || config.PluginModeWorldExclusive)
-			for (final LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities()) {
-				if (!(e instanceof Player) && !(e instanceof Wolf) && !(e instanceof Villager)) e.damage(Integer.MAX_VALUE);
-			}
-		else
-			for (final LivingEntity e : level.getInitialSpawn().getWorld().getLivingEntities())
-				if ((e.getLocation().distance(level.getInitialSpawn())) < config.LevelClearZone && !(e instanceof Player) && !(e instanceof Wolf) && !(e instanceof Villager)) e.damage(Integer.MAX_VALUE);
-		if (config.PlayersRollback) {
-			// If there is a restoring operation currently, do it
-			// quickly
-			memory.getReady();
-			memory.startCapturing();
-			// Pre-cache level
-			memory.add(level.getInitialSpawn().getChunk());
-			memory.add(level.getDeathSpawn().getChunk());
-			for (final Location l : level.getZombieSpawns())
-				memory.add(l.getChunk());
-		}
-		getLevel().initSigns();
-		sortedStats.clear();
-
-		for (final PlayerStats stat : players.values()) {
-			stat.resetPoints();
-			stat.resetMoney();
-			sortedStats.add(stat);
-		}
-		getWaveStarter().resetWave();
-		revivePlayers(true);
-		getWaveStarter().scheduleWave(Constants.TicksBySecond * config.WaveStartDelay);
-		return true;
-
 	}
 
 	/**
@@ -971,9 +976,9 @@ public class Tribu extends JavaPlugin {
 			private float	counter	= timeout;
 
 			public void run() {
-				if (counter <= 0f) {
+				if (counter <= 0f)
 					startRunning();
-				} else if (broadcastTime.isEmpty())
+				else if (broadcastTime.isEmpty())
 					messagePlayers(getLocale("Broadcast.GameStarting"));
 				else if (broadcastTime.peek() >= counter) messagePlayers("Broadcast.GameStartingSoon", broadcastTime.pop());
 				counter -= step;
@@ -1017,9 +1022,11 @@ public class Tribu extends JavaPlugin {
 
 	}
 
-	static Random	rand	= new Random();
-
-	public static Random getRandom() {
-		return rand;
+	public LinkedList<String> whyNotStarting() {
+		final LinkedList<String> resp = new LinkedList<String>();
+		if (isRunning) resp.add("Already running");
+		if (getLevel() == null) resp.add("Level not loaded");
+		if (waitingPlayers != 0) resp.add("Waiting " + waitingPlayers + " players");
+		return resp;
 	}
 }

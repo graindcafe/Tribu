@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright or © or Copr. Quentin Godron (2011)
+ * Copyright or ï¿½ or Copr. Quentin Godron (2011)
  * 
  * cafe.en.grain@gmail.com
  * 
@@ -78,7 +78,7 @@ public class TribuDefaultConfiguration {
 	public List<Double>			ZombiesHealth				= Arrays.asList(0.5, 4.0);
 	public List<Double>			ZombiesDamage				= Arrays.asList(4.0);
 	public boolean				ZombiesFireProof			= false;
-	public boolean				ZombiesSunProof			= false;
+	public boolean				ZombiesSunProof				= false;
 	public FocusType			ZombiesFocus				= FocusType.None;
 	public List<Double>			ZombiesTimeToSpawn			= Arrays.asList(1.0);
 	public boolean				ZombiesSpeedRandom			= true;
