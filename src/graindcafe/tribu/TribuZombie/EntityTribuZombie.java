@@ -120,7 +120,7 @@ public class EntityTribuZombie extends EntityMonster {
 		sunProof = plugin.config().ZombiesFireProof || plugin.config().ZombiesSunProof;
 		// from 0.85 to 1.18
 		final double normalSpeedCoef = ((plugin.config().ZombiesSpeedRandom) ? .1d + (random.nextDouble() / 3d) : .25d) + (plugin.config().ZombiesSpeedBase * .75d);
-		final double rushSpeedCoef = ((plugin.config().ZombiesSpeedRandom) ? (random.nextDouble() / 2d) : .25d) + (plugin.config().ZombiesSpeedRush - .25d);
+		final double rushSpeedCoef = (((plugin.config().ZombiesSpeedRandom) ? (random.nextDouble() / 2d) : .25d) + (plugin.config().ZombiesSpeedRush - .25d)) / normalSpeedCoef;
 		// from 1 to 1.77
 		// .85 * 1.18 = 1 and we'll have normalSpeed * rushSpeed * speed, if
 		// normalSpeed=.85 * rushSpeed=1 = 1
@@ -151,12 +151,12 @@ public class EntityTribuZombie extends EntityMonster {
 			// normalSpeed));
 			goalSelector.a(5, new PathfinderGoalRandomStroll(this, normalSpeed));
 		} else if (focus.equals(FocusType.NearestPlayer) || focus.equals(FocusType.RandomPlayer)) {
-			goalSelector.a(5, new PathfinderGoalTrackPlayer(plugin, focus.equals(FocusType.RandomPlayer), this, normalSpeedCoef, 4f));
+			goalSelector.a(5, new PathfinderGoalTrackPlayer(plugin, focus.equals(FocusType.RandomPlayer), this, rushSpeedCoef, 4f));
 		}
 		// this.goalSelector.a(5, new PathfinderGoalTrackPlayer(this, plugin,
 		// focus.equals(FocusType.RandomPlayer), this.bb, true));
 		else if (focus.equals(FocusType.InitialSpawn) || focus.equals(FocusType.DeathSpawn))
-			goalSelector.a(5, new PathfinderGoalMoveTo(this, focus.equals(FocusType.InitialSpawn) ? plugin.getLevel().getInitialSpawn() : plugin.getLevel().getDeathSpawn(), (float) normalSpeed, 4f));
+			goalSelector.a(5, new PathfinderGoalMoveTo(this, focus.equals(FocusType.InitialSpawn) ? plugin.getLevel().getInitialSpawn() : plugin.getLevel().getDeathSpawn(), 1f, 4f));
 		this.goalSelector.a(6, new PathfinderGoalRandomStroll(this, 1.0D));
 		this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
 		this.goalSelector.a(7, new PathfinderGoalRandomLookaround(this));

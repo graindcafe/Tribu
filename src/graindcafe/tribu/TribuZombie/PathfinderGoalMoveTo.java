@@ -3,9 +3,6 @@
  */
 package graindcafe.tribu.TribuZombie;
 
-import java.util.Random;
-import java.util.logging.Logger;
-
 import net.minecraft.server.v1_6_R2.EntityCreature;
 import net.minecraft.server.v1_6_R2.PathfinderGoal;
 import net.minecraft.server.v1_6_R2.RandomPositionGenerator;
@@ -29,18 +26,11 @@ public class PathfinderGoalMoveTo extends PathfinderGoal {
 	 */
 	private final float				squaredActiveDistance;
 	/**
-	 * not sure what it is for... 
-	 */
-	private int						counter;
-	/**
 	 * Default : 0.02
 	 */
-	private final float				chance;
 	private final double			destX, destY, destZ;
-	private double					x, y, z;
 	private final float				speed;
-	private boolean					doLookAt	= true;
-	private final Random			rand		= new Random();
+	double							c, d;
 
 	/**
 	 * 
@@ -49,22 +39,9 @@ public class PathfinderGoalMoveTo extends PathfinderGoal {
 	 * @param distance
 	 */
 	public PathfinderGoalMoveTo(final EntityCreature creature, final Location loc, final float speed, final float distance) {
-		this(creature, loc, speed, distance, 0.02f);
-	}
-
-	/**
-	 * 
-	 * @param creature
-	 * @param targetClass
-	 * @param distance
-	 * @param chance (?) default 0.02
-	 */
-	public PathfinderGoalMoveTo(final EntityCreature creature, final Location loc, final float speed, final float distance, final float chance) {
-		trueDebugMsg("init");
 		this.creature = creature;
 		squaredActiveDistance = distance * distance;
 		this.speed = speed;
-		this.chance = chance;
 		destX = loc.getX();
 		destY = loc.getY();
 		destZ = loc.getZ();
@@ -79,22 +56,7 @@ public class PathfinderGoalMoveTo extends PathfinderGoal {
 	 */
 	@Override
 	public boolean a() {
-
-		// if too far away, do nothing
-		debugMsg("testing distance");
-		// if we are near enough, don't do anything
-		if (creature.f(destX, destY, destZ) < squaredActiveDistance) return false;
-		final Vec3D localVec3D = RandomPositionGenerator.a(creature, 16, 7, Vec3D.a(destX, destY, destZ));
-		// if generation failed (improbable) do nothing
-		debugMsg("testing vec");
-		if (localVec3D == null) return false;
-		x = localVec3D.c;
-		y = localVec3D.d;
-		z = localVec3D.e;
-		// lookat stuff
-		// creature
-		doLookAt = (rand.nextFloat() >= chance);
-		return true;
+		return (creature.f(destX, destY, destZ) > squaredActiveDistance);
 	}
 
 	/**
@@ -103,14 +65,7 @@ public class PathfinderGoalMoveTo extends PathfinderGoal {
 	 */
 	@Override
 	public boolean b() {
-		// lookAt stuff
-		doLookAt = counter > 0;
-		// move stuff
-		// I have no idea what "g()" is... but it's from
-		// PathfinderGoalMoveTowardsRetriction.b()
-		return trueDebugMsg("testing navigation") && (creature.getNavigation().g()) && //
-				((trueDebugMsg("testing distance") && (creature.f(x, y, z) < squaredActiveDistance) && trueDebugMsg("distance ok")) || falseDebugMsg("distance ko"));
-
+		return !creature.getNavigation().g();
 	}
 
 	/**
@@ -119,46 +74,16 @@ public class PathfinderGoalMoveTo extends PathfinderGoal {
 	 */
 	@Override
 	public void c() {
-		debugMsg("gonna add it ! ");
+		// navigation.a() <- move method
 
-		if (doLookAt) counter = (40 + rand.nextInt(40));
-		creature.getNavigation().a(x, y, z, speed);
-	}
+		if (this.creature.e(destX, destY, destZ) > 256.0D) {
+			Vec3D vec3d = RandomPositionGenerator.a(this.creature, 14, 3, this.creature.world.getVec3DPool().create(destX + 0.5D, destY, destZ + 0.5D));
 
-	/**
-	 * Before stop doing this
-	 * if b() false and (?:goalSelector.a(PathfinderGoalSelectorItem)) should be executed, then do this before removing it
-	 */
-	@Override
-	public void d() {
-		debugMsg("gonna delete it");
-	}
-
-	private void debugMsg(final String msg) {
-		Logger.getLogger("Minecraft").info(msg);
-	}
-
-	/**
-	* Do the action
-	*/
-	@Override
-	public void e() {
-		if (doLookAt) {
-			debugMsg("run + lookAt");
-			// cf. PathfinderGoalLookAtPlayer
-			creature.getControllerLook().a(x, y, z, 10.0F, creature.bp());
-			counter -= 1;
-		} else
-			debugMsg("run - lookAt");
-	}
-
-	private boolean falseDebugMsg(final String msg) {
-		debugMsg(msg);
-		return false;
-	}
-
-	private boolean trueDebugMsg(final String msg) {
-		debugMsg(msg);
-		return true;
+			if (vec3d != null) {
+				this.creature.getNavigation().a(vec3d.c, vec3d.d, vec3d.e, speed);
+			}
+		} else {
+			this.creature.getNavigation().a(destX + 0.5D, destY, destZ + 0.5D, speed);
+		}
 	}
 }
