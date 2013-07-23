@@ -164,6 +164,7 @@ public class EntityTribuZombie extends EntityMonster {
 		targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true));
 		targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, 0, true));
 		targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityVillager.class, 0, false));
+		getAttributeInstance(attrMaxHealth).setValue(maxHealth);
 	}
 
 	public EntityTribuZombie(final World world) {
