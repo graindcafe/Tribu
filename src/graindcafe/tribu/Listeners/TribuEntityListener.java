@@ -108,7 +108,7 @@ public class TribuEntityListener implements Listener {
 						p = (Player) event.getDamager();
 					else if (zomb.getTarget() instanceof Player) p = (Player) zomb.getTarget();
 					if (p != null) zomb.addAttack(p, event.getDamage());
-				}
+				} else if (plugin.config().ZombiesFireProof && (dam.getCause() == DamageCause.FIRE || dam.getCause() == DamageCause.FIRE_TICK)) dam.setCancelled(true);
 	}
 
 	@EventHandler
