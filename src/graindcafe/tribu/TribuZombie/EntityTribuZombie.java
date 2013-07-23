@@ -86,7 +86,7 @@ public class EntityTribuZombie extends EntityMonster {
 	private static final AttributeModifier	br	= new AttributeModifier(bq, "Baby speed boost", 0.5D, 1);
 
 	public static EntityTribuZombie spawn(final Tribu plugin, final WorldServer world, final double x, final double y, final double z) throws CannotSpawnException {
-		final EntityTribuZombie tz = new EntityTribuZombie(plugin, world, x, y, z);
+		final EntityTribuZombie tz = new EntityTribuZombie(plugin, world, x, y + 0.5, z);
 		synchronized (tz) {
 			if (world.addEntity(tz, CreatureSpawnEvent.SpawnReason.CUSTOM))
 				return tz;
