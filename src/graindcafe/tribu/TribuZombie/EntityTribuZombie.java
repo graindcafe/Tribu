@@ -106,6 +106,7 @@ public class EntityTribuZombie extends EntityMonster {
 	private int						damage					= 3;
 	final double					baseSpeed				= 0.23000000417232513D;
 	private final double			normalSpeed				= 0.23000000417232513D;
+	private double					normalSpeedCoef			= 1;
 	private double					rushSpeed				= 0.23000000417232513D;
 	private final double			followRange				= 40d;
 	private static final IAttribute	attrMaxHealth			= GenericAttributes.a;
@@ -119,7 +120,7 @@ public class EntityTribuZombie extends EntityMonster {
 		// fireProof = plugin.config().ZombiesFireProof;
 		sunProof = plugin.config().ZombiesFireProof || plugin.config().ZombiesSunProof;
 		// from 0.85 to 1.18
-		final double normalSpeedCoef = ((plugin.config().ZombiesSpeedRandom) ? .1d + (random.nextDouble() / 3d) : .25d) + (plugin.config().ZombiesSpeedBase * .75d);
+		normalSpeedCoef = ((plugin.config().ZombiesSpeedRandom) ? .1d + (random.nextDouble() / 3d) : .25d) + (plugin.config().ZombiesSpeedBase * .75d);
 		final double rushSpeedCoef = (((plugin.config().ZombiesSpeedRandom) ? (random.nextDouble() / 2d) : .25d) + (plugin.config().ZombiesSpeedRush - .25d)) / normalSpeedCoef;
 		// from 1 to 1.77
 		// .85 * 1.18 = 1 and we'll have normalSpeed * rushSpeed * speed, if
@@ -304,8 +305,9 @@ public class EntityTribuZombie extends EntityMonster {
 	@Override
 	protected void ay() {
 		super.ay();
+		final double speed = normalSpeed * normalSpeedCoef;
 		getAttributeInstance(attrFollowRange).setValue(followRange);
-		getAttributeInstance(attrSpeed).setValue(normalSpeed);
+		getAttributeInstance(attrSpeed).setValue(speed);
 		getAttributeInstance(attrAttackDamage).setValue(damage);
 		aW().b(bp).setValue(random.nextDouble() * 0.10000000149011612D);
 	}
