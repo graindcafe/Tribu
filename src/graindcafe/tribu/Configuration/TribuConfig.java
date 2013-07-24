@@ -40,6 +40,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -109,6 +110,21 @@ public class TribuConfig extends TribuDefaultConfiguration {
 			}
 		}
 		return DefaultPackages;
+	}
+
+	protected static Map<String, List<String>> getMysteriesPackages(
+			final FileConfiguration config) {
+		Map<String, List<String>> mysteriesPackages = null;
+		if (config.isConfigurationSection("MysteriesPackages")) {
+			mysteriesPackages = new HashMap<String, List<String>>();
+			final ConfigurationSection configNode = config
+					.getConfigurationSection("MysteriesPackages");
+			for (final String pckName : configNode.getKeys(false)) {
+				mysteriesPackages.put(pckName,
+						configNode.getStringList(pckName));
+			}
+		}
+		return mysteriesPackages;
 	}
 
 	public TribuConfig() {
@@ -275,6 +291,8 @@ public class TribuConfig extends TribuDefaultConfiguration {
 				// debugMsg(keyNode[1] +": "+ config.getBoolean(key));
 			} else if (keyNode[0].equalsIgnoreCase("DefaultPackages"))
 				return;
+			else if (keyNode[0].equalsIgnoreCase("MisteriesPackages"))
+				return;
 			else {
 				debugMsg("Not found : " + key);
 				try {
@@ -288,6 +306,8 @@ public class TribuConfig extends TribuDefaultConfiguration {
 			}
 		} else if (key.equalsIgnoreCase("DefaultPackages"))
 			DefaultPackages = TribuConfig.getDefaultPackages(config);
+		else if (key.equalsIgnoreCase("MysteriesPackages"))
+			MysteriesPackages = TribuConfig.getMysteriesPackages(config);
 		else
 			debugMsg("Section : " + key);
 		return;

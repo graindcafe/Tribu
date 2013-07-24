@@ -445,6 +445,7 @@ public class Tribu extends JavaPlugin {
 				put("File.TranslationsToDo",
 						"# Translations to do in this language file\n");
 				put("Sign.Buy", "Buy");
+				put("Sign.Mystery", "Mystery");
 				put("Sign.ToggleSpawner", "Spawn's switch");
 				put("Sign.Spawner", "Zombie Spawner");
 				put("Sign.HighscoreNames", "Top Names");
@@ -1239,5 +1240,9 @@ public class Tribu extends JavaPlugin {
 		if (waitingPlayers != 0)
 			resp.add("Waiting " + waitingPlayers + " players");
 		return resp;
+	}
+
+	public Random getRandom() {
+		return rnd;
 	}
 }

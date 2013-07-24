@@ -63,6 +63,8 @@ public abstract class TribuSign {
 		TribuSign ret = null;
 		if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Buy")))
 			ret = new ShopSign(plugin, pos, lines);
+		else if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Mystery")))
+			ret = new RandomSign(plugin, pos, lines);
 		else if (lines[0].equalsIgnoreCase(plugin
 				.getLocale("Sign.HighscoreNames")))
 			ret = new TopNamesSign(plugin, pos);
@@ -92,6 +94,7 @@ public abstract class TribuSign {
 
 	public static boolean isIt(final Tribu plugin, final String[] lines) {
 		return lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Buy"))
+				|| lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Mystery"))
 				|| lines[0].equalsIgnoreCase(plugin
 						.getLocale("Sign.HighscoreNames"))
 				|| lines[0].equalsIgnoreCase(plugin
@@ -120,34 +123,16 @@ public abstract class TribuSign {
 		for (final char c : s.toCharArray())
 			switch (c) {
 			case '0':
-				num = num * 10 + 0;
-				break;
 			case '1':
-				num = num * 10 + 1;
-				break;
 			case '2':
-				num = num * 10 + 2;
-				break;
 			case '3':
-				num = num * 10 + 3;
-				break;
 			case '4':
-				num = num * 10 + 4;
-				break;
 			case '5':
-				num = num * 10 + 5;
-				break;
 			case '6':
-				num = num * 10 + 6;
-				break;
 			case '7':
-				num = num * 10 + 7;
-				break;
 			case '8':
-				num = num * 10 + 8;
-				break;
 			case '9':
-				num = num * 10 + 9;
+				num = num * 10 + c - '0';
 				break;
 			default:
 				break;
@@ -187,7 +172,9 @@ public abstract class TribuSign {
 
 	public String[] getLines() {
 		final String[] lines = getSpecificLines();
-		if (this instanceof ShopSign)
+		if (this instanceof RandomSign)
+			lines[0] = plugin.getLocale("Sign.Mystery");
+		else if (this instanceof ShopSign)
 			lines[0] = plugin.getLocale("Sign.Buy");
 		else if (this instanceof TopNamesSign)
 			lines[0] = plugin.getLocale("Sign.HighscoreNames");

@@ -63,7 +63,7 @@ public class ShopSign extends TribuSign {
 	 *            the currentLevel
 	 * @return the found package or an empty one
 	 */
-	private static Package getItem(final String[] signLines,
+	protected static Package getItem(final String[] signLines,
 			final TribuLevel level) {
 		if (signLines == null || level == null)
 			return new Package();
@@ -92,14 +92,14 @@ public class ShopSign extends TribuSign {
 	/**
 	 * Cost of this sign
 	 */
-	private int cost = 0;
+	protected int cost = 0;
 
 	/* private Item droppedItem = null; */
 
 	/**
 	 * Items to sell
 	 */
-	private Package items = null;
+	protected Package items = null;
 
 	/**
 	 * Default constructor (never used ?)
@@ -109,6 +109,11 @@ public class ShopSign extends TribuSign {
 	 */
 	public ShopSign(final Tribu plugin) {
 		super(plugin);
+	}
+
+	protected ShopSign(final Tribu plugin, final Location pos, final int cost) {
+		super(plugin, pos);
+		this.cost = cost;
 	}
 
 	/**
@@ -185,15 +190,14 @@ public class ShopSign extends TribuSign {
 	@Override
 	protected String[] getSpecificLines() {
 		final String[] lines = new String[4];
+		final int idx = items.toString().lastIndexOf('_');
 		lines[0] = "";
-		if (items.toString().lastIndexOf('_') < 0) {
+		if (idx < 0) {
 			lines[1] = items.toString();
 			lines[2] = "";
 		} else {
-			lines[1] = items.toString().substring(0,
-					items.toString().lastIndexOf('_'));
-			lines[2] = items.toString().substring(
-					items.toString().lastIndexOf('_') + 1);
+			lines[1] = items.toString().substring(0, idx);
+			lines[2] = items.toString().substring(idx + 1);
 		}
 		lines[3] = String.valueOf(cost);
 		return lines;
@@ -246,7 +250,7 @@ public class ShopSign extends TribuSign {
 		final Player p = ((PlayerInteractEvent) e).getPlayer();
 		final PlayerStats stats = plugin.getStats(p);
 		if (stats.subtractmoney(cost)) {
-			if (!items.isEmpty()) {
+			if (items != null && !items.isEmpty()) {
 				LinkedList<ItemStack> givenItems = new LinkedList<ItemStack>();
 				for (final ItemStack item : items.getItemStacks()) {
 					givenItems.add(item);

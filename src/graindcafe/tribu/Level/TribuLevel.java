@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -53,13 +55,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class TribuLevel {
 	private final ArrayList<Location> activeZombieSpawns;
-	private boolean changed; // For
-								// deciding
-								// whether
-								// the level
-								// needs
-								// saving
-								// again
+	/**
+	 * Decide whether the level needs saving or not
+	 */
+	private boolean changed;
 	private Location deathSpawn;
 	private Location initialSpawn;
 	private final String name;
@@ -67,6 +66,7 @@ public class TribuLevel {
 	private final HashMap<Location, TribuSign> Signs;
 	private final HashMap<String, Location> zombieSpawns;
 	private final LinkedList<Package> Packages;
+	private Map<String, List<String>> mysteriesPackages = null;
 
 	public TribuLevel(final String name, final Location spawn) {
 		zombieSpawns = new HashMap<String, Location>();
@@ -77,6 +77,7 @@ public class TribuLevel {
 		changed = false;
 		Signs = new HashMap<Location, TribuSign>();
 		Packages = new LinkedList<Package>();
+
 	}
 
 	public void activateZombieSpawn(final String name) {
@@ -150,6 +151,14 @@ public class TribuLevel {
 		for (final Package n : Packages)
 			if (n.getName().equalsIgnoreCase(name))
 				return n;
+		return null;
+	}
+
+	public List<String> getMysteryPackage(final String name) {
+		if (mysteriesPackages != null)
+			for (String pckName : mysteriesPackages.keySet())
+				if (pckName.equalsIgnoreCase(name))
+					return mysteriesPackages.get(pckName);
 		return null;
 	}
 
@@ -365,6 +374,14 @@ public class TribuLevel {
 	 */
 	public void setSaved() {
 		changed = false;
+	}
+
+	public Map<String, List<String>> getMysteriesPackages() {
+		return mysteriesPackages;
+	}
+
+	public void setMysteriesPackages(Map<String, List<String>> mysteriesPackages) {
+		this.mysteriesPackages = mysteriesPackages;
 	}
 
 }

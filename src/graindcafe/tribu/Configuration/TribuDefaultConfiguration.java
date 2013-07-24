@@ -103,6 +103,8 @@ public class TribuDefaultConfiguration {
 	public boolean PlayersAllowPlace = true;
 	/* Default Packages */
 	public LinkedList<Package> DefaultPackages = null;
+	/* Mysteries Packages */
+	public Map<String, List<String>> MysteriesPackages = null;
 
 	/* Advanced : Advanced config are "invisible" but still usable */
 	public int AdvancedRestoringSpeed = 85;
@@ -150,6 +152,7 @@ public class TribuDefaultConfiguration {
 				put("Players.AllowPlace", PlayersAllowPlace);
 				// put("Signs.ShopSign.DropItem", true);
 				put("DefaultPackages", DefaultPackages);
+				put("MysteriesPackages", MysteriesPackages);
 			}
 		};
 		return map;
