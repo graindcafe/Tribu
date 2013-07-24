@@ -39,10 +39,12 @@ import graindcafe.tribu.Configuration.FocusType;
 import graindcafe.tribu.TribuZombie.CannotSpawnException;
 import graindcafe.tribu.TribuZombie.CraftTribuZombie;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_6_R2.entity.CraftLivingEntity;
@@ -88,6 +90,8 @@ public class TribuSpawner {
 	 */
 	private final LinkedList<CraftTribuZombie> zombies;
 
+	private final HashMap<Runnable, Integer> runnerTaskIds;
+
 	/**
 	 * Init the spawner
 	 * 
@@ -103,6 +107,7 @@ public class TribuSpawner {
 		starting = true;
 		health = 10;
 		zombies = new LinkedList<CraftTribuZombie>();
+		runnerTaskIds = new HashMap<Runnable, Integer>();
 	}
 
 	/**
@@ -348,74 +353,51 @@ public class TribuSpawner {
 				|| plugin.config().ZombiesFocus == FocusType.RandomPlayer) {
 			System.out.println("Trying to spawn it again");
 			pendingSpawn++;
-			final Integer taskId = plugin.getServer().getScheduler()
-					.scheduleSyncRepeatingTask(
-							plugin,
-							new Runnable() {
-								boolean done = false;
-								double distanceD = 0;
-								double step = (e.getTarget().getLocation()
-										.distanceSquared(e.getLocation())
-										/ 10 * e.getHandle().getSpeed() * e
-										.getHandle().getSpeed());
-								final Location initLoc = e.getLocation()
-										.clone();
-								final CraftLivingEntity target = e.getTarget();
+			Runnable runner = new Runnable() {
+				boolean done = false;
+				double traveled = 0;
+				double step = 20 * e.getHandle().getSpeed();
+				final Location initLoc = e.getLocation().clone();
+				final CraftLivingEntity target = e.getTarget();
+				final double distanceToPlayer = 50;
 
-								public void run() {
-									distanceD += step;
-									if (!done
-											&& target.getLocation()
-													.distanceSquared(initLoc) <= distanceD) {
-										// System.out.println("Spawning");
-										done = true;
-										Location newLoc = generatePointBetween(
-												target.getLocation(), initLoc,
-												30);
-										if (newLoc != null) {
-											try {
-												justspawned = true;
-												CraftTribuZombie zomb;
-												zomb = (CraftTribuZombie) CraftTribuZombie
-														.spawn(plugin, newLoc);
-												pendingSpawn--;
-												alreadySpawned++;
-												justspawned = false;
-												zomb.setTarget(target);
-												zombies.add(zomb);
-											} catch (CannotSpawnException e) {
+				public void run() {
+					traveled += step;
+					if (!done
+							&& target.getLocation().distanceSquared(initLoc) <= ((distanceToPlayer + traveled) * (distanceToPlayer + traveled))) {
+						// System.out.println("Spawning");
+						done = true;
+						Location newLoc = generatePointBetween(
+								target.getLocation(), initLoc, 50);
+						pendingSpawn--;
+						if (newLoc != null) {
+							try {
+								justspawned = true;
+								CraftTribuZombie zomb;
+								zomb = (CraftTribuZombie) CraftTribuZombie
+										.spawn(plugin, newLoc);
 
-											}
-										} else if (!initLoc.getWorld().equals(
-												target.getWorld())) {
-											done = true;
-										}
-									}
-									// System.out.println("Waiting " +
-									// distanceD);
-								}
-							},
-							0,
-							(long) ((e.getTarget().getLocation()
-									.distanceSquared(e.getLocation()) / (10 * e
-									.getHandle().getSpeed() * e.getHandle()
-									.getSpeed()))));
-			plugin.getServer().getScheduler()
-					.scheduleSyncDelayedTask(
-							plugin,
-							new Runnable() {
-								public void run() {
-									// System.out.println("Too late");
-									pendingSpawn--;
-									plugin.getServer().getScheduler()
-											.cancelTask(taskId);
-								}
+								alreadySpawned++;
+								justspawned = false;
+								zomb.setTarget(target);
+								zombies.add(zomb);
+							} catch (CannotSpawnException e) {
 
-							},
-							(long) (21 * (e.getTarget().getLocation()
-									.distanceSquared(e.getLocation()) / (e
-									.getHandle().getSpeed() * e.getHandle()
-									.getSpeed()))));
+							}
+						}
+						Bukkit.getScheduler().cancelTask(
+								runnerTaskIds.remove(this));
+					}
+					// System.out.println("Waiting " +
+					// distanceD);
+				}
+			};
+			int taskId = plugin
+					.getServer()
+					.getScheduler()
+					.scheduleSyncRepeatingTask(plugin, runner, 5,
+							Constants.TicksBySecond);
+			runnerTaskIds.put(runner, taskId);
 		}
 	}
 

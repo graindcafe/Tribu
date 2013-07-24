@@ -10,12 +10,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
 
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_6_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_6_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_6_R2.entity.CraftMonster;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -153,7 +153,7 @@ public class CraftTribuZombie extends CraftMonster implements Zombie {
 
 	@Override
 	public void setTarget(final LivingEntity target) {
-		Logger.getLogger("Minecraft").info("Setting target to " + target);
+		getHandle().setTarget(((CraftLivingEntity) target).getHandle());
 	}
 
 	public void setTotalAttack(final double t) {
