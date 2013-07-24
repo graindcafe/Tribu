@@ -179,6 +179,7 @@ public class EntityTribuZombie extends EntityMonster {
 		getAttributeInstance(attrMaxHealth).setValue(maxHealth);
 		final double speed = baseSpeed * normalSpeedCoef;
 		getAttributeInstance(attrSpeed).setValue(speed);
+		getAttributeInstance(attrAttackDamage).setValue(damage);
 	}
 
 	public EntityTribuZombie(final World world) {
