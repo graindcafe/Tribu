@@ -71,6 +71,7 @@ import net.minecraft.server.v1_6_R2.PathfinderGoalFloat;
 import net.minecraft.server.v1_6_R2.PathfinderGoalHurtByTarget;
 import net.minecraft.server.v1_6_R2.PathfinderGoalLookAtPlayer;
 import net.minecraft.server.v1_6_R2.PathfinderGoalMeleeAttack;
+import net.minecraft.server.v1_6_R2.PathfinderGoalMoveTowardsRestriction;
 import net.minecraft.server.v1_6_R2.PathfinderGoalNearestAttackableTarget;
 import net.minecraft.server.v1_6_R2.PathfinderGoalRandomLookaround;
 import net.minecraft.server.v1_6_R2.PathfinderGoalRandomStroll;
@@ -111,10 +112,11 @@ public class EntityTribuZombie extends EntityMonster {
 	protected int d = 0;
 	private int damage = 3;
 	final double baseSpeed = 0.23000000417232513D;
-	private final double normalSpeed = 0.23000000417232513D;
+	// private double normalSpeed = 0.23000000417232513D;
 	private double normalSpeedCoef = 1;
-	private double rushSpeed = 0.23000000417232513D;
+	// private final double rushSpeed = 0.23000000417232513D;
 	private final double followRange = 40d;
+	private double rushSpeedCoef = 1;
 	private static final IAttribute attrMaxHealth = GenericAttributes.a;
 	private static final IAttribute attrFollowRange = GenericAttributes.b;
 	private static final IAttribute attrKnockbackResistance = GenericAttributes.c;
@@ -131,52 +133,32 @@ public class EntityTribuZombie extends EntityMonster {
 		normalSpeedCoef = ((plugin.config().ZombiesSpeedRandom) ? .1d + (random
 				.nextDouble() / 3d) : .25d)
 				+ (plugin.config().ZombiesSpeedBase * .75d);
-		final double rushSpeedCoef = (((plugin.config().ZombiesSpeedRandom) ? (random
-				.nextDouble() / 2d) : .25d) + (plugin.config().ZombiesSpeedRush - .25d))
-				/ normalSpeedCoef;
-		// from 1 to 1.77
-		// .85 * 1.18 = 1 and we'll have normalSpeed * rushSpeed * speed, if
-		// normalSpeed=.85 * rushSpeed=1 = 1
-
-		// normalSpeed *= normalSpeedCoef;// * normalSpeedCoef;
-
-		rushSpeed = rushSpeedCoef;
-		// Speed: 0.23 normal speed
+		rushSpeedCoef = (((plugin.config().ZombiesSpeedRandom) ? (random
+				.nextDouble() / 2d) : .25d) + (plugin.config().ZombiesSpeedRush - .25d));
 		damage = plugin.getWaveStarter().getCurrentDamage();
 		maxHealth = plugin.getWaveStarter().getCurrentHealth();
 		this.plugin = plugin;
-		// getAttributeInstance(attrSpeed).setValue(baseSpeed);
-		// getAttributeInstance(attrAttackDamage).setValue(damage);
-		// this.getAttributeInstance(attrKnockbackResistance)
-		// this.getAttributeInstance(attrFollowRange)
-		// getAttributeInstance(attrMaxHealth).setValue(maxHealth);
+
 		// Can break wooden door ?
 		getNavigation().b(true);
 		goalSelector.a(0, new PathfinderGoalFloat(this));
 		goalSelector.a(1, new PathfinderGoalBreakDoor(this));
 		goalSelector.a(2, new PathfinderGoalMeleeAttack(this,
-				EntityHuman.class, 1d, false));
+				EntityHuman.class, rushSpeedCoef, false));
 		goalSelector.a(3, new PathfinderGoalMeleeAttack(this,
 				EntityVillager.class, rushSpeedCoef, true));
-		// goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this,
-		// 1.0D));
+		goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
 		final FocusType focus = plugin.config().ZombiesFocus;
 		if (focus.equals(FocusType.None)) {
-			// goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this,
-			// normalSpeed));
-			goalSelector
-					.a(5, new PathfinderGoalRandomStroll(this, normalSpeed));
+
+			goalSelector.a(5, new PathfinderGoalRandomStroll(this, 1d));
 		} else if (focus.equals(FocusType.NearestPlayer)
 				|| focus.equals(FocusType.RandomPlayer)) {
 			goalSelector.a(
 					5,
 					new PathfinderGoalTrackPlayer(plugin, focus
-							.equals(FocusType.RandomPlayer), this,
-							rushSpeedCoef, 20));
-		}
-		// this.goalSelector.a(5, new PathfinderGoalTrackPlayer(this, plugin,
-		// focus.equals(FocusType.RandomPlayer), this.bb, true));
-		else if (focus.equals(FocusType.InitialSpawn)
+							.equals(FocusType.RandomPlayer), this, 1d, 20));
+		} else if (focus.equals(FocusType.InitialSpawn)
 				|| focus.equals(FocusType.DeathSpawn))
 			goalSelector.a(
 					5,
@@ -195,6 +177,8 @@ public class EntityTribuZombie extends EntityMonster {
 		targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this,
 				EntityVillager.class, 0, false));
 		getAttributeInstance(attrMaxHealth).setValue(maxHealth);
+		final double speed = baseSpeed * normalSpeedCoef;
+		getAttributeInstance(attrSpeed).setValue(speed);
 	}
 
 	public EntityTribuZombie(final World world) {
@@ -367,9 +351,9 @@ public class EntityTribuZombie extends EntityMonster {
 	@Override
 	protected void ay() {
 		super.ay();
-		final double speed = normalSpeed * normalSpeedCoef;
+		// final double speed = baseSpeed * normalSpeedCoef;
 		getAttributeInstance(attrFollowRange).setValue(followRange);
-		getAttributeInstance(attrSpeed).setValue(speed);
+		getAttributeInstance(attrSpeed).setValue(baseSpeed);
 		getAttributeInstance(attrAttackDamage).setValue(damage);
 		aW().b(bp).setValue(random.nextDouble() * 0.10000000149011612D);
 	}
@@ -624,10 +608,10 @@ public class EntityTribuZombie extends EntityMonster {
 	}
 
 	public double getSpeed() {
-		return normalSpeed;
+		return baseSpeed * normalSpeedCoef;
 	}
 
 	public double getRushSpeed() {
-		return rushSpeed;
+		return baseSpeed * normalSpeedCoef * rushSpeedCoef;
 	}
 }
