@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_6_R2.CraftServer;
 import org.bukkit.craftbukkit.v1_6_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_6_R2.entity.CraftMonster;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -23,7 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 
 public class CraftTribuZombie extends CraftMonster implements Zombie {
-	public static Entity spawn(final Tribu plugin, final Location pos) throws CannotSpawnException {
+	public static CraftEntity spawn(final Tribu plugin, final Location pos) throws CannotSpawnException {
 		if (!pos.getChunk().isLoaded()) pos.getChunk().load();
 
 		final EntityTribuZombie tz = EntityTribuZombie.spawn(plugin, ((CraftWorld) pos.getWorld()).getHandle(), pos.getX(), pos.getY(), pos.getZ());

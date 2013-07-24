@@ -86,7 +86,7 @@ public class EntityTribuZombie extends EntityMonster {
 	private static final AttributeModifier	br	= new AttributeModifier(bq, "Baby speed boost", 0.5D, 1);
 
 	public static EntityTribuZombie spawn(final Tribu plugin, final WorldServer world, final double x, final double y, final double z) throws CannotSpawnException {
-		final EntityTribuZombie tz = new EntityTribuZombie(plugin, world, x, y + 0.5, z);
+		final EntityTribuZombie tz = new EntityTribuZombie(plugin, world, x, y + 0.1, z);
 		synchronized (tz) {
 			if (world.addEntity(tz, CreatureSpawnEvent.SpawnReason.CUSTOM))
 				return tz;
@@ -151,7 +151,7 @@ public class EntityTribuZombie extends EntityMonster {
 			// normalSpeed));
 			goalSelector.a(5, new PathfinderGoalRandomStroll(this, normalSpeed));
 		} else if (focus.equals(FocusType.NearestPlayer) || focus.equals(FocusType.RandomPlayer)) {
-			goalSelector.a(5, new PathfinderGoalTrackPlayer(plugin, focus.equals(FocusType.RandomPlayer), this, rushSpeedCoef, 4f));
+			goalSelector.a(5, new PathfinderGoalTrackPlayer(plugin, focus.equals(FocusType.RandomPlayer), this, rushSpeedCoef, 20));
 		}
 		// this.goalSelector.a(5, new PathfinderGoalTrackPlayer(this, plugin,
 		// focus.equals(FocusType.RandomPlayer), this.bb, true));
@@ -525,5 +525,13 @@ public class EntityTribuZombie extends EntityMonster {
 
 	public void setVillager(final boolean flag) {
 		getDataWatcher().watch(13, Byte.valueOf((byte) (flag ? 1 : 0)));
+	}
+
+	public double getSpeed() {
+		return normalSpeed;
+	}
+
+	public double getRushSpeed() {
+		return rushSpeed;
 	}
 }

@@ -35,6 +35,7 @@
 package graindcafe.tribu;
 
 import graindcafe.tribu.Configuration.Constants;
+import graindcafe.tribu.Configuration.FocusType;
 import graindcafe.tribu.TribuZombie.CannotSpawnException;
 import graindcafe.tribu.TribuZombie.CraftTribuZombie;
 
@@ -43,6 +44,8 @@ import java.util.List;
 import java.util.Stack;
 
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.craftbukkit.v1_6_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
@@ -77,6 +80,10 @@ public class TribuSpawner {
 	 */
 	private int									alreadySpawned;
 	/**
+	 * planified spawns
+	 */
+	private int									pendingSpawn;
+	/**
 	 * Referenced zombies
 	 */
 	private final LinkedList<CraftTribuZombie>	zombies;
@@ -88,6 +95,7 @@ public class TribuSpawner {
 	public TribuSpawner(final Tribu instance) {
 		plugin = instance;
 		alreadySpawned = 0;
+		pendingSpawn = 0;
 		totalToSpawn = 5;
 		finished = false;
 		starting = true;
@@ -228,24 +236,134 @@ public class TribuSpawner {
 		return justspawned;
 	}
 
+	public static Location generatePointBetween(Location loc1, Location loc2, int distanceFromLoc1) {
+		if (distanceFromLoc1 * distanceFromLoc1 > loc1.distanceSquared(loc2)) return loc2;
+		double x = loc1.getX();
+		Double y = loc1.getY();
+		double z = loc1.getZ();
+		Double y1Param;
+		Double x1Param;
+		Double y2Param;
+		Double x2Param;
+		if (x > z) {
+			y1Param = z;
+			x1Param = x;
+			y2Param = loc2.getZ();
+			x2Param = loc2.getX();
+		} else {
+			y1Param = x;
+			x1Param = z;
+			y2Param = loc2.getX();
+			x2Param = loc2.getZ();
+		}
+		double dY = y2Param - y1Param;
+		double dX = x2Param - x1Param;
+		double a = dY / dX;
+		// double b = a * x1Param - y1Param;
+		double rDx = (dX < 0 ? -1 : 1) * Math.sqrt(distanceFromLoc1 * distanceFromLoc1 / (1 + a * a));
+
+		y1Param += a * rDx;
+		x1Param += rDx;
+		if (x > z) {
+			z = y1Param;
+			x = x1Param;
+		} else {
+			x = y1Param;
+			z = x1Param;
+		}
+
+		y = findSuitableY(loc1.getWorld(), x, y, z);
+		if (y == null) return null;
+		return new Location(loc1.getWorld(), x, y, z);
+	}
+
+	static Double findSuitableY(Location loc) {
+		return findSuitableY(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ());
+	}
+
+	static Double findSuitableY(World w, double x, double y, double z) {
+		double newY = Math.floor(y);
+		double step = 0.5;
+		double sign = -1;
+		boolean failed = false;
+		while (!w.getBlockAt((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z)).isEmpty()) {
+			newY = y + (step * sign);
+			sign *= -1;
+			step++;
+			if (step >= 256) {
+				failed = true;
+				break;
+			}
+		}
+		if (failed) return null;
+		return newY;
+	}
+
 	/**
 	 * Kill & unreference a zombie 
 	 * @param e Zombie to despawn
-	 * @param removeReward Reward attakers ?
+	 * @param removeReward Reward attackers ?
 	 */
 	public void removedZombieCallback(final CraftTribuZombie e, final boolean removeReward) {
+		System.out.println("Zombie removed!");
 		if (e != null) {
 			if (removeReward) e.setNoAttacker();
 			e.remove();
 		}
 		zombies.remove(e);
 		alreadySpawned--;
+		if (plugin.config().ZombiesFocus == FocusType.NearestPlayer || plugin.config().ZombiesFocus == FocusType.RandomPlayer) {
+			System.out.println("Trying to spawn it again");
+			pendingSpawn++;
+			final Integer taskId = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+				boolean					done		= false;
+				double					distanceD	= 0;
+				double					step		= (e.getTarget().getLocation().distanceSquared(e.getLocation()) / 10 * e.getHandle().getSpeed() * e.getHandle().getSpeed());
+				final Location			initLoc		= e.getLocation().clone();
+				final CraftLivingEntity	target		= e.getTarget();
+
+				public void run() {
+					distanceD += step;
+					if (!done && target.getLocation().distanceSquared(initLoc) <= distanceD) {
+						// System.out.println("Spawning");
+						done = true;
+						Location newLoc = generatePointBetween(target.getLocation(), initLoc, 30);
+						if (newLoc != null) {
+							try {
+								justspawned = true;
+								CraftTribuZombie zomb;
+								zomb = (CraftTribuZombie) CraftTribuZombie.spawn(plugin, newLoc);
+								pendingSpawn--;
+								alreadySpawned++;
+								justspawned = false;
+								zomb.setTarget(target);
+								zombies.add(zomb);
+							} catch (CannotSpawnException e) {
+
+							}
+						} else if (!initLoc.getWorld().equals(target.getWorld())) {
+							done = true;
+						}
+					}
+					// System.out.println("Waiting " + distanceD);
+				}
+			}, 0, (long) ((e.getTarget().getLocation().distanceSquared(e.getLocation()) / (10 * e.getHandle().getSpeed() * e.getHandle().getSpeed()))));
+			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				public void run() {
+					// System.out.println("Too late");
+					pendingSpawn--;
+					plugin.getServer().getScheduler().cancelTask(taskId);
+				}
+
+			}, (long) (21 * (e.getTarget().getLocation().distanceSquared(e.getLocation()) / (e.getHandle().getSpeed() * e.getHandle().getSpeed()))));
+		}
 	}
 
 	/**
 	 * Prevent spawner to continue spawning but do not set it as finished
 	 */
 	public void resetTotal() {
+		pendingSpawn = 0;
 		alreadySpawned = 0;
 		finished = false;
 	}
@@ -271,12 +389,11 @@ public class TribuSpawner {
 	 * @return if zombies still have to spawn (before spawning it)
 	 */
 	public boolean spawnZombie() {
-		if (alreadySpawned < totalToSpawn && !finished) {
+		if ((pendingSpawn + alreadySpawned) < totalToSpawn && !finished) {
 			Location pos = plugin.getLevel().getRandomZombieSpawn();
 			if (pos != null) {
 				if (!pos.getWorld().isChunkLoaded(pos.getWorld().getChunkAt(pos))) {
 					checkZombies();
-
 					pos = getValidSpawn();
 				}
 				if (pos != null) {
@@ -285,6 +402,7 @@ public class TribuSpawner {
 					justspawned = true;
 					CraftTribuZombie zombie;
 					try {
+						pos.setY(findSuitableY(pos));
 						zombie = (CraftTribuZombie) CraftTribuZombie.spawn(plugin, pos);
 						zombies.add(zombie);
 						zombie.setHealth(health);
