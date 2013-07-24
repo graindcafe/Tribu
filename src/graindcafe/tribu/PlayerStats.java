@@ -39,10 +39,10 @@ import graindcafe.tribu.Configuration.Constants;
 import org.bukkit.entity.Player;
 
 public class PlayerStats implements Comparable<PlayerStats> {
-	private boolean			alive;
-	private int				money;
-	private final Player	player;
-	private int				points;
+	private boolean alive;
+	private int money;
+	private final Player player;
+	private int points;
 
 	public PlayerStats(final Player player) {
 		this.player = player;
@@ -69,9 +69,11 @@ public class PlayerStats implements Comparable<PlayerStats> {
 
 	@Override
 	public boolean equals(final Object o) {
-		if (!(o instanceof PlayerStats)) return false;
+		if (!(o instanceof PlayerStats))
+			return false;
 		final PlayerStats ps = (PlayerStats) o;
-		return ps.getPlayer().equals(player) && ps.getMoney() == money && ps.getPoints() == points;
+		return ps.getPlayer().equals(player) && ps.getMoney() == money
+				&& ps.getPoints() == points;
 	}
 
 	public int getMoney() {
@@ -95,7 +97,10 @@ public class PlayerStats implements Comparable<PlayerStats> {
 	}
 
 	public void msgStats() {
-		Tribu.messagePlayer(player, String.format(Constants.MessageMoneyPoints, String.valueOf(money), String.valueOf(points)));
+		Tribu.messagePlayer(
+				player,
+				String.format(Constants.MessageMoneyPoints,
+						String.valueOf(money), String.valueOf(points)));
 	}
 
 	public void resetMoney() {
@@ -120,7 +125,8 @@ public class PlayerStats implements Comparable<PlayerStats> {
 
 	public void subtractPoints(final int val) {
 		points -= val;
-		if (points < 0) points = 0;
+		if (points < 0)
+			points = 0;
 	}
 
 }

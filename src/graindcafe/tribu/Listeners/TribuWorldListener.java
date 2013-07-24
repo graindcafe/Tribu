@@ -44,7 +44,7 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.plugin.PluginManager;
 
 public class TribuWorldListener implements Listener {
-	private final Tribu	plugin;
+	private final Tribu plugin;
 
 	public TribuWorldListener(final Tribu instance) {
 		plugin = instance;
@@ -53,7 +53,9 @@ public class TribuWorldListener implements Listener {
 	@EventHandler
 	public void onChunkUnload(final ChunkUnloadEvent event) {
 		for (final Entity e : event.getChunk().getEntities())
-			if (e instanceof CraftTribuZombie) plugin.getSpawner().removedZombieCallback((CraftTribuZombie) e, true);
+			if (e instanceof CraftTribuZombie)
+				plugin.getSpawner().removedZombieCallback((CraftTribuZombie) e,
+						true);
 	}
 
 	public void registerEvents(final PluginManager pm) {

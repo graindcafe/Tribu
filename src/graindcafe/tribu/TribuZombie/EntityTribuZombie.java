@@ -81,12 +81,18 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 
 public class EntityTribuZombie extends EntityMonster {
 
-	protected static final IAttribute		bp	= (new AttributeRanged("zombie.spawnReinforcements", 0.0D, 0.0D, 1.0D)).a("Spawn Reinforcements Chance");
-	private static final UUID				bq	= UUID.randomUUID();
-	private static final AttributeModifier	br	= new AttributeModifier(bq, "Baby speed boost", 0.5D, 1);
+	protected static final IAttribute bp = (new AttributeRanged(
+			"zombie.spawnReinforcements", 0.0D, 0.0D, 1.0D))
+			.a("Spawn Reinforcements Chance");
+	private static final UUID bq = UUID.randomUUID();
+	private static final AttributeModifier br = new AttributeModifier(bq,
+			"Baby speed boost", 0.5D, 1);
 
-	public static EntityTribuZombie spawn(final Tribu plugin, final WorldServer world, final double x, final double y, final double z) throws CannotSpawnException {
-		final EntityTribuZombie tz = new EntityTribuZombie(plugin, world, x, y + 0.1, z);
+	public static EntityTribuZombie spawn(final Tribu plugin,
+			final WorldServer world, final double x, final double y,
+			final double z) throws CannotSpawnException {
+		final EntityTribuZombie tz = new EntityTribuZombie(plugin, world, x,
+				y + 0.1, z);
 		synchronized (tz) {
 			if (world.addEntity(tz, CreatureSpawnEvent.SpawnReason.CUSTOM))
 				return tz;
@@ -96,32 +102,38 @@ public class EntityTribuZombie extends EntityMonster {
 
 	}
 
-	private int						bs;
+	private int bs;
 
 	@SuppressWarnings("unused")
-	private Tribu					plugin;
-	private int						maxHealth				= 20;
-	private boolean					sunProof				= true;
-	protected int					d						= 0;
-	private int						damage					= 3;
-	final double					baseSpeed				= 0.23000000417232513D;
-	private final double			normalSpeed				= 0.23000000417232513D;
-	private double					normalSpeedCoef			= 1;
-	private double					rushSpeed				= 0.23000000417232513D;
-	private final double			followRange				= 40d;
-	private static final IAttribute	attrMaxHealth			= GenericAttributes.a;
-	private static final IAttribute	attrFollowRange			= GenericAttributes.b;
-	private static final IAttribute	attrKnockbackResistance	= GenericAttributes.c;
-	private static final IAttribute	attrSpeed				= GenericAttributes.d;
-	private static final IAttribute	attrAttackDamage		= GenericAttributes.e;
+	private Tribu plugin;
+	private int maxHealth = 20;
+	private boolean sunProof = true;
+	protected int d = 0;
+	private int damage = 3;
+	final double baseSpeed = 0.23000000417232513D;
+	private final double normalSpeed = 0.23000000417232513D;
+	private double normalSpeedCoef = 1;
+	private double rushSpeed = 0.23000000417232513D;
+	private final double followRange = 40d;
+	private static final IAttribute attrMaxHealth = GenericAttributes.a;
+	private static final IAttribute attrFollowRange = GenericAttributes.b;
+	private static final IAttribute attrKnockbackResistance = GenericAttributes.c;
+	private static final IAttribute attrSpeed = GenericAttributes.d;
+	private static final IAttribute attrAttackDamage = GenericAttributes.e;
 
-	public EntityTribuZombie(final Tribu plugin, final World world, final double x, final double y, final double z) {
+	public EntityTribuZombie(final Tribu plugin, final World world,
+			final double x, final double y, final double z) {
 		this(world, x, y, z);
 		// fireProof = plugin.config().ZombiesFireProof;
-		sunProof = plugin.config().ZombiesFireProof || plugin.config().ZombiesSunProof;
+		sunProof = plugin.config().ZombiesFireProof
+				|| plugin.config().ZombiesSunProof;
 		// from 0.85 to 1.18
-		normalSpeedCoef = ((plugin.config().ZombiesSpeedRandom) ? .1d + (random.nextDouble() / 3d) : .25d) + (plugin.config().ZombiesSpeedBase * .75d);
-		final double rushSpeedCoef = (((plugin.config().ZombiesSpeedRandom) ? (random.nextDouble() / 2d) : .25d) + (plugin.config().ZombiesSpeedRush - .25d)) / normalSpeedCoef;
+		normalSpeedCoef = ((plugin.config().ZombiesSpeedRandom) ? .1d + (random
+				.nextDouble() / 3d) : .25d)
+				+ (plugin.config().ZombiesSpeedBase * .75d);
+		final double rushSpeedCoef = (((plugin.config().ZombiesSpeedRandom) ? (random
+				.nextDouble() / 2d) : .25d) + (plugin.config().ZombiesSpeedRush - .25d))
+				/ normalSpeedCoef;
 		// from 1 to 1.77
 		// .85 * 1.18 = 1 and we'll have normalSpeed * rushSpeed * speed, if
 		// normalSpeed=.85 * rushSpeed=1 = 1
@@ -142,29 +154,46 @@ public class EntityTribuZombie extends EntityMonster {
 		getNavigation().b(true);
 		goalSelector.a(0, new PathfinderGoalFloat(this));
 		goalSelector.a(1, new PathfinderGoalBreakDoor(this));
-		goalSelector.a(2, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1d, false));
-		goalSelector.a(3, new PathfinderGoalMeleeAttack(this, EntityVillager.class, rushSpeedCoef, true));
+		goalSelector.a(2, new PathfinderGoalMeleeAttack(this,
+				EntityHuman.class, 1d, false));
+		goalSelector.a(3, new PathfinderGoalMeleeAttack(this,
+				EntityVillager.class, rushSpeedCoef, true));
 		// goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this,
 		// 1.0D));
 		final FocusType focus = plugin.config().ZombiesFocus;
 		if (focus.equals(FocusType.None)) {
 			// goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this,
 			// normalSpeed));
-			goalSelector.a(5, new PathfinderGoalRandomStroll(this, normalSpeed));
-		} else if (focus.equals(FocusType.NearestPlayer) || focus.equals(FocusType.RandomPlayer)) {
-			goalSelector.a(5, new PathfinderGoalTrackPlayer(plugin, focus.equals(FocusType.RandomPlayer), this, rushSpeedCoef, 20));
+			goalSelector
+					.a(5, new PathfinderGoalRandomStroll(this, normalSpeed));
+		} else if (focus.equals(FocusType.NearestPlayer)
+				|| focus.equals(FocusType.RandomPlayer)) {
+			goalSelector.a(
+					5,
+					new PathfinderGoalTrackPlayer(plugin, focus
+							.equals(FocusType.RandomPlayer), this,
+							rushSpeedCoef, 20));
 		}
 		// this.goalSelector.a(5, new PathfinderGoalTrackPlayer(this, plugin,
 		// focus.equals(FocusType.RandomPlayer), this.bb, true));
-		else if (focus.equals(FocusType.InitialSpawn) || focus.equals(FocusType.DeathSpawn))
-			goalSelector.a(5, new PathfinderGoalMoveTo(this, focus.equals(FocusType.InitialSpawn) ? plugin.getLevel().getInitialSpawn() : plugin.getLevel().getDeathSpawn(), 1f, 4f));
+		else if (focus.equals(FocusType.InitialSpawn)
+				|| focus.equals(FocusType.DeathSpawn))
+			goalSelector.a(
+					5,
+					new PathfinderGoalMoveTo(this, focus
+							.equals(FocusType.InitialSpawn) ? plugin.getLevel()
+							.getInitialSpawn() : plugin.getLevel()
+							.getDeathSpawn(), 1f, 4f));
 		this.goalSelector.a(6, new PathfinderGoalRandomStroll(this, 1.0D));
-		this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+		this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this,
+				EntityHuman.class, 8.0F));
 		this.goalSelector.a(7, new PathfinderGoalRandomLookaround(this));
 
 		targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true));
-		targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, 0, true));
-		targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityVillager.class, 0, false));
+		targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this,
+				EntityHuman.class, 0, true));
+		targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this,
+				EntityVillager.class, 0, false));
 		getAttributeInstance(attrMaxHealth).setValue(maxHealth);
 	}
 
@@ -175,7 +204,8 @@ public class EntityTribuZombie extends EntityMonster {
 
 	}
 
-	private EntityTribuZombie(final World world, final double x, final double y, final double z) {
+	private EntityTribuZombie(final World world, final double x,
+			final double y, final double z) {
 		this(world);
 		setPosition(x, y, z);
 	}
@@ -192,12 +222,19 @@ public class EntityTribuZombie extends EntityMonster {
 	public boolean a(final EntityHuman entityhuman) {
 		final ItemStack itemstack = entityhuman.bx();
 
-		if (itemstack != null && itemstack.getItem() == Item.GOLDEN_APPLE && itemstack.getData() == 0 && isVillager() && this.hasEffect(MobEffectList.WEAKNESS)) {
-			if (!entityhuman.abilities.canInstantlyBuild) --itemstack.count;
+		if (itemstack != null && itemstack.getItem() == Item.GOLDEN_APPLE
+				&& itemstack.getData() == 0 && isVillager()
+				&& this.hasEffect(MobEffectList.WEAKNESS)) {
+			if (!entityhuman.abilities.canInstantlyBuild)
+				--itemstack.count;
 
-			if (itemstack.count <= 0) entityhuman.inventory.setItem(entityhuman.inventory.itemInHandIndex, (ItemStack) null);
+			if (itemstack.count <= 0)
+				entityhuman.inventory
+						.setItem(entityhuman.inventory.itemInHandIndex,
+								(ItemStack) null);
 
-			if (!world.isStatic) this.a(random.nextInt(2401) + 3600);
+			if (!world.isStatic)
+				this.a(random.nextInt(2401) + 3600);
 
 			return true;
 		} else
@@ -208,7 +245,8 @@ public class EntityTribuZombie extends EntityMonster {
 	public void a(final EntityLiving entityliving) {
 		super.a(entityliving);
 		if (world.difficulty >= 2 && entityliving instanceof EntityVillager) {
-			if (world.difficulty == 2 && random.nextBoolean()) return;
+			if (world.difficulty == 2 && random.nextBoolean())
+				return;
 
 			final EntityZombie entityzombie = new EntityZombie(world);
 
@@ -216,10 +254,12 @@ public class EntityTribuZombie extends EntityMonster {
 			world.kill(entityliving);
 			entityzombie.a((GroupDataEntity) null);
 			entityzombie.setVillager(true);
-			if (entityliving.isBaby()) entityzombie.setBaby(true);
+			if (entityliving.isBaby())
+				entityzombie.setBaby(true);
 
 			world.addEntity(entityzombie);
-			world.a((EntityHuman) null, 1016, (int) locX, (int) locY, (int) locZ, 0);
+			world.a((EntityHuman) null, 1016, (int) locX, (int) locY,
+					(int) locZ, 0);
 		}
 	}
 
@@ -229,14 +269,19 @@ public class EntityTribuZombie extends EntityMonster {
 		final float f = world.b(locX, locY, locZ);
 
 		this.h(random.nextFloat() < 0.55F * f);
-		if (object == null) object = new GroupDataTribuZombie(this, world.random.nextFloat() < 0.05F, world.random.nextFloat() < 0.05F, (Object) null);
+		if (object == null)
+			object = new GroupDataTribuZombie(this,
+					world.random.nextFloat() < 0.05F,
+					world.random.nextFloat() < 0.05F, (Object) null);
 
 		if (object instanceof GroupDataTribuZombie) {
 			final GroupDataTribuZombie groupdatazombie = (GroupDataTribuZombie) object;
 
-			if (groupdatazombie.b) setVillager(true);
+			if (groupdatazombie.b)
+				setVillager(true);
 
-			if (groupdatazombie.a) setBaby(true);
+			if (groupdatazombie.a)
+				setBaby(true);
 		}
 
 		bw();
@@ -244,17 +289,28 @@ public class EntityTribuZombie extends EntityMonster {
 		if (this.getEquipment(4) == null) {
 			final Calendar calendar = world.W();
 
-			if (calendar.get(2) + 1 == 10 && calendar.get(5) == 31 && random.nextFloat() < 0.25F) {
-				setEquipment(4, new ItemStack(random.nextFloat() < 0.1F ? Block.JACK_O_LANTERN : Block.PUMPKIN));
+			if (calendar.get(2) + 1 == 10 && calendar.get(5) == 31
+					&& random.nextFloat() < 0.25F) {
+				setEquipment(4, new ItemStack(
+						random.nextFloat() < 0.1F ? Block.JACK_O_LANTERN
+								: Block.PUMPKIN));
 				dropChances[4] = 0.0F;
 			}
 		}
 
-		getAttributeInstance(attrKnockbackResistance).a(new AttributeModifier("Random spawn bonus", random.nextDouble() * 0.05000000074505806D, 0));
-		getAttributeInstance(attrFollowRange).a(new AttributeModifier("Random zombie-spawn bonus", random.nextDouble() * 1.5D, 2));
+		getAttributeInstance(attrKnockbackResistance).a(
+				new AttributeModifier("Random spawn bonus",
+						random.nextDouble() * 0.05000000074505806D, 0));
+		getAttributeInstance(attrFollowRange).a(
+				new AttributeModifier("Random zombie-spawn bonus", random
+						.nextDouble() * 1.5D, 2));
 		if (random.nextFloat() < f * 0.05F) {
-			getAttributeInstance(bp).a(new AttributeModifier("Leader zombie bonus", random.nextDouble() * 0.25D + 0.5D, 0));
-			getAttributeInstance(attrMaxHealth).a(new AttributeModifier("Leader zombie bonus", random.nextDouble() * 3.0D + 1.0D, 2));
+			getAttributeInstance(bp).a(
+					new AttributeModifier("Leader zombie bonus", random
+							.nextDouble() * 0.25D + 0.5D, 0));
+			getAttributeInstance(attrMaxHealth).a(
+					new AttributeModifier("Leader zombie bonus", random
+							.nextDouble() * 3.0D + 1.0D, 2));
 		}
 
 		return (GroupDataEntity) object;
@@ -264,7 +320,8 @@ public class EntityTribuZombie extends EntityMonster {
 		bs = i;
 		getDataWatcher().watch(14, Byte.valueOf((byte) 1));
 		this.k(MobEffectList.WEAKNESS.id);
-		addEffect(new MobEffect(MobEffectList.INCREASE_DAMAGE.id, i, Math.min(world.difficulty - 1, 0)));
+		addEffect(new MobEffect(MobEffectList.INCREASE_DAMAGE.id, i, Math.min(
+				world.difficulty - 1, 0)));
 		world.broadcastEntityEffect(this, (byte) 16);
 	}
 
@@ -276,11 +333,15 @@ public class EntityTribuZombie extends EntityMonster {
 	@Override
 	public void a(final NBTTagCompound nbttagcompound) {
 		super.a(nbttagcompound);
-		if (nbttagcompound.getBoolean("IsBaby")) setBaby(true);
+		if (nbttagcompound.getBoolean("IsBaby"))
+			setBaby(true);
 
-		if (nbttagcompound.getBoolean("IsVillager")) setVillager(true);
+		if (nbttagcompound.getBoolean("IsVillager"))
+			setVillager(true);
 
-		if (nbttagcompound.hasKey("ConversionTime") && nbttagcompound.getInt("ConversionTime") > -1) this.a(nbttagcompound.getInt("ConversionTime"));
+		if (nbttagcompound.hasKey("ConversionTime")
+				&& nbttagcompound.getInt("ConversionTime") > -1)
+			this.a(nbttagcompound.getInt("ConversionTime"));
 	}
 
 	@Override
@@ -297,7 +358,8 @@ public class EntityTribuZombie extends EntityMonster {
 	public int aP() {
 		int i = super.aP() + 2;
 
-		if (i > 20) i = 20;
+		if (i > 20)
+			i = 20;
 
 		return i;
 	}
@@ -315,9 +377,11 @@ public class EntityTribuZombie extends EntityMonster {
 	@Override
 	public void b(final NBTTagCompound nbttagcompound) {
 		super.b(nbttagcompound);
-		if (isBaby()) nbttagcompound.setBoolean("IsBaby", true);
+		if (isBaby())
+			nbttagcompound.setBoolean("IsBaby", true);
 
-		if (isVillager()) nbttagcompound.setBoolean("IsVillager", true);
+		if (isVillager())
+			nbttagcompound.setBoolean("IsVillager", true);
 
 		nbttagcompound.setInt("ConversionTime", bV() ? bs : -1);
 	}
@@ -350,11 +414,13 @@ public class EntityTribuZombie extends EntityMonster {
 		entityvillager.j(this);
 		entityvillager.a((GroupDataEntity) null);
 		entityvillager.bX();
-		if (isBaby()) entityvillager.setAge(-24000);
+		if (isBaby())
+			entityvillager.setAge(-24000);
 
 		world.kill(this);
 		world.addEntity(entityvillager);
-		entityvillager.addEffect(new MobEffect(MobEffectList.CONFUSION.id, 200, 0));
+		entityvillager.addEffect(new MobEffect(MobEffectList.CONFUSION.id, 200,
+				0));
 		world.a((EntityHuman) null, 1017, (int) locX, (int) locY, (int) locZ, 0);
 	}
 
@@ -370,7 +436,8 @@ public class EntityTribuZombie extends EntityMonster {
 						final int j1 = world.getTypeId(k, l, i1);
 
 						if (j1 == Block.IRON_FENCE.id || j1 == Block.BED.id) {
-							if (random.nextFloat() < 0.3F) ++i;
+							if (random.nextFloat() < 0.3F)
+								++i;
 
 							++j;
 						}
@@ -385,7 +452,10 @@ public class EntityTribuZombie extends EntityMonster {
 		if (!sunProof && world.v() && !world.isStatic && !isBaby()) {
 			final float f = this.d(1.0F);
 
-			if (f > 0.5F && random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && world.l(MathHelper.floor(locX), MathHelper.floor(locY), MathHelper.floor(locZ))) {
+			if (f > 0.5F
+					&& random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F
+					&& world.l(MathHelper.floor(locX), MathHelper.floor(locY),
+							MathHelper.floor(locZ))) {
 				boolean flag = true;
 				final ItemStack itemstack = this.getEquipment(4);
 
@@ -401,7 +471,8 @@ public class EntityTribuZombie extends EntityMonster {
 					flag = false;
 				}
 
-				if (flag) setOnFire(8);
+				if (flag)
+					setOnFire(8);
 			}
 		}
 
@@ -415,29 +486,48 @@ public class EntityTribuZombie extends EntityMonster {
 		else {
 			EntityLiving entityliving = getGoalTarget();
 
-			if (entityliving == null && bN() instanceof EntityLiving) entityliving = (EntityLiving) bN();
+			if (entityliving == null && bN() instanceof EntityLiving)
+				entityliving = (EntityLiving) bN();
 
-			if (entityliving == null && damagesource.getEntity() instanceof EntityLiving) entityliving = (EntityLiving) damagesource.getEntity();
+			if (entityliving == null
+					&& damagesource.getEntity() instanceof EntityLiving)
+				entityliving = (EntityLiving) damagesource.getEntity();
 
-			if (entityliving != null && world.difficulty >= 3 && random.nextFloat() < getAttributeInstance(bp).getValue()) {
+			if (entityliving != null && world.difficulty >= 3
+					&& random.nextFloat() < getAttributeInstance(bp).getValue()) {
 				final int i = MathHelper.floor(locX);
 				final int j = MathHelper.floor(locY);
 				final int k = MathHelper.floor(locZ);
 				final EntityZombie entityzombie = new EntityZombie(world);
 
 				for (int l = 0; l < 50; ++l) {
-					final int i1 = i + MathHelper.nextInt(random, 7, 40) * MathHelper.nextInt(random, -1, 1);
-					final int j1 = j + MathHelper.nextInt(random, 7, 40) * MathHelper.nextInt(random, -1, 1);
-					final int k1 = k + MathHelper.nextInt(random, 7, 40) * MathHelper.nextInt(random, -1, 1);
+					final int i1 = i + MathHelper.nextInt(random, 7, 40)
+							* MathHelper.nextInt(random, -1, 1);
+					final int j1 = j + MathHelper.nextInt(random, 7, 40)
+							* MathHelper.nextInt(random, -1, 1);
+					final int k1 = k + MathHelper.nextInt(random, 7, 40)
+							* MathHelper.nextInt(random, -1, 1);
 
-					if (world.w(i1, j1 - 1, k1) && world.getLightLevel(i1, j1, k1) < 10) {
+					if (world.w(i1, j1 - 1, k1)
+							&& world.getLightLevel(i1, j1, k1) < 10) {
 						entityzombie.setPosition(i1, j1, k1);
-						if (world.b(entityzombie.boundingBox) && world.getCubes(entityzombie, entityzombie.boundingBox).isEmpty() && !world.containsLiquid(entityzombie.boundingBox)) {
+						if (world.b(entityzombie.boundingBox)
+								&& world.getCubes(entityzombie,
+										entityzombie.boundingBox).isEmpty()
+								&& !world
+										.containsLiquid(entityzombie.boundingBox)) {
 							world.addEntity(entityzombie);
 							entityzombie.setGoalTarget(entityliving);
 							entityzombie.a((GroupDataEntity) null);
-							getAttributeInstance(bp).a(new AttributeModifier("Zombie reinforcement caller charge", -0.05000000074505806D, 0));
-							entityzombie.getAttributeInstance(bp).a(new AttributeModifier("Zombie reinforcement callee charge", -0.05000000074505806D, 0));
+							getAttributeInstance(bp)
+									.a(new AttributeModifier(
+											"Zombie reinforcement caller charge",
+											-0.05000000074505806D, 0));
+							entityzombie
+									.getAttributeInstance(bp)
+									.a(new AttributeModifier(
+											"Zombie reinforcement callee charge",
+											-0.05000000074505806D, 0));
 							break;
 						}
 					}
@@ -475,16 +565,16 @@ public class EntityTribuZombie extends EntityMonster {
 	@Override
 	protected ItemStack l(final int i) {
 		switch (random.nextInt(3)) {
-			case 0:
-				this.b(Item.IRON_INGOT.id, 1);
-				break;
+		case 0:
+			this.b(Item.IRON_INGOT.id, 1);
+			break;
 
-			case 1:
-				this.b(Item.CARROT.id, 1);
-				break;
+		case 1:
+			this.b(Item.CARROT.id, 1);
+			break;
 
-			case 2:
-				this.b(Item.POTATO.id, 1);
+		case 2:
+			this.b(Item.POTATO.id, 1);
 		}
 		return null;
 	}
@@ -495,7 +585,8 @@ public class EntityTribuZombie extends EntityMonster {
 			final int i = bX();
 
 			bs -= i;
-			if (bs <= 0) bW();
+			if (bs <= 0)
+				bW();
 		}
 
 		super.l_();
@@ -505,7 +596,9 @@ public class EntityTribuZombie extends EntityMonster {
 	public boolean m(final Entity entity) {
 		final boolean flag = super.m(entity);
 
-		if (flag && aY() == null && isBurning() && random.nextFloat() < world.difficulty * 0.3F) entity.setOnFire(2 * world.difficulty);
+		if (flag && aY() == null && isBurning()
+				&& random.nextFloat() < world.difficulty * 0.3F)
+			entity.setOnFire(2 * world.difficulty);
 
 		return flag;
 	}
@@ -521,7 +614,8 @@ public class EntityTribuZombie extends EntityMonster {
 			final AttributeInstance attributeinstance = getAttributeInstance(attrSpeed);
 
 			attributeinstance.b(br);
-			if (flag) attributeinstance.a(br);
+			if (flag)
+				attributeinstance.a(br);
 		}
 	}
 

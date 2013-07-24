@@ -39,9 +39,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class TribuTempInventory {
-	private ItemStack[]		armor		= new ItemStack[4];
-	private ItemStack[]		inventory	= new ItemStack[36];
-	private final Player	p;
+	private ItemStack[] armor = new ItemStack[4];
+	private ItemStack[] inventory = new ItemStack[36];
+	private final Player p;
 
 	public TribuTempInventory(final Player p) {
 		this.p = p;
@@ -49,7 +49,8 @@ public class TribuTempInventory {
 
 	public TribuTempInventory(final Player p, final boolean captureNow) {
 		this.p = p;
-		if (captureNow) capture();
+		if (captureNow)
+			capture();
 	}
 
 	public TribuTempInventory(final Player p, final ItemStack[] items) {

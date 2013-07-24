@@ -10,22 +10,26 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.block.BlockState;
 
 public class EntrySpawner extends EntryBlockState {
-	String	mobName;
+	String mobName;
 
 	public EntrySpawner(final BlockState bs) throws WrongBlockException {
 		super(bs);
 		if (bs instanceof TileEntityMobSpawner)
 			mobName = ((TileEntityMobSpawner) bs).a().getMobName();
 		else
-			throw new WrongBlockException(Block.MOB_SPAWNER.id, getWorld().getTypeId(x, y, z), x, y, z, getWorld().getWorld());
+			throw new WrongBlockException(Block.MOB_SPAWNER.id, getWorld()
+					.getTypeId(x, y, z), x, y, z, getWorld().getWorld());
 	}
 
 	@Override
 	public void restore() throws WrongBlockException, Exception {
 		Validate.notNull(getWorld(), "getWorld() is null");
 		Validate.notEmpty(mobName, "Mob name is empty");
-		if (getWorld().getTypeId(x, y, z) != Block.MOB_SPAWNER.id) throw new WrongBlockException(Block.MOB_SPAWNER.id, getWorld().getTypeId(x, y, z), x, y, z, getWorld().getWorld());
-		TileEntityMobSpawner spawner = ((TileEntityMobSpawner) getWorld().getTileEntity(x, y, z));
+		if (getWorld().getTypeId(x, y, z) != Block.MOB_SPAWNER.id)
+			throw new WrongBlockException(Block.MOB_SPAWNER.id, getWorld()
+					.getTypeId(x, y, z), x, y, z, getWorld().getWorld());
+		TileEntityMobSpawner spawner = ((TileEntityMobSpawner) getWorld()
+				.getTileEntity(x, y, z));
 		if (spawner == null) {
 			ChunkMemory.debugMsg("Null mob spawner tile entity");
 			spawner = new TileEntityMobSpawner();

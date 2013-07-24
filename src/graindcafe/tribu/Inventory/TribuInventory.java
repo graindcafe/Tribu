@@ -44,8 +44,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 public class TribuInventory {
-	protected HashMap<Player, List<ItemStack>>	inventories;
-	protected HashMap<Player, List<ItemStack>>	armors;
+	protected HashMap<Player, List<ItemStack>> inventories;
+	protected HashMap<Player, List<ItemStack>> armors;
 
 	public TribuInventory() {
 		inventories = new HashMap<Player, List<ItemStack>>();
@@ -74,16 +74,20 @@ public class TribuInventory {
 	}
 
 	public void restoreInventory(final Player p) {
-		if (inventories.containsKey(p)) uncheckedRestoreInventory(p);
-		if (armors.containsKey(p)) uncheckedRestoreArmor(p);
+		if (inventories.containsKey(p))
+			uncheckedRestoreInventory(p);
+		if (armors.containsKey(p))
+			uncheckedRestoreArmor(p);
 
 	}
 
 	protected void uncheckedRestoreArmor(final Player p) {
-		p.getInventory().setArmorContents((ItemStack[]) armors.remove(p).toArray());
+		p.getInventory().setArmorContents(
+				(ItemStack[]) armors.remove(p).toArray());
 	}
 
 	protected void uncheckedRestoreInventory(final Player p) {
-		p.getInventory().setContents((ItemStack[]) inventories.remove(p).toArray());
+		p.getInventory().setContents(
+				(ItemStack[]) inventories.remove(p).toArray());
 	}
 }

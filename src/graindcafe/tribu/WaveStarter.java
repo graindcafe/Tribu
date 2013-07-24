@@ -41,12 +41,12 @@ import java.util.List;
 import org.bukkit.entity.Player;
 
 public class WaveStarter implements Runnable {
-	private final Tribu	plugin;
-	private boolean		scheduled;
-	private int			taskID;
-	private int			waveNumber;
-	private int			zombieDamage;
-	private int			health;
+	private final Tribu plugin;
+	private boolean scheduled;
+	private int taskID;
+	private int waveNumber;
+	private int zombieDamage;
+	private int health;
 
 	public WaveStarter(final Tribu instance) {
 		plugin = instance;
@@ -55,7 +55,8 @@ public class WaveStarter implements Runnable {
 	}
 
 	private int calcPolynomialFunction(final int x, final List<Double> coef) {
-		if (coef == null || coef.size() == 0) return 0;
+		if (coef == null || coef.size() == 0)
+			return 0;
 		byte i = (byte) (coef.size() - 1);
 		byte j;
 		float r = 0;
@@ -103,28 +104,41 @@ public class WaveStarter implements Runnable {
 
 	public void run() {
 		if (plugin.isRunning()) {
-			if (plugin.config().WaveStartTeleportPlayers) for (final Player p : plugin.getPlayers())
-				p.teleport(plugin.getLevel().getInitialSpawn());
-			if (plugin.config().WaveStartSetTime) plugin.getLevel().getInitialSpawn().getWorld().setTime(plugin.config().WaveStartSetTimeTo);
-			final int max = calcPolynomialFunction(waveNumber, plugin.config().ZombiesQuantity);
-			health = calcPolynomialFunction(waveNumber, plugin.config().ZombiesHealth);
-			zombieDamage = calcPolynomialFunction(waveNumber, plugin.config().ZombiesDamage);
-			final int timeToSpawn = Math.round(Constants.TicksBySecond * ((float) calcPolynomialFunction(waveNumber, plugin.config().ZombiesTimeToSpawn) / (float) max));
+			if (plugin.config().WaveStartTeleportPlayers)
+				for (final Player p : plugin.getPlayers())
+					p.teleport(plugin.getLevel().getInitialSpawn());
+			if (plugin.config().WaveStartSetTime)
+				plugin.getLevel().getInitialSpawn().getWorld()
+						.setTime(plugin.config().WaveStartSetTimeTo);
+			final int max = calcPolynomialFunction(waveNumber,
+					plugin.config().ZombiesQuantity);
+			health = calcPolynomialFunction(waveNumber,
+					plugin.config().ZombiesHealth);
+			zombieDamage = calcPolynomialFunction(waveNumber,
+					plugin.config().ZombiesDamage);
+			final int timeToSpawn = Math.round(Constants.TicksBySecond
+					* ((float) calcPolynomialFunction(waveNumber,
+							plugin.config().ZombiesTimeToSpawn) / (float) max));
 
 			scheduled = false;
 			plugin.revivePlayers(false);
 			plugin.getLevel().onWaveStart();
 			plugin.getSpawnTimer().StartWave(max, health, timeToSpawn);
-			plugin.messagePlayers("Broadcast.StartingWave", String.valueOf(waveNumber), String.valueOf(max), String.valueOf(health));
+			plugin.messagePlayers("Broadcast.StartingWave",
+					String.valueOf(waveNumber), String.valueOf(max),
+					String.valueOf(health));
 			plugin.getSpawner().startingCallback();
 		}
 	}
 
 	public void scheduleWave(final int delay) {
 		if (!scheduled && plugin.isRunning()) {
-			taskID = plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, this, delay);
+			taskID = plugin.getServer().getScheduler()
+					.scheduleSyncDelayedTask(plugin, this, delay);
 			scheduled = true;
-			plugin.messagePlayers("Broadcast.Wave", String.valueOf(plugin.getWaveStarter().getWaveNumber()), String.valueOf(delay / Constants.TicksBySecond));
+			plugin.messagePlayers("Broadcast.Wave",
+					String.valueOf(plugin.getWaveStarter().getWaveNumber()),
+					String.valueOf(delay / Constants.TicksBySecond));
 		}
 	}
 

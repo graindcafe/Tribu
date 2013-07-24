@@ -24,10 +24,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 
 public class CraftTribuZombie extends CraftMonster implements Zombie {
-	public static CraftEntity spawn(final Tribu plugin, final Location pos) throws CannotSpawnException {
-		if (!pos.getChunk().isLoaded()) pos.getChunk().load();
+	public static CraftEntity spawn(final Tribu plugin, final Location pos)
+			throws CannotSpawnException {
+		if (!pos.getChunk().isLoaded())
+			pos.getChunk().load();
 
-		final EntityTribuZombie tz = EntityTribuZombie.spawn(plugin, ((CraftWorld) pos.getWorld()).getHandle(), pos.getX(), pos.getY(), pos.getZ());
+		final EntityTribuZombie tz = EntityTribuZombie.spawn(plugin,
+				((CraftWorld) pos.getWorld()).getHandle(), pos.getX(),
+				pos.getY(), pos.getZ());
 		if (tz == null)
 			return null;
 		else
@@ -35,11 +39,12 @@ public class CraftTribuZombie extends CraftMonster implements Zombie {
 
 	}
 
-	private final HashMap<Player, Double>	playerDamage;
-	private Double							maxAccrued, total, maxDamage;
-	private Player							bestAttacker;
+	private final HashMap<Player, Double> playerDamage;
+	private Double maxAccrued, total, maxDamage;
+	private Player bestAttacker;
 
-	public CraftTribuZombie(final CraftServer server, final EntityTribuZombie entity) {
+	public CraftTribuZombie(final CraftServer server,
+			final EntityTribuZombie entity) {
 		super(server, entity);
 		playerDamage = new HashMap<Player, Double>();
 		maxAccrued = 0d;
@@ -48,7 +53,8 @@ public class CraftTribuZombie extends CraftMonster implements Zombie {
 	}
 
 	public void addAttack(final Player p, final double damage) {
-		if (maxDamage < damage) maxDamage = damage;
+		if (maxDamage < damage)
+			maxDamage = damage;
 		Double i;
 		if (playerDamage.containsKey(p)) {
 
@@ -76,25 +82,18 @@ public class CraftTribuZombie extends CraftMonster implements Zombie {
 
 	public Player getBestAttacker() {
 		/*
-		LinkedList<Integer> list = new LinkedList<Integer>();
-		list.addAll(playerDamage.values());
-		Collections.sort(list, Collections.reverseOrder());
-		Player p=null;
-		Integer max=list.get(0);
-		for(Entry<Player,Integer> e : playerDamage.entrySet())
-		{
-			if(e.getValue().equals(max))
-			{
-				p=e.getKey();
-				break;
-			}
-		}
-		return p;*/
+		 * LinkedList<Integer> list = new LinkedList<Integer>();
+		 * list.addAll(playerDamage.values()); Collections.sort(list,
+		 * Collections.reverseOrder()); Player p=null; Integer max=list.get(0);
+		 * for(Entry<Player,Integer> e : playerDamage.entrySet()) {
+		 * if(e.getValue().equals(max)) { p=e.getKey(); break; } } return p;
+		 */
 		return bestAttacker;
 	}
 
 	public Player getFirstAttacker() {
-		if (playerDamage.isEmpty()) return null;
+		if (playerDamage.isEmpty())
+			return null;
 		return playerDamage.keySet().iterator().next();
 	}
 
@@ -104,7 +103,8 @@ public class CraftTribuZombie extends CraftMonster implements Zombie {
 	}
 
 	public Player getLastAttacker() {
-		if (playerDamage.isEmpty()) return null;
+		if (playerDamage.isEmpty())
+			return null;
 		final Iterator<Player> i = playerDamage.keySet().iterator();
 
 		final Player beforeLast = i.next();

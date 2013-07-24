@@ -53,7 +53,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.plugin.PluginManager;
 
 public class TribuPlayerListener implements Listener {
-	private final Tribu	plugin;
+	private final Tribu plugin;
 
 	public TribuPlayerListener(final Tribu instance) {
 		plugin = instance;
@@ -62,32 +62,45 @@ public class TribuPlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChangeWorld(final PlayerChangedWorldEvent event) {
 		// If he is playing, then he is inside the world...
-		if (plugin.config().PluginModeWorldExclusive) if (plugin.isInsideLevel(event.getPlayer().getLocation()))
-			// Timed out add player
-			// you need this orelse you will get kicked
-			// "Moving to fast Hacking?"
-			// its just a .5 of a second delay (it can be set to even less)
-			plugin.addPlayer(event.getPlayer(), 0.5);
-		else if (plugin.isPlaying(event.getPlayer())) plugin.removePlayer(event.getPlayer());
+		if (plugin.config().PluginModeWorldExclusive)
+			if (plugin.isInsideLevel(event.getPlayer().getLocation()))
+				// Timed out add player
+				// you need this orelse you will get kicked
+				// "Moving to fast Hacking?"
+				// its just a .5 of a second delay (it can be set to even less)
+				plugin.addPlayer(event.getPlayer(), 0.5);
+			else if (plugin.isPlaying(event.getPlayer()))
+				plugin.removePlayer(event.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(final PlayerInteractEvent event) {
 		if (!event.isCancelled()) {
 			final Block block = event.getClickedBlock();
-			if (block != null && Sign.class.isInstance(block.getState()) && plugin.getLevel() != null) {
+			if (block != null && Sign.class.isInstance(block.getState())
+					&& plugin.getLevel() != null) {
 				if (plugin.isRunning() && plugin.isPlaying(event.getPlayer())) {
-					if (event.getAction() == Action.RIGHT_CLICK_BLOCK) plugin.getLevel().onSignClicked(event);
-				} else if (event.getPlayer().hasPermission("tribu.signs.place")) if (plugin.getLevel().removeSign(block.getLocation()))
-					Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.TribuSignRemoved"));
-				else if (plugin.getLevel().addSign(TribuSign.getObject(plugin, block.getLocation()))) Tribu.messagePlayer(event.getPlayer(), plugin.getLocale("Message.TribuSignAdded"));
-			} else if (plugin.isRunning()) plugin.getLevel().onClick(event);
+					if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
+						plugin.getLevel().onSignClicked(event);
+				} else if (event.getPlayer().hasPermission("tribu.signs.place"))
+					if (plugin.getLevel().removeSign(block.getLocation()))
+						Tribu.messagePlayer(event.getPlayer(),
+								plugin.getLocale("Message.TribuSignRemoved"));
+					else if (plugin.getLevel().addSign(
+							TribuSign.getObject(plugin, block.getLocation())))
+						Tribu.messagePlayer(event.getPlayer(),
+								plugin.getLocale("Message.TribuSignAdded"));
+			} else if (plugin.isRunning())
+				plugin.getLevel().onClick(event);
 		}
 	}
 
 	@EventHandler
 	public void onPlayerJoin(final PlayerJoinEvent event) {
-		if (plugin.config().PluginModeServerExclusive || plugin.config().PluginModeWorldExclusive && plugin.isInsideLevel(event.getPlayer().getLocation(), true)) plugin.addPlayer(event.getPlayer());
+		if (plugin.config().PluginModeServerExclusive
+				|| plugin.config().PluginModeWorldExclusive
+				&& plugin.isInsideLevel(event.getPlayer().getLocation(), true))
+			plugin.addPlayer(event.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
@@ -95,9 +108,14 @@ public class TribuPlayerListener implements Listener {
 		final Player player = event.getPlayer();
 		if (plugin.isRunning() && plugin.isPlaying(player)) {
 			plugin.getChunkMemory().add(player.getLocation().getChunk());
-			if (plugin.config().LevelJail && !plugin.isAlive(player) && plugin.getLevel().getDeathSpawn().distanceSquared(player.getLocation()) > plugin.config().LevelJailRadius) {
+			if (plugin.config().LevelJail
+					&& !plugin.isAlive(player)
+					&& plugin.getLevel().getDeathSpawn()
+							.distanceSquared(player.getLocation()) > plugin
+							.config().LevelJailRadius) {
 				player.teleport(plugin.getLevel().getDeathSpawn());
-				Tribu.messagePlayer(player, plugin.getLocale("Message.PlayerDSpawnLeaveWarning"));
+				Tribu.messagePlayer(player,
+						plugin.getLocale("Message.PlayerDSpawnLeaveWarning"));
 			}
 		}
 	}
@@ -112,10 +130,12 @@ public class TribuPlayerListener implements Listener {
 	public void onPlayerRespawn(final PlayerRespawnEvent event) {
 		if (plugin.getLevel() != null) {
 			plugin.setDead(event.getPlayer());
-			plugin.resetedSpawnAdd(event.getPlayer(), event.getRespawnLocation());
+			plugin.resetedSpawnAdd(event.getPlayer(),
+					event.getRespawnLocation());
 			event.setRespawnLocation(plugin.getLevel().getDeathSpawn());
 			plugin.restoreTempInv(event.getPlayer());
-			if (!plugin.isPlaying(event.getPlayer())) plugin.restoreInventory(event.getPlayer());
+			if (!plugin.isPlaying(event.getPlayer()))
+				plugin.restoreInventory(event.getPlayer());
 		}
 	}
 

@@ -12,21 +12,25 @@ import org.bukkit.material.Directional;
 import org.bukkit.material.MaterialData;
 
 public class EntryDirectional extends EntryBlockState {
-	int	facing;
+	int facing;
 
 	public EntryDirectional(final BlockState bs) throws WrongBlockException {
 		super(bs);
 		if (bs.getData() instanceof Directional)
 			facing = ((Directional) bs.getData()).getFacing().ordinal();
 		else
-			throw new WrongBlockException(Block.DISPENSER.id, world.getTypeId(x, y, z), x, y, z, world.getWorld());
+			throw new WrongBlockException(Block.DISPENSER.id, world.getTypeId(
+					x, y, z), x, y, z, world.getWorld());
 	}
 
 	@Override
 	public void restore() throws WrongBlockException, Exception {
 		Validate.notNull(world, "World is null");
-		final MaterialData materialData = world.getWorld().getBlockAt(x, y, z).getState().getData();
-		if (materialData instanceof Directional) ((Directional) materialData).setFacingDirection(BlockFace.values()[facing]);
+		final MaterialData materialData = world.getWorld().getBlockAt(x, y, z)
+				.getState().getData();
+		if (materialData instanceof Directional)
+			((Directional) materialData)
+					.setFacingDirection(BlockFace.values()[facing]);
 
 		world.notify(x, y, z);
 

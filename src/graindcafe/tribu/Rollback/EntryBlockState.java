@@ -9,14 +9,16 @@ import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.v1_6_R2.CraftWorld;
 
 public abstract class EntryBlockState {
-	protected int			x, y, z;
-	protected WorldServer	world;
+	protected int x, y, z;
+	protected WorldServer world;
 
 	public EntryBlockState(final BlockState bs) throws WrongBlockException {
-		this(bs.getBlock().getX(), bs.getBlock().getY(), bs.getBlock().getZ(), ((CraftWorld) bs.getBlock().getWorld()).getHandle());
+		this(bs.getBlock().getX(), bs.getBlock().getY(), bs.getBlock().getZ(),
+				((CraftWorld) bs.getBlock().getWorld()).getHandle());
 	}
 
-	private EntryBlockState(final int x, final int y, final int z, final WorldServer world) {
+	private EntryBlockState(final int x, final int y, final int z,
+			final WorldServer world) {
 		super();
 		this.x = x;
 		this.y = y;

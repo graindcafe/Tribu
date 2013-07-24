@@ -36,8 +36,8 @@ package graindcafe.tribu;
 
 public class SpawnTimer implements Runnable {
 
-	private final Tribu	plugin;
-	private int			taskID;
+	private final Tribu plugin;
+	private int taskID;
 
 	// ?? maxSpawn ?
 	// private int totalSpawn;
@@ -48,7 +48,8 @@ public class SpawnTimer implements Runnable {
 	}
 
 	public void getState() {
-		if (plugin.isRunning() && plugin.getAliveCount() > 0 && !plugin.getSpawner().isWaveCompleted())
+		if (plugin.isRunning() && plugin.getAliveCount() > 0
+				&& !plugin.getSpawner().isWaveCompleted())
 			plugin.LogInfo("Should spawn zombie");
 		else
 			plugin.LogInfo("Should NOT spawn zombie");
@@ -66,11 +67,14 @@ public class SpawnTimer implements Runnable {
 	}
 
 	public void run() {
-		if (plugin.isRunning() && plugin.getAliveCount() > 0 && !plugin.getSpawner().isWaveCompleted()) {
-			if (!plugin.getSpawner().spawnZombie()) plugin.getSpawner().checkZombies();
+		if (plugin.isRunning() && plugin.getAliveCount() > 0
+				&& !plugin.getSpawner().isWaveCompleted()) {
+			if (!plugin.getSpawner().spawnZombie())
+				plugin.getSpawner().checkZombies();
 		} else {
 			plugin.getSpawner().finishCallback();
-			if (plugin.getSpawner().tryStartNextWave()) stop();
+			if (plugin.getSpawner().tryStartNextWave())
+				stop();
 		}
 
 	}
@@ -80,14 +84,15 @@ public class SpawnTimer implements Runnable {
 			plugin.getSpawner().setMaxSpawn(max);
 			plugin.getSpawner().resetTotal();
 			plugin.getSpawner().setHealth(health);
-			taskID = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, this, 0, timeToSpawn);
+			taskID = plugin.getServer().getScheduler()
+					.scheduleSyncRepeatingTask(plugin, this, 0, timeToSpawn);
 		}
 	}/*
-		* public void StartWave(int total, int max, int health) { if
-		* (plugin.isRunning()) { totalSpawn = total;
-		* plugin.getSpawner().setMaxSpawn(max); plugin.getSpawner().resetTotal();
-		* plugin.getSpawner().setHealth(health); Start(); } }
-		*/
+	 * public void StartWave(int total, int max, int health) { if
+	 * (plugin.isRunning()) { totalSpawn = total;
+	 * plugin.getSpawner().setMaxSpawn(max); plugin.getSpawner().resetTotal();
+	 * plugin.getSpawner().setHealth(health); Start(); } }
+	 */
 
 	public void stop() {
 		if (taskID > 0) {

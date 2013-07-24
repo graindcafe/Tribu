@@ -35,17 +35,17 @@ public class ChunkMemory implements Runnable {
 		// Logger.getLogger("Minecraft").info(msg);
 	}
 
-	private boolean							restoring	= false;
-	private boolean							capturing	= false;
-	private boolean							busy		= false;
-	HashSet<Chunk>							chunkMemory;
-	HashSet<ChunkSnapshot>					snapMemory;
-	HashSet<CraftWorld>						worlds;
-	Iterator<ChunkSnapshot>					iterator;
-	int										taskId;
-	private final HashSet<EntryBlockState>	tileEntityMemory;
+	private boolean restoring = false;
+	private boolean capturing = false;
+	private boolean busy = false;
+	HashSet<Chunk> chunkMemory;
+	HashSet<ChunkSnapshot> snapMemory;
+	HashSet<CraftWorld> worlds;
+	Iterator<ChunkSnapshot> iterator;
+	int taskId;
+	private final HashSet<EntryBlockState> tileEntityMemory;
 
-	private final HashSet<EntryBlock>		failedRestore;
+	private final HashSet<EntryBlock> failedRestore;
 
 	/**
 	 * Init memories
@@ -94,7 +94,8 @@ public class ChunkMemory implements Runnable {
 						tileEntityMemory.add(new EntrySpawner(bs));
 					else if (bs instanceof TileEntityPiston)
 						tileEntityMemory.add(new EntryPiston(bs));
-					else if (bs.getData() instanceof Directional) tileEntityMemory.add(new EntryDirectional(bs));
+					else if (bs.getData() instanceof Directional)
+						tileEntityMemory.add(new EntryDirectional(bs));
 				} catch (final Exception e) {
 					debugMsg("Exception : " + e.getMessage());
 					e.printStackTrace();
@@ -127,16 +128,20 @@ public class ChunkMemory implements Runnable {
 		final int baseX = snap.getX(), baseZ = snap.getZ();
 		int y;
 
-		final Chunk currentChunk = Bukkit.getWorld(snap.getWorldName()).getChunkAt(baseX, baseZ);
+		final Chunk currentChunk = Bukkit.getWorld(snap.getWorldName())
+				.getChunkAt(baseX, baseZ);
 
-		final WorldServer world = ((CraftWorld) currentChunk.getWorld()).getHandle();
+		final WorldServer world = ((CraftWorld) currentChunk.getWorld())
+				.getHandle();
 		final int maxHeight = currentChunk.getWorld().getMaxHeight();
 		// suppress physics to stop falling lava and fire etc...
 		world.isStatic = true;
-		if (!currentChunk.isLoaded()) while (currentChunk.load(false))
-			;
+		if (!currentChunk.isLoaded())
+			while (currentChunk.load(false))
+				;
 		for (final Entity e : currentChunk.getEntities())
-			if (e instanceof Item) ((Item) e).remove();
+			if (e instanceof Item)
+				((Item) e).remove();
 		tryRestoreFails();
 		debugMsg("Restoring : " + baseX + "," + baseZ);
 		Block currentB;
@@ -150,7 +155,10 @@ public class ChunkMemory implements Runnable {
 					snapId = snap.getBlockTypeId(x, y, z);
 					snapData = (byte) snap.getBlockData(x, y, z);
 					currentB.setTypeIdAndData(snapId, snapData, false);
-					if (currentB.getTypeId() != snapId || currentB.getData() != snapData) failedRestore.add(new EntryBlock(baseX + x, y, baseZ + z, snapId, snapData, world));
+					if (currentB.getTypeId() != snapId
+							|| currentB.getData() != snapData)
+						failedRestore.add(new EntryBlock(baseX + x, y, baseZ
+								+ z, snapId, snapData, world));
 
 					y++;
 				}
@@ -189,11 +197,12 @@ public class ChunkMemory implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		if (restoring && !busy) if (iterator.hasNext()) {
-			restore(iterator.next());
-			iterator.remove();
-		} else
-			stopRestoring();
+		if (restoring && !busy)
+			if (iterator.hasNext()) {
+				restore(iterator.next());
+				iterator.remove();
+			} else
+				stopRestoring();
 
 	}
 
@@ -215,7 +224,8 @@ public class ChunkMemory implements Runnable {
 	public void startRestoring(final JavaPlugin plugin, int speed) {
 		if (!restoring) {
 			stopCapturing();
-			if (snapMemory.isEmpty()) return;
+			if (snapMemory.isEmpty())
+				return;
 			debugMsg("Start restoring : " + snapMemory.size());
 			restoring = true;
 			speed = 21 - speed / 5;
@@ -224,7 +234,8 @@ public class ChunkMemory implements Runnable {
 			final Iterator<CraftWorld> wIterator = worlds.iterator();
 			while (wIterator.hasNext())
 				wIterator.next().getHandle().isStatic = true;
-			taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this, 0, speed);
+			taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin,
+					this, 0, speed);
 		}
 	}
 
@@ -256,7 +267,8 @@ public class ChunkMemory implements Runnable {
 				debugMsg(e.getMessage());
 				// Try placing the desired block, we'll try again later (2nd
 				// loop)
-				e.getWorld().getBlockAt(e.getX(), e.getY(), e.getZ()).setTypeId(e.getExpected());
+				e.getWorld().getBlockAt(e.getX(), e.getY(), e.getZ())
+						.setTypeId(e.getExpected());
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
@@ -298,7 +310,8 @@ public class ChunkMemory implements Runnable {
 			debugMsg(failedRestore.size() + " fails");
 			while (fails.hasNext())
 				// If succeed remove it else keep it
-				if (fails.next().restore()) fails.remove();
+				if (fails.next().restore())
+					fails.remove();
 		}
 		return failedRestore.isEmpty();
 	}

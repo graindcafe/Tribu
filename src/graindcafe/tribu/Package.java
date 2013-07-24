@@ -43,8 +43,8 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
 public class Package {
-	LinkedList<ItemStack>	pck;
-	String					name;
+	LinkedList<ItemStack> pck;
+	String name;
 
 	public Package() {
 		pck = new LinkedList<ItemStack>();
@@ -80,18 +80,24 @@ public class Package {
 		return addItem(id, subid, number, null);
 	}
 
-	public boolean addItem(final int id, final short subid, final short number, final Map<Enchantment, Integer> enchantments) {
+	public boolean addItem(final int id, final short subid, final short number,
+			final Map<Enchantment, Integer> enchantments) {
 		final ItemStack is = new ItemStack(id);
 		is.setAmount(number);
 		is.setDurability(subid);
-		if (enchantments != null && !enchantments.isEmpty()) for (final Map.Entry<Enchantment, Integer> entry : enchantments.entrySet())
-			if (entry.getKey() != null) if (entry.getKey().canEnchantItem(is)) is.addEnchantment(entry.getKey(), entry.getValue());
+		if (enchantments != null && !enchantments.isEmpty())
+			for (final Map.Entry<Enchantment, Integer> entry : enchantments
+					.entrySet())
+				if (entry.getKey() != null)
+					if (entry.getKey().canEnchantItem(is))
+						is.addEnchantment(entry.getKey(), entry.getValue());
 		return this.addItem(is);
 	}
 
 	public boolean addItem(final ItemStack item) {
 		removeDuplicate(item);
-		return item == null || item.getAmount() == 0 || item.getTypeId() == 0 ? false : pck.add(item);
+		return item == null || item.getAmount() == 0 || item.getTypeId() == 0 ? false
+				: pck.add(item);
 	}
 
 	public boolean addItem(final ItemStack item, final int number) {
@@ -107,11 +113,14 @@ public class Package {
 		return addItem(m, subid, (short) 1);
 	}
 
-	public boolean addItem(final Material m, final short subid, final short number) {
+	public boolean addItem(final Material m, final short subid,
+			final short number) {
 		return addItem(m, subid, number, null);
 	}
 
-	public boolean addItem(final Material m, final short subid, final short number, final Enchantment enchantment, final Integer enchLvl) {
+	public boolean addItem(final Material m, final short subid,
+			final short number, final Enchantment enchantment,
+			final Integer enchLvl) {
 		if (enchantment != null) {
 			final HashMap<Enchantment, Integer> hm = new HashMap<Enchantment, Integer>();
 			hm.put(enchantment, enchLvl);
@@ -120,7 +129,8 @@ public class Package {
 		return addItem(m, subid, number, null);
 	}
 
-	public boolean addItem(final Material m, final short subid, final short amount, final Map<Enchantment, Integer> enchts) {
+	public boolean addItem(final Material m, final short subid,
+			final short amount, final Map<Enchantment, Integer> enchts) {
 		if (m != null)
 			return addItem(m.getId(), subid, amount, enchts);
 		else
@@ -135,7 +145,8 @@ public class Package {
 		return addItem(name, subid, (short) 1);
 	}
 
-	public boolean addItem(final String name, final short subid, final short number) {
+	public boolean addItem(final String name, final short subid,
+			final short number) {
 		try {
 			return addItem(Integer.parseInt(name), subid, number);
 		} catch (final NumberFormatException e) {
@@ -163,16 +174,18 @@ public class Package {
 	public ItemStack getItem(final int id) {
 		ItemStack r = null;
 		for (final ItemStack i : pck)
-			if (i.getTypeId() == id) if (r == null)
-				r = i;
-			else
-				return null;
+			if (i.getTypeId() == id)
+				if (r == null)
+					r = i;
+				else
+					return null;
 		return r;
 	}
 
 	public ItemStack getItem(final int id, final short subid) {
 		for (final ItemStack i : pck)
-			if (i.getTypeId() == id && i.getDurability() == subid) return i;
+			if (i.getTypeId() == id && i.getDurability() == subid)
+				return i;
 		return null;
 	}
 
@@ -182,7 +195,8 @@ public class Package {
 			if (i.equals(item))
 				return i;
 			else if (i.getTypeId() == item.getTypeId()) {
-				if (i.getDurability() == item.getDurability()) return i;
+				if (i.getDurability() == item.getDurability())
+					return i;
 				if (r == null)
 					r = i;
 				else
@@ -195,7 +209,8 @@ public class Package {
 	public LinkedList<ItemStack> getItems(final int id) {
 		final LinkedList<ItemStack> list = new LinkedList<ItemStack>();
 		for (final ItemStack i : pck)
-			if (i.getTypeId() == id) list.add(i);
+			if (i.getTypeId() == id)
+				list.add(i);
 		return list;
 	}
 
@@ -204,7 +219,8 @@ public class Package {
 	}
 
 	public String getLastItemName() {
-		return pck.isEmpty() ? "" : pck.getLast().getData().getItemType().toString();
+		return pck.isEmpty() ? "" : pck.getLast().getData().getItemType()
+				.toString();
 	}
 
 	public String getName() {
@@ -216,14 +232,18 @@ public class Package {
 	}
 
 	private void removeDuplicate(final ItemStack item) {
-		if (item == null) return;
+		if (item == null)
+			return;
 		ItemStack r = null;
 		for (final ItemStack i : pck)
 			if (i.equals(item))
 				r = i;
-			else if (i.getTypeId() == item.getTypeId()) if (i.getDurability() == item.getDurability()) r = i;
+			else if (i.getTypeId() == item.getTypeId())
+				if (i.getDurability() == item.getDurability())
+					r = i;
 
-		if (r != null) pck.remove(r);
+		if (r != null)
+			pck.remove(r);
 	}
 
 	public void setName(final String name) {
@@ -236,7 +256,9 @@ public class Package {
 		String s = new String(name);
 		s += " { ";
 		for (final ItemStack i : pck)
-			s += String.valueOf(i.getData().getItemType().toString()) + ':' + String.valueOf(i.getDurability()) + 'x' + String.valueOf(i.getAmount()) + ' ';
+			s += String.valueOf(i.getData().getItemType().toString()) + ':'
+					+ String.valueOf(i.getDurability()) + 'x'
+					+ String.valueOf(i.getAmount()) + ' ';
 		s += '}';
 		return s;
 	}

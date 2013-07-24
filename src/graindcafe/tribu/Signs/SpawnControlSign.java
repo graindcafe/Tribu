@@ -42,13 +42,14 @@ import org.bukkit.event.block.BlockRedstoneEvent;
 
 public class SpawnControlSign extends TribuSign {
 
-	String	ZombieSpawn;
+	String ZombieSpawn;
 
 	public SpawnControlSign(final Tribu plugin) {
 		super(plugin);
 	}
 
-	public SpawnControlSign(final Tribu plugin, final Location pos, final String[] Lines) {
+	public SpawnControlSign(final Tribu plugin, final Location pos,
+			final String[] Lines) {
 		super(plugin, pos);
 		ZombieSpawn = Lines[1];
 	}

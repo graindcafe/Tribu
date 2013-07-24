@@ -39,9 +39,10 @@ import graindcafe.tribu.Tribu;
 import org.bukkit.Location;
 
 public class SpawnControlToggleSign extends SpawnControlSign {
-	protected boolean	state	= true;
+	protected boolean state = true;
 
-	public SpawnControlToggleSign(final Tribu plugin, final Location pos, final String[] Lines) {
+	public SpawnControlToggleSign(final Tribu plugin, final Location pos,
+			final String[] Lines) {
 		super(plugin, pos, Lines);
 		state = Lines[2].equalsIgnoreCase("on") || Lines[2].equals("1");
 	}
@@ -57,10 +58,11 @@ public class SpawnControlToggleSign extends SpawnControlSign {
 
 	@Override
 	public void raiseEvent() {
-		if (pos.getBlock().isBlockPowered()) if (state)
-			plugin.getLevel().activateZombieSpawn(ZombieSpawn);
-		else
-			plugin.getLevel().deactivateZombieSpawn(ZombieSpawn);
+		if (pos.getBlock().isBlockPowered())
+			if (state)
+				plugin.getLevel().activateZombieSpawn(ZombieSpawn);
+			else
+				plugin.getLevel().deactivateZombieSpawn(ZombieSpawn);
 	}
 
 }

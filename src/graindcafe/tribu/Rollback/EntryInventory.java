@@ -16,20 +16,24 @@ import org.bukkit.craftbukkit.v1_6_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.InventoryHolder;
 
 public class EntryInventory extends EntryBlockState {
-	CraftItemStack[]	items;
+	CraftItemStack[] items;
 
-	public EntryInventory(final BlockState inventoryHolder) throws WrongBlockException {
+	public EntryInventory(final BlockState inventoryHolder)
+			throws WrongBlockException {
 		super(inventoryHolder);
 
 		if (inventoryHolder instanceof InventoryHolder) {
 			final InventoryHolder inventory = (InventoryHolder) inventoryHolder;
-			final org.bukkit.inventory.ItemStack[] bItems = inventory.getInventory().getContents();
+			final org.bukkit.inventory.ItemStack[] bItems = inventory
+					.getInventory().getContents();
 			items = new CraftItemStack[bItems.length];
 			for (int i = 0; i < bItems.length; i++)
 
-				if (bItems[i] != null) items[i] = CraftItemStack.asCraftCopy(bItems[i]);
+				if (bItems[i] != null)
+					items[i] = CraftItemStack.asCraftCopy(bItems[i]);
 		} else
-			throw new WrongBlockException(Block.CHEST.id, world.getTypeId(x, y, z), x, y, z, world.getWorld());
+			throw new WrongBlockException(Block.CHEST.id, world.getTypeId(x, y,
+					z), x, y, z, world.getWorld());
 	}
 
 	private void fillContainer(final IInventory inventory) {
@@ -40,7 +44,8 @@ public class EntryInventory extends EntryBlockState {
 		} else
 			max = items.length;
 		for (int i = 0; i < max; i++)
-			if (items[i] != null) inventory.setItem(i, CraftItemStack.asNMSCopy(items[i]));
+			if (items[i] != null)
+				inventory.setItem(i, CraftItemStack.asNMSCopy(items[i]));
 	}
 
 	@Override
@@ -58,8 +63,10 @@ public class EntryInventory extends EntryBlockState {
 			else if (typeId == Block.DISPENSER.id)
 				inventory = new TileEntityDispenser();
 			else
-				throw new WrongBlockException(Block.CHEST.id, world.getTypeId(x, y, z), x, y, z, world.getWorld());
-			if (typeId == Block.CHEST.id) ((TileEntityChest) inventory).i();
+				throw new WrongBlockException(Block.CHEST.id, world.getTypeId(
+						x, y, z), x, y, z, world.getWorld());
+			if (typeId == Block.CHEST.id)
+				((TileEntityChest) inventory).i();
 			fillContainer(inventory);
 			world.setTileEntity(x, y, z, (TileEntity) inventory);
 		} else

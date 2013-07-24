@@ -53,14 +53,16 @@ public class TribuConfig extends TribuDefaultConfiguration {
 		// Logger.getLogger("Minecraft").info("[Tribu] " + info);
 	}
 
-	protected static LinkedList<Package> getDefaultPackages(final FileConfiguration config) {
+	protected static LinkedList<Package> getDefaultPackages(
+			final FileConfiguration config) {
 		LinkedList<Package> DefaultPackages = null;
 		if (config.isConfigurationSection("DefaultPackages")) {
 			DefaultPackages = new LinkedList<Package>();
 			Package pck;
 			List<Integer> enchIds;
 			List<Integer> enchLvls;
-			final ConfigurationSection defaultPackage = config.getConfigurationSection("DefaultPackages");
+			final ConfigurationSection defaultPackage = config
+					.getConfigurationSection("DefaultPackages");
 			ConfigurationSection pckCs, item;
 			byte i = 0;
 			final HashMap<Enchantment, Integer> enchts = new HashMap<Enchantment, Integer>();
@@ -79,16 +81,24 @@ public class TribuConfig extends TribuDefaultConfiguration {
 							if (item.contains("enchantmentsId")) {
 								enchIds = item.getIntegerList("enchantmentsId");
 								if (item.contains("enchantmentsLevel"))
-									enchLvls = item.getIntegerList("enchantmentsLevel");
+									enchLvls = item
+											.getIntegerList("enchantmentsLevel");
 								else
 									enchLvls = new LinkedList<Integer>();
 								i = 0;
 								for (final Integer id : enchIds) {
-									enchts.put(Enchantment.getById(id), (enchLvls.size() > i) ? enchLvls.get(i) : 1);
+									enchts.put(
+											Enchantment.getById(id),
+											(enchLvls.size() > i) ? enchLvls
+													.get(i) : 1);
 									i++;
 								}
 							}
-							pck.addItem(item.getInt("id"), (short) item.getInt("data", item.getInt("subid", item.getInt("durability", 0))), (short) item.getInt("amount", 1), enchts);
+							pck.addItem(item.getInt("id"), (short) item.getInt(
+									"data",
+									item.getInt("subid",
+											item.getInt("durability", 0))),
+									(short) item.getInt("amount", 1), enchts);
 						} else
 							debugMsg(itemName + " not loaded");
 					}
@@ -109,7 +119,8 @@ public class TribuConfig extends TribuDefaultConfiguration {
 		this(config, new TribuDefaultConfiguration());
 	}
 
-	public TribuConfig(final File config, final TribuDefaultConfiguration DefaultConfig) {
+	public TribuConfig(final File config,
+			final TribuDefaultConfiguration DefaultConfig) {
 		this(YamlConfiguration.loadConfiguration(config), DefaultConfig);
 
 	}
@@ -119,7 +130,8 @@ public class TribuConfig extends TribuDefaultConfiguration {
 
 	}
 
-	public TribuConfig(final FileConfiguration config, final TribuDefaultConfiguration DefaultConfig) {
+	public TribuConfig(final FileConfiguration config,
+			final TribuDefaultConfiguration DefaultConfig) {
 		/*
 		 * try { config.load(config); } catch (FileNotFoundException e2) {
 		 * 
@@ -135,10 +147,14 @@ public class TribuConfig extends TribuDefaultConfiguration {
 		this(new File(config));
 	}
 
-	private void load(final FileConfiguration config, final TribuDefaultConfiguration DefaultConfig) {
-		config.options().header("# Tribu Config File Version " + Constants.ConfigFileVersion + " \n");
+	private void load(final FileConfiguration config,
+			final TribuDefaultConfiguration DefaultConfig) {
+		config.options().header(
+				"# Tribu Config File Version " + Constants.ConfigFileVersion
+						+ " \n");
 
-		final HashMap<String, Object> DefaultConfiguration = (HashMap<String, Object>) DefaultConfig.toMap();
+		final HashMap<String, Object> DefaultConfiguration = (HashMap<String, Object>) DefaultConfig
+				.toMap();
 
 		for (final String key : config.getKeys(true)) {
 			this.load(key, config);
@@ -170,7 +186,8 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					PluginModeLanguage = config.getString(key);
 				else if (keyNode[1].equalsIgnoreCase("AutoStart"))
 					PluginModeAutoStart = config.getBoolean(key);
-				else if (keyNode[1].equalsIgnoreCase("DefaultLevel")) PluginModeDefaultLevel = config.getString(key);
+				else if (keyNode[1].equalsIgnoreCase("DefaultLevel"))
+					PluginModeDefaultLevel = config.getString(key);
 			} else if (keyNode[0].equalsIgnoreCase("Level")) {
 				if (keyNode[1].equalsIgnoreCase("Jail"))
 					LevelJail = config.getBoolean(key);
@@ -183,7 +200,8 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					LevelStartDelay = config.getInt(key);
 				else if (keyNode[1].equalsIgnoreCase("MinPlayers")) {
 					LevelMinPlayers = config.getInt(key);
-					if (LevelMinPlayers < 1) LevelMinPlayers = 1;
+					if (LevelMinPlayers < 1)
+						LevelMinPlayers = 1;
 				}
 			} else if (keyNode[0].equalsIgnoreCase("WaveStart")) {
 				if (keyNode[1].equalsIgnoreCase("SetTime"))
@@ -198,7 +216,8 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					WaveStartTeleportPlayers = config.getBoolean(key);
 				else if (keyNode[1].equalsIgnoreCase("HealPlayers"))
 					WaveStartHealPlayers = config.getBoolean(key);
-				else if (keyNode[1].equalsIgnoreCase("FeedPlayers")) WaveStartFeedPlayers = config.getBoolean(key);
+				else if (keyNode[1].equalsIgnoreCase("FeedPlayers"))
+					WaveStartFeedPlayers = config.getBoolean(key);
 
 			} else if (keyNode[0].equalsIgnoreCase("Zombies")) {
 				if (keyNode[1].equalsIgnoreCase("Quantity"))
@@ -219,22 +238,29 @@ public class TribuConfig extends TribuDefaultConfiguration {
 				else if (keyNode[1].equalsIgnoreCase("TimeToSpawn"))
 					ZombiesTimeToSpawn = config.getDoubleList(key);
 				else if (keyNode[1].equalsIgnoreCase("Speed") && nodeCount > 2) {
-					if (keyNode[2].equalsIgnoreCase("Random")) ZombiesSpeedRandom = config.getBoolean(key);
-					if (keyNode[2].equalsIgnoreCase("Base")) ZombiesSpeedBase = (float) config.getDouble(key);
-					if (keyNode[2].equalsIgnoreCase("Rush")) ZombiesSpeedRush = (float) config.getDouble(key);
+					if (keyNode[2].equalsIgnoreCase("Random"))
+						ZombiesSpeedRandom = config.getBoolean(key);
+					if (keyNode[2].equalsIgnoreCase("Base"))
+						ZombiesSpeedBase = (float) config.getDouble(key);
+					if (keyNode[2].equalsIgnoreCase("Rush"))
+						ZombiesSpeedRush = (float) config.getDouble(key);
 				}
 			} else if (keyNode[0].equalsIgnoreCase("Stats")) {
-				if (nodeCount > 2) if (keyNode[1].equalsIgnoreCase("OnZombieKill")) {
-					if (keyNode[2].equalsIgnoreCase("Points"))
-						StatsOnZombieKillPoints = config.getInt(key);
-					else if (keyNode[2].equalsIgnoreCase("Money")) StatsOnZombieKillMoney = config.getInt(key);
-				} else if (keyNode[1].equalsIgnoreCase("OnPlayerDeath")) {
-					if (keyNode[2].equalsIgnoreCase("Points"))
-						StatsOnPlayerDeathPoints = config.getInt(key);
-					else if (keyNode[2].equalsIgnoreCase("Money")) StatsOnPlayerDeathMoney = config.getInt(key);
-				} else if (keyNode[1].equalsIgnoreCase("RewardMethod"))
-					StatsRewardMethod = config.getString(key);
-				else if (keyNode[1].equalsIgnoreCase("RewardOnlyAlive")) StatsRewardOnlyAlive = config.getBoolean(key);
+				if (nodeCount > 2)
+					if (keyNode[1].equalsIgnoreCase("OnZombieKill")) {
+						if (keyNode[2].equalsIgnoreCase("Points"))
+							StatsOnZombieKillPoints = config.getInt(key);
+						else if (keyNode[2].equalsIgnoreCase("Money"))
+							StatsOnZombieKillMoney = config.getInt(key);
+					} else if (keyNode[1].equalsIgnoreCase("OnPlayerDeath")) {
+						if (keyNode[2].equalsIgnoreCase("Points"))
+							StatsOnPlayerDeathPoints = config.getInt(key);
+						else if (keyNode[2].equalsIgnoreCase("Money"))
+							StatsOnPlayerDeathMoney = config.getInt(key);
+					} else if (keyNode[1].equalsIgnoreCase("RewardMethod"))
+						StatsRewardMethod = config.getString(key);
+					else if (keyNode[1].equalsIgnoreCase("RewardOnlyAlive"))
+						StatsRewardOnlyAlive = config.getBoolean(key);
 			} else if (keyNode[0].equalsIgnoreCase("Players")) {
 				if (keyNode[1].equalsIgnoreCase("DontLooseItem"))
 					PlayersDontLooseItem = config.getBoolean(key);
@@ -244,14 +270,16 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					PlayersRollback = config.getBoolean(key);
 				else if (keyNode[1].equalsIgnoreCase("AllowPlace"))
 					PlayersAllowPlace = config.getBoolean(key);
-				else if (keyNode[1].equalsIgnoreCase("AllowBreak")) PlayersAllowBreak = config.getBoolean(key);
+				else if (keyNode[1].equalsIgnoreCase("AllowBreak"))
+					PlayersAllowBreak = config.getBoolean(key);
 				// debugMsg(keyNode[1] +": "+ config.getBoolean(key));
 			} else if (keyNode[0].equalsIgnoreCase("DefaultPackages"))
 				return;
 			else {
 				debugMsg("Not found : " + key);
 				try {
-					this.getClass().getField(key).set(toMap().get(key), config.get(key));
+					this.getClass().getField(key)
+							.set(toMap().get(key), config.get(key));
 				} catch (final Exception e) {
 					debugMsg("Failed " + key);
 					return;

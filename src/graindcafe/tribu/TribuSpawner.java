@@ -53,44 +53,46 @@ public class TribuSpawner {
 	/**
 	 * Is the round finish
 	 */
-	private boolean								finished;
+	private boolean finished;
 
 	/**
 	 * Health of zombie to spawn
 	 */
-	private int									health;
+	private int health;
 	/**
-	 *  A zombie just spawned
+	 * A zombie just spawned
 	 */
-	private boolean								justspawned;
+	private boolean justspawned;
 	/**
 	 * number of zombies to spawn
 	 */
-	private int									totalToSpawn;
+	private int totalToSpawn;
 	/**
 	 * Tribu
 	 */
-	private final Tribu							plugin;
+	private final Tribu plugin;
 	/**
 	 * Gonna start
 	 */
-	private boolean								starting;
+	private boolean starting;
 	/**
 	 * spawned zombies
 	 */
-	private int									alreadySpawned;
+	private int alreadySpawned;
 	/**
 	 * planified spawns
 	 */
-	private int									pendingSpawn;
+	private int pendingSpawn;
 	/**
 	 * Referenced zombies
 	 */
-	private final LinkedList<CraftTribuZombie>	zombies;
+	private final LinkedList<CraftTribuZombie> zombies;
 
 	/**
 	 * Init the spawner
-	 * @param instance of Tribu
+	 * 
+	 * @param instance
+	 *            of Tribu
 	 */
 	public TribuSpawner(final Tribu instance) {
 		plugin = instance;
@@ -104,14 +106,15 @@ public class TribuSpawner {
 	}
 
 	/**
-	 * Check that all referenced zombies are alive
-	 * Useful to check if a zombie has been despawned (too far away, killed but not caught) 
-	 * set finished if they are all dead
+	 * Check that all referenced zombies are alive Useful to check if a zombie
+	 * has been despawned (too far away, killed but not caught) set finished if
+	 * they are all dead
 	 */
 	public void checkZombies() {
 		final Stack<CraftTribuZombie> toDelete = new Stack<CraftTribuZombie>();
 		for (final CraftTribuZombie e : zombies)
-			if (e == null || e.isDead()) toDelete.push(e);
+			if (e == null || e.isDead())
+				toDelete.push(e);
 		finished = toDelete.isEmpty();
 		while (!toDelete.isEmpty())
 			removedZombieCallback(toDelete.pop(), false);
@@ -130,19 +133,24 @@ public class TribuSpawner {
 
 	/**
 	 * Despawn a killed zombie
-	 * @param zombie zombie to unreference
-	 * @param drops drops to clear
+	 * 
+	 * @param zombie
+	 *            zombie to unreference
+	 * @param drops
+	 *            drops to clear
 	 */
-	public void despawnZombie(final CraftTribuZombie zombie, final List<ItemStack> drops) {
+	public void despawnZombie(final CraftTribuZombie zombie,
+			final List<ItemStack> drops) {
 		if (zombies.remove(zombie)) {
 			drops.clear();
 			tryStartNextWave();
 		}
 		// Else The zombie may have been deleted by "removedZombieCallback"
-		/*else {
-			
-			plugin.LogWarning("Unreferenced zombie despawned");
-		}*/
+		/*
+		 * else {
+		 * 
+		 * plugin.LogWarning("Unreferenced zombie despawned"); }
+		 */
 	}
 
 	/**
@@ -154,8 +162,9 @@ public class TribuSpawner {
 
 	// Debug command
 	/**
-	 * This is a debug command returning the location of a living zombie
-	 * It prints info of this zombie on the console or a severe error
+	 * This is a debug command returning the location of a living zombie It
+	 * prints info of this zombie on the console or a severe error
+	 * 
 	 * @return location of a living zombie
 	 */
 	public Location getFirstZombieLocation() {
@@ -167,7 +176,10 @@ public class TribuSpawner {
 				return zombies.get(0).getLocation();
 			} else {
 				plugin.getSpawnTimer().getState();
-				plugin.LogSevere("There is " + zombies.size() + " zombie alive of " + alreadySpawned + "/" + totalToSpawn + " spawned . The wave is " + (finished ? "finished" : "in progress"));
+				plugin.LogSevere("There is " + zombies.size()
+						+ " zombie alive of " + alreadySpawned + "/"
+						+ totalToSpawn + " spawned . The wave is "
+						+ (finished ? "finished" : "in progress"));
 				return null;
 			}
 		else
@@ -175,8 +187,8 @@ public class TribuSpawner {
 	}
 
 	/**
-	 * Get the total quantity of zombie to spawn
-	 * (Not counting zombies killed)
+	 * Get the total quantity of zombie to spawn (Not counting zombies killed)
+	 * 
 	 * @return total to spawn
 	 */
 	public int getMaxSpawn() {
@@ -185,6 +197,7 @@ public class TribuSpawner {
 
 	/**
 	 * Get the number of zombie already spawned
+	 * 
 	 * @return number of zombie already spawned
 	 */
 	public int getTotal() {
@@ -193,11 +206,14 @@ public class TribuSpawner {
 
 	/**
 	 * Get the first spawn in a loaded chunk
+	 * 
 	 * @return
 	 */
 	public Location getValidSpawn() {
 		for (final Location curPos : plugin.getLevel().getActiveSpawns())
-			if (curPos.getWorld().isChunkLoaded(curPos.getWorld().getChunkAt(curPos))) return curPos;
+			if (curPos.getWorld().isChunkLoaded(
+					curPos.getWorld().getChunkAt(curPos)))
+				return curPos;
 		plugin.LogInfo(plugin.getLocale("Warning.AllSpawnsCurrentlyUnloaded"));
 		return null;
 
@@ -205,6 +221,7 @@ public class TribuSpawner {
 
 	/**
 	 * If the spawner should continue spawning
+	 * 
 	 * @return
 	 */
 	public boolean haveZombieToSpawn() {
@@ -213,6 +230,7 @@ public class TribuSpawner {
 
 	/**
 	 * Check if the living entity is referenced here
+	 * 
 	 * @param ent
 	 * @return if the living entity was spawned by this
 	 */
@@ -221,8 +239,10 @@ public class TribuSpawner {
 	}
 
 	/**
-	 * The wave is completed if there is no zombie to spawn and zombies spawned are dead
-	 * @return is wave completed 
+	 * The wave is completed if there is no zombie to spawn and zombies spawned
+	 * are dead
+	 * 
+	 * @return is wave completed
 	 */
 	public boolean isWaveCompleted() {
 		return !haveZombieToSpawn() && zombies.isEmpty();
@@ -230,14 +250,17 @@ public class TribuSpawner {
 
 	/**
 	 * Is currently spawning a zombie ?
+	 * 
 	 * @return
 	 */
 	public boolean justSpawned() {
 		return justspawned;
 	}
 
-	public static Location generatePointBetween(Location loc1, Location loc2, int distanceFromLoc1) {
-		if (distanceFromLoc1 * distanceFromLoc1 > loc1.distanceSquared(loc2)) return loc2;
+	public static Location generatePointBetween(Location loc1, Location loc2,
+			int distanceFromLoc1) {
+		if (distanceFromLoc1 * distanceFromLoc1 > loc1.distanceSquared(loc2))
+			return loc2;
 		double x = loc1.getX();
 		Double y = loc1.getY();
 		double z = loc1.getZ();
@@ -260,7 +283,8 @@ public class TribuSpawner {
 		double dX = x2Param - x1Param;
 		double a = dY / dX;
 		// double b = a * x1Param - y1Param;
-		double rDx = (dX < 0 ? -1 : 1) * Math.sqrt(distanceFromLoc1 * distanceFromLoc1 / (1 + a * a));
+		double rDx = (dX < 0 ? -1 : 1)
+				* Math.sqrt(distanceFromLoc1 * distanceFromLoc1 / (1 + a * a));
 
 		y1Param += a * rDx;
 		x1Param += rDx;
@@ -273,7 +297,8 @@ public class TribuSpawner {
 		}
 
 		y = findSuitableY(loc1.getWorld(), x, y, z);
-		if (y == null) return null;
+		if (y == null)
+			return null;
 		return new Location(loc1.getWorld(), x, y, z);
 	}
 
@@ -286,7 +311,8 @@ public class TribuSpawner {
 		double step = 0.5;
 		double sign = -1;
 		boolean failed = false;
-		while (!w.getBlockAt((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z)).isEmpty()) {
+		while (!w.getBlockAt((int) Math.floor(x), (int) Math.floor(y),
+				(int) Math.floor(z)).isEmpty()) {
 			newY = y + (step * sign);
 			sign *= -1;
 			step++;
@@ -295,67 +321,101 @@ public class TribuSpawner {
 				break;
 			}
 		}
-		if (failed) return null;
+		if (failed)
+			return null;
 		return newY;
 	}
 
 	/**
-	 * Kill & unreference a zombie 
-	 * @param e Zombie to despawn
-	 * @param removeReward Reward attackers ?
+	 * Kill & unreference a zombie
+	 * 
+	 * @param e
+	 *            Zombie to despawn
+	 * @param removeReward
+	 *            Reward attackers ?
 	 */
-	public void removedZombieCallback(final CraftTribuZombie e, final boolean removeReward) {
+	public void removedZombieCallback(final CraftTribuZombie e,
+			final boolean removeReward) {
 		System.out.println("Zombie removed!");
 		if (e != null) {
-			if (removeReward) e.setNoAttacker();
+			if (removeReward)
+				e.setNoAttacker();
 			e.remove();
 		}
 		zombies.remove(e);
 		alreadySpawned--;
-		if (plugin.config().ZombiesFocus == FocusType.NearestPlayer || plugin.config().ZombiesFocus == FocusType.RandomPlayer) {
+		if (plugin.config().ZombiesFocus == FocusType.NearestPlayer
+				|| plugin.config().ZombiesFocus == FocusType.RandomPlayer) {
 			System.out.println("Trying to spawn it again");
 			pendingSpawn++;
-			final Integer taskId = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
-				boolean					done		= false;
-				double					distanceD	= 0;
-				double					step		= (e.getTarget().getLocation().distanceSquared(e.getLocation()) / 10 * e.getHandle().getSpeed() * e.getHandle().getSpeed());
-				final Location			initLoc		= e.getLocation().clone();
-				final CraftLivingEntity	target		= e.getTarget();
+			final Integer taskId = plugin.getServer().getScheduler()
+					.scheduleSyncRepeatingTask(
+							plugin,
+							new Runnable() {
+								boolean done = false;
+								double distanceD = 0;
+								double step = (e.getTarget().getLocation()
+										.distanceSquared(e.getLocation())
+										/ 10 * e.getHandle().getSpeed() * e
+										.getHandle().getSpeed());
+								final Location initLoc = e.getLocation()
+										.clone();
+								final CraftLivingEntity target = e.getTarget();
 
-				public void run() {
-					distanceD += step;
-					if (!done && target.getLocation().distanceSquared(initLoc) <= distanceD) {
-						// System.out.println("Spawning");
-						done = true;
-						Location newLoc = generatePointBetween(target.getLocation(), initLoc, 30);
-						if (newLoc != null) {
-							try {
-								justspawned = true;
-								CraftTribuZombie zomb;
-								zomb = (CraftTribuZombie) CraftTribuZombie.spawn(plugin, newLoc);
-								pendingSpawn--;
-								alreadySpawned++;
-								justspawned = false;
-								zomb.setTarget(target);
-								zombies.add(zomb);
-							} catch (CannotSpawnException e) {
+								public void run() {
+									distanceD += step;
+									if (!done
+											&& target.getLocation()
+													.distanceSquared(initLoc) <= distanceD) {
+										// System.out.println("Spawning");
+										done = true;
+										Location newLoc = generatePointBetween(
+												target.getLocation(), initLoc,
+												30);
+										if (newLoc != null) {
+											try {
+												justspawned = true;
+												CraftTribuZombie zomb;
+												zomb = (CraftTribuZombie) CraftTribuZombie
+														.spawn(plugin, newLoc);
+												pendingSpawn--;
+												alreadySpawned++;
+												justspawned = false;
+												zomb.setTarget(target);
+												zombies.add(zomb);
+											} catch (CannotSpawnException e) {
 
-							}
-						} else if (!initLoc.getWorld().equals(target.getWorld())) {
-							done = true;
-						}
-					}
-					// System.out.println("Waiting " + distanceD);
-				}
-			}, 0, (long) ((e.getTarget().getLocation().distanceSquared(e.getLocation()) / (10 * e.getHandle().getSpeed() * e.getHandle().getSpeed()))));
-			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-				public void run() {
-					// System.out.println("Too late");
-					pendingSpawn--;
-					plugin.getServer().getScheduler().cancelTask(taskId);
-				}
+											}
+										} else if (!initLoc.getWorld().equals(
+												target.getWorld())) {
+											done = true;
+										}
+									}
+									// System.out.println("Waiting " +
+									// distanceD);
+								}
+							},
+							0,
+							(long) ((e.getTarget().getLocation()
+									.distanceSquared(e.getLocation()) / (10 * e
+									.getHandle().getSpeed() * e.getHandle()
+									.getSpeed()))));
+			plugin.getServer().getScheduler()
+					.scheduleSyncDelayedTask(
+							plugin,
+							new Runnable() {
+								public void run() {
+									// System.out.println("Too late");
+									pendingSpawn--;
+									plugin.getServer().getScheduler()
+											.cancelTask(taskId);
+								}
 
-			}, (long) (21 * (e.getTarget().getLocation().distanceSquared(e.getLocation()) / (e.getHandle().getSpeed() * e.getHandle().getSpeed()))));
+							},
+							(long) (21 * (e.getTarget().getLocation()
+									.distanceSquared(e.getLocation()) / (e
+									.getHandle().getSpeed() * e.getHandle()
+									.getSpeed()))));
 		}
 	}
 
@@ -370,7 +430,9 @@ public class TribuSpawner {
 
 	/**
 	 * Set health of zombie to spawn
-	 * @param value Health
+	 * 
+	 * @param value
+	 *            Health
 	 */
 	public void setHealth(final int value) {
 		health = value;
@@ -378,6 +440,7 @@ public class TribuSpawner {
 
 	/**
 	 * Set the number of zombie to spawn
+	 * 
 	 * @param count
 	 */
 	public void setMaxSpawn(final int count) {
@@ -386,13 +449,15 @@ public class TribuSpawner {
 
 	/**
 	 * Try to spawn a zombie
+	 * 
 	 * @return if zombies still have to spawn (before spawning it)
 	 */
 	public boolean spawnZombie() {
 		if ((pendingSpawn + alreadySpawned) < totalToSpawn && !finished) {
 			Location pos = plugin.getLevel().getRandomZombieSpawn();
 			if (pos != null) {
-				if (!pos.getWorld().isChunkLoaded(pos.getWorld().getChunkAt(pos))) {
+				if (!pos.getWorld().isChunkLoaded(
+						pos.getWorld().getChunkAt(pos))) {
 					checkZombies();
 					pos = getValidSpawn();
 				}
@@ -403,7 +468,8 @@ public class TribuSpawner {
 					CraftTribuZombie zombie;
 					try {
 						pos.setY(findSuitableY(pos));
-						zombie = (CraftTribuZombie) CraftTribuZombie.spawn(plugin, pos);
+						zombie = (CraftTribuZombie) CraftTribuZombie.spawn(
+								plugin, pos);
 						zombies.add(zombie);
 						zombie.setHealth(health);
 						alreadySpawned++;
@@ -428,7 +494,8 @@ public class TribuSpawner {
 	}
 
 	/**
-	 * Try to start the next wave if possible and return if it's starting 
+	 * Try to start the next wave if possible and return if it's starting
+	 * 
 	 * @return
 	 */
 	public boolean tryStartNextWave() {
@@ -436,7 +503,8 @@ public class TribuSpawner {
 			starting = true;
 			plugin.messagePlayers(plugin.getLocale("Broadcast.WaveComplete"));
 			plugin.getWaveStarter().incrementWave();
-			plugin.getWaveStarter().scheduleWave(Constants.TicksBySecond * plugin.config().WaveStartDelay);
+			plugin.getWaveStarter().scheduleWave(
+					Constants.TicksBySecond * plugin.config().WaveStartDelay);
 		}
 		return starting;
 	}

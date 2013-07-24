@@ -52,21 +52,21 @@ import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class TribuLevel {
-	private final ArrayList<Location>			activeZombieSpawns;
-	private boolean								changed;			// For
-																	// deciding
-																	// whether
-																	// the level
-																	// needs
-																	// saving
-																	// again
-	private Location							deathSpawn;
-	private Location							initialSpawn;
-	private final String						name;
-	private final Random						rnd	= new Random();
-	private final HashMap<Location, TribuSign>	Signs;
-	private final HashMap<String, Location>		zombieSpawns;
-	private final LinkedList<Package>			Packages;
+	private final ArrayList<Location> activeZombieSpawns;
+	private boolean changed; // For
+								// deciding
+								// whether
+								// the level
+								// needs
+								// saving
+								// again
+	private Location deathSpawn;
+	private Location initialSpawn;
+	private final String name;
+	private final Random rnd = new Random();
+	private final HashMap<Location, TribuSign> Signs;
+	private final HashMap<String, Location> zombieSpawns;
+	private final LinkedList<Package> Packages;
 
 	public TribuLevel(final String name, final Location spawn) {
 		zombieSpawns = new HashMap<String, Location>();
@@ -83,13 +83,15 @@ public class TribuLevel {
 		for (final String sname : zombieSpawns.keySet())
 			if (sname.equalsIgnoreCase(name)) {
 				final Location spawn = zombieSpawns.get(sname);
-				if (!activeZombieSpawns.contains(spawn)) activeZombieSpawns.add(spawn);
+				if (!activeZombieSpawns.contains(spawn))
+					activeZombieSpawns.add(spawn);
 				return;
 			}
 	}
 
 	public void addPackage(final Package newPck) {
-		if (newPck == null) return;
+		if (newPck == null)
+			return;
 		final String name = newPck.getName();
 		for (final Package cur : Packages)
 			if (cur.getName().equalsIgnoreCase(name)) {
@@ -100,7 +102,8 @@ public class TribuLevel {
 	}
 
 	public boolean addSign(final TribuSign sign) {
-		if (sign == null) return false;
+		if (sign == null)
+			return false;
 		Signs.put(sign.getLocation(), sign);
 		return true;
 
@@ -145,7 +148,8 @@ public class TribuLevel {
 
 	public Package getPackage(final String name) {
 		for (final Package n : Packages)
-			if (n.getName().equalsIgnoreCase(name)) return n;
+			if (n.getName().equalsIgnoreCase(name))
+				return n;
 		return null;
 	}
 
@@ -154,7 +158,8 @@ public class TribuLevel {
 	}
 
 	public Location getRandomZombieSpawn() {
-		if (activeZombieSpawns.isEmpty()) return null;
+		if (activeZombieSpawns.isEmpty())
+			return null;
 		return activeZombieSpawns.get(rnd.nextInt(activeZombieSpawns.size()));
 	}
 
@@ -224,7 +229,8 @@ public class TribuLevel {
 			nameList += separator + name;
 			separator = ", ";
 		}
-		Tribu.messagePlayer(player, String.format(Constants.MessageZombieSpawnList, nameList));
+		Tribu.messagePlayer(player,
+				String.format(Constants.MessageZombieSpawnList, nameList));
 	}
 
 	/**
@@ -235,7 +241,8 @@ public class TribuLevel {
 	 */
 	public void onClick(final PlayerInteractEvent e) {
 		for (final TribuSign s : Signs.values())
-			if (s.isUsedEvent(e)) s.raiseEvent(e);
+			if (s.isUsedEvent(e))
+				s.raiseEvent(e);
 	}
 
 	/**
@@ -246,7 +253,8 @@ public class TribuLevel {
 	 */
 	public void onRedstoneChange(final BlockRedstoneEvent e) {
 		for (final TribuSign s : Signs.values())
-			if (s.isUsedEvent(e)) s.raiseEvent(e);
+			if (s.isUsedEvent(e))
+				s.raiseEvent(e);
 	}
 
 	/**
@@ -258,7 +266,8 @@ public class TribuLevel {
 	public void onSignClicked(final PlayerInteractEvent e) {
 		if (Signs.containsKey(e.getClickedBlock().getLocation())) {
 			final TribuSign ss = Signs.get(e.getClickedBlock().getLocation());
-			if (ss.isUsedEvent(e)) ss.raiseEvent(e);
+			if (ss.isUsedEvent(e))
+				ss.raiseEvent(e);
 		}
 	}
 
@@ -267,7 +276,8 @@ public class TribuLevel {
 	 */
 	public void onWaveStart() {
 		for (final TribuSign s : Signs.values())
-			if (s.isUsedEvent(null)) s.raiseEvent(null);
+			if (s.isUsedEvent(null))
+				s.raiseEvent(null);
 	}
 
 	public boolean removePackage(final Package n) {

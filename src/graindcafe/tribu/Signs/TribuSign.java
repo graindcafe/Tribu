@@ -50,26 +50,32 @@ public abstract class TribuSign {
 
 	public static TribuSign getObject(final Tribu plugin, final Location pos) {
 		if (Sign.class.isInstance(pos.getBlock().getState()))
-			return getObject(plugin, pos, ((Sign) pos.getBlock().getState()).getLines());
+			return getObject(plugin, pos,
+					((Sign) pos.getBlock().getState()).getLines());
 		else
 			return null;
 
 	}
 
-	public static TribuSign getObject(final Tribu plugin, final Location pos, final String[] lines) {
+	public static TribuSign getObject(final Tribu plugin, final Location pos,
+			final String[] lines) {
 
 		TribuSign ret = null;
 		if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Buy")))
 			ret = new ShopSign(plugin, pos, lines);
-		else if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.HighscoreNames")))
+		else if (lines[0].equalsIgnoreCase(plugin
+				.getLocale("Sign.HighscoreNames")))
 			ret = new TopNamesSign(plugin, pos);
-		else if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.HighscorePoints")))
+		else if (lines[0].equalsIgnoreCase(plugin
+				.getLocale("Sign.HighscorePoints")))
 			ret = new TopPointsSign(plugin, pos);
 		else if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Spawner")))
 			ret = new SpawnControlSign(plugin, pos, lines);
-		else if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.ToggleSpawner")))
+		else if (lines[0].equalsIgnoreCase(plugin
+				.getLocale("Sign.ToggleSpawner")))
 			ret = new SpawnControlToggleSign(plugin, pos, lines);
-		else if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.TollSign"))) ret = new TollSign(plugin, pos, lines);
+		else if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.TollSign")))
+			ret = new TollSign(plugin, pos, lines);
 
 		return ret;
 	}
@@ -79,18 +85,28 @@ public abstract class TribuSign {
 	}
 
 	public static boolean isIt(final Tribu plugin, final Block b) {
-		if (Sign.class.isInstance(b.getState())) return isIt(plugin, ((Sign) b.getState()).getLines());
+		if (Sign.class.isInstance(b.getState()))
+			return isIt(plugin, ((Sign) b.getState()).getLines());
 		return false;
 	}
 
 	public static boolean isIt(final Tribu plugin, final String[] lines) {
-		return lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Buy")) || lines[0].equalsIgnoreCase(plugin.getLocale("Sign.HighscoreNames")) || lines[0].equalsIgnoreCase(plugin.getLocale("Sign.HighscorePoints"))
-				|| lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Spawner")) || lines[0].equalsIgnoreCase(plugin.getLocale("Sign.ToggleSpawner")) || lines[0].equalsIgnoreCase(plugin.getLocale("Sign.TollSign"));
+		return lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Buy"))
+				|| lines[0].equalsIgnoreCase(plugin
+						.getLocale("Sign.HighscoreNames"))
+				|| lines[0].equalsIgnoreCase(plugin
+						.getLocale("Sign.HighscorePoints"))
+				|| lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Spawner"))
+				|| lines[0].equalsIgnoreCase(plugin
+						.getLocale("Sign.ToggleSpawner"))
+				|| lines[0].equalsIgnoreCase(plugin.getLocale("Sign.TollSign"));
 	}
 
-	public static TribuSign LoadFromStream(final Tribu plugin, final World world, final DataInputStream stream) {
+	public static TribuSign LoadFromStream(final Tribu plugin,
+			final World world, final DataInputStream stream) {
 		try {
-			final Location pos = new Location(world, stream.readDouble(), stream.readDouble(), stream.readDouble());
+			final Location pos = new Location(world, stream.readDouble(),
+					stream.readDouble(), stream.readDouble());
 			return getObject(plugin, pos);
 
 		} catch (final IOException e) {
@@ -103,38 +119,38 @@ public abstract class TribuSign {
 		int num = 0;
 		for (final char c : s.toCharArray())
 			switch (c) {
-				case '0':
-					num = num * 10 + 0;
-					break;
-				case '1':
-					num = num * 10 + 1;
-					break;
-				case '2':
-					num = num * 10 + 2;
-					break;
-				case '3':
-					num = num * 10 + 3;
-					break;
-				case '4':
-					num = num * 10 + 4;
-					break;
-				case '5':
-					num = num * 10 + 5;
-					break;
-				case '6':
-					num = num * 10 + 6;
-					break;
-				case '7':
-					num = num * 10 + 7;
-					break;
-				case '8':
-					num = num * 10 + 8;
-					break;
-				case '9':
-					num = num * 10 + 9;
-					break;
-				default:
-					break;
+			case '0':
+				num = num * 10 + 0;
+				break;
+			case '1':
+				num = num * 10 + 1;
+				break;
+			case '2':
+				num = num * 10 + 2;
+				break;
+			case '3':
+				num = num * 10 + 3;
+				break;
+			case '4':
+				num = num * 10 + 4;
+				break;
+			case '5':
+				num = num * 10 + 5;
+				break;
+			case '6':
+				num = num * 10 + 6;
+				break;
+			case '7':
+				num = num * 10 + 7;
+				break;
+			case '8':
+				num = num * 10 + 8;
+				break;
+			case '9':
+				num = num * 10 + 9;
+				break;
+			default:
+				break;
 			}
 		return num;
 	}
@@ -147,9 +163,9 @@ public abstract class TribuSign {
 
 	}
 
-	protected Tribu		plugin;
+	protected Tribu plugin;
 
-	protected Location	pos;
+	protected Location pos;
 
 	public TribuSign(final Tribu plugin) {
 		this.plugin = plugin;
@@ -161,7 +177,8 @@ public abstract class TribuSign {
 
 	}
 
-	public TribuSign(final Tribu plugin, final Location pos, final String[] lines) {
+	public TribuSign(final Tribu plugin, final Location pos,
+			final String[] lines) {
 		this.plugin = plugin;
 		this.pos = pos;
 	}
@@ -180,7 +197,8 @@ public abstract class TribuSign {
 			lines[0] = plugin.getLocale("Sign.Spawner");
 		else if (this instanceof SpawnControlToggleSign)
 			lines[0] = plugin.getLocale("Sign.ToggleSpawner");
-		else if (this instanceof TollSign) lines[0] = plugin.getLocale("Sign.TollSign");
+		else if (this instanceof TollSign)
+			lines[0] = plugin.getLocale("Sign.TollSign");
 
 		return lines;
 	}

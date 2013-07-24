@@ -56,8 +56,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class LevelFileLoader {
 
-	private final Set<String>	levels;
-	private final Tribu			plugin;
+	private final Set<String> levels;
+	private final Tribu plugin;
 
 	public LevelFileLoader(final Tribu instance) {
 		plugin = instance;
@@ -74,9 +74,12 @@ public class LevelFileLoader {
 		 * plugin.LogSevere(plugin.getLocale("Severe.TribuCantMkdir")); } }
 		 */
 		final File[] files = dir.listFiles();
-		plugin.LogInfo(String.format(plugin.getLocale("Info.LevelFound"), String.valueOf(files == null ? 0 : files.length)));
-		if (files != null) for (final File file : files)
-			levels.add(file.getName().substring(0, file.getName().lastIndexOf(".")));
+		plugin.LogInfo(String.format(plugin.getLocale("Info.LevelFound"),
+				String.valueOf(files == null ? 0 : files.length)));
+		if (files != null)
+			for (final File file : files)
+				levels.add(file.getName().substring(0,
+						file.getName().lastIndexOf(".")));
 
 	}
 
@@ -85,7 +88,8 @@ public class LevelFileLoader {
 		if (file.exists()) {
 			final boolean result = file.delete();
 			if (!result)
-				plugin.LogWarning(plugin.getLocale("Warning.IOErrorOnFileDelete"));
+				plugin.LogWarning(plugin
+						.getLocale("Warning.IOErrorOnFileDelete"));
 			else
 				levels.remove(name);
 			return result;
@@ -104,9 +108,11 @@ public class LevelFileLoader {
 
 	public String getWorldName(String levelName) {
 		for (final String level : levels)
-			if (level.equalsIgnoreCase(levelName)) levelName = level;
+			if (level.equalsIgnoreCase(levelName))
+				levelName = level;
 		final File file = new File(Constants.levelFolder + levelName + ".lvl");
-		if (!file.exists()) return null;
+		if (!file.exists())
+			return null;
 		FileInputStream fstream;
 		try {
 			fstream = new FileInputStream(file);
@@ -132,7 +138,8 @@ public class LevelFileLoader {
 		try {
 
 			File file = new File(Constants.levelFolder + name + ".lvl");
-			if (!file.exists()) return null;
+			if (!file.exists())
+				return null;
 			FileInputStream fstream = new FileInputStream(file);
 			DataInputStream in = new DataInputStream(fstream);
 			int version = in.readByte();
@@ -140,14 +147,18 @@ public class LevelFileLoader {
 			if (version == 1) {
 				fstream.close();
 				in.close();
-				if (file.renameTo(new File(Constants.levelFolder + name + "." + version))) {
-					file = new File(Constants.levelFolder + name + "." + version);
+				if (file.renameTo(new File(Constants.levelFolder + name + "."
+						+ version))) {
+					file = new File(Constants.levelFolder + name + "."
+							+ version);
 					fstream = new FileInputStream(file);
 					in = new DataInputStream(fstream);
 
-					final File tempFile = new File(Constants.levelFolder + name + ".lvl");
+					final File tempFile = new File(Constants.levelFolder + name
+							+ ".lvl");
 					version = 3;
-					final DataOutputStream out = new DataOutputStream(new FileOutputStream(tempFile));
+					final DataOutputStream out = new DataOutputStream(
+							new FileOutputStream(tempFile));
 					// set the file version
 					out.writeByte(version);
 					int i = in.available() - 1;
@@ -173,14 +184,18 @@ public class LevelFileLoader {
 			if (version == 2) {
 				fstream.close();
 				in.close();
-				if (file.renameTo(new File(Constants.levelFolder + name + "." + version))) {
-					file = new File(Constants.levelFolder + name + "." + version);
+				if (file.renameTo(new File(Constants.levelFolder + name + "."
+						+ version))) {
+					file = new File(Constants.levelFolder + name + "."
+							+ version);
 					fstream = new FileInputStream(file);
 					in = new DataInputStream(fstream);
 
-					final File tempFile = new File(Constants.levelFolder + name + ".lvl");
+					final File tempFile = new File(Constants.levelFolder + name
+							+ ".lvl");
 					version = 3;
-					final DataOutputStream out = new DataOutputStream(new FileOutputStream(tempFile));
+					final DataOutputStream out = new DataOutputStream(
+							new FileOutputStream(tempFile));
 					// set the file version
 					out.writeByte(version);
 					int i = in.available() - 1;
@@ -205,7 +220,8 @@ public class LevelFileLoader {
 			if (version != Constants.LevelFileVersion) {
 				fstream.close();
 				in.close();
-				plugin.LogSevere(plugin.getLocale("Severe.WorldInvalidFileVersion"));
+				plugin.LogSevere(plugin
+						.getLocale("Severe.WorldInvalidFileVersion"));
 				return null;
 			}
 			if (in.available() < 2) {
@@ -256,7 +272,9 @@ public class LevelFileLoader {
 			}
 			int count = in.readInt();
 			for (int i = 0; i < count; i++)
-				if (!level.addSign(TribuSign.LoadFromStream(plugin, world, in))) plugin.LogWarning(plugin.getLocale("Warning.UnableToAddSign"));
+				if (!level.addSign(TribuSign.LoadFromStream(plugin, world, in)))
+					plugin.LogWarning(plugin
+							.getLocale("Warning.UnableToAddSign"));
 
 			byte iCount;
 			Package n;
@@ -300,7 +318,8 @@ public class LevelFileLoader {
 					// Each enchantment
 					while (enchNumber != 0) {
 						// Read enchantment type and enchantment level
-						ench.put(Enchantment.getById(in.readInt()), in.readInt());
+						ench.put(Enchantment.getById(in.readInt()),
+								in.readInt());
 						enchNumber--;
 					}
 					// Add this item to the package with enchantments
@@ -313,7 +332,9 @@ public class LevelFileLoader {
 			}
 
 		} catch (final Exception e) {
-			plugin.LogSevere(String.format(plugin.getLocale("Severe.ErrorDuringLevelLoading"), Tribu.getExceptionMessage(e)));
+			plugin.LogSevere(String.format(
+					plugin.getLocale("Severe.ErrorDuringLevelLoading"),
+					Tribu.getExceptionMessage(e)));
 			level = null;
 		}
 
@@ -322,7 +343,8 @@ public class LevelFileLoader {
 
 	public TribuLevel loadLevelIgnoreCase(String name) {
 		for (final String level : levels)
-			if (level.equalsIgnoreCase(name)) name = level;
+			if (level.equalsIgnoreCase(name))
+				name = level;
 		return loadLevel(name);
 	}
 
@@ -331,17 +353,20 @@ public class LevelFileLoader {
 	}
 
 	public boolean saveLevel(final TribuLevel level) {
-		if (level == null) return true; // Sorta successful since a save isn't
-										// really needed
+		if (level == null)
+			return true; // Sorta successful since a save isn't
+							// really needed
 		// and nothing failed
 
-		if (!level.hasChanged()) return true; // No need to save since the level
-												// hasn't changed
+		if (!level.hasChanged())
+			return true; // No need to save since the level
+							// hasn't changed
 
 		FileOutputStream out;
 		DataOutputStream o;
 		try {
-			out = new FileOutputStream(Constants.levelFolder + level.getName() + ".lvl", false);
+			out = new FileOutputStream(Constants.levelFolder + level.getName()
+					+ ".lvl", false);
 			o = new DataOutputStream(out);
 			final Location spawn = level.getInitialSpawn();
 			final Location death = level.getDeathSpawn();
@@ -400,7 +425,8 @@ public class LevelFileLoader {
 					// Number of enchantments for this item
 					o.write(is.getEnchantments().size());
 					// Each enchantment
-					for (final Entry<Enchantment, Integer> ench : is.getEnchantments().entrySet()) {
+					for (final Entry<Enchantment, Integer> ench : is
+							.getEnchantments().entrySet()) {
 						// Enchantment type
 						o.writeInt(ench.getKey().getId());
 						// Enchantment level
@@ -412,7 +438,9 @@ public class LevelFileLoader {
 			o.close();
 			out.close();
 		} catch (final Exception e) {
-			plugin.LogSevere(String.format(plugin.getLocale("Severe.ErrorDuringLevelSaving"), Tribu.getExceptionMessage(e)));
+			plugin.LogSevere(String.format(
+					plugin.getLocale("Severe.ErrorDuringLevelSaving"),
+					Tribu.getExceptionMessage(e)));
 			return false;
 		}
 		levels.add(level.getName());

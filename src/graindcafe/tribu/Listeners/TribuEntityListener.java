@@ -55,7 +55,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 
 public class TribuEntityListener implements Listener {
-	private final Tribu	plugin;
+	private final Tribu plugin;
 
 	public TribuEntityListener(final Tribu instance) {
 		plugin = instance;
@@ -63,7 +63,9 @@ public class TribuEntityListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onCreatureSpawn(final CreatureSpawnEvent event) {
-		if (plugin.isInsideLevel(event.getLocation()) && !plugin.getSpawner().justSpawned()) event.setCancelled(true);
+		if (plugin.isInsideLevel(event.getLocation())
+				&& !plugin.getSpawner().justSpawned())
+			event.setCancelled(true);
 
 	}
 
@@ -83,7 +85,12 @@ public class TribuEntityListener implements Listener {
 						if (plugin.isAlive(p)) {
 							if (!plugin.config().PlayersDontLooseItem) {
 								for (final ItemStack is : p.getInventory())
-									if (is != null) p.getLocation().getWorld().dropItemNaturally(p.getLocation(), is.clone());
+									if (is != null)
+										p.getLocation()
+												.getWorld()
+												.dropItemNaturally(
+														p.getLocation(),
+														is.clone());
 								p.getInventory().clear();
 							}
 							plugin.setDead(p);
@@ -96,72 +103,90 @@ public class TribuEntityListener implements Listener {
 				} else
 					plugin.restoreInventory(p);
 			} else if (dam.getEntity() instanceof CraftTribuZombie)
-				if (plugin.isRunning() && (dam.getCause() == DamageCause.ENTITY_ATTACK || dam.getCause() == DamageCause.PROJECTILE || dam.getCause() == DamageCause.POISON)) {
+				if (plugin.isRunning()
+						&& (dam.getCause() == DamageCause.ENTITY_ATTACK
+								|| dam.getCause() == DamageCause.PROJECTILE || dam
+								.getCause() == DamageCause.POISON)) {
 					final EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) dam;
 
-					final CraftTribuZombie zomb = (CraftTribuZombie) event.getEntity();
+					final CraftTribuZombie zomb = (CraftTribuZombie) event
+							.getEntity();
 					Player p = null;
 					if (event.getDamager() instanceof Projectile) {
 						final Projectile pj = (Projectile) event.getDamager();
-						if (pj.getShooter() instanceof Player) p = (Player) pj.getShooter();
+						if (pj.getShooter() instanceof Player)
+							p = (Player) pj.getShooter();
 					} else if (event.getDamager() instanceof Player)
 						p = (Player) event.getDamager();
-					else if (zomb.getTarget() instanceof Player) p = (Player) zomb.getTarget();
-					if (p != null) zomb.addAttack(p, event.getDamage());
-				} else if (plugin.config().ZombiesFireProof && (dam.getCause() == DamageCause.FIRE || dam.getCause() == DamageCause.FIRE_TICK)) dam.setCancelled(true);
+					else if (zomb.getTarget() instanceof Player)
+						p = (Player) zomb.getTarget();
+					if (p != null)
+						zomb.addAttack(p, event.getDamage());
+				} else if (plugin.config().ZombiesFireProof
+						&& (dam.getCause() == DamageCause.FIRE || dam
+								.getCause() == DamageCause.FIRE_TICK))
+					dam.setCancelled(true);
 	}
 
 	@EventHandler
 	public void onEntityDeath(final EntityDeathEvent event) {
 
-		if (plugin.isRunning()) if (event.getEntity() instanceof Player) {
-			final Player player = (Player) event.getEntity();
-			plugin.setDead(player);
+		if (plugin.isRunning())
+			if (event.getEntity() instanceof Player) {
+				final Player player = (Player) event.getEntity();
+				plugin.setDead(player);
 
-			if (plugin.config().PlayersDontLooseItem) {
-				plugin.keepTempInv((Player) event.getEntity(), event.getDrops().toArray(new ItemStack[] {}));
-				event.getDrops().clear();
+				if (plugin.config().PlayersDontLooseItem) {
+					plugin.keepTempInv((Player) event.getEntity(), event
+							.getDrops().toArray(new ItemStack[] {}));
+					event.getDrops().clear();
+				}
+
+			} else if (event.getEntity() instanceof CraftTribuZombie) {
+				final CraftTribuZombie zombie = (CraftTribuZombie) event
+						.getEntity();
+
+				final HashMap<Player, Double> rewards = new HashMap<Player, Double>();
+				final String rewardMethod = plugin.config().StatsRewardMethod;
+				final boolean onlyForAlive = plugin.config().StatsRewardOnlyAlive;
+				final float baseMoney = plugin.config().StatsOnZombieKillMoney;
+				final float basePoint = plugin.config().StatsOnZombieKillPoints;
+				if (rewardMethod.equalsIgnoreCase("Last"))
+					rewards.put(zombie.getLastAttacker(), 1d);
+				else if (rewardMethod.equalsIgnoreCase("First"))
+					rewards.put(zombie.getFirstAttacker(), 1d);
+				else if (rewardMethod.equalsIgnoreCase("Best"))
+					rewards.put(zombie.getBestAttacker(), 1d);
+				else if (rewardMethod.equalsIgnoreCase("Percentage"))
+					rewards.putAll(zombie.getAttackersPercentage());
+				else if (rewardMethod.equalsIgnoreCase("All"))
+					for (final Player p : plugin.getPlayers())
+						rewards.put(p, 1d);
+
+				Player player;
+				Double percentage;
+				for (final Entry<Player, Double> entry : rewards.entrySet()) {
+					player = entry.getKey();
+					percentage = entry.getValue();
+					if (player == null && zombie.getTarget() instanceof Player)
+						player = (Player) zombie.getTarget();
+					if (player != null && player.isOnline()
+							&& !(onlyForAlive && player.isDead())) {
+						final PlayerStats stats = plugin.getStats(player);
+						if (stats != null) {
+							stats.addMoney((int) Math.round(baseMoney
+									* percentage));
+							stats.addPoints((int) Math.round(basePoint
+									* percentage));
+							stats.msgStats();
+							// Removed 24/06 : why is it here ?
+							// plugin.getLevel().onWaveStart();
+						}
+					}
+				}
+
+				plugin.getSpawner().despawnZombie(zombie, event.getDrops());
 			}
-
-		} else if (event.getEntity() instanceof CraftTribuZombie) {
-			final CraftTribuZombie zombie = (CraftTribuZombie) event.getEntity();
-
-			final HashMap<Player, Double> rewards = new HashMap<Player, Double>();
-			final String rewardMethod = plugin.config().StatsRewardMethod;
-			final boolean onlyForAlive = plugin.config().StatsRewardOnlyAlive;
-			final float baseMoney = plugin.config().StatsOnZombieKillMoney;
-			final float basePoint = plugin.config().StatsOnZombieKillPoints;
-			if (rewardMethod.equalsIgnoreCase("Last"))
-				rewards.put(zombie.getLastAttacker(), 1d);
-			else if (rewardMethod.equalsIgnoreCase("First"))
-				rewards.put(zombie.getFirstAttacker(), 1d);
-			else if (rewardMethod.equalsIgnoreCase("Best"))
-				rewards.put(zombie.getBestAttacker(), 1d);
-			else if (rewardMethod.equalsIgnoreCase("Percentage"))
-				rewards.putAll(zombie.getAttackersPercentage());
-			else if (rewardMethod.equalsIgnoreCase("All")) for (final Player p : plugin.getPlayers())
-				rewards.put(p, 1d);
-
-			Player player;
-			Double percentage;
-			for (final Entry<Player, Double> entry : rewards.entrySet()) {
-				player = entry.getKey();
-				percentage = entry.getValue();
-				if (player == null && zombie.getTarget() instanceof Player) player = (Player) zombie.getTarget();
-				if (player != null && player.isOnline() && !(onlyForAlive && player.isDead())) {
-					final PlayerStats stats = plugin.getStats(player);
-					if (stats != null) {
-						stats.addMoney((int) Math.round(baseMoney * percentage));
-						stats.addPoints((int) Math.round(basePoint * percentage));
-						stats.msgStats();
-						// Removed 24/06 : why is it here ?
-						// plugin.getLevel().onWaveStart();
-		}
-	}
-}
-
-plugin.getSpawner().despawnZombie(zombie, event.getDrops());
-}
 	}
 
 	public void registerEvents(final PluginManager pm) {

@@ -42,28 +42,32 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CmdDspawn implements CommandExecutor {
-	private final Tribu	plugin;
+	private final Tribu plugin;
 
 	public CmdDspawn(final Tribu instance) {
 		plugin = instance;
 	}
 
-	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+	public boolean onCommand(final CommandSender sender, final Command command,
+			final String label, final String[] args) {
 		if (!sender.hasPermission("tribu.level.dspawn")) {
 			sender.sendMessage(plugin.getLocale("Message.Deny"));
 			return true;
 		}
 
 		if (!(sender instanceof Player)) {
-			plugin.LogWarning(plugin.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
+			plugin.LogWarning(plugin
+					.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 			return true;
 		}
 		final Player player = (Player) sender;
 
 		// Make sure a level is loaded
 		if (plugin.getLevel() == null) {
-			Tribu.messagePlayer(player, plugin.getLocale("Message.NoLevelLoaded"));
-			Tribu.messagePlayer(player, plugin.getLocale("Message.NoLevelLoaded2"));
+			Tribu.messagePlayer(player,
+					plugin.getLocale("Message.NoLevelLoaded"));
+			Tribu.messagePlayer(player,
+					plugin.getLocale("Message.NoLevelLoaded2"));
 			return true;
 		}
 
@@ -71,14 +75,16 @@ public class CmdDspawn implements CommandExecutor {
 			if (args[0].equalsIgnoreCase("jump")) {
 
 				player.teleport(plugin.getLevel().getDeathSpawn());
-				Tribu.messagePlayer(player, plugin.getLocale("Message.TeleportedToDeathSpawn"));
+				Tribu.messagePlayer(player,
+						plugin.getLocale("Message.TeleportedToDeathSpawn"));
 				return true;
 
 			}
 		} else {
 
 			plugin.getLevel().setDeathSpawn(player.getLocation());
-			Tribu.messagePlayer(player, plugin.getLocale("Message.DeathSpawnSet"));
+			Tribu.messagePlayer(player,
+					plugin.getLocale("Message.DeathSpawnSet"));
 			return true;
 
 		}
