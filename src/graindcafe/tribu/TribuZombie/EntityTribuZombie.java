@@ -549,18 +549,6 @@ public class EntityTribuZombie extends EntityMonster {
 
 	@Override
 	protected ItemStack l(final int i) {
-		switch (random.nextInt(3)) {
-		case 0:
-			this.b(Item.IRON_INGOT.id, 1);
-			break;
-
-		case 1:
-			this.b(Item.CARROT.id, 1);
-			break;
-
-		case 2:
-			this.b(Item.POTATO.id, 1);
-		}
 		return null;
 	}
 
