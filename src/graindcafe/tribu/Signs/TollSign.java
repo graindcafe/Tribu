@@ -45,8 +45,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.material.Door;
 
 public class TollSign extends TribuSign {
 
@@ -111,7 +111,9 @@ public class TollSign extends TribuSign {
 
 	@Override
 	public boolean isUsedEvent(final Event e) {
-		return e instanceof PlayerInteractEvent;
+		return e instanceof PlayerInteractEvent
+				&& (linkedButton.getType() != Material.WOODEN_DOOR || ((PlayerInteractEvent) e)
+						.getAction().equals(Action.RIGHT_CLICK_BLOCK));
 	}
 
 	@Override
@@ -120,7 +122,16 @@ public class TollSign extends TribuSign {
 		// Wait for the second event of a button
 
 		if (linkedButton != null)
-			if (e.getClickedBlock().equals(linkedButton)) {
+			if (e.getClickedBlock().equals(linkedButton)
+					|| (linkedButton.getType().equals(Material.WOODEN_DOOR) && //
+					((linkedButton.getRelative(BlockFace.UP).getType()
+							.equals(Material.WOODEN_DOOR) && e
+							.getClickedBlock().equals(
+									linkedButton.getRelative(BlockFace.UP))) || (linkedButton
+							.getRelative(BlockFace.DOWN).getType()
+							.equals(Material.WOODEN_DOOR) && e
+							.getClickedBlock().equals(
+									linkedButton.getRelative(BlockFace.DOWN)))))) {
 				final Player p = e.getPlayer();
 				if (!preventSpam || !lastPlayerTry.equals(p)) {
 					final PlayerStats stats = plugin.getStats(p);
@@ -130,11 +141,6 @@ public class TollSign extends TribuSign {
 						Tribu.messagePlayer(p, plugin
 								.getLocale("Message.YouDontHaveEnoughMoney"));
 						e.setCancelled(true);
-						if (linkedButton.getType() == Material.WOODEN_DOOR) {
-							final Door d = new Door(linkedButton.getData());
-							d.setOpen(!d.isOpen());
-							linkedButton.setData(d.getData());
-						}
 					} else if (!allowedPlayer.contains(p)) {
 						allowedPlayer.add(p);
 						Tribu.messagePlayer(p, String.format(plugin
@@ -146,5 +152,4 @@ public class TollSign extends TribuSign {
 			}
 
 	}
-
 }
