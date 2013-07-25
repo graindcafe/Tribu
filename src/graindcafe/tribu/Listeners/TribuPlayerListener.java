@@ -65,7 +65,7 @@ public class TribuPlayerListener implements Listener {
 		if (plugin.config().PluginModeWorldExclusive)
 			if (plugin.isInsideLevel(event.getPlayer().getLocation()))
 				// Timed out add player
-				// you need this orelse you will get kicked
+				// you need this or else you will get kicked
 				// "Moving to fast Hacking?"
 				// its just a .5 of a second delay (it can be set to even less)
 				plugin.addPlayer(event.getPlayer(), 0.5);

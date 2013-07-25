@@ -161,10 +161,7 @@ public class Tribu extends JavaPlugin {
 	public void addPlayer(final Player player) {
 		if (player != null && !players.containsKey(player)) {
 			beforePoint.put(player, player.getLocation());
-			if (config.PlayersStoreInventory) {
-				inventorySave.addInventory(player);
-				player.getInventory().clear();
-			}
+
 			final PlayerStats stats = new PlayerStats(player);
 			players.put(player, stats);
 			sortedStats.add(stats);
@@ -182,6 +179,10 @@ public class Tribu extends JavaPlugin {
 				else
 					broadcast("Broadcast.WaitingPlayers", waitingPlayers);
 			} else if (getLevel() != null && isRunning) {
+				if (config.PlayersStoreInventory) {
+					inventorySave.addInventory(player);
+					player.getInventory().clear();
+				}
 				player.teleport(level.getDeathSpawn());
 				messagePlayer(player, language.get("Message.GameInProgress"));
 			}
@@ -264,9 +265,12 @@ public class Tribu extends JavaPlugin {
 			messagePlayers(String.format(
 					language.get("Message.YouHaveReachedWave"),
 					String.valueOf(getWaveStarter().getWaveNumber())));
-			stopRunning(true);
-			if (getPlayersCount() != 0)
+
+			if (getPlayersCount() != 0) {
+				stopRunning(true);
 				getLevelSelector().startVote(Constants.VoteDelay);
+			} else
+				stopRunning(false);
 		}
 	}
 
@@ -333,10 +337,20 @@ public class Tribu extends JavaPlugin {
 		}
 		getWaveStarter().resetWave();
 		revivePlayers(true);
+		storeInventories();
 		getWaveStarter().scheduleWave(
 				Constants.TicksBySecond * config.WaveStartDelay);
 		return true;
 
+	}
+
+	public void storeInventories() {
+		if (config.PlayersStoreInventory) {
+			for (Player player : players.keySet()) {
+				inventorySave.addInventory(player);
+				player.getInventory().clear();
+			}
+		}
 	}
 
 	/**
@@ -1204,6 +1218,11 @@ public class Tribu extends JavaPlugin {
 		stopRunning(false);
 	}
 
+	public void clearInventories() {
+		for (Player player : players.keySet())
+			player.getInventory().clear();
+	}
+
 	public void stopRunning(final boolean rerun) {
 		getLevelSelector().cancelVote();
 		if (isRunning) {
@@ -1218,6 +1237,7 @@ public class Tribu extends JavaPlugin {
 			// Teleports all players to spawn when game ends
 			for (final Player p : players.keySet())
 				p.teleport(level.getInitialSpawn());
+
 			if (!rerun) {
 				if (config.PlayersStoreInventory)
 					inventorySave.restoreInventories();

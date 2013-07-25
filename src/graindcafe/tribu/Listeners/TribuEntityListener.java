@@ -85,13 +85,16 @@ public class TribuEntityListener implements Listener {
 						if (plugin.isAlive(p)) {
 							if (!plugin.config().PlayersDontLooseItem) {
 								for (final ItemStack is : p.getInventory())
-									if (is != null)
+									if (is != null) {
+										System.out.println("Droping " + is);
 										p.getLocation()
 												.getWorld()
 												.dropItemNaturally(
 														p.getLocation(),
 														is.clone());
+									}
 								p.getInventory().clear();
+								p.updateInventory();
 							}
 							plugin.setDead(p);
 						}
