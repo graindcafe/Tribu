@@ -919,7 +919,7 @@ public class Tribu extends JavaPlugin {
 					final byte[] buf = new byte[1024];
 					int i = 0;
 
-					if (!f.exists() && f.canWrite() && fis.available() > 0)
+					if (f.canWrite() && fis.available() > 0)
 						while ((i = fis.read(buf)) > 0)
 							fos.write(buf, 0, i);
 				} catch (final Exception e) {
