@@ -1,6 +1,7 @@
 Version: 1
 Author: Graindcafe
 Sign:
+  Mystery: Mystère
   Buy: Acheter
   ToggleSpawner: Relais à Zombie
   Spawner: Venue de Zombie
@@ -65,6 +66,7 @@ Message:
   PckItemAdded: ȡL'objet "%s" a été ajouté avec succès.
   PckNotFound: ȥLe paquet %s n'a pas été trouvé dans ce niveau.
   PckNeedId: ȥVous devez spécifié au moins l'id.
+  PckNeedSubId: ȥVous devez spécifié l'id et le sous-id.
   PlayerRevive: ȡVous avez été ressucité.
   Deny: ȣUn zombie a empêché votre action, désolé.
   PckOpened: ȡLe paquet %s a été ouvert.
@@ -91,6 +93,7 @@ Broadcast:
   WaveComplete: '&6Vague terminée'
   GameStartingSoon: '&8Le jeu va commencer dans %.0f secondes !'
   GameStarting: '&4Le jeu commence maintenant !'
+  WaitingPlayers: '§7Encore §c joueurs avant de démarrer.'
 Info:
   LevelFound: '%s niveaux trouvés'
   Enable: 'Activation de Tribu par Graindcafe, auteur original : samp20'
