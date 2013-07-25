@@ -69,6 +69,7 @@ public class TribuEntityListener implements Listener {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onEntityDamage(final EntityDamageEvent dam) {
 		if (!dam.isCancelled() && plugin.isRunning())
@@ -86,7 +87,6 @@ public class TribuEntityListener implements Listener {
 							if (!plugin.config().PlayersDontLooseItem) {
 								for (final ItemStack is : p.getInventory())
 									if (is != null) {
-										System.out.println("Droping " + is);
 										p.getLocation()
 												.getWorld()
 												.dropItemNaturally(
