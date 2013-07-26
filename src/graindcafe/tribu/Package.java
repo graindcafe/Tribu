@@ -80,9 +80,16 @@ public class Package {
 		return addItem(id, subid, number, null);
 	}
 
-	public boolean addItem(final int id, final short subid, final short number,
+	public boolean addItem(final int id, final short subid, short number,
 			final Map<Enchantment, Integer> enchantments) {
 		final ItemStack is = new ItemStack(id);
+		int max = is.getMaxStackSize();
+		int clone = (int) Math.floor(number / max);
+		number = (short) (number % max);
+		if (number == 0) {
+			number = (short) max;
+			clone--;
+		}
 		is.setAmount(number);
 		is.setDurability(subid);
 		if (enchantments != null && !enchantments.isEmpty())
@@ -91,18 +98,34 @@ public class Package {
 				if (entry.getKey() != null)
 					if (entry.getKey().canEnchantItem(is))
 						is.addEnchantment(entry.getKey(), entry.getValue());
-		return this.addItem(is);
+
+		return this.reallyAddItem(is, clone);
 	}
 
-	public boolean addItem(final ItemStack item) {
+	protected boolean reallyAddItem(final ItemStack item, int duplicates) {
 		removeDuplicate(item);
-		return item == null || item.getAmount() == 0 || item.getTypeId() == 0 ? false
-				: pck.add(item);
+		if (item == null || item.getAmount() == 0 || item.getTypeId() == 0)
+			return false;
+		else {
+			ItemStack duplicata = item.clone();
+			duplicata.setAmount(duplicata.getMaxStackSize());
+			while (duplicates-- != 0)
+				if (!this.pck.add(duplicata.clone()))
+					return false;
+			return pck.add(item);
+		}
 	}
 
-	public boolean addItem(final ItemStack item, final int number) {
+	public boolean addItem(final ItemStack item, int number) {
+		int max = item.getMaxStackSize();
+		int clone = (int) Math.floor(number / max);
+		number = (short) (number % max);
+		if (number == 0) {
+			number = max;
+			clone--;
+		}
 		item.setAmount(number);
-		return this.addItem(item);
+		return this.reallyAddItem(item, clone);
 	}
 
 	public boolean addItem(final Material m) {
