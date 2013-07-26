@@ -79,7 +79,8 @@ public class SpawnTimer implements Runnable {
 
 	}
 
-	public void StartWave(final int max, final int health, final int timeToSpawn) {
+	public void StartWave(final int max, final float health,
+			final int timeToSpawn) {
 		if (plugin.isRunning()) {
 			plugin.getSpawner().setMaxSpawn(max);
 			plugin.getSpawner().resetTotal();

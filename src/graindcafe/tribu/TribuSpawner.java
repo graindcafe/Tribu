@@ -60,7 +60,7 @@ public class TribuSpawner {
 	/**
 	 * Health of zombie to spawn
 	 */
-	private int health;
+	private float health;
 	/**
 	 * A zombie just spawned
 	 */
@@ -413,11 +413,11 @@ public class TribuSpawner {
 	/**
 	 * Set health of zombie to spawn
 	 * 
-	 * @param value
+	 * @param health
 	 *            Health
 	 */
-	public void setHealth(final int value) {
-		health = value;
+	public void setHealth(final float health) {
+		this.health = health;
 	}
 
 	/**

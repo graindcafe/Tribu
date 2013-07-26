@@ -45,8 +45,8 @@ public class WaveStarter implements Runnable {
 	private boolean scheduled;
 	private int taskID;
 	private int waveNumber;
-	private int zombieDamage;
-	private int health;
+	private float zombieDamage;
+	private float health;
 
 	public WaveStarter(final Tribu instance) {
 		plugin = instance;
@@ -54,7 +54,7 @@ public class WaveStarter implements Runnable {
 		scheduled = false;
 	}
 
-	private int calcPolynomialFunction(final int x, final List<Double> coef) {
+	private float calcPolynomialFunction(final int x, final List<Double> coef) {
 		if (coef == null || coef.size() == 0)
 			return 0;
 		byte i = (byte) (coef.size() - 1);
@@ -72,7 +72,10 @@ public class WaveStarter implements Runnable {
 			r += c * tmpX;
 			i--;
 		}
-		return Math.round(r);
+		r = Math.round(r * 10) / 10;
+		if (r <= 0)
+			return 0.1f;
+		return r;
 	}
 
 	public void cancelWave() {
@@ -82,11 +85,11 @@ public class WaveStarter implements Runnable {
 		}
 	}
 
-	public int getCurrentDamage() {
+	public float getCurrentDamage() {
 		return zombieDamage;
 	}
 
-	public int getCurrentHealth() {
+	public float getCurrentHealth() {
 		return health;
 	}
 
@@ -114,15 +117,15 @@ public class WaveStarter implements Runnable {
 			if (plugin.config().WaveStartSetTime)
 				plugin.getLevel().getInitialSpawn().getWorld()
 						.setTime(plugin.config().WaveStartSetTimeTo);
-			final int max = calcPolynomialFunction(waveNumber,
-					plugin.config().ZombiesQuantity);
+			final int max = (int) Math.ceil(calcPolynomialFunction(waveNumber,
+					plugin.config().ZombiesQuantity));
 			health = calcPolynomialFunction(waveNumber,
 					plugin.config().ZombiesHealth);
 			zombieDamage = calcPolynomialFunction(waveNumber,
 					plugin.config().ZombiesDamage);
 			final int timeToSpawn = Math.round(Constants.TicksBySecond
-					* ((float) calcPolynomialFunction(waveNumber,
-							plugin.config().ZombiesTimeToSpawn) / (float) max));
+					* (calcPolynomialFunction(waveNumber,
+							plugin.config().ZombiesTimeToSpawn) / max));
 
 			scheduled = false;
 			plugin.revivePlayers(false);
