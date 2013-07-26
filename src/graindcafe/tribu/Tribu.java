@@ -1039,6 +1039,7 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public void reloadConf() {
+		stopRunning();
 		// Reload the main config file from disk
 		reloadConfig();
 		// Parse again the file
