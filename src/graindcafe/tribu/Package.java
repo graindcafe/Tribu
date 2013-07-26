@@ -116,6 +116,10 @@ public class Package {
 		}
 	}
 
+	public boolean addItem(final ItemStack item) {
+		return addItem(item, 1);
+	}
+
 	public boolean addItem(final ItemStack item, int number) {
 		int max = item.getMaxStackSize();
 		int clone = (int) Math.floor(number / max);
