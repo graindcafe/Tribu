@@ -997,7 +997,8 @@ public class Tribu extends JavaPlugin {
 		// A language should be loaded BEFORE levelLoader uses
 		initLanguage();
 		levelLoader = new LevelFileLoader(this);
-		// The level loader have to be ready
+		levelSelector = new LevelSelector(this);
+		// The level loader & selector have to be ready
 		reloadConf();
 		isRunning = false;
 		tempInventories = new HashMap<Player, TribuTempInventory>();
@@ -1005,8 +1006,6 @@ public class Tribu extends JavaPlugin {
 		spawnPoint = new HashMap<Player, Location>();
 		beforePoint = new HashMap<Player, Location>();
 		sortedStats = new LinkedList<PlayerStats>();
-
-		levelSelector = new LevelSelector(this);
 
 		spawner = new TribuSpawner(this);
 		spawnTimer = new SpawnTimer(this);
@@ -1266,7 +1265,7 @@ public class Tribu extends JavaPlugin {
 
 	public void stopRunning(final boolean rerun) {
 		getLevelSelector().cancelVote();
-		if (isRunning) {
+		if (isRunning && level != null) {
 			isRunning = false;
 			getSpawnTimer().stop();
 			getWaveStarter().cancelWave();
