@@ -476,6 +476,22 @@ public class TribuSpawner {
 	}
 
 	/**
+	 * 
+	 * @return true if the wave has already started
+	 */
+	public boolean hasStarted() {
+		return !starting;
+	}
+
+	/**
+	 * 
+	 * @return true if the wave didn't start yet
+	 */
+	public boolean isStarting() {
+		return starting;
+	}
+
+	/**
 	 * Try to start the next wave if possible and return if it's starting
 	 * 
 	 * @return

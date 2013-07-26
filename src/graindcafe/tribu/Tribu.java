@@ -142,6 +142,15 @@ public class Tribu extends JavaPlugin {
 
 	private WaveStarter waveStarter;
 	private TribuWorldListener worldListener;
+	private boolean forceStop = false;
+
+	public void setForceStop(boolean state) {
+		forceStop = state;
+	}
+
+	public boolean getForceStop() {
+		return forceStop;
+	}
 
 	/**
 	 * Add packages from config file to the level
@@ -166,11 +175,20 @@ public class Tribu extends JavaPlugin {
 			players.put(player, stats);
 			sortedStats.add(stats);
 			messagePlayer(player, getLocale("Message.YouJoined"));
+			if (waitingPlayers == 0
+					&& !isRunning
+					&& (config().PluginModeServerExclusive || config().PluginModeWorldExclusive)) {
+				waitingPlayers = config().LevelMinPlayers;
+			}
 			if (waitingPlayers != 0) {
 				waitingPlayers--;
 				if (waitingPlayers == 0) // No need to delay if everyone is
 											// playing
 					if (config.PluginModeServerExclusive
+							|| (config.PluginModeWorldExclusive
+									&& getLevel() != null && getLevel()
+									.getInitialSpawn().getWorld().getPlayers()
+									.size() <= players.size())
 							|| getServer().getOnlinePlayers().length == players
 									.size())
 						startRunning();
@@ -179,12 +197,15 @@ public class Tribu extends JavaPlugin {
 				else
 					broadcast("Broadcast.WaitingPlayers", waitingPlayers);
 			} else if (getLevel() != null && isRunning) {
-				if (config.PlayersStoreInventory) {
-					inventorySave.addInventory(player);
-					player.getInventory().clear();
+				storeInventory(player);
+				if (getWaveStarter().hasStarted()) {
+					player.teleport(level.getDeathSpawn());
+					setDead(player);
+					messagePlayer(player,
+							language.get("Message.GameInProgress"));
+				} else {
+					player.teleport(level.getInitialSpawn());
 				}
-				player.teleport(level.getDeathSpawn());
-				messagePlayer(player, language.get("Message.GameInProgress"));
 			}
 		}
 	}
@@ -284,6 +305,11 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public boolean forceStart() {
+		if (forceStop) {
+			LogInfo(getLocale("Info.ForceStopped"));
+			broadcast("Broadcast.ForceStopped", "tribu.game", Void.class);
+			return false;
+		}
 		if (getLevel() == null)
 			return false;
 		// Before (next instruction) it will saves current default
@@ -342,6 +368,13 @@ public class Tribu extends JavaPlugin {
 				Constants.TicksBySecond * config.WaveStartDelay);
 		return true;
 
+	}
+
+	public void storeInventory(Player player) {
+		if (config.PlayersStoreInventory) {
+			inventorySave.addInventory(player);
+			player.getInventory().clear();
+		}
 	}
 
 	public void storeInventories() {
@@ -639,6 +672,12 @@ public class Tribu extends JavaPlugin {
 						+ " starting in " + ChatColor.DARK_RED + "%s"
 						+ ChatColor.DARK_GRAY + " seconds.");
 				put("Broadcast.WaveComplete", ChatColor.GOLD + "Wave Complete");
+				put("Broadcast.ForceStopped",
+						ChatColor.RED
+								+ "The game won't start cause it's still force stopped. Reactivate it with /tribu start");
+				put("Info.ForceStopped",
+						ChatColor.RED
+								+ "The game didn't start because it has been force stopped.");
 				put("Info.LevelFound", ChatColor.YELLOW + "%s levels found");
 				put("Info.Enable", ChatColor.WHITE + "Starting "
 						+ ChatColor.DARK_RED + "Tribu" + ChatColor.WHITE
@@ -1157,8 +1196,9 @@ public class Tribu extends JavaPlugin {
 			if (waitingPlayers < 0)
 				waitingPlayers = 0;
 		}
-		if (!isRunning && getLevel() != null && waitingPlayers == 0)
+		if (!isRunning && getLevel() != null && waitingPlayers == 0) {
 			return forceStart();
+		}
 		return true;
 	}
 
@@ -1253,6 +1293,8 @@ public class Tribu extends JavaPlugin {
 
 	public LinkedList<String> whyNotStarting() {
 		final LinkedList<String> resp = new LinkedList<String>();
+		if (forceStop)
+			resp.add("Force stopped");
 		if (isRunning)
 			resp.add("Already running");
 		if (getLevel() == null)

@@ -475,6 +475,7 @@ public class CmdTribu implements CommandExecutor {
 				return true;
 			}
 			plugin.getLevelSelector().cancelVote();
+			plugin.setForceStop(false);
 			if (plugin.startRunning())
 				Tribu.messagePlayer(sender,
 						plugin.getLocale("Message.ZombieModeEnabled"));
@@ -487,6 +488,7 @@ public class CmdTribu implements CommandExecutor {
 				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
 				return true;
 			}
+			plugin.setForceStop(true);
 			plugin.stopRunning();
 			Tribu.messagePlayer(sender,
 					plugin.getLocale("Message.ZombieModeDisabled"));
@@ -496,6 +498,7 @@ public class CmdTribu implements CommandExecutor {
 				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
 				return true;
 			}
+
 			for (final String msg : plugin.whyNotStarting())
 				Tribu.messagePlayer(sender, msg);
 			if (plugin.forceStart())

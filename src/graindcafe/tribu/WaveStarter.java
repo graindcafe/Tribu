@@ -102,6 +102,10 @@ public class WaveStarter implements Runnable {
 		waveNumber = 1;
 	}
 
+	public boolean hasStarted() {
+		return !scheduled;
+	}
+
 	public void run() {
 		if (plugin.isRunning()) {
 			if (plugin.config().WaveStartTeleportPlayers)
