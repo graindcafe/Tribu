@@ -54,23 +54,15 @@ public class WaveStarter implements Runnable {
 		scheduled = false;
 	}
 
-	private float calcPolynomialFunction(final int x, final List<Double> coef) {
+	private float calcPolynomialFunction(final double x, final List<Double> coef) {
 		if (coef == null || coef.size() == 0)
 			return 0;
-		byte i = (byte) (coef.size() - 1);
-		byte j;
+		byte i = 0;
 		float r = 0;
-		int tmpX;
 
 		for (final double c : coef) {
-			j = 0;
-			tmpX = 1;
-			while (j < i) {
-				tmpX *= x;
-				j++;
-			}
-			r += c * tmpX;
-			i--;
+			r += c * Math.pow(x, i);
+			i++;
 		}
 		r = Math.round(r * 10) / 10;
 		if (r <= 0)
