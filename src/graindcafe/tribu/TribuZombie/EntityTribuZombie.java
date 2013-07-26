@@ -108,10 +108,10 @@ public class EntityTribuZombie extends EntityMonster {
 
 	@SuppressWarnings("unused")
 	private Tribu plugin;
-	private int maxHealth = 20;
+	private float maxHealth = 20;
 	private boolean sunProof = true;
 	protected int d = 0;
-	private int damage = 3;
+	private float damage = 3;
 	final double baseSpeed = 0.23000000417232513D;
 	// private double normalSpeed = 0.23000000417232513D;
 	private double normalSpeedCoef = 1;
