@@ -7,57 +7,57 @@
 # # - Sign.Spawner: Zombie Spawner
 # # - Sign.HighscorePoints: Top Points
 # # - Sign.Buy: Buy
-# # - Message.PckSaved: §aThe package %s has been saved and closed.
-# # - Message.AlreadyIn: §eYou are already in.
-# # - Message.Stats: §aRanking of  best zombies killers : 
-# # - Message.PckList: §aPackages of this level : %s.
-# # - Message.PckNeedOpen: §eYou have to open or create a package first.
-# # - Message.PckCreated: §aThe package %s has been created.
-# # - Warning.NoSpawns: §cYou didn't set any zombie spawn.
-# # - Info.Enable: §fStarting §4Tribu§f by Graindcafe, original author : samp20
-# # - Info.Disable: §eStopping Tribu
-# # - Warning.UnableToAddSign: §cUnable to add sign, maybe you've changed your locales, or signs' tags.
-# # - Message.PlayerDied: §d%s§c has died.
+# # - Message.PckSaved: &aThe package %s has been saved and closed.
+# # - Message.AlreadyIn: &eYou are already in.
+# # - Message.Stats: &aRanking of  best zombies killers : 
+# # - Message.PckList: &aPackages of this level : %s.
+# # - Message.PckNeedOpen: &eYou have to open or create a package first.
+# # - Message.PckCreated: &aThe package %s has been created.
+# # - Warning.NoSpawns: &cYou didn't set any zombie spawn.
+# # - Info.Enable: &fStarting &4Tribu&f by Graindcafe, original author : samp20
+# # - Info.Disable: &eStopping Tribu
+# # - Warning.UnableToAddSign: &cUnable to add sign, maybe you've changed your locales, or signs' tags.
+# # - Message.PlayerDied: &d%s&c has died.
 # # - Sign.HighscoreNames: Top Names
-# # - Message.PckRemoved: §aThe package has been removed.
-# # - Message.PckItemAdded: §aThe item "%s" has been successfully added.
+# # - Message.PckRemoved: &aThe package has been removed.
+# # - Message.PckItemAdded: &aThe item "%s" has been successfully added.
 # # - Prefix.Info: [Tribu]
-# # - Message.PckNotFound: §ePackage %s not found in this level.
-# # - Message.ProtectedBlock: §eSorry, this sign is protected, please ask an operator to remove it.
-# # - Message.PlayerRevive: §aYou have been revived.
-# # - Message.PckNeedId: §eYou have to specify the at least the id.
+# # - Message.PckNotFound: &ePackage %s not found in this level.
+# # - Message.ProtectedBlock: &eSorry, this sign is protected, please ask an operator to remove it.
+# # - Message.PlayerRevive: &aYou have been revived.
+# # - Message.PckNeedId: &eYou have to specify the at least the id.
 # # - Prefix.Broadcast: [Tribu]
-# # - Severe.PlayerDidntGetInvBack: §cdidn't get his inventory back because he was returned null. (Maybe he was not in server?)
-# # - Message.PckOpened: §aThe package %s has been opened.
-# # - Message.Died: §7%s died.
-# # - Message.UnableToCreatePackage: §cUnable to create package, try again later
-# # - Message.CannotPlaceASpecialSign: §eSorry, you cannot place a special signs, please ask an operator to do it.
-# # - Message.PackageCreated: §cPackage created successfully
-# # - Message.PckNeedIdSubid: §eYou have to specify the id and subid.
-# # - Warning.LanguageFileMissing: §cThe chosen language file is missing
-# # - Info.LevelFolderDoesntExist: §cLevel folder doesn't exist
-# # - Info.LevelFound: §e%s levels found
-# # - Message.ConfigFileReloaded: §aConfig files have been reloaded.
-# # - Message.PckNoneOpened: §enone opened/specified
+# # - Severe.PlayerDidntGetInvBack: &cdidn't get his inventory back because he was returned null. (Maybe he was not in server?)
+# # - Message.PckOpened: &aThe package %s has been opened.
+# # - Message.Died: &7%s died.
+# # - Message.UnableToCreatePackage: &cUnable to create package, try again later
+# # - Message.CannotPlaceASpecialSign: &eSorry, you cannot place a special signs, please ask an operator to do it.
+# # - Message.PackageCreated: &cPackage created successfully
+# # - Message.PckNeedIdSubid: &eYou have to specify the id and subid.
+# # - Warning.LanguageFileMissing: &cThe chosen language file is missing
+# # - Info.LevelFolderDoesntExist: &cLevel folder doesn't exist
+# # - Info.LevelFound: &e%s levels found
+# # - Message.ConfigFileReloaded: &aConfig files have been reloaded.
+# # - Message.PckNoneOpened: &enone opened/specified
 # # - Info.ChosenLanguage: Chosen language : %s. Provided by %s.
 # # - Prefix.Message: 
-# # - Message.PckItemDeleted: §aThe item has been deleted.
-# # - Warning.IOErrorOnFileDelete: §cIO error on file delete
-# # - Warning.AllSpawnsCurrentlyUnloaded: §eAll zombies spawns are currently unloaded.
-# # - Message.PckNeedName: §eYou have to specify the name of the package.
+# # - Message.PckItemDeleted: &aThe item has been deleted.
+# # - Warning.IOErrorOnFileDelete: &cIO error on file delete
+# # - Warning.AllSpawnsCurrentlyUnloaded: &eAll zombies spawns are currently unloaded.
+# # - Message.PckNeedName: &eYou have to specify the name of the package.
 # # - Sign.TollSign: Pay
-# # - Warning.LanguageFileOutdated: §cYour current language file is outdated
-# # - Message.PlayerDSpawnLeaveWarning: §6You cannot leave until a new round starts.
+# # - Warning.LanguageFileOutdated: &cYour current language file is outdated
+# # - Message.PlayerDSpawnLeaveWarning: &6You cannot leave until a new round starts.
 # # - Sign.ToggleSpawner: Spawn's switch
-# # - Severe.PlayerHaveNotRetrivedHisItems: §cThe player %s have not retrieved his items, they will be deleted ! Items list : %s
-# # - Message.PckItemAddFailed: §eThe item "%s" could not be added.
-# # - Warning.UnknownFocus: §cThe string given for the configuration Zombies.Focus is not recognized : %s . It could be 'None','Nearest','Random','DeathSpawn','InitialSpawn'.
-# # - Info.LevelSaved: §aLevel saved
-# # - Message.LevelNotReady: §eThe level is not ready to run. Make sure you create/load a level and that it contains zombie spawns.
-# # - Severe.TribuCantMkdir: §cTribu can't make dirs so it cannot create the level directory, you would not be able to save levels ! You can't use Tribu !
-# # - Warning.ThisCommandCannotBeUsedFromTheConsole: §cThis command cannot be used from the console
-# # - Message.Deny: §cA zombie denied your action, sorry.
-# # - Warning.UnableToSaveLevel: §cUnable to save level
+# # - Severe.PlayerHaveNotRetrivedHisItems: &cThe player %s have not retrieved his items, they will be deleted ! Items list : %s
+# # - Message.PckItemAddFailed: &eThe item "%s" could not be added.
+# # - Warning.UnknownFocus: &cThe string given for the configuration Zombies.Focus is not recognized : %s . It could be 'None','Nearest','Random','DeathSpawn','InitialSpawn'.
+# # - Info.LevelSaved: &aLevel saved
+# # - Message.LevelNotReady: &eThe level is not ready to run. Make sure you create/load a level and that it contains zombie spawns.
+# # - Severe.TribuCantMkdir: &cTribu can't make dirs so it cannot create the level directory, you would not be able to save levels ! You can't use Tribu !
+# # - Warning.ThisCommandCannotBeUsedFromTheConsole: &cThis command cannot be used from the console
+# # - Message.Deny: &cA zombie denied your action, sorry.
+# # - Warning.UnableToSaveLevel: &cUnable to save level
 # # - Prefix.Warning: [Tribu]
 
 Message:

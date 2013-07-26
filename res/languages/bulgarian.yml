@@ -16,81 +16,81 @@ Severe:
   ErrorDuringLevelLoading: 'Greshka po vreme  na zarejdaneto na kartata: %s'
   WorldInvalidFileVersion: Karta s greshna failova versiq
 Message:
-  TeleportedToInitialSpawn: §aTeleportiran do choveshkiqt spawn
-  UnknownLevel: '§cNerazpoznata karta: %s'
-  LevelCreated: §aKartata §d%s§a be suzdadena
-  Deny: §cZombito sprq vasheto deistvie.
-  LevelNotReady: §eKartata ne e gotova za puskane. Budete sigurni che ste syzdali/zaredili spawnove za zombita.
-  PckItemAddFailed: §ePredmetut "%s" ne moje da bude dobaven.
+  TeleportedToInitialSpawn: &aTeleportiran do choveshkiqt spawn
+  UnknownLevel: '&cNerazpoznata karta: %s'
+  LevelCreated: &aKartata &d%s&a be suzdadena
+  Deny: &cZombito sprq vasheto deistvie.
+  LevelNotReady: &eKartata ne e gotova za puskane. Budete sigurni che ste syzdali/zaredili spawnove za zombita.
+  PckItemAddFailed: &ePredmetut "%s" ne moje da bude dobaven.
   UnableToGiveYouThatItem: Nevuzmojno e da vi dadem tozi predmet...
-  InitialSpawnSet: §aChoveshkiqt spawn e zadaden.
-  DeathSpawnSet: §aSpawn koito shte vi teleportira pri umirane e zadaden.
-  LevelDeleted: §aKartata beshe iztrito uspeshno.
-  PckNeedName: §eTrqbva da ukajete ime na paketa.
-  TribuSignAdded: §aTribu tabela beshe dobavena uspeshno.
-  PckItemDeleted: §aPredmetyt beshe iztrit.
-  YouCannotVoteAtThisTime: §cV momenta ne mojete da glasuvate
-  YouHaveReachedWave: §cVie dostignahte nivo §e%s
-  TribuSignRemoved: §aTribu tabela beshe premahnata uspeshno.
-  InvalidVote: §cNevaliden glas
+  InitialSpawnSet: &aChoveshkiqt spawn e zadaden.
+  DeathSpawnSet: &aSpawn koito shte vi teleportira pri umirane e zadaden.
+  LevelDeleted: &aKartata beshe iztrito uspeshno.
+  PckNeedName: &eTrqbva da ukajete ime na paketa.
+  TribuSignAdded: &aTribu tabela beshe dobavena uspeshno.
+  PckItemDeleted: &aPredmetyt beshe iztrit.
+  YouCannotVoteAtThisTime: &cV momenta ne mojete da glasuvate
+  YouHaveReachedWave: &cVie dostignahte nivo &e%s
+  TribuSignRemoved: &aTribu tabela beshe premahnata uspeshno.
+  InvalidVote: &cNevaliden glas
   PckNoneOpened: nishto ne e otvoreno/utochneno
-  ConfigFileReloaded: §aFailovete s nastroiki bqha prezaredeni.
-  UnableToSaveCurrentLevel: §cNevuzmojno zapisvaneto na tekushtata karta
-  YouJoined: §6Vie se prisuedinihte kym horata v borbata sreshtu zombita.
-  GameInProgress: §eIgrata e v progres, ti shte budesh preroden sledvashtiqt rund
-  PckNeedIdSubid: §eVie trqbva da zadadete id i subid.
-  MoneyPoints: '§8Pari: §7%s $§8 Tochki: §7%s'
-  PackageCreated: §cPaketut beshe syzdaden uspeshno.
-  YouDontHaveEnoughMoney: §4Vie nqmate dostatuchno pari za tova!
-  UnableToLoadLevel: §cNevuzmojno e da zaredite tazi karta
-  CannotPlaceASpecialSign: §eSujelqvam, vie ne mojete da slagate speciqlni tabeli, molq pitaite nqkoi admin da go napravi.
+  ConfigFileReloaded: &aFailovete s nastroiki bqha prezaredeni.
+  UnableToSaveCurrentLevel: &cNevuzmojno zapisvaneto na tekushtata karta
+  YouJoined: &6Vie se prisuedinihte kym horata v borbata sreshtu zombita.
+  GameInProgress: &eIgrata e v progres, ti shte budesh preroden sledvashtiqt rund
+  PckNeedIdSubid: &eVie trqbva da zadadete id i subid.
+  MoneyPoints: '&8Pari: &7%s $&8 Tochki: &7%s'
+  PackageCreated: &cPaketut beshe syzdaden uspeshno.
+  YouDontHaveEnoughMoney: &4Vie nqmate dostatuchno pari za tova!
+  UnableToLoadLevel: &cNevuzmojno e da zaredite tazi karta
+  CannotPlaceASpecialSign: &eSujelqvam, vie ne mojete da slagate speciqlni tabeli, molq pitaite nqkoi admin da go napravi.
   ZombieModeDisabled: Zombi Modyt e izkluchen!
-  UnableToDeleteLevel: §cNevuzmojno e iztrivaneto na tekushtata karta.
-  UnableToCreatePackage: §cNevuzmojno e syzdavaneto na paket, opitai otnovo po-kysno
-  PckOpened: §aPaketyt %s beshe otvoren.
-  SpawnpointRemoved: §aSpawnpoint premahnat
-  LevelSaveSuccessful: §aKartata e zapisana uspeshno
-  ZombieHavePrevailed: §4Zombitata naddelqha!
+  UnableToDeleteLevel: &cNevuzmojno e iztrivaneto na tekushtata karta.
+  UnableToCreatePackage: &cNevuzmojno e syzdavaneto na paket, opitai otnovo po-kysno
+  PckOpened: &aPaketyt %s beshe otvoren.
+  SpawnpointRemoved: &aSpawnpoint premahnat
+  LevelSaveSuccessful: &aKartata e zapisana uspeshno
+  ZombieHavePrevailed: &4Zombitata naddelqha!
   NoLevelLoaded: Ne e zaredena karta, napishete '/tribu load' za da zaredite,
-  PckNeedId: §eVie trqbva da zadydete pone id.
-  MaybeNotSaved: §eMojebi vie ne ste zapisali kartata ili ne ste zadali nishto v neq.
-  ProtectedBlock: §eSyjelqvam, tazi tabela e zashtitena, molq popitaite nqkoi admin da q premahne.
-  PckNotFound: §ePaketut %s ne beshe nameren v tazi karta.
-  ThankyouForYourVote: §aBlagodarq za vashiqt glas
-  PckItemAdded: §aPredmetyt "%s" beshe uspeshno dobaven.
-  LevelIsAlreadyTheCurrentLevel: §cKartata %s vse oshte e zaredena
-  LevelLoadedSuccessfully: §aKartata e zaredena uspeshno
-  PckRemoved: §aPaketyt beshe premahnat.
-  InvalidSpawnName: §cNevalidno spawn ime
-  PurchaseSuccessfulMoney: '§aUspeshna pokupka.§8 Pari: §7%s $'
-  ZombieSpawnList: §a%s
-  TeleportedToDeathSpawn: §aTeleportiran pri spawn za murtvi
+  PckNeedId: &eVie trqbva da zadydete pone id.
+  MaybeNotSaved: &eMojebi vie ne ste zapisali kartata ili ne ste zadali nishto v neq.
+  ProtectedBlock: &eSyjelqvam, tazi tabela e zashtitena, molq popitaite nqkoi admin da q premahne.
+  PckNotFound: &ePaketut %s ne beshe nameren v tazi karta.
+  ThankyouForYourVote: &aBlagodarq za vashiqt glas
+  PckItemAdded: &aPredmetyt "%s" beshe uspeshno dobaven.
+  LevelIsAlreadyTheCurrentLevel: &cKartata %s vse oshte e zaredena
+  LevelLoadedSuccessfully: &aKartata e zaredena uspeshno
+  PckRemoved: &aPaketyt beshe premahnat.
+  InvalidSpawnName: &cNevalidno spawn ime
+  PurchaseSuccessfulMoney: '&aUspeshna pokupka.&8 Pari: &7%s $'
+  ZombieSpawnList: &a%s
+  TeleportedToDeathSpawn: &aTeleportiran pri spawn za murtvi
   NoLevelLoaded2: ili '/tribu create' za da suzdadete nova karta,
-  Levels: '§aNiva: %s'
-  PckCreated: §aPaketyt %s beshe syzdaden.
-  PckNeedOpen: §eVie trqbva da otvorite ili syzdadete paket pyrvo.
-  LevelUnloaded: §aKartata beshe sprqna uspeshno
-  UnableToSaveLevel: §cNevuzmojno e zapisvaneto na kartata, opitaite otnovo po-kysno
-  SpawnpointAdded: §aSpawnpoint dobaven
-  PckList: '§aList s paketi za tazi karta: %s.'
-  YouLeft: §6Vie izleznahte ot borbata s zombita.
-  ThisOperationIsNotCancellable: §cTazi operaciq e neotmenima!
-  TeleportedToZombieSpawn: §aTeleportiran do zombi spawn §d%s
-  Stats: '§aKlasaciq na nai-dobrite ubiici na zombita: '
-  AlreadyIn: §eVie ste vutre veche.
-  ConfirmDeletion: §eMolq potvurdete iztrivaneto na kartata %s kato napishete komandata oshte vednuj
-  UnknownItem: §eSyjelqvam, nepoznat predmet
-  PckSaved: §aPaketyt %s beshe zapazen i zatvoren.
+  Levels: '&aNiva: %s'
+  PckCreated: &aPaketyt %s beshe syzdaden.
+  PckNeedOpen: &eVie trqbva da otvorite ili syzdadete paket pyrvo.
+  LevelUnloaded: &aKartata beshe sprqna uspeshno
+  UnableToSaveLevel: &cNevuzmojno e zapisvaneto na kartata, opitaite otnovo po-kysno
+  SpawnpointAdded: &aSpawnpoint dobaven
+  PckList: '&aList s paketi za tazi karta: %s.'
+  YouLeft: &6Vie izleznahte ot borbata s zombita.
+  ThisOperationIsNotCancellable: &cTazi operaciq e neotmenima!
+  TeleportedToZombieSpawn: &aTeleportiran do zombi spawn &d%s
+  Stats: '&aKlasaciq na nai-dobrite ubiici na zombita: '
+  AlreadyIn: &eVie ste vutre veche.
+  ConfirmDeletion: &eMolq potvurdete iztrivaneto na kartata %s kato napishete komandata oshte vednuj
+  UnknownItem: &eSyjelqvam, nepoznat predmet
+  PckSaved: &aPaketyt %s beshe zapazen i zatvoren.
   ZombieModeEnabled: Zombi Mod vkluchen!
 Broadcast:
-  MapChosen: §1Kartata §d%s§1 beshe izbrana
-  Wave: §8Nivo §4%s§8 zapochva sled §4%s§8 secundi.
-  MapVoteStarting: §3Glasuvaneto za karta zapochva,
-  WaveComplete: §6Nivoto Preminata
-  SlashVoteForMap: §6'/tribu vote %s'§3 za karta §9%s
-  StartingWave: §7Zapochva nivo §4%s§7, §4%s§7 Zombita @ §4%s§7 jivot
-  Type: '§3Tip '
-  VoteClosingInSeconds: §3Glasuvaneto zavurshva sled %s sekundi
+  MapChosen: &1Kartata &d%s&1 beshe izbrana
+  Wave: &8Nivo &4%s&8 zapochva sled &4%s&8 secundi.
+  MapVoteStarting: &3Glasuvaneto za karta zapochva,
+  WaveComplete: &6Nivoto Preminata
+  SlashVoteForMap: &6'/tribu vote %s'&3 za karta &9%s
+  StartingWave: &7Zapochva nivo &4%s&7, &4%s&7 Zombita @ &4%s&7 jivot
+  Type: '&3Tip '
+  VoteClosingInSeconds: &3Glasuvaneto zavurshva sled %s sekundi
 Warning:
   UnableToSaveLevel: Nevuzmojno e zapisvaneto na kartata
   ThisCommandCannotBeUsedFromTheConsole: Tazi komenda ne moje da bude izpolzvana prez konzolata
@@ -108,7 +108,7 @@ Info:
   LevelFound: '%s karti otkriti'
   LevelFolderDoesntExist: Papkata s karti ne sushtestvuva
   Disable: Tribu Sprqn
-  Enable: '§fStartira §4Tribu§f ot Graindcafe, originalen avtor : samp20'
+  Enable: '&fStartira &4Tribu&f ot Graindcafe, originalen avtor : samp20'
 Sign:
   ToggleSpawner: Spawn's prevkluchvatel
   TollSign: Plati
