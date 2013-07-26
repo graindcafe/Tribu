@@ -54,6 +54,7 @@ import net.minecraft.server.v1_6_R2.Entity;
 import net.minecraft.server.v1_6_R2.EntityHuman;
 import net.minecraft.server.v1_6_R2.EntityLiving;
 import net.minecraft.server.v1_6_R2.EntityMonster;
+import net.minecraft.server.v1_6_R2.EntityPlayer;
 import net.minecraft.server.v1_6_R2.EntityVillager;
 import net.minecraft.server.v1_6_R2.EntityZombie;
 import net.minecraft.server.v1_6_R2.EnumMonsterType;
@@ -143,10 +144,20 @@ public class EntityTribuZombie extends EntityMonster {
 		getNavigation().b(true);
 		goalSelector.a(0, new PathfinderGoalFloat(this));
 		goalSelector.a(1, new PathfinderGoalBreakDoor(this));
+		if (plugin.config().ZombiesFocusNPC
+				&& plugin.config().ZombiesFocusPlayerFirst) {
+			goalSelector.a(2, new PathfinderGoalMeleeAttack(this,
+					EntityPlayer.class, rushSpeedCoef, false));
+		}
+
 		goalSelector.a(2, new PathfinderGoalMeleeAttack(this,
-				EntityHuman.class, rushSpeedCoef, false));
-		goalSelector.a(3, new PathfinderGoalMeleeAttack(this,
-				EntityVillager.class, rushSpeedCoef, true));
+				plugin.config().ZombiesFocusNPC ? EntityHuman.class
+						: EntityPlayer.class, rushSpeedCoef, false));
+
+		if (plugin.config().ZombiesFocusVillager) {
+			goalSelector.a(3, new PathfinderGoalMeleeAttack(this,
+					EntityVillager.class, rushSpeedCoef, true));
+		}
 		goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
 		final FocusType focus = plugin.config().ZombiesFocus;
 		if (focus.equals(FocusType.None)) {

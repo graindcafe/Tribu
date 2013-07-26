@@ -251,6 +251,12 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					ZombiesSunProof = config.getBoolean(key);
 				else if (keyNode[1].equalsIgnoreCase("Focus"))
 					ZombiesFocus = FocusType.fromString(config.getString(key));
+				else if (keyNode[1].equalsIgnoreCase("FocusNPC"))
+					ZombiesFocusNPC = config.getBoolean(key);
+				else if (keyNode[1].equalsIgnoreCase("FocusVillager"))
+					ZombiesFocusVillager = config.getBoolean(key);
+				else if (keyNode[1].equalsIgnoreCase("FocusPlayerFirst"))
+					ZombiesFocusPlayerFirst = config.getBoolean(key);
 				else if (keyNode[1].equalsIgnoreCase("TimeToSpawn"))
 					ZombiesTimeToSpawn = config.getDoubleList(key);
 				else if (keyNode[1].equalsIgnoreCase("Speed") && nodeCount > 2) {

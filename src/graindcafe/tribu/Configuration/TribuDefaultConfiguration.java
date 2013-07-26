@@ -80,6 +80,9 @@ public class TribuDefaultConfiguration {
 	public boolean ZombiesFireProof = false;
 	public boolean ZombiesSunProof = false;
 	public FocusType ZombiesFocus = FocusType.None;
+	public boolean ZombiesFocusNPC = true;
+	public boolean ZombiesFocusVillager = true;
+	public boolean ZombiesFocusPlayerFirst = false;
 	public List<Double> ZombiesTimeToSpawn = Arrays.asList(1.0);
 	public boolean ZombiesSpeedRandom = true;
 	public float ZombiesSpeedBase = 1f;
@@ -135,6 +138,9 @@ public class TribuDefaultConfiguration {
 				put("Zombies.FireProof", ZombiesFireProof);
 				put("Zombies.SunProof", ZombiesSunProof);
 				put("Zombies.Focus", ZombiesFocus);
+				put("Zombies.FocusNPC", ZombiesFocusNPC);
+				put("Zombies.FocusVillager", ZombiesFocusVillager);
+				put("Zombies.FocusPlayerFirst", ZombiesFocusPlayerFirst);
 				put("Zombies.TimeToSpawn", ZombiesTimeToSpawn);
 				put("Zombies.Speed.Random", ZombiesSpeedRandom);
 				put("Zombies.Speed.Base", ZombiesSpeedBase);
