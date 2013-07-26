@@ -94,7 +94,7 @@ public class RandomSign extends ShopSign {
 
 	@Override
 	public boolean isUsedEvent(Event e) {
-		return super.isUsedEvent(e);
+		return super.isUsedEvent(e) && packages != null;
 	}
 
 	@Override
