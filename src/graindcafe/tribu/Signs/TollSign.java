@@ -88,8 +88,9 @@ public class TollSign extends TribuSign {
 		Block current;
 		final BlockFace[] firstFaces = new BlockFace[] { BlockFace.SELF,
 				BlockFace.UP, BlockFace.DOWN };
-		final BlockFace[] secondFaces = new BlockFace[] { BlockFace.NORTH,
-				BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST };
+		final BlockFace[] secondFaces = new BlockFace[] { BlockFace.SELF,
+				BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST,
+				BlockFace.WEST };
 		for (final BlockFace bf : firstFaces) {
 			current = pos.getBlock().getRelative(bf);
 			for (final BlockFace bf2 : secondFaces)
