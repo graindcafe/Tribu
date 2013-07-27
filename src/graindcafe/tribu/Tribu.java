@@ -1223,6 +1223,8 @@ public class Tribu extends JavaPlugin {
 	public void setLevel(final TribuLevel level) {
 		this.level = level;
 		this.loadCustomConf();
+		if (level != null)
+			level.setMysteriesPackages(config.MysteriesPackages);
 	}
 
 	/**

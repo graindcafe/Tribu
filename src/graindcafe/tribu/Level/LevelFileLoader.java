@@ -255,7 +255,6 @@ public class LevelFileLoader {
 
 			level = new TribuLevel(name, spawn);
 			level.setDeathSpawn(death);
-			level.setMysteriesPackages(plugin.config().MysteriesPackages);
 			final int spawncount = in.readInt();
 
 			Location pos;
@@ -350,7 +349,6 @@ public class LevelFileLoader {
 
 	public TribuLevel newLevel(final String name, final Location spawn) {
 		TribuLevel level = new TribuLevel(name, spawn);
-		level.setMysteriesPackages(plugin.config().MysteriesPackages);
 		return level;
 	}
 
