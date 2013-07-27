@@ -39,6 +39,8 @@ import graindcafe.tribu.Configuration.Constants;
 import java.util.List;
 
 import org.bukkit.entity.Player;
+import org.mcstats.Metrics.Graph;
+import org.mcstats.Metrics.Plotter;
 
 public class WaveStarter implements Runnable {
 	private final Tribu plugin;
@@ -47,11 +49,23 @@ public class WaveStarter implements Runnable {
 	private int waveNumber;
 	private float zombieDamage;
 	private float health;
+	private Graph survivorGraph = null;
+	private Graph zombieHealthGraph;
+	private Graph zombieDamageGraph;
 
 	public WaveStarter(final Tribu instance) {
 		plugin = instance;
 		waveNumber = 1;
 		scheduled = false;
+		if (plugin.getMetrics() != null) {
+			survivorGraph = plugin.getMetrics().createGraph(
+					"Percentage of survivors");
+			zombieHealthGraph = plugin.getMetrics()
+					.createGraph("Zombie Health");
+			zombieDamageGraph = plugin.getMetrics()
+					.createGraph("Zombie Damage");
+
+		}
 	}
 
 	private float calcPolynomialFunction(final double x, final List<Double> coef) {
@@ -101,6 +115,32 @@ public class WaveStarter implements Runnable {
 		return !scheduled;
 	}
 
+	private void stat() {
+		if (waveNumber == 0)
+			return;
+		if (survivorGraph != null)
+			survivorGraph.addPlotter(new Plotter("Wave " + waveNumber) {
+				@Override
+				public int getValue() {
+					return plugin.getAliveCount();
+				}
+			});
+		if (zombieHealthGraph != null)
+			zombieHealthGraph.addPlotter(new Plotter("Wave " + waveNumber) {
+				@Override
+				public int getValue() {
+					return Math.round(health);
+				}
+			});
+		if (zombieDamageGraph != null)
+			zombieDamageGraph.addPlotter(new Plotter("Wave " + waveNumber) {
+				@Override
+				public int getValue() {
+					return Math.round(zombieDamage);
+				}
+			});
+	}
+
 	public void run() {
 		if (plugin.isRunning()) {
 			if (plugin.config().WaveStartTeleportPlayers)
@@ -120,6 +160,7 @@ public class WaveStarter implements Runnable {
 							plugin.config().ZombiesTimeToSpawn) / max));
 
 			scheduled = false;
+			stat();
 			plugin.revivePlayers(false);
 			plugin.getLevel().onWaveStart(waveNumber);
 			plugin.getSpawnTimer().StartWave(max, health, timeToSpawn);

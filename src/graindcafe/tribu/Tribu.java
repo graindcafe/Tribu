@@ -84,6 +84,7 @@ import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.Metrics;
 
 /**
  * @author Graindcafe
@@ -149,6 +150,8 @@ public class Tribu extends JavaPlugin {
 	private WaveStarter waveStarter;
 	private TribuWorldListener worldListener;
 	private boolean forceStop = false;
+	private Metrics metrics;
+	private int maxPlayers;
 
 	public void setForceStop(boolean state) {
 		forceStop = state;
@@ -191,8 +194,10 @@ public class Tribu extends JavaPlugin {
 			}
 			if (waitingPlayers != 0) {
 				waitingPlayers--;
-				if (waitingPlayers == 0) // No need to delay if everyone is
-											// playing
+				if (waitingPlayers == 0) {
+					maxPlayers = players.size();
+					// No need to delay if everyone is
+					// playing
 					if (config.PluginModeServerExclusive
 							|| (config.PluginModeWorldExclusive
 									&& getLevel() != null && getLevel()
@@ -203,9 +208,11 @@ public class Tribu extends JavaPlugin {
 						startRunning();
 					else
 						startRunning(config.LevelStartDelay);
-				else
+				} else
 					broadcast("Broadcast.WaitingPlayers", waitingPlayers);
 			} else if (getLevel() != null && isRunning) {
+				if (players.size() > maxPlayers)
+					maxPlayers = players.size();
 				beforeStates.put(player, new BeforeGamePlayerState(player,
 						config.PlayersStoreInventory));
 				addStaringMoneyPoints(player);
@@ -311,7 +318,9 @@ public class Tribu extends JavaPlugin {
 			messagePlayers(String.format(
 					language.get("Message.YouHaveReachedWave"),
 					String.valueOf(getWaveStarter().getWaveNumber())));
-
+			stat("Reached Wave", getWaveStarter().getWaveNumber());
+			stat("Players at end", getPlayersCount());
+			stat("Max Players", maxPlayers);
 			if (getPlayersCount() != 0) {
 				stopRunning(true);
 				getLevelSelector().startVote(Constants.VoteDelay);
@@ -1090,6 +1099,13 @@ public class Tribu extends JavaPlugin {
 			LogSevere(getLocale("Severe.TribuCantMkdir"));
 		if (!langCopy)
 			LogSevere(getLocale("Severe.CannotCopyLanguages"));
+		try {
+			metrics = new Metrics(this);
+			metrics.start();
+			metrics.addCustomData(null);
+		} catch (IOException e) {
+			// Failed to submit the stats :-(
+		}
 		LogInfo(language.get("Info.Enable"));
 		if (config.PluginModeAutoStart)
 			startRunning();
@@ -1316,6 +1332,21 @@ public class Tribu extends JavaPlugin {
 	public void clearInventories() {
 		for (Player player : players.keySet())
 			player.getInventory().clear();
+	}
+
+	public Metrics getMetrics() {
+		return metrics;
+	}
+
+	private void stat(String text, final int value) {
+		if (metrics != null) {
+			metrics.addCustomData(new Metrics.Plotter(text) {
+				@Override
+				public int getValue() {
+					return value;
+				}
+			});
+		}
 	}
 
 	public void stopRunning(final boolean rerun) {
