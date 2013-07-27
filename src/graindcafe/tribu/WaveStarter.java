@@ -39,8 +39,7 @@ import graindcafe.tribu.Configuration.Constants;
 import java.util.List;
 
 import org.bukkit.entity.Player;
-import org.mcstats.Metrics.Graph;
-import org.mcstats.Metrics.Plotter;
+import org.mcstats.Metrics;
 
 public class WaveStarter implements Runnable {
 	private final Tribu plugin;
@@ -49,9 +48,9 @@ public class WaveStarter implements Runnable {
 	private int waveNumber;
 	private float zombieDamage;
 	private float health;
-	private Graph survivorGraph = null;
-	private Graph zombieHealthGraph;
-	private Graph zombieDamageGraph;
+	private Metrics.Graph survivorGraph = null;
+	private Metrics.Graph zombieHealthGraph;
+	private Metrics.Graph zombieDamageGraph;
 
 	public WaveStarter(final Tribu instance) {
 		plugin = instance;
@@ -119,21 +118,23 @@ public class WaveStarter implements Runnable {
 		if (waveNumber == 0)
 			return;
 		if (survivorGraph != null)
-			survivorGraph.addPlotter(new Plotter("Wave " + waveNumber) {
+			survivorGraph.addPlotter(new Metrics.Plotter("Wave " + waveNumber) {
 				@Override
 				public int getValue() {
 					return plugin.getAliveCount();
 				}
 			});
 		if (zombieHealthGraph != null)
-			zombieHealthGraph.addPlotter(new Plotter("Wave " + waveNumber) {
+			zombieHealthGraph.addPlotter(new Metrics.Plotter("Wave "
+					+ waveNumber) {
 				@Override
 				public int getValue() {
 					return Math.round(health);
 				}
 			});
 		if (zombieDamageGraph != null)
-			zombieDamageGraph.addPlotter(new Plotter("Wave " + waveNumber) {
+			zombieDamageGraph.addPlotter(new Metrics.Plotter("Wave "
+					+ waveNumber) {
 				@Override
 				public int getValue() {
 					return Math.round(zombieDamage);

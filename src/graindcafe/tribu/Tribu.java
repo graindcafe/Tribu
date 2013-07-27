@@ -1102,7 +1102,6 @@ public class Tribu extends JavaPlugin {
 		try {
 			metrics = new Metrics(this);
 			metrics.start();
-			metrics.addCustomData(null);
 		} catch (IOException e) {
 			// Failed to submit the stats :-(
 		}
