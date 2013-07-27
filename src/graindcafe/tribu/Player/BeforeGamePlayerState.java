@@ -64,11 +64,13 @@ public class BeforeGamePlayerState {
 		p.getInventory().clear();
 	}
 
+	@SuppressWarnings("deprecation")
 	public void restoreInventory() {
 		if (inventories != null)
 			uncheckedRestoreInventory();
 		if (armors != null)
 			uncheckedRestoreArmor();
+		p.updateInventory();
 	}
 
 	protected void uncheckedRestoreArmor() {
