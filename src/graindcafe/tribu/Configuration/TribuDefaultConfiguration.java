@@ -54,10 +54,12 @@ public class TribuDefaultConfiguration {
 	public String PluginModeLanguage = "english";
 	public boolean PluginModeAutoStart = false;
 	public String PluginModeDefaultLevel = "";
-	public int LevelMinPlayers = 1;
+
 	/*
 	 * Level related
 	 */
+	public int LevelMinPlayers = 1;
+	public int LevelMaxPlayers = Integer.MAX_VALUE;
 	public double LevelClearZone = 50d;
 	public boolean LevelJail = true;
 	public double LevelJailRadius = 25.0;

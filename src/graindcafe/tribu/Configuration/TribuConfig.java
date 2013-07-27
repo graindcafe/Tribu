@@ -218,7 +218,14 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					LevelMinPlayers = config.getInt(key);
 					if (LevelMinPlayers < 1)
 						LevelMinPlayers = 1;
+				} else if (keyNode[1].equalsIgnoreCase("MaxPlayers")) {
+					LevelMaxPlayers = config.getInt(key);
+					if (LevelMaxPlayers == 0)
+						LevelMaxPlayers = Integer.MAX_VALUE;
+					if (LevelMaxPlayers < LevelMinPlayers)
+						LevelMaxPlayers = LevelMinPlayers;
 				}
+
 			} else if (keyNode[0].equalsIgnoreCase("WaveStart")) {
 				if (keyNode[1].equalsIgnoreCase("SetTime"))
 					WaveStartSetTime = config.getBoolean(key);

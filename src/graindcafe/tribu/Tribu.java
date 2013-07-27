@@ -60,6 +60,7 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
@@ -169,6 +170,11 @@ public class Tribu extends JavaPlugin {
 	 */
 	public void addPlayer(final Player player) {
 		if (player != null && !players.containsKey(player)) {
+			if (config.LevelMaxPlayers < players.size()) {
+				messagePlayer(player, getLocale("Message.GameFull"));
+				return;
+			}
+
 			beforePoint.put(player, player.getLocation());
 
 			final PlayerStats stats = new PlayerStats(player);
@@ -312,6 +318,16 @@ public class Tribu extends JavaPlugin {
 		}
 		if (getLevel() == null)
 			return false;
+		if (config.LevelMaxPlayers < players.size()) {
+			ListIterator<PlayerStats> li = sortedStats
+					.listIterator(config.LevelMaxPlayers);
+			Player p;
+			while (li.hasNext()) {
+				p = li.next().getPlayer();
+				removePlayer(p);
+				messagePlayer(p, getLocale("Message.KickedGameFull"));
+			}
+		}
 		// Before (next instruction) it will saves current default
 		// packages to the level, saving theses packages with the level
 		addDefaultPackages();
@@ -644,6 +660,11 @@ public class Tribu extends JavaPlugin {
 				put("Message.AlreadyIn", ChatColor.YELLOW
 						+ "You are already in.");
 				put("Message.Died", ChatColor.GRAY + "%s died.");
+				put("Message.GameFull", ChatColor.YELLOW
+						+ "Sorry, the game is full.");
+				put("Message.GameFull",
+						ChatColor.YELLOW
+								+ "Sorry you have been randomly kicked beacause the game is full.");
 				put("Broadcast.GameStartingSoon", ChatColor.GRAY
 						+ "Game is starting in " + ChatColor.RED + "%.0f"
 						+ ChatColor.GRAY + " seconds!");
