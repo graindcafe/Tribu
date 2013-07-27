@@ -42,6 +42,7 @@ import java.util.LinkedList;
 
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
+import org.bukkit.event.Event;
 
 public class TopPointsSign extends HighscoreSign {
 
@@ -72,7 +73,7 @@ public class TopPointsSign extends HighscoreSign {
 	}
 
 	@Override
-	public void raiseEvent() {
+	public void raiseEvent(Event e) {
 		final Sign s = ((Sign) pos.getBlock().getState());
 		final String[] lines = getSpecificLines();
 		// s.setLine(0, plugin.getLocale("Sign.HighscorePoints"));

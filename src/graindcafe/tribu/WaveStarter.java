@@ -121,7 +121,7 @@ public class WaveStarter implements Runnable {
 
 			scheduled = false;
 			plugin.revivePlayers(false);
-			plugin.getLevel().onWaveStart();
+			plugin.getLevel().onWaveStart(waveNumber);
 			plugin.getSpawnTimer().StartWave(max, health, timeToSpawn);
 			plugin.messagePlayers("Broadcast.StartingWave",
 					String.valueOf(waveNumber), String.valueOf(max),

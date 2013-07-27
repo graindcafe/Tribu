@@ -35,6 +35,7 @@
 package graindcafe.tribu.Signs;
 
 import graindcafe.tribu.Tribu;
+import graindcafe.tribu.WaveStartEvent;
 import graindcafe.tribu.Level.TribuLevel;
 
 import org.bukkit.Location;
@@ -80,9 +81,9 @@ public class JoinSign extends TribuSign {
 
 	@Override
 	public boolean isUsedEvent(final Event e) {
-		return !(e instanceof PlayerInteractEvent)
-				|| ((PlayerInteractEvent) e).getAction().equals(
-						Action.RIGHT_CLICK_BLOCK);
+		return (e instanceof PlayerInteractEvent && ((PlayerInteractEvent) e)
+				.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+				|| (e instanceof WaveStartEvent);
 	}
 
 	@Override

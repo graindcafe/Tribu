@@ -35,6 +35,7 @@
 package graindcafe.tribu.Signs;
 
 import graindcafe.tribu.Tribu;
+import graindcafe.tribu.WaveStartEvent;
 
 import org.bukkit.Location;
 import org.bukkit.event.Event;
@@ -52,18 +53,12 @@ public abstract class HighscoreSign extends TribuSign {
 
 	@Override
 	public void init() {
-		raiseEvent();
+		raiseEvent(new WaveStartEvent(0));
 	}
 
 	@Override
 	public boolean isUsedEvent(final Event e) {
-		return true;
+		return (e instanceof WaveStartEvent);
 	}
 
-	public abstract void raiseEvent();
-
-	@Override
-	public void raiseEvent(final Event e) {
-		raiseEvent();
-	}
 }

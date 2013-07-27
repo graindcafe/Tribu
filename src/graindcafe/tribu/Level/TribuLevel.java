@@ -36,6 +36,7 @@ package graindcafe.tribu.Level;
 
 import graindcafe.tribu.Package;
 import graindcafe.tribu.Tribu;
+import graindcafe.tribu.WaveStartEvent;
 import graindcafe.tribu.Configuration.Constants;
 import graindcafe.tribu.Signs.TribuSign;
 
@@ -50,6 +51,7 @@ import java.util.Set;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -283,10 +285,11 @@ public class TribuLevel {
 	/**
 	 * Actions to run at begining of a wave
 	 */
-	public void onWaveStart() {
+	public void onWaveStart(int n) {
+		Event e = new WaveStartEvent(n);
 		for (final TribuSign s : Signs.values())
-			if (s.isUsedEvent(null))
-				s.raiseEvent(null);
+			if (s.isUsedEvent(e))
+				s.raiseEvent(e);
 	}
 
 	public boolean removePackage(final Package n) {
