@@ -40,7 +40,6 @@ import graindcafe.tribu.Executors.CmdDspawn;
 import graindcafe.tribu.Executors.CmdIspawn;
 import graindcafe.tribu.Executors.CmdTribu;
 import graindcafe.tribu.Executors.CmdZspawn;
-import graindcafe.tribu.Inventory.TribuTempInventory;
 import graindcafe.tribu.Level.LevelFileLoader;
 import graindcafe.tribu.Level.LevelSelector;
 import graindcafe.tribu.Level.TribuLevel;
@@ -48,6 +47,9 @@ import graindcafe.tribu.Listeners.TribuBlockListener;
 import graindcafe.tribu.Listeners.TribuEntityListener;
 import graindcafe.tribu.Listeners.TribuPlayerListener;
 import graindcafe.tribu.Listeners.TribuWorldListener;
+import graindcafe.tribu.Player.BeforeGamePlayerState;
+import graindcafe.tribu.Player.PlayerStats;
+import graindcafe.tribu.Player.TribuTempInventory;
 import graindcafe.tribu.Rollback.ChunkMemory;
 import graindcafe.tribu.TribuZombie.EntityTribuZombie;
 
@@ -547,9 +549,9 @@ public class Tribu extends JavaPlugin {
 				put("Sign.Toll", "Pay");
 				put("Sign.Each", "for each");
 				put("Sign.Join", "Join");
-				put("Sign.Join.LevelName", "%s");
-				put("Sign.Join.PlayerCount", "%s fighters");
-				put("Sign.Join.WaveNumber", "Wave #%s");
+				put("Sign.JoinLevelName", "%s");
+				put("Sign.JoinPlayerCount", "%s fighters");
+				put("Sign.JoinWaveNumber", "Wave #%s");
 				put("Sign.Leave", "Leave");
 				put("Message.Stats", ChatColor.GREEN
 						+ "Ranking of  best zombies killers : ");

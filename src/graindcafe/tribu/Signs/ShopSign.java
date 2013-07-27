@@ -35,9 +35,9 @@
 package graindcafe.tribu.Signs;
 
 import graindcafe.tribu.Package;
-import graindcafe.tribu.PlayerStats;
 import graindcafe.tribu.Tribu;
 import graindcafe.tribu.Level.TribuLevel;
+import graindcafe.tribu.Player.PlayerStats;
 
 import java.util.HashMap;
 import java.util.LinkedList;

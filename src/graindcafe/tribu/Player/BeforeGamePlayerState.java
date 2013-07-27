@@ -1,4 +1,4 @@
-package graindcafe.tribu;
+package graindcafe.tribu.Player;
 
 import java.util.Arrays;
 import java.util.List;

@@ -64,10 +64,10 @@ public class JoinSign extends TribuSign {
 			lines[2] = "";
 			lines[3] = "";
 		} else {
-			lines[1] = plugin.formatLocale("Sign.Join.LevelName", l.getName());
-			lines[2] = plugin.formatLocale("Sign.Join.PlayerCount",
+			lines[1] = plugin.formatLocale("Sign.JoinLevelName", l.getName());
+			lines[2] = plugin.formatLocale("Sign.JoinPlayerCount",
 					String.valueOf(plugin.getPlayersCount()));
-			lines[3] = plugin.formatLocale("Sign.Join.WaveNumber",
+			lines[3] = plugin.formatLocale("Sign.JoinWaveNumber",
 					String.valueOf(plugin.getWaveStarter().getWaveNumber()));
 		}
 		return lines;

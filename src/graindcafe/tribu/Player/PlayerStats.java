@@ -32,62 +32,102 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package graindcafe.tribu.Inventory;
+package graindcafe.tribu.Player;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import graindcafe.tribu.Tribu;
+import graindcafe.tribu.Configuration.Constants;
 
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 
-public class TribuInventory {
-	protected HashMap<Player, List<ItemStack>> inventories;
-	protected HashMap<Player, List<ItemStack>> armors;
+public class PlayerStats implements Comparable<PlayerStats> {
+	private boolean alive;
+	private int money;
+	private final Player player;
+	private int points;
 
-	public TribuInventory() {
-		inventories = new HashMap<Player, List<ItemStack>>();
-		armors = new HashMap<Player, List<ItemStack>>();
+	public PlayerStats(final Player player) {
+		this.player = player;
+		alive = false;
 	}
 
-	public void addInventories(final Set<Player> players) {
-		for (final Player p : players)
-			addInventory(p);
+	public void addMoney(final int amount) {
+		money += amount;
 	}
 
-	public void addInventory(final Player p) {
-		final PlayerInventory pInv = p.getInventory();
-
-		inventories.put(p, Arrays.asList(pInv.getContents().clone()));
-		armors.put(p, Arrays.asList(pInv.getArmorContents().clone()));
+	public void addPoints(final int amount) {
+		points += amount;
 	}
 
-	public void restoreInventories() {
-		Set<Player> players = inventories.keySet();
-		for (final Player p : players)
-			uncheckedRestoreInventory(p);
-		players = armors.keySet();
-		for (final Player p : players)
-			uncheckedRestoreArmor(p);
+	// Order reversed to sort list desc
+	public int compareTo(final PlayerStats o) {
+		if (o.getPoints() == points)
+			return 0;
+		else if (o.getPoints() > points)
+			return 1;
+		else
+			return -1;
 	}
 
-	public void restoreInventory(final Player p) {
-		if (inventories.containsKey(p))
-			uncheckedRestoreInventory(p);
-		if (armors.containsKey(p))
-			uncheckedRestoreArmor(p);
-
+	@Override
+	public boolean equals(final Object o) {
+		if (!(o instanceof PlayerStats))
+			return false;
+		final PlayerStats ps = (PlayerStats) o;
+		return ps.getPlayer().equals(player) && ps.getMoney() == money
+				&& ps.getPoints() == points;
 	}
 
-	protected void uncheckedRestoreArmor(final Player p) {
-		p.getInventory().setArmorContents(
-				(ItemStack[]) armors.remove(p).toArray());
+	public int getMoney() {
+		return money;
 	}
 
-	protected void uncheckedRestoreInventory(final Player p) {
-		p.getInventory().setContents(
-				(ItemStack[]) inventories.remove(p).toArray());
+	public Player getPlayer() {
+		return player;
 	}
+
+	public int getPoints() {
+		return points;
+	}
+
+	public boolean isAlive() {
+		return alive;
+	}
+
+	public void kill() {
+		alive = false;
+	}
+
+	public void msgStats() {
+		Tribu.messagePlayer(
+				player,
+				String.format(Constants.MessageMoneyPoints,
+						String.valueOf(money), String.valueOf(points)));
+	}
+
+	public void resetMoney() {
+		money = 0;
+	}
+
+	public void resetPoints() {
+		points = 0;
+	}
+
+	public void revive() {
+		alive = true;
+	}
+
+	public boolean subtractmoney(final int amount) {
+		if (money >= amount) {
+			money -= amount;
+			return true;
+		}
+		return false;
+	}
+
+	public void subtractPoints(final int val) {
+		points -= val;
+		if (points < 0)
+			points = 0;
+	}
+
 }

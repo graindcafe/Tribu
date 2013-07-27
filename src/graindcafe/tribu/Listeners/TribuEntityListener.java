@@ -34,8 +34,8 @@
  ******************************************************************************/
 package graindcafe.tribu.Listeners;
 
-import graindcafe.tribu.PlayerStats;
 import graindcafe.tribu.Tribu;
+import graindcafe.tribu.Player.PlayerStats;
 import graindcafe.tribu.TribuZombie.CraftTribuZombie;
 
 import java.util.HashMap;

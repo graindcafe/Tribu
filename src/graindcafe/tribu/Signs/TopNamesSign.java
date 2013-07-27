@@ -34,8 +34,8 @@
  ******************************************************************************/
 package graindcafe.tribu.Signs;
 
-import graindcafe.tribu.PlayerStats;
 import graindcafe.tribu.Tribu;
+import graindcafe.tribu.Player.PlayerStats;
 
 import java.util.Iterator;
 import java.util.LinkedList;

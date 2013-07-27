@@ -35,8 +35,8 @@
 package graindcafe.tribu.Executors;
 
 import graindcafe.tribu.Package;
-import graindcafe.tribu.PlayerStats;
 import graindcafe.tribu.Tribu;
+import graindcafe.tribu.Player.PlayerStats;
 import graindcafe.tribu.Signs.TribuSign;
 
 import java.util.Iterator;

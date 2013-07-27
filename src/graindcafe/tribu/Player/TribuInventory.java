@@ -32,85 +32,62 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package graindcafe.tribu.Inventory;
+package graindcafe.tribu.Player;
 
-import org.bukkit.Location;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
-public class TribuTempInventory {
-	private ItemStack[] armor = new ItemStack[4];
-	private ItemStack[] inventory = new ItemStack[36];
-	private final Player p;
+public class TribuInventory {
+	protected HashMap<Player, List<ItemStack>> inventories;
+	protected HashMap<Player, List<ItemStack>> armors;
 
-	public TribuTempInventory(final Player p) {
-		this.p = p;
+	public TribuInventory() {
+		inventories = new HashMap<Player, List<ItemStack>>();
+		armors = new HashMap<Player, List<ItemStack>>();
 	}
 
-	public TribuTempInventory(final Player p, final boolean captureNow) {
-		this.p = p;
-		if (captureNow)
-			capture();
+	public void addInventories(final Set<Player> players) {
+		for (final Player p : players)
+			addInventory(p);
 	}
 
-	public TribuTempInventory(final Player p, final ItemStack[] items) {
-		this.p = p;
-		add(items);
+	public void addInventory(final Player p) {
+		final PlayerInventory pInv = p.getInventory();
+
+		inventories.put(p, Arrays.asList(pInv.getContents().clone()));
+		armors.put(p, Arrays.asList(pInv.getArmorContents().clone()));
 	}
 
-	public void add(final ItemStack[] items) {
-		if (items.length > 36) {
-			// We have a big problem...
-			// TODO:
-			byte i = 0;
-			while (i < 36) {
-				inventory[i] = items[i];
-				i++;
-			}
-		} else {
-			byte i = 0;
-			for (final ItemStack item : items) {
-				inventory[i] = item;
-				i++;
-			}
-
-		}
+	public void restoreInventories() {
+		Set<Player> players = inventories.keySet();
+		for (final Player p : players)
+			uncheckedRestoreInventory(p);
+		players = armors.keySet();
+		for (final Player p : players)
+			uncheckedRestoreArmor(p);
 	}
 
-	public void capture() {
-		inventory = p.getInventory().getContents();
-		armor = p.getInventory().getArmorContents();
-		p.getInventory().clear();
-		p.getInventory().setArmorContents(null);
+	public void restoreInventory(final Player p) {
+		if (inventories.containsKey(p))
+			uncheckedRestoreInventory(p);
+		if (armors.containsKey(p))
+			uncheckedRestoreArmor(p);
+
 	}
 
-	public void drop(final Location dropPlace) {
-		for (final ItemStack item : inventory)
-			dropPlace.getWorld().dropItem(dropPlace, item);
-		for (final ItemStack item : armor)
-			dropPlace.getWorld().dropItem(dropPlace, item);
+	protected void uncheckedRestoreArmor(final Player p) {
+		p.getInventory().setArmorContents(
+				(ItemStack[]) armors.remove(p).toArray());
 	}
 
-	public void restore() {
-
-		// clear the inventory
-		p.getInventory().clear();
-		p.getInventory().setArmorContents(null);
-		// add items
-		p.getInventory().setContents(inventory);
-		p.getInventory().setArmorContents(armor);
-	}
-
-	@Override
-	public String toString() {
-		String r;
-		r = "Inventory :\n";
-		for (final ItemStack item : inventory)
-			r += item.getType() + "x" + item.getAmount();
-		r = "Armor :\n";
-		for (final ItemStack item : armor)
-			r += item.getType() + "(" + item.getDurability() + ")";
-		return r;
-
+	protected void uncheckedRestoreInventory(final Player p) {
+		p.getInventory().setContents(
+				(ItemStack[]) inventories.remove(p).toArray());
 	}
 }

@@ -32,101 +32,85 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  ******************************************************************************/
-package graindcafe.tribu;
+package graindcafe.tribu.Player;
 
-import graindcafe.tribu.Configuration.Constants;
-
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
-public class PlayerStats implements Comparable<PlayerStats> {
-	private boolean alive;
-	private int money;
-	private final Player player;
-	private int points;
+public class TribuTempInventory {
+	private ItemStack[] armor = new ItemStack[4];
+	private ItemStack[] inventory = new ItemStack[36];
+	private final Player p;
 
-	public PlayerStats(final Player player) {
-		this.player = player;
-		alive = false;
+	public TribuTempInventory(final Player p) {
+		this.p = p;
 	}
 
-	public void addMoney(final int amount) {
-		money += amount;
+	public TribuTempInventory(final Player p, final boolean captureNow) {
+		this.p = p;
+		if (captureNow)
+			capture();
 	}
 
-	public void addPoints(final int amount) {
-		points += amount;
+	public TribuTempInventory(final Player p, final ItemStack[] items) {
+		this.p = p;
+		add(items);
 	}
 
-	// Order reversed to sort list desc
-	public int compareTo(final PlayerStats o) {
-		if (o.getPoints() == points)
-			return 0;
-		else if (o.getPoints() > points)
-			return 1;
-		else
-			return -1;
+	public void add(final ItemStack[] items) {
+		if (items.length > 36) {
+			// We have a big problem...
+			// TODO:
+			byte i = 0;
+			while (i < 36) {
+				inventory[i] = items[i];
+				i++;
+			}
+		} else {
+			byte i = 0;
+			for (final ItemStack item : items) {
+				inventory[i] = item;
+				i++;
+			}
+
+		}
+	}
+
+	public void capture() {
+		inventory = p.getInventory().getContents();
+		armor = p.getInventory().getArmorContents();
+		p.getInventory().clear();
+		p.getInventory().setArmorContents(null);
+	}
+
+	public void drop(final Location dropPlace) {
+		for (final ItemStack item : inventory)
+			dropPlace.getWorld().dropItem(dropPlace, item);
+		for (final ItemStack item : armor)
+			dropPlace.getWorld().dropItem(dropPlace, item);
+	}
+
+	public void restore() {
+
+		// clear the inventory
+		p.getInventory().clear();
+		p.getInventory().setArmorContents(null);
+		// add items
+		p.getInventory().setContents(inventory);
+		p.getInventory().setArmorContents(armor);
 	}
 
 	@Override
-	public boolean equals(final Object o) {
-		if (!(o instanceof PlayerStats))
-			return false;
-		final PlayerStats ps = (PlayerStats) o;
-		return ps.getPlayer().equals(player) && ps.getMoney() == money
-				&& ps.getPoints() == points;
-	}
+	public String toString() {
+		String r;
+		r = "Inventory :\n";
+		for (final ItemStack item : inventory)
+			r += item.getType() + "x" + item.getAmount();
+		r = "Armor :\n";
+		for (final ItemStack item : armor)
+			r += item.getType() + "(" + item.getDurability() + ")";
+		return r;
 
-	public int getMoney() {
-		return money;
 	}
-
-	public Player getPlayer() {
-		return player;
-	}
-
-	public int getPoints() {
-		return points;
-	}
-
-	public boolean isAlive() {
-		return alive;
-	}
-
-	public void kill() {
-		alive = false;
-	}
-
-	public void msgStats() {
-		Tribu.messagePlayer(
-				player,
-				String.format(Constants.MessageMoneyPoints,
-						String.valueOf(money), String.valueOf(points)));
-	}
-
-	public void resetMoney() {
-		money = 0;
-	}
-
-	public void resetPoints() {
-		points = 0;
-	}
-
-	public void revive() {
-		alive = true;
-	}
-
-	public boolean subtractmoney(final int amount) {
-		if (money >= amount) {
-			money -= amount;
-			return true;
-		}
-		return false;
-	}
-
-	public void subtractPoints(final int val) {
-		points -= val;
-		if (points < 0)
-			points = 0;
-	}
-
 }
