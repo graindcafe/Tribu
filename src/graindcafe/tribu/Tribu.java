@@ -544,7 +544,7 @@ public class Tribu extends JavaPlugin {
 				put("Sign.Spawner", "Zombie Spawner");
 				put("Sign.HighscoreNames", "Top Names");
 				put("Sign.HighscorePoints", "Top Points");
-				put("Sign.TollSign", "Pay");
+				put("Sign.Toll", "Pay");
 				put("Sign.Each", "for each");
 				put("Sign.Join", "Join");
 				put("Sign.Join.LevelName", "%s");

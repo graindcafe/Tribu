@@ -122,7 +122,9 @@ Info:
   Enable: '&fStarting &4Tribu&f by Graindcafe, original author : samp20'
 Sign:
   ToggleSpawner: Spawn's switch
-  TollSign: Pay
+  Toll: Pay
+  Join: Join
+  Leave: Leave
   Each: For each
   HighscoreNames: Top Names
   Buy: Buy

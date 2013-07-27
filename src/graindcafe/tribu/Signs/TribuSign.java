@@ -76,11 +76,11 @@ public abstract class TribuSign {
 		else if (lines[0].equalsIgnoreCase(plugin
 				.getLocale("Sign.ToggleSpawner")))
 			ret = new SpawnControlToggleSign(plugin, pos, lines);
-		else if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.TollSign")))
+		else if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Toll")))
 			ret = new TollSign(plugin, pos, lines);
-		else if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.JoinSign")))
+		else if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Join")))
 			ret = new JoinSign(plugin, pos, lines);
-		else if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.LeaveSign")))
+		else if (lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Leave")))
 			ret = new LeaveSign(plugin, pos, lines);
 
 		return ret;
@@ -106,10 +106,9 @@ public abstract class TribuSign {
 				|| lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Spawner"))
 				|| lines[0].equalsIgnoreCase(plugin
 						.getLocale("Sign.ToggleSpawner"))
-				|| lines[0].equalsIgnoreCase(plugin.getLocale("Sign.TollSign"))
-				|| lines[0].equalsIgnoreCase(plugin.getLocale("Sign.JoinSign"))
-				|| lines[0]
-						.equalsIgnoreCase(plugin.getLocale("Sign.LeaveSign"));
+				|| lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Toll"))
+				|| lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Join"))
+				|| lines[0].equalsIgnoreCase(plugin.getLocale("Sign.Leave"));
 	}
 
 	public static TribuSign LoadFromStream(final Tribu plugin,
@@ -178,11 +177,11 @@ public abstract class TribuSign {
 		else if (this instanceof SpawnControlToggleSign)
 			lines[0] = plugin.getLocale("Sign.ToggleSpawner");
 		else if (this instanceof TollSign)
-			lines[0] = plugin.getLocale("Sign.TollSign");
+			lines[0] = plugin.getLocale("Sign.Toll");
 		else if (this instanceof JoinSign)
-			lines[0] = plugin.getLocale("Sign.JoinSign");
+			lines[0] = plugin.getLocale("Sign.Join");
 		else if (this instanceof LeaveSign)
-			lines[0] = plugin.getLocale("Sign.LeaveSign");
+			lines[0] = plugin.getLocale("Sign.Leave");
 		return lines;
 	}
 

@@ -7,7 +7,9 @@ Sign:
   Spawner: Venue de Zombie
   HighscoreNames: Records (Nom)
   HighscorePoints: Records (Point)
-  TollSign: Payer
+  Toll: Payer
+  Join: Rejoindre
+  Leave: Quitter
   Each: pour chaque
 Message:
   UnknownItem: '&EObjet inconnu, désolé'
