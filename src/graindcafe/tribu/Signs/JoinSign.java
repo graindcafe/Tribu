@@ -48,6 +48,11 @@ public class JoinSign extends TribuSign {
 
 	public JoinSign(final Tribu plugin, final Location pos, final String[] lines) {
 		super(plugin, pos);
+		final Sign s = ((Sign) pos.getBlock().getState());
+		s.setLine(1, "");
+		s.setLine(2, "");
+		s.setLine(3, "");
+		s.update();
 	}
 
 	@Override
