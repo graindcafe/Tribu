@@ -232,6 +232,8 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					LevelStartingPoints = config.getInt(key);
 					if (LevelStartingPoints < 0)
 						LevelStartingPoints = 0;
+				} else if (keyNode[1].equalsIgnoreCase("KickIfZeroPoint")) {
+					LevelKickIfZeroPoint = config.getBoolean(key);
 				}
 			} else if (keyNode[0].equalsIgnoreCase("WaveStart")) {
 				if (keyNode[1].equalsIgnoreCase("SetTime"))

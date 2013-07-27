@@ -88,7 +88,7 @@ public class PlayerStats implements Comparable<PlayerStats> {
 		return points;
 	}
 
-	public boolean isalive() {
+	public boolean isAlive() {
 		return alive;
 	}
 

@@ -802,7 +802,7 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public boolean isAlive(final Player player) {
-		return players.get(player).isalive();
+		return players.get(player).isAlive();
 	}
 
 	/**
@@ -1172,7 +1172,18 @@ public class Tribu extends JavaPlugin {
 	public void revivePlayer(final Player player) {
 		if (spawnPoint.containsKey(player))
 			player.setBedSpawnLocation(spawnPoint.remove(player));
-		players.get(player).revive();
+		PlayerStats stat = players.get(player);
+		if (config.LevelKickIfZeroPoint && !stat.isAlive()
+				&& stat.getPoints() == 0) {
+			removePlayer(player);
+			// If the game stopped he already received this message
+			if (isRunning)
+				messagePlayer(player,
+						language.get("Message.YouHaveReachedWave"),
+						String.valueOf(getWaveStarter().getWaveNumber()));
+			return;
+		}
+		stat.revive();
 		if (config.WaveStartHealPlayers)
 			player.setHealth(20);
 		if (config.WaveStartFeedPlayers)

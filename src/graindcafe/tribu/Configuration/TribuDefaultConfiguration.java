@@ -66,6 +66,7 @@ public class TribuDefaultConfiguration {
 	public int LevelStartDelay = 10;
 	public int LevelStartingMoney = 0;
 	public int LevelStartingPoints = 0;
+	public boolean LevelKickIfZeroPoint = false;
 	/*
 	 * Wave related
 	 */
@@ -135,6 +136,7 @@ public class TribuDefaultConfiguration {
 				put("Level.MaxPlayers",
 						LevelMaxPlayers == Integer.MAX_VALUE ? 0
 								: LevelMaxPlayers);
+				put("Level.KickIfZeroPoint", LevelKickIfZeroPoint);
 				put("WaveStart.SetTime", WaveStartSetTime);
 				put("WaveStart.SetTimeTo", WaveStartSetTimeTo);
 				put("WaveStart.Delay", WaveStartDelay);
