@@ -64,6 +64,8 @@ public class TribuDefaultConfiguration {
 	public boolean LevelJail = true;
 	public double LevelJailRadius = 25.0;
 	public int LevelStartDelay = 10;
+	public int LevelStartingMoney = 0;
+	public int LevelStartingPoints = 0;
 	/*
 	 * Wave related
 	 */
@@ -127,7 +129,12 @@ public class TribuDefaultConfiguration {
 				put("Level.Jail", LevelJail);
 				put("Level.JailRadius", LevelJailRadius);
 				put("Level.StartDelay", LevelStartDelay);
+				put("Level.StartingMoney", LevelStartingMoney);
+				put("Level.StartingPoints", LevelStartingPoints);
 				put("Level.MinPlayers", LevelMinPlayers);
+				put("Level.MaxPlayers",
+						LevelMaxPlayers == Integer.MAX_VALUE ? 0
+								: LevelMaxPlayers);
 				put("WaveStart.SetTime", WaveStartSetTime);
 				put("WaveStart.SetTimeTo", WaveStartSetTimeTo);
 				put("WaveStart.Delay", WaveStartDelay);

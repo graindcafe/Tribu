@@ -204,6 +204,7 @@ public class Tribu extends JavaPlugin {
 					broadcast("Broadcast.WaitingPlayers", waitingPlayers);
 			} else if (getLevel() != null && isRunning) {
 				storeInventory(player);
+				addStaringMoneyPoints(player);
 				if (getWaveStarter().hasStarted()) {
 					player.teleport(level.getDeathSpawn());
 					setDead(player);
@@ -328,6 +329,7 @@ public class Tribu extends JavaPlugin {
 				messagePlayer(p, getLocale("Message.KickedGameFull"));
 			}
 		}
+
 		// Before (next instruction) it will saves current default
 		// packages to the level, saving theses packages with the level
 		addDefaultPackages();
@@ -375,6 +377,7 @@ public class Tribu extends JavaPlugin {
 		for (final PlayerStats stat : players.values()) {
 			stat.resetPoints();
 			stat.resetMoney();
+			addStaringMoneyPoints(stat);
 			sortedStats.add(stat);
 		}
 		getWaveStarter().resetWave();
@@ -1222,6 +1225,19 @@ public class Tribu extends JavaPlugin {
 			return forceStart();
 		}
 		return true;
+	}
+
+	public void addStaringMoneyPoints(Player player) {
+		final PlayerStats stats = getStats(player);
+		addStaringMoneyPoints(stats);
+	}
+
+	public void addStaringMoneyPoints(PlayerStats stats) {
+		if (stats != null) {
+			stats.addMoney(config.LevelStartingMoney);
+			stats.addPoints(config.LevelStartingPoints);
+			stats.msgStats();
+		}
 	}
 
 	/**

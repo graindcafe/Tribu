@@ -224,8 +224,15 @@ public class TribuConfig extends TribuDefaultConfiguration {
 						LevelMaxPlayers = Integer.MAX_VALUE;
 					if (LevelMaxPlayers < LevelMinPlayers)
 						LevelMaxPlayers = LevelMinPlayers;
+				} else if (keyNode[1].equalsIgnoreCase("StartingMoney")) {
+					LevelStartingMoney = config.getInt(key);
+					if (LevelStartingMoney < 0)
+						LevelStartingMoney = 0;
+				} else if (keyNode[1].equalsIgnoreCase("StartingPoints")) {
+					LevelStartingPoints = config.getInt(key);
+					if (LevelStartingPoints < 0)
+						LevelStartingPoints = 0;
 				}
-
 			} else if (keyNode[0].equalsIgnoreCase("WaveStart")) {
 				if (keyNode[1].equalsIgnoreCase("SetTime"))
 					WaveStartSetTime = config.getBoolean(key);
