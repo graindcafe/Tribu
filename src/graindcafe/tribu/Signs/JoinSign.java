@@ -81,8 +81,10 @@ public class JoinSign extends TribuSign {
 
 	@Override
 	public boolean isUsedEvent(final Event e) {
-		return (e instanceof PlayerInteractEvent && ((PlayerInteractEvent) e)
-				.getAction().equals(Action.RIGHT_CLICK_BLOCK))
+		return (e instanceof PlayerInteractEvent
+				&& ((PlayerInteractEvent) e).getAction().equals(
+						Action.RIGHT_CLICK_BLOCK) && ((PlayerInteractEvent) e)
+				.getClickedBlock().getLocation().equals(pos))
 				|| (e instanceof WaveStartEvent);
 	}
 

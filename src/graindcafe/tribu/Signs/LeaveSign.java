@@ -72,7 +72,9 @@ public class LeaveSign extends TribuSign {
 	public boolean isUsedEvent(final Event e) {
 		return e instanceof PlayerInteractEvent
 				&& ((PlayerInteractEvent) e).getAction().equals(
-						Action.RIGHT_CLICK_BLOCK);
+						Action.RIGHT_CLICK_BLOCK)
+				&& ((PlayerInteractEvent) e).getClickedBlock().getLocation()
+						.equals(pos);
 	}
 
 	@Override
