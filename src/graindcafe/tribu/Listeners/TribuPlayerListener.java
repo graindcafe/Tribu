@@ -122,7 +122,6 @@ public class TribuPlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerQuit(final PlayerQuitEvent event) {
-		plugin.restoreInventory(event.getPlayer());
 		plugin.removePlayer(event.getPlayer());
 	}
 
@@ -130,12 +129,8 @@ public class TribuPlayerListener implements Listener {
 	public void onPlayerRespawn(final PlayerRespawnEvent event) {
 		if (plugin.getLevel() != null) {
 			plugin.setDead(event.getPlayer());
-			plugin.resetedSpawnAdd(event.getPlayer(),
-					event.getRespawnLocation());
 			event.setRespawnLocation(plugin.getLevel().getDeathSpawn());
 			plugin.restoreTempInv(event.getPlayer());
-			if (!plugin.isPlaying(event.getPlayer()))
-				plugin.restoreInventory(event.getPlayer());
 		}
 	}
 

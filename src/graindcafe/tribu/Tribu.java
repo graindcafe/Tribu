@@ -40,7 +40,6 @@ import graindcafe.tribu.Executors.CmdDspawn;
 import graindcafe.tribu.Executors.CmdIspawn;
 import graindcafe.tribu.Executors.CmdTribu;
 import graindcafe.tribu.Executors.CmdZspawn;
-import graindcafe.tribu.Inventory.TribuInventory;
 import graindcafe.tribu.Inventory.TribuTempInventory;
 import graindcafe.tribu.Level.LevelFileLoader;
 import graindcafe.tribu.Level.LevelSelector;
@@ -59,6 +58,7 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Random;
@@ -76,6 +76,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
@@ -117,7 +118,7 @@ public class Tribu extends JavaPlugin {
 
 	private TribuConfig config;
 	private TribuEntityListener entityListener;
-	private TribuInventory inventorySave;
+
 	private boolean isRunning;
 	private Language language;
 	private TribuLevel level;
@@ -135,8 +136,9 @@ public class Tribu extends JavaPlugin {
 	private LinkedList<PlayerStats> sortedStats;
 
 	private TribuSpawner spawner;
-	private HashMap<Player, Location> spawnPoint;
-	private HashMap<Player, Location> beforePoint;
+
+	private HashMap<Player, BeforeGamePlayerState> beforeStates;
+
 	private SpawnTimer spawnTimer;
 	private HashMap<Player, TribuTempInventory> tempInventories;
 	private int waitingPlayers = -1;
@@ -175,8 +177,6 @@ public class Tribu extends JavaPlugin {
 				return;
 			}
 
-			beforePoint.put(player, player.getLocation());
-
 			final PlayerStats stats = new PlayerStats(player);
 			players.put(player, stats);
 			sortedStats.add(stats);
@@ -203,7 +203,8 @@ public class Tribu extends JavaPlugin {
 				else
 					broadcast("Broadcast.WaitingPlayers", waitingPlayers);
 			} else if (getLevel() != null && isRunning) {
-				storeInventory(player);
+				beforeStates.put(player, new BeforeGamePlayerState(player,
+						config.PlayersStoreInventory));
 				addStaringMoneyPoints(player);
 				if (getWaveStarter().hasStarted()) {
 					player.teleport(level.getDeathSpawn());
@@ -343,7 +344,6 @@ public class Tribu extends JavaPlugin {
 				messagePlayer(p, getLocale("Message.KickedGameFull"));
 			}
 		}
-
 		// Before (next instruction) it will saves current default
 		// packages to the level, saving theses packages with the level
 		addDefaultPackages();
@@ -362,14 +362,15 @@ public class Tribu extends JavaPlugin {
 		if (config.PluginModeServerExclusive || config.PluginModeWorldExclusive)
 			for (final LivingEntity e : level.getInitialSpawn().getWorld()
 					.getLivingEntities()) {
-				if (!(e instanceof Player) && !(e instanceof Wolf)
+				if (!(e instanceof Player) && !(e instanceof Tameable)
 						&& !(e instanceof Villager))
 					e.remove();
 			}
 		else
 			for (final LivingEntity e : level.getInitialSpawn().getWorld()
 					.getLivingEntities())
-				if ((e.getLocation().distance(level.getInitialSpawn())) < config.LevelClearZone
+				if ((e.getLocation().distanceSquared(level.getInitialSpawn())) < config.LevelClearZone
+						* config.LevelClearZone
 						&& !(e instanceof Player)
 						&& !(e instanceof Wolf)
 						&& !(e instanceof Villager))
@@ -395,27 +396,39 @@ public class Tribu extends JavaPlugin {
 			sortedStats.add(stat);
 		}
 		getWaveStarter().resetWave();
+		// Before revive player (which teleport)
+		storePlayerStates();
 		revivePlayers(true);
-		storeInventories();
 		getWaveStarter().scheduleWave(
 				Constants.TicksBySecond * config.WaveStartDelay);
 		return true;
 
 	}
 
-	public void storeInventory(Player player) {
-		if (config.PlayersStoreInventory) {
-			inventorySave.addInventory(player);
-			player.getInventory().clear();
-		}
+	public void storePlayerState(Player player) {
+		beforeStates.put(player, new BeforeGamePlayerState(player,
+				config.PlayersStoreInventory));
 	}
 
-	public void storeInventories() {
-		if (config.PlayersStoreInventory) {
-			for (Player player : players.keySet()) {
-				inventorySave.addInventory(player);
-				player.getInventory().clear();
-			}
+	public void storePlayerStates() {
+		for (Player player : players.keySet())
+			beforeStates.put(player, new BeforeGamePlayerState(player,
+					config.PlayersStoreInventory));
+	}
+
+	private void restorePlayerState(Player player) {
+		BeforeGamePlayerState state = beforeStates.remove(player);
+		// With kick option the player
+		// can never been added
+		if (state != null)
+			state.restore();
+	}
+
+	public void restorePlayerStates() {
+		Iterator<BeforeGamePlayerState> it = beforeStates.values().iterator();
+		while (it.hasNext()) {
+			it.next().restore();
+			it.remove();
 		}
 	}
 
@@ -976,11 +989,11 @@ public class Tribu extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		inventorySave.restoreInventories();
+		stopRunning();
 		players.clear();
 		sortedStats.clear();
 		memory.restoreAll();
-		stopRunning();
+
 		LogInfo(language.get("Info.Disable"));
 	}
 
@@ -1046,9 +1059,7 @@ public class Tribu extends JavaPlugin {
 		reloadConf();
 		isRunning = false;
 		tempInventories = new HashMap<Player, TribuTempInventory>();
-		inventorySave = new TribuInventory();
-		spawnPoint = new HashMap<Player, Location>();
-		beforePoint = new HashMap<Player, Location>();
+		beforeStates = new HashMap<Player, BeforeGamePlayerState>();
 		sortedStats = new LinkedList<PlayerStats>();
 
 		spawner = new TribuSpawner(this);
@@ -1111,8 +1122,6 @@ public class Tribu extends JavaPlugin {
 	 * @param player
 	 */
 	public void removePlayer(final Player player) {
-		Location point;
-
 		if (player != null && players.containsKey(player)) {
 			if (isAlive(player))
 				aliveCount--;
@@ -1121,41 +1130,15 @@ public class Tribu extends JavaPlugin {
 				waitingPlayers++;
 			broadcast("Broadcast.WaitingPlayers", waitingPlayers);
 			sortedStats.remove(players.get(player));
-			inventorySave.restoreInventory(player);
+			restorePlayerState(player);
 			players.remove(player);
 			Tribu.messagePlayer(player, getLocale("Message.YouLeft"));
-			point = spawnPoint.remove(player);
-			if (point != null)
-				player.setBedSpawnLocation(point);
-			point = beforePoint.remove(player);
-			if (point != null)
-				player.teleport(point);
 			// check alive AFTER player remove
 			checkAliveCount();
 			// remove vote AFTER player remove
 			levelSelector.removeVote(player);
-			if (!player.isDead())
-				restoreInventory(player);
 
 		}
-	}
-
-	/**
-	 * Set that the player spawn has been reseted and should be set it back when
-	 * reviving
-	 * 
-	 * @param p
-	 *            The player
-	 * @param point
-	 *            The previous spawn
-	 */
-	public void resetedSpawnAdd(final Player p, final Location point) {
-		spawnPoint.put(p, point);
-	}
-
-	public void restoreInventory(final Player p) {
-		// log.info("Restore items for " + p.getDisplayName());
-		inventorySave.restoreInventory(p);
 	}
 
 	public void restoreTempInv(final Player p) {
@@ -1170,8 +1153,7 @@ public class Tribu extends JavaPlugin {
 	 * @param player
 	 */
 	public void revivePlayer(final Player player) {
-		if (spawnPoint.containsKey(player))
-			player.setBedSpawnLocation(spawnPoint.remove(player));
+		beforeStates.get(player).resetBedSpawn();
 		PlayerStats stat = players.get(player);
 		if (config.LevelKickIfZeroPoint && !stat.isAlive()
 				&& stat.getPoints() == 0) {
@@ -1338,18 +1320,11 @@ public class Tribu extends JavaPlugin {
 			getSpawnTimer().stop();
 			getWaveStarter().cancelWave();
 			getSpawner().clearZombies();
-
 			if (config.PlayersRollback)
 				memory.startRestoring(this, config.AdvancedRestoringSpeed);
 			level.finishSigns();
-			// Teleports all players to spawn when game ends
-			for (final Player p : players.keySet())
-				p.teleport(level.getInitialSpawn());
-
+			restorePlayerStates();
 			if (!rerun) {
-				if (config.PlayersStoreInventory)
-					inventorySave.restoreInventories();
-
 				if (!config.PluginModeServerExclusive
 						&& !config.PluginModeWorldExclusive)
 					players.clear();

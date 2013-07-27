@@ -103,8 +103,7 @@ public class TribuEntityListener implements Listener {
 						dam.setCancelled(true);
 						p.setNoDamageTicks(5);
 					}
-				} else
-					plugin.restoreInventory(p);
+				}
 			} else if (dam.getEntity() instanceof CraftTribuZombie)
 				if (plugin.isRunning()
 						&& (dam.getCause() == DamageCause.ENTITY_ATTACK
