@@ -113,6 +113,7 @@ public class TollSign extends TribuSign {
 	@Override
 	public boolean isUsedEvent(final Event e) {
 		return e instanceof PlayerInteractEvent
+				&& linkedButton != null
 				&& (linkedButton.getType() != Material.WOODEN_DOOR || ((PlayerInteractEvent) e)
 						.getAction().equals(Action.RIGHT_CLICK_BLOCK));
 	}
@@ -122,35 +123,33 @@ public class TollSign extends TribuSign {
 		final PlayerInteractEvent e = (PlayerInteractEvent) ev;
 		// Wait for the second event of a button
 
-		if (linkedButton != null)
-			if (e.getClickedBlock().equals(linkedButton)
-					|| (linkedButton.getType().equals(Material.WOODEN_DOOR) && //
-					((linkedButton.getRelative(BlockFace.UP).getType()
-							.equals(Material.WOODEN_DOOR) && e
-							.getClickedBlock().equals(
-									linkedButton.getRelative(BlockFace.UP))) || (linkedButton
-							.getRelative(BlockFace.DOWN).getType()
-							.equals(Material.WOODEN_DOOR) && e
-							.getClickedBlock().equals(
-									linkedButton.getRelative(BlockFace.DOWN)))))) {
-				final Player p = e.getPlayer();
-				if (!preventSpam || !lastPlayerTry.equals(p)) {
-					final PlayerStats stats = plugin.getStats(p);
-					if (!allowedPlayer.contains(p)
-							&& !stats.subtractmoney(cost)) {
+		if (e.getClickedBlock().equals(linkedButton)
+				|| (linkedButton.getType().equals(Material.WOODEN_DOOR) && //
+				((linkedButton.getRelative(BlockFace.UP).getType()
+						.equals(Material.WOODEN_DOOR) && e.getClickedBlock()
+						.equals(linkedButton.getRelative(BlockFace.UP))) || (linkedButton
+						.getRelative(BlockFace.DOWN).getType()
+						.equals(Material.WOODEN_DOOR) && e.getClickedBlock()
+						.equals(linkedButton.getRelative(BlockFace.DOWN)))))) {
+			final Player p = e.getPlayer();
+			if (!preventSpam || !lastPlayerTry.equals(p)) {
+				final PlayerStats stats = plugin.getStats(p);
+				if (!allowedPlayer.contains(p) && !stats.subtractmoney(cost)) {
 
-						Tribu.messagePlayer(p, plugin
-								.getLocale("Message.YouDontHaveEnoughMoney"));
-						e.setCancelled(true);
-					} else if (!allowedPlayer.contains(p)) {
-						allowedPlayer.add(p);
-						Tribu.messagePlayer(p, String.format(plugin
-								.getLocale("Message.PurchaseSuccessfulMoney"),
-								String.valueOf(stats.getMoney())));
-					}
+					Tribu.messagePlayer(p,
+							plugin.getLocale("Message.YouDontHaveEnoughMoney"));
+					e.setCancelled(true);
+				} else if (!allowedPlayer.contains(p)) {
+					allowedPlayer.add(p);
+					Tribu.messagePlayer(
+							p,
+							String.format(
+									plugin.getLocale("Message.PurchaseSuccessfulMoney"),
+									String.valueOf(stats.getMoney())));
 				}
-				lastPlayerTry = p;
 			}
+			lastPlayerTry = p;
+		}
 
 	}
 }
