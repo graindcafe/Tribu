@@ -183,8 +183,13 @@ public class EntityTribuZombie extends EntityMonster {
 		this.goalSelector.a(7, new PathfinderGoalRandomLookaround(this));
 
 		targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true));
-		targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this,
-				EntityHuman.class, 0, true));
+
+		targetSelector.a(
+				2,
+				new PathfinderGoalNearestAttackableTarget(this,
+						EntityHuman.class, 0, (!focus
+								.equals(FocusType.InitialSpawn) && !focus
+								.equals(FocusType.DeathSpawn))));
 		targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this,
 				EntityVillager.class, 0, false));
 		getAttributeInstance(attrMaxHealth).setValue(maxHealth);

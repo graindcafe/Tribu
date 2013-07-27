@@ -84,7 +84,7 @@ public class PathfinderGoalMoveTo extends PathfinderGoal {
 		if (this.creature.e(destX, destY, destZ) > 256.0D) {
 			Vec3D vec3d = RandomPositionGenerator.a(
 					this.creature,
-					14,
+					4,
 					3,
 					this.creature.world.getVec3DPool().create(destX + 0.5D,
 							destY, destZ + 0.5D));
