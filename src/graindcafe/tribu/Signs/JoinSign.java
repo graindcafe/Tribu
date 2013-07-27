@@ -35,8 +35,10 @@
 package graindcafe.tribu.Signs;
 
 import graindcafe.tribu.Tribu;
+import graindcafe.tribu.Level.TribuLevel;
 
 import org.bukkit.Location;
+import org.bukkit.block.Sign;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -55,10 +57,19 @@ public class JoinSign extends TribuSign {
 	@Override
 	protected String[] getSpecificLines() {
 		final String[] lines = new String[4];
-		lines[0] = "";
-		lines[1] = "";
-		lines[2] = "";
-		lines[3] = "";
+		TribuLevel l = plugin.getLevel();
+		if (l == null) {
+			lines[0] = "";
+			lines[1] = "";
+			lines[2] = "";
+			lines[3] = "";
+		} else {
+			lines[1] = plugin.formatLocale("Sign.Join.LevelName", l.getName());
+			lines[2] = plugin.formatLocale("Sign.Join.PlayerCount",
+					String.valueOf(plugin.getPlayersCount()));
+			lines[3] = plugin.formatLocale("Sign.Join.WaveNumber",
+					String.valueOf(plugin.getWaveStarter().getWaveNumber()));
+		}
 		return lines;
 	}
 
@@ -69,14 +80,22 @@ public class JoinSign extends TribuSign {
 
 	@Override
 	public boolean isUsedEvent(final Event e) {
-		return e instanceof PlayerInteractEvent
-				&& ((PlayerInteractEvent) e).getAction().equals(
+		return !(e instanceof PlayerInteractEvent)
+				|| ((PlayerInteractEvent) e).getAction().equals(
 						Action.RIGHT_CLICK_BLOCK);
 	}
 
 	@Override
 	public void raiseEvent(final Event ev) {
-		final PlayerInteractEvent e = (PlayerInteractEvent) ev;
-		plugin.addPlayer(e.getPlayer());
+		if (ev instanceof PlayerInteractEvent) {
+			final PlayerInteractEvent e = (PlayerInteractEvent) ev;
+			plugin.addPlayer(e.getPlayer());
+		}
+		final Sign s = ((Sign) pos.getBlock().getState());
+		final String[] lines = getSpecificLines();
+		s.setLine(1, lines[1]);
+		s.setLine(2, lines[2]);
+		s.setLine(3, lines[3]);
+		s.update();
 	}
 }

@@ -259,6 +259,20 @@ public class Tribu extends JavaPlugin {
 	}
 
 	/**
+	 * Format a string using a language node
+	 * 
+	 * @param languageNode
+	 *            The language node to format
+	 * @param params
+	 *            The arguments to pass to the language node
+	 * @return the formated string
+	 */
+	public String formatLocale(final String languageNode,
+			final Object... params) {
+		return String.format(getLocale(languageNode), params);
+	}
+
+	/**
 	 * Broadcast message to every players on the server with given permission
 	 * 
 	 * @param message
@@ -518,6 +532,11 @@ public class Tribu extends JavaPlugin {
 				put("Sign.HighscorePoints", "Top Points");
 				put("Sign.TollSign", "Pay");
 				put("Sign.Each", "for each");
+				put("Sign.Join", "Join");
+				put("Sign.Join.LevelName", "%s");
+				put("Sign.Join.PlayerCount", "%s fighters");
+				put("Sign.Join.WaveNumber", "Wave #%s");
+				put("Sign.Leave", "Leave");
 				put("Message.Stats", ChatColor.GREEN
 						+ "Ranking of  best zombies killers : ");
 				put("Message.UnknownItem", ChatColor.YELLOW
