@@ -74,6 +74,7 @@ import net.minecraft.server.v1_6_R2.EntityZombie;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
@@ -1320,6 +1321,16 @@ public class Tribu extends JavaPlugin {
 			getSpawnTimer().stop();
 			getWaveStarter().cancelWave();
 			getSpawner().clearZombies();
+			Iterator<ExperienceOrb> it = level.getInitialSpawn().getWorld()
+					.getEntitiesByClass(ExperienceOrb.class).iterator();
+			while (it.hasNext()) {
+				ExperienceOrb xp = it.next();
+				if (xp.getLocation().distanceSquared(level.getInitialSpawn()) < config.LevelClearZone
+						* config.LevelClearZone) {
+					it.remove();
+					xp.remove();
+				}
+			}
 			if (config.PlayersRollback)
 				memory.startRestoring(this, config.AdvancedRestoringSpeed);
 			level.finishSigns();
