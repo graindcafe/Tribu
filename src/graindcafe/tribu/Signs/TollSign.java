@@ -56,10 +56,13 @@ public class TollSign extends TribuSign {
 	private final LinkedList<Player> allowedPlayer;
 	private Player lastPlayerTry;
 	private boolean preventSpam = false;
+	private boolean eachTime = false;
 
 	public TollSign(final Tribu plugin, final Location pos, final String[] lines) {
 		super(plugin, pos);
 		cost = TribuSign.parseInt(lines[1]);
+		eachTime = lines[2].toLowerCase().contains(
+				plugin.getLocale("Sign.Each").toLowerCase());
 		allowedPlayer = new LinkedList<Player>();
 	}
 
@@ -78,7 +81,10 @@ public class TollSign extends TribuSign {
 		final String[] lines = new String[4];
 		lines[0] = "";
 		lines[1] = String.valueOf(cost);
-		lines[2] = "";
+		if (eachTime)
+			lines[2] = plugin.getLocale("Sign.Each");
+		else
+			lines[2] = "";
 		lines[3] = "";
 		return lines;
 	}
@@ -134,13 +140,15 @@ public class TollSign extends TribuSign {
 			final Player p = e.getPlayer();
 			if (!preventSpam || !lastPlayerTry.equals(p)) {
 				final PlayerStats stats = plugin.getStats(p);
-				if (!allowedPlayer.contains(p) && !stats.subtractmoney(cost)) {
+				if ((eachTime || !allowedPlayer.contains(p))
+						&& !stats.subtractmoney(cost)) {
 
 					Tribu.messagePlayer(p,
 							plugin.getLocale("Message.YouDontHaveEnoughMoney"));
 					e.setCancelled(true);
 				} else if (!allowedPlayer.contains(p)) {
-					allowedPlayer.add(p);
+					if (!eachTime)
+						allowedPlayer.add(p);
 					Tribu.messagePlayer(
 							p,
 							String.format(

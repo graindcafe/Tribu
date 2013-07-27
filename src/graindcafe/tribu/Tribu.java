@@ -498,6 +498,7 @@ public class Tribu extends JavaPlugin {
 				put("Sign.HighscoreNames", "Top Names");
 				put("Sign.HighscorePoints", "Top Points");
 				put("Sign.TollSign", "Pay");
+				put("Sign.Each", "for each");
 				put("Message.Stats", ChatColor.GREEN
 						+ "Ranking of  best zombies killers : ");
 				put("Message.UnknownItem", ChatColor.YELLOW

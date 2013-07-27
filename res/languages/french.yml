@@ -8,6 +8,7 @@ Sign:
   HighscoreNames: Records (Nom)
   HighscorePoints: Records (Point)
   TollSign: Payer
+  Each: pour chaque
 Message:
   UnknownItem: '&EObjet inconnu, désolé'
   ZombieSpawnList: '&A%s'
