@@ -13,6 +13,7 @@ public class BeforeGamePlayerState {
 	double health;
 	int foodLevel;
 	float exp;
+	int level;
 	Location point;
 	Location bed;
 	List<ItemStack> inventories = null;
@@ -23,6 +24,7 @@ public class BeforeGamePlayerState {
 		health = p.getHealth();
 		foodLevel = p.getFoodLevel();
 		exp = p.getExp();
+		level = p.getLevel();
 		point = p.getLocation();
 		bed = p.getBedSpawnLocation();
 		if (inventory)
@@ -39,8 +41,10 @@ public class BeforeGamePlayerState {
 			p.setHealth(health);
 		if (hunger)
 			p.setFoodLevel(foodLevel);
-		if (xp)
+		if (xp) {
+			p.setLevel(level);
 			p.setExp(exp);
+		}
 		if (location)
 			p.teleport(point);
 		if (bedLoc)
