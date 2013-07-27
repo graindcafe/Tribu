@@ -19,6 +19,7 @@ public class BeforeGamePlayerState {
 	List<ItemStack> armors = null;
 
 	public BeforeGamePlayerState(Player p, boolean inventory) {
+		this.p = p;
 		health = p.getHealth();
 		foodLevel = p.getFoodLevel();
 		exp = p.getExp();
