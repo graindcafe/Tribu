@@ -47,7 +47,7 @@ public class PlayerStats implements Comparable<PlayerStats> {
 
 	public PlayerStats(final Player player) {
 		this.player = player;
-		alive = false;
+		alive = true;
 	}
 
 	public void addMoney(final int amount) {

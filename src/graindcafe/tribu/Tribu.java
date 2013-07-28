@@ -1141,22 +1141,26 @@ public class Tribu extends JavaPlugin {
 	 */
 	public void removePlayer(final Player player) {
 		if (player != null && players.containsKey(player)) {
-			if (isAlive(player))
-				aliveCount--;
-			if (!isRunning && waitingPlayers != -1
-					&& waitingPlayers < config.LevelMinPlayers)
-				waitingPlayers++;
-			broadcast("Broadcast.WaitingPlayers", waitingPlayers);
-			sortedStats.remove(players.get(player));
-			restorePlayerState(player);
+			uncheckedRemovePlayer(player);
 			players.remove(player);
-			Tribu.messagePlayer(player, getLocale("Message.YouLeft"));
-			// check alive AFTER player remove
-			checkAliveCount();
-			// remove vote AFTER player remove
-			levelSelector.removeVote(player);
-
 		}
+	}
+
+	private void uncheckedRemovePlayer(final Player player) {
+		if (isAlive(player))
+			aliveCount--;
+		if (!isRunning && waitingPlayers != -1
+				&& waitingPlayers < config.LevelMinPlayers)
+			waitingPlayers++;
+		broadcast("Broadcast.WaitingPlayers", waitingPlayers);
+		sortedStats.remove(players.get(player));
+		restorePlayerState(player);
+		Tribu.messagePlayer(player, getLocale("Message.YouLeft"));
+		// check alive AFTER player remove
+		checkAliveCount();
+		// remove vote AFTER player remove
+		levelSelector.removeVote(player);
+
 	}
 
 	public void restoreTempInv(final Player p) {
@@ -1169,18 +1173,13 @@ public class Tribu extends JavaPlugin {
 	 * Revive a player
 	 * 
 	 * @param player
+	 * @return if the player should be kicked
 	 */
-	public void revivePlayer(final Player player) {
+	public boolean revivePlayer(final Player player) {
 		PlayerStats stat = players.get(player);
 		if (config.LevelKickIfZeroPoint && !stat.isAlive()
 				&& stat.getPoints() == 0) {
-			removePlayer(player);
-			// If the game stopped he already received this message
-			if (isRunning)
-				messagePlayer(player,
-						language.get("Message.YouHaveReachedWave"),
-						String.valueOf(getWaveStarter().getWaveNumber()));
-			return;
+			return false;
 		}
 		stat.revive();
 		if (config.WaveStartHealPlayers)
@@ -1189,7 +1188,7 @@ public class Tribu extends JavaPlugin {
 			player.setFoodLevel(20);
 		restoreTempInv(player);
 		aliveCount++;
-
+		return true;
 	}
 
 	/**
@@ -1200,9 +1199,19 @@ public class Tribu extends JavaPlugin {
 	 */
 	public void revivePlayers(final boolean teleportAll) {
 		aliveCount = 0;
-		for (final Player player : players.keySet()) {
-			revivePlayer(player);
-			if (isRunning && level != null && (teleportAll || !isAlive(player)))
+		Iterator<Player> it = players.keySet().iterator();
+		while (it.hasNext()) {
+			Player player = it.next();
+			if (!revivePlayer(player)) {
+				// If the game stopped he already received this message
+				if (isRunning)
+					messagePlayer(player,
+							language.get("Message.YouHaveReachedWave"),
+							String.valueOf(getWaveStarter().getWaveNumber()));
+				removePlayer(player);
+				it.remove();
+			} else if (isRunning && level != null
+					&& (teleportAll || !isAlive(player)))
 				player.teleport(level.getInitialSpawn());
 		}
 	}
