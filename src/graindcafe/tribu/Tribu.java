@@ -1001,11 +1001,11 @@ public class Tribu extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		// Before stopRunning
+		memory.restoreAll();
 		stopRunning();
 		players.clear();
 		sortedStats.clear();
-		memory.restoreAll();
-
 		LogInfo(language.get("Info.Disable"));
 	}
 
