@@ -93,7 +93,8 @@ public class TollSign extends TribuSign {
 	public void init() {
 		Block current;
 		final BlockFace[] firstFaces = new BlockFace[] { BlockFace.SELF,
-				BlockFace.UP, BlockFace.DOWN };
+				BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH,
+				BlockFace.EAST, BlockFace.WEST };
 		final BlockFace[] secondFaces = new BlockFace[] { BlockFace.SELF,
 				BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST,
 				BlockFace.WEST };
@@ -121,8 +122,20 @@ public class TollSign extends TribuSign {
 	public boolean isUsedEvent(final Event e) {
 		return e instanceof PlayerInteractEvent
 				&& linkedButton != null
-				&& (linkedButton.getType() != Material.WOODEN_DOOR || ((PlayerInteractEvent) e)
+				&& ((linkedButton.getType() != Material.WOODEN_DOOR && linkedButton
+						.getType() != Material.FENCE_GATE) || ((PlayerInteractEvent) e)
 						.getAction().equals(Action.RIGHT_CLICK_BLOCK));
+	}
+
+	private boolean isLinked(Block block) {
+		return block.equals(linkedButton)
+				|| (linkedButton.getType().equals(Material.WOODEN_DOOR) //
+				&& ((linkedButton.getRelative(BlockFace.UP).getType()
+						.equals(Material.WOODEN_DOOR) //
+				&& block.equals(linkedButton.getRelative(BlockFace.UP))) //
+				|| (linkedButton.getRelative(BlockFace.DOWN).getType()
+						.equals(Material.WOODEN_DOOR) //
+				&& block.equals(linkedButton.getRelative(BlockFace.DOWN)))));
 	}
 
 	@Override
@@ -130,14 +143,7 @@ public class TollSign extends TribuSign {
 		final PlayerInteractEvent e = (PlayerInteractEvent) ev;
 		// Wait for the second event of a button
 
-		if (e.getClickedBlock().equals(linkedButton)
-				|| (linkedButton.getType().equals(Material.WOODEN_DOOR) && //
-				((linkedButton.getRelative(BlockFace.UP).getType()
-						.equals(Material.WOODEN_DOOR) && e.getClickedBlock()
-						.equals(linkedButton.getRelative(BlockFace.UP))) || (linkedButton
-						.getRelative(BlockFace.DOWN).getType()
-						.equals(Material.WOODEN_DOOR) && e.getClickedBlock()
-						.equals(linkedButton.getRelative(BlockFace.DOWN)))))) {
+		if (isLinked(e.getClickedBlock())) {
 			final Player p = e.getPlayer();
 			if (!preventSpam || !lastPlayerTry.equals(p)) {
 				final PlayerStats stats = plugin.getStats(p);
