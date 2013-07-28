@@ -32,7 +32,13 @@ public class BeforeGamePlayerState {
 	}
 
 	public void restore() {
-		restore(true, true, true, true, true);
+		p.setHealth(health);
+		p.setFoodLevel(foodLevel);
+		p.setLevel(level);
+		p.setExp(exp);
+		p.teleport(point);
+		p.setBedSpawnLocation(bed, true);
+		restoreInventory();
 	}
 
 	public void restore(boolean location, boolean bedLoc, boolean hp,
@@ -47,8 +53,9 @@ public class BeforeGamePlayerState {
 		}
 		if (location)
 			p.teleport(point);
-		if (bedLoc)
+		if (bedLoc) {
 			p.setBedSpawnLocation(bed, true);
+		}
 		restoreInventory();
 	}
 

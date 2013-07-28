@@ -127,7 +127,8 @@ public class TribuPlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerRespawn(final PlayerRespawnEvent event) {
-		if (plugin.getLevel() != null) {
+		if (plugin.isRunning() && plugin.getLevel() != null
+				&& plugin.isPlaying(event.getPlayer())) {
 			plugin.setDead(event.getPlayer());
 			event.setRespawnLocation(plugin.getLevel().getDeathSpawn());
 			plugin.restoreTempInv(event.getPlayer());
