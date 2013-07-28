@@ -1,16 +1,16 @@
 Version: 1
-Author: Graindcafe
+Author: 'Graindcafe'
 Sign:
-  Mystery: Mystère
-  Buy: Acheter
-  ToggleSpawner: Relais à Zombie
-  Spawner: Venue de Zombie
-  HighscoreNames: Records (Nom)
-  HighscorePoints: Records (Point)
-  Toll: Payer
-  Join: Rejoindre
-  Leave: Quitter
-  Each: pour chaque
+  Mystery: 'Mystère'
+  Buy: 'Acheter'
+  ToggleSpawner: 'Relais à Zombie'
+  Spawner: 'Venue de Zombie'
+  HighscoreNames: 'Records (Nom)'
+  HighscorePoints: 'Records (Point)'
+  Toll: 'Payer'
+  Join: 'Rejoindre'
+  Leave: 'Quitter'
+  Each: 'pour chaque'
 Message:
   UnknownItem: '&EObjet inconnu, désolé'
   ZombieSpawnList: '&A%s'
@@ -38,8 +38,8 @@ Message:
   UnknownLevel: '&ENiveau inconnu : %s'
   MaybeNotSaved: '&EPeut-être n''avez-vous pas sauvegardé le niveau ou bien vous n''avez rien mis dedans.'
   Levels: '&ANiveaux : %s'
-  ZombieModeEnabled: Mode survie de zombie activé !
-  ZombieModeDisabled: Mode survie de zombie désactivé !
+  ZombieModeEnabled: 'Mode survie de zombie activé !'
+  ZombieModeDisabled: 'Mode survie de zombie désactivé !'
   SpawnpointAdded: '&APoint d''apparition ajouté'
   SpawnpointRemoved: '&APoint d''apparition supprimé'
   InvalidSpawnName: '&CNom du point invalide'
@@ -55,43 +55,41 @@ Message:
   YouLeft: '&6Vous avez quitté la bataille contre les zombies.'
   TribuSignAdded: '&aPancarte de Tribu ajouté'
   TribuSignRemoved: '&aPancarte de Tribu supprimé'
-  ProtectedBlock: '&eDésolé, ce bloc est protégé vous devez demandez à de le
-    supprimer'
-  CannotPlaceASpecialSign: Désolé, vous ne pouvez pas placé une pancarte spéciale, demandez à un opérateur de le faire.
+  ProtectedBlock: '&eDésolé, ce bloc est protégé vous devez demandez à le supprimer'
+  CannotPlaceASpecialSign: 'Désolé, vous ne pouvez pas placé une pancarte spéciale, demandez à un opérateur de le faire.'
   Stats: '&eClassement des meilleurs tueurs de zombies'
-  PckSaved: &2Le paquet %s a été sauvegardé et fermé.
-  AlreadyIn: &eVous êtes déjà dedans.
+  PckSaved: '&2Le paquet %s a été sauvegardé et fermé.'
+  AlreadyIn: '&eVous êtes déjà dedans.'
   PckList: '&2Paquets pour ce niveau : %s.'
-  PckNeedOpen: &eVous devez créer ou ouvrir un paquet d'abord.
-  PckCreated: &2Le paquet %s a été crée.
-  PlayerDied: &e%s&c est mort.
-  PckRemoved: &2Le paquet a été supprimé.
-  PckItemAdded: &2L'objet "%s" a été ajouté avec succès.
-  PckNotFound: &eLe paquet %s n'a pas été trouvé dans ce niveau.
-  PckNeedId: &eVous devez spécifié au moins l'id.
-  PckNeedSubId: &eVous devez spécifié l'id et le sous-id.
-  PlayerRevive: &2Vous avez été ressucité.
-  Deny: &cUn zombie a empêché votre action, désolé.
-  PckOpened: &2Le paquet %s a été ouvert.
-  Died: &7%s est mort.
-  UnableToCreatePackage: &cImpossible de créer le paquet, essayez plus tard.
-  PackageCreated: &cLe paquet a été créer avec succès.
-  PckNeedIdSubId: &eVous devez spécifier l'id et le sous id.
-  ConfigFileReloaded: &2Les fichiers de configuration ont été rechargés.
-  PckNoneOpened: &eAucun ouvert ou spécifié.
-  PckItemDeleted: &2L'objet a été supprimé.
-  PckNeedName: &eVous devez préciser le nom du paquet.
-  PlayerDSpawnLeaveWarning: &6Vous ne pouvez pas sortir jusqu'à la prochaine vague.
-  PckItemAddFailed: &eL'objet "%s" ne peut pas être ajouté.
-  LevelNotReady: &eLe niveau n'est pas prêt à être lancé. Assurez vous d'avoir créer ou charger un niveau et qu'il contient des spawns de zombies.
+  PckNeedOpen: '&eVous devez créer ou ouvrir un paquet d''abord.'
+  PckCreated: '&2Le paquet %s a été crée.'
+  PlayerDied: '&e%s&c est mort.'
+  PckRemoved: '&2Le paquet a été supprimé.'
+  PckItemAdded: '&2L''objet "%s" a été ajouté avec succès.'
+  PckNotFound: '&eLe paquet %s n''a pas été trouvé dans ce niveau.'
+  PckNeedId: '&eVous devez spécifié au moins l''id.'
+  PckNeedSubId: '&eVous devez spécifié l''id et le sous-id.'
+  PlayerRevive: '&2Vous avez été ressucité.'
+  Deny: '&cUn zombie a empêché votre action, désolé.'
+  PckOpened: '&2Le paquet %s a été ouvert.'
+  Died: '&7%s est mort.'
+  UnableToCreatePackage: '&cImpossible de créer le paquet, essayez plus tard.'
+  PackageCreated: '&cLe paquet a été créer avec succès.'
+  PckNeedIdSubId: '&eVous devez spécifier l''id et le sous id.'
+  ConfigFileReloaded: '&2Les fichiers de configuration ont été rechargés.'
+  PckNoneOpened: '&eAucun ouvert ou spécifié.'
+  PckItemDeleted: '&2L''objet a été supprimé.'
+  PckNeedName: '&eVous devez préciser le nom du paquet.'
+  PlayerDSpawnLeaveWarning: '&6Vous ne pouvez pas sortir jusqu''à la prochaine vague.'
+  PckItemAddFailed: '&eL''objet "%s" ne peut pas être ajouté.'
+  LevelNotReady: '&eLe niveau n''est pas prêt à être lancé. Assurez vous d''avoir créer ou charger un niveau et qu''il contient des spawns de zombies.'
 Broadcast:
   MapChosen: '&1Le niveau &d%s&1 a été choisi'
   MapVoteStarting: '&ADébut du vote pour le niveau,'
   Type: '&3Taper '
   SlashVoteForMap: '&6''/tribu vote %s''&3 pour le niveau &9%s'
   VoteClosingInSeconds: '&3Les votes se termineront dans &D%s&A secondes'
-  StartingWave: '&7La vague numéro &4%s&7 arrive, &4%s &7zombies @ &4%s&7 points
-    de vie'
+  StartingWave: '&7La vague numéro &4%s&7 arrive, &4%s &7zombies @ &4%s&7 points de vie'
   Wave: '&8La vague numéro &4%s&8 arrivera dans &4%s&8 secondes.'
   WaveComplete: '&6Vague terminée'
   GameStartingSoon: '&8Le jeu va commencer dans %.0f secondes !'
@@ -100,40 +98,41 @@ Broadcast:
 Info:
   LevelFound: '%s niveaux trouvés'
   Enable: 'Activation de Tribu par Graindcafe, auteur original : samp20'
-  Disable: Désactivation de Tribu
-  LevelSaved: Niveau sauvegardé
-  LevelFolderDoesntExist: Le répretoire des niveaux n'existe pas
+  Disable: 'Désactivation de Tribu'
+  LevelSaved: 'Niveau sauvegardé'
+  LevelFolderDoesntExist: 'Le répretoire des niveaux n''existe pas'
   ChosenLanguage: 'Langue choisi : %s. Fourni par : %s'
 Warning:
-  AllSpawnsCurrentlyUnloaded: Tous les points d'apparition de zombies sont actuellement déchargé.
-  UnableToSaveLevel: Impossible de sauvegarder le niveau
-  ThisCommandCannotBeUsedFromTheConsole: Cette commande ne peut pas être utilisé à la console.
-  IOErrorOnFileDelete: Erreur E/S à la suppression du fichier
-  LanguageFileOutdated: Votre fichier de langue actuel n'est pas à jour
+  AllSpawnsCurrentlyUnloaded: 'Tous les points d''apparition de zombies sont actuellement déchargé.'
+  UnableToSaveLevel: 'Impossible de sauvegarder le niveau'
+  ThisCommandCannotBeUsedFromTheConsole: 'Cette commande ne peut pas être utilisé à la console.'
+  IOErrorOnFileDelete: 'Erreur E/S à la suppression du fichier'
+  LanguageFileOutdated: 'Votre fichier de langue actuel n''est pas à jour'
   UnknownFocus: 'Le mot donné pour la configuration Zombies.Focus n''est pas reconnu : %s . Cela peut être  ''None'',''Nearest'',''Random'',''DeathSpawn'',''InitialSpawn''.'
-  LanguageFileMissing: Le fichier de langue choisi est inexistant
-  UnableToAddSign: Impossible d'ajouter la pancarte, peut être que vous avez changé vos fichiers de langues ou les repères de pancartes.
-  NoSpawns: &cVous n'avez pas régler de spawn de zombie.
-  LanguageOutdated: Votre fichier de langue n'est pas à jour!
+  LanguageFileMissing: 'Le fichier de langue choisi est inexistant'
+  UnableToAddSign: 'Impossible d''ajouter la pancarte, peut être que vous avez changé vos fichiers de langues ou les repères de pancartes.'
+  NoSpawns: '&cVous n''avez pas régler de spawn de zombie.'
+  LanguageOutdated: 'Votre fichier de langue n''est pas à jour!'
 Severe:
-  WorldInvalidFileVersion: Version du fichier de monde invalide
-  WorldDoesntExist: Le monde n'existe pas
+  WorldInvalidFileVersion: 'Version du fichier de monde invalide'
+  WorldDoesntExist: 'Le monde n''existe pas'
   ErrorDuringLevelLoading: 'Erreur durant le chargement du niveau : %s'
   ErrorDuringLevelSaving: 'Erreur durant la sauvegarde du niveau : %s'
   Exception: 'Exception : %s'
   PlayerHaveNotRetrivedHisItems: 'Le joueur %s n''a pas récupérer ses objets, ils vont être supprimés ! Liste des objets : %s'
-  TribuCantMkdir: &cTribu ne peut pas créer les répertoires, il ne peut pas créer le répertoire des niveaux, vous ne pourrez pas sauvegarder les niveaux, vous ne pouvez pas utiliser Tribu !
-  PlayerDidntGetInvBack: &cn'a pas pu récupérer son inventaire parce qu'il était "null".
-  CannotCopyLanguages: &cImpossible de copier les fichiers de langues.
-Name: french
+  TribuCantMkdir: '&cTribu ne peut pas créer les répertoires, il ne peut pas créer le répertoire des niveaux, vous ne pourrez pas sauvegarder les niveaux, vous ne pouvez pas utiliser Tribu !'
+  PlayerDidntGetInvBack: '&cn''a pas pu récupérer son inventaire parce qu''il était "null".'
+  CannotCopyLanguages: '&cImpossible de copier les fichiers de langues.'
+Name: 'french'
 File:
   DefaultLanguageFile: '# Ceci est votre fichier de langue par défaut\n# Vous ne
     devez pas l''éditer !\n# Créer un autre fichier de langue (perso.yml) \n# et
-    mettez ''Default: french'' si votre langue par défaut est le français\n" LanguageFileComplete: '
+    mettez ''Default: ''french'' si votre langue par défaut est le français\n" 
+    LanguageFileComplete: '
   TranslationsToDo: '# Traductions à faire dans ce fichier'
 Prefix: 
- Severe: [Tribu] 
- Info: [Tribu] 
- Broadcast: [Tribu] 
- Warning: [Tribu]
+ Severe: '[Tribu] '
+ Info: '[Tribu] '
+ Broadcast: '[Tribu] '
+ Warning: '[Tribu]'
  Message: ''
