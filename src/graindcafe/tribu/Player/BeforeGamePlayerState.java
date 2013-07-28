@@ -38,7 +38,7 @@ public class BeforeGamePlayerState {
 	}
 
 	public void clear(boolean inventory) {
-		p.setLevel(1);
+		p.setLevel(0);
 		p.setExp(0);
 		p.setFoodLevel(20);
 		p.setHealth(p.getMaxHealth());
