@@ -912,10 +912,10 @@ public class Tribu extends JavaPlugin {
 					+ ".yml");
 	}
 
-	protected void loadCustomConf(final String levelName, final String worldName) {
+	public void loadCustomConf(final String levelName, final String worldName) {
 		final TribuLevel level = getLevel();
-		if (level == null)
-			return;
+		// if (level == null)
+		// return;
 		File worldFile = null, levelFile = null, worldDir, levelDir;
 		worldDir = new File(Constants.perWorldFolder);
 		levelDir = new File(Constants.perLevelFolder);
@@ -1254,7 +1254,6 @@ public class Tribu extends JavaPlugin {
 	 */
 	public void setLevel(final TribuLevel level) {
 		this.level = level;
-		this.loadCustomConf();
 		if (level != null)
 			level.setMysteriesPackages(config.MysteriesPackages);
 	}
