@@ -1171,7 +1171,6 @@ public class Tribu extends JavaPlugin {
 	 * @param player
 	 */
 	public void revivePlayer(final Player player) {
-		beforeStates.get(player).resetBedSpawn();
 		PlayerStats stat = players.get(player);
 		if (config.LevelKickIfZeroPoint && !stat.isAlive()
 				&& stat.getPoints() == 0) {
@@ -1185,7 +1184,7 @@ public class Tribu extends JavaPlugin {
 		}
 		stat.revive();
 		if (config.WaveStartHealPlayers)
-			player.setHealth(20);
+			player.setHealth(player.getMaxHealth());
 		if (config.WaveStartFeedPlayers)
 			player.setFoodLevel(20);
 		restoreTempInv(player);
@@ -1326,11 +1325,6 @@ public class Tribu extends JavaPlugin {
 	 */
 	public void stopRunning() {
 		stopRunning(false);
-	}
-
-	public void clearInventories() {
-		for (Player player : players.keySet())
-			player.getInventory().clear();
 	}
 
 	public Metrics getMetrics() {

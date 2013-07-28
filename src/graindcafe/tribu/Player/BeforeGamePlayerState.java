@@ -3,6 +3,7 @@ package graindcafe.tribu.Player;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -11,6 +12,7 @@ import org.bukkit.inventory.PlayerInventory;
 public class BeforeGamePlayerState {
 	Player p;
 	double health;
+	double maxHealth;
 	int foodLevel;
 	float exp;
 	int level;
@@ -18,49 +20,43 @@ public class BeforeGamePlayerState {
 	Location bed;
 	List<ItemStack> inventories = null;
 	List<ItemStack> armors = null;
+	GameMode mode;
 
 	public BeforeGamePlayerState(Player p, boolean inventory) {
 		this.p = p;
 		health = p.getHealth();
+		maxHealth = p.getMaxHealth();
 		foodLevel = p.getFoodLevel();
 		exp = p.getExp();
 		level = p.getLevel();
 		point = p.getLocation();
 		bed = p.getBedSpawnLocation();
+		mode = p.getGameMode();
 		if (inventory)
 			addInventory();
+		clear(inventory);
+	}
+
+	public void clear(boolean inventory) {
+		p.setLevel(1);
+		p.setExp(0);
+		p.setFoodLevel(20);
+		p.setHealth(p.getMaxHealth());
+		p.setGameMode(GameMode.SURVIVAL);
+		if (inventory)
+			p.getInventory().clear();
 	}
 
 	public void restore() {
+		p.setMaxHealth(maxHealth);
 		p.setHealth(health);
 		p.setFoodLevel(foodLevel);
 		p.setLevel(level);
 		p.setExp(exp);
 		p.teleport(point);
 		p.setBedSpawnLocation(bed, true);
+		p.setGameMode(mode);
 		restoreInventory();
-	}
-
-	public void restore(boolean location, boolean bedLoc, boolean hp,
-			boolean hunger, boolean xp) {
-		if (hp)
-			p.setHealth(health);
-		if (hunger)
-			p.setFoodLevel(foodLevel);
-		if (xp) {
-			p.setLevel(level);
-			p.setExp(exp);
-		}
-		if (location)
-			p.teleport(point);
-		if (bedLoc) {
-			p.setBedSpawnLocation(bed, true);
-		}
-		restoreInventory();
-	}
-
-	public void resetBedSpawn() {
-		p.setBedSpawnLocation(bed, true);
 	}
 
 	public void addInventory() {
@@ -68,7 +64,6 @@ public class BeforeGamePlayerState {
 
 		inventories = Arrays.asList(pInv.getContents().clone());
 		armors = Arrays.asList(pInv.getArmorContents().clone());
-		p.getInventory().clear();
 	}
 
 	@SuppressWarnings("deprecation")
