@@ -1202,6 +1202,8 @@ public class Tribu extends JavaPlugin {
 		Iterator<Player> it = players.keySet().iterator();
 		while (it.hasNext()) {
 			Player player = it.next();
+			if (isRunning && level != null && (teleportAll || !isAlive(player)))
+				player.teleport(level.getInitialSpawn());
 			if (!revivePlayer(player)) {
 				// If the game stopped he already received this message
 				if (isRunning)
@@ -1210,9 +1212,7 @@ public class Tribu extends JavaPlugin {
 							String.valueOf(getWaveStarter().getWaveNumber()));
 				removePlayer(player);
 				it.remove();
-			} else if (isRunning && level != null
-					&& (teleportAll || !isAlive(player)))
-				player.teleport(level.getInitialSpawn());
+			}
 		}
 	}
 
