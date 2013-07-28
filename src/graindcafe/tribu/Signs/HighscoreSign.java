@@ -35,7 +35,7 @@
 package graindcafe.tribu.Signs;
 
 import graindcafe.tribu.Tribu;
-import graindcafe.tribu.WaveStartEvent;
+import graindcafe.tribu.Events.WaveStartEvent;
 
 import org.bukkit.Location;
 import org.bukkit.event.Event;

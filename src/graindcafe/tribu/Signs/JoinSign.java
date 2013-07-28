@@ -35,14 +35,13 @@
 package graindcafe.tribu.Signs;
 
 import graindcafe.tribu.Tribu;
-import graindcafe.tribu.WaveStartEvent;
+import graindcafe.tribu.Events.SignClickEvent;
+import graindcafe.tribu.Events.WaveStartEvent;
 import graindcafe.tribu.Level.TribuLevel;
 
 import org.bukkit.Location;
 import org.bukkit.block.Sign;
 import org.bukkit.event.Event;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 
 public class JoinSign extends TribuSign {
 
@@ -86,17 +85,13 @@ public class JoinSign extends TribuSign {
 
 	@Override
 	public boolean isUsedEvent(final Event e) {
-		return (e instanceof PlayerInteractEvent
-				&& ((PlayerInteractEvent) e).getAction().equals(
-						Action.RIGHT_CLICK_BLOCK) && ((PlayerInteractEvent) e)
-				.getClickedBlock().getLocation().equals(pos))
-				|| (e instanceof WaveStartEvent);
+		return (e instanceof SignClickEvent) || (e instanceof WaveStartEvent);
 	}
 
 	@Override
 	public void raiseEvent(final Event ev) {
-		if (ev instanceof PlayerInteractEvent) {
-			final PlayerInteractEvent e = (PlayerInteractEvent) ev;
+		if (ev instanceof SignClickEvent) {
+			final SignClickEvent e = (SignClickEvent) ev;
 			plugin.addPlayer(e.getPlayer());
 		}
 		final Sign s = ((Sign) pos.getBlock().getState());

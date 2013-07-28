@@ -35,6 +35,7 @@
 package graindcafe.tribu.Listeners;
 
 import graindcafe.tribu.Tribu;
+import graindcafe.tribu.Events.SignClickEvent;
 import graindcafe.tribu.Signs.TribuSign;
 
 import org.bukkit.block.Block;
@@ -77,19 +78,25 @@ public class TribuPlayerListener implements Listener {
 	public void onPlayerInteract(final PlayerInteractEvent event) {
 		if (!event.isCancelled()) {
 			final Block block = event.getClickedBlock();
-			if (block != null && Sign.class.isInstance(block.getState())
+			if (block != null && block.getState() instanceof Sign
 					&& plugin.getLevel() != null) {
-				if (plugin.isRunning() && plugin.isPlaying(event.getPlayer())) {
-					if (event.getAction() == Action.RIGHT_CLICK_BLOCK)
-						plugin.getLevel().onSignClicked(event);
-				} else if (event.getPlayer().hasPermission("tribu.signs.place"))
-					if (plugin.getLevel().removeSign(block.getLocation()))
-						Tribu.messagePlayer(event.getPlayer(),
-								plugin.getLocale("Message.TribuSignRemoved"));
-					else if (plugin.getLevel().addSign(
-							TribuSign.getObject(plugin, block.getLocation())))
-						Tribu.messagePlayer(event.getPlayer(),
-								plugin.getLocale("Message.TribuSignAdded"));
+				if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+					plugin.getLevel().onSignClicked(
+							new SignClickEvent(event, plugin.isPlaying(event
+									.getPlayer()), plugin.isRunning()));
+					if (!plugin.isRunning()
+							&& event.getPlayer().hasPermission(
+									"tribu.signs.place"))
+						if (plugin.getLevel().removeSign(block.getLocation()))
+							Tribu.messagePlayer(event.getPlayer(), plugin
+									.getLocale("Message.TribuSignRemoved"));
+						else if (plugin.getLevel()
+								.addSign(
+										TribuSign.getObject(plugin,
+												block.getLocation())))
+							Tribu.messagePlayer(event.getPlayer(),
+									plugin.getLocale("Message.TribuSignAdded"));
+				}
 			} else if (plugin.isRunning())
 				plugin.getLevel().onClick(event);
 		}

@@ -1,4 +1,4 @@
-package graindcafe.tribu;
+package graindcafe.tribu.Events;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

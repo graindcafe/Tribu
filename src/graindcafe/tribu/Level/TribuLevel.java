@@ -36,8 +36,8 @@ package graindcafe.tribu.Level;
 
 import graindcafe.tribu.Package;
 import graindcafe.tribu.Tribu;
-import graindcafe.tribu.WaveStartEvent;
 import graindcafe.tribu.Configuration.Constants;
+import graindcafe.tribu.Events.WaveStartEvent;
 import graindcafe.tribu.Signs.TribuSign;
 
 import java.util.ArrayList;
@@ -275,11 +275,9 @@ public class TribuLevel {
 	 *            The player event that occurs
 	 */
 	public void onSignClicked(final PlayerInteractEvent e) {
-		if (Signs.containsKey(e.getClickedBlock().getLocation())) {
-			final TribuSign ss = Signs.get(e.getClickedBlock().getLocation());
-			if (ss.isUsedEvent(e))
-				ss.raiseEvent(e);
-		}
+		final TribuSign ss = Signs.get(e.getClickedBlock().getLocation());
+		if (ss != null && ss.isUsedEvent(e))
+			ss.raiseEvent(e);
 	}
 
 	/**

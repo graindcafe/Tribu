@@ -35,10 +35,10 @@
 package graindcafe.tribu.Signs;
 
 import graindcafe.tribu.Tribu;
+import graindcafe.tribu.Events.SignClickEvent;
 
 import org.bukkit.Location;
 import org.bukkit.event.Event;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class LeaveSign extends TribuSign {
@@ -70,11 +70,7 @@ public class LeaveSign extends TribuSign {
 
 	@Override
 	public boolean isUsedEvent(final Event e) {
-		return e instanceof PlayerInteractEvent
-				&& ((PlayerInteractEvent) e).getAction().equals(
-						Action.RIGHT_CLICK_BLOCK)
-				&& ((PlayerInteractEvent) e).getClickedBlock().getLocation()
-						.equals(pos);
+		return e instanceof SignClickEvent;
 	}
 
 	@Override

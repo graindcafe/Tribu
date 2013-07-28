@@ -36,6 +36,7 @@ package graindcafe.tribu.Signs;
 
 import graindcafe.tribu.Package;
 import graindcafe.tribu.Tribu;
+import graindcafe.tribu.Events.SignClickEvent;
 import graindcafe.tribu.Level.TribuLevel;
 import graindcafe.tribu.Player.PlayerStats;
 
@@ -234,9 +235,8 @@ public class ShopSign extends TribuSign {
 	 */
 	@Override
 	public boolean isUsedEvent(final Event e) {
-		return e instanceof PlayerInteractEvent
-				&& ((PlayerInteractEvent) e).getClickedBlock().getLocation()
-						.equals(pos);
+		return e instanceof SignClickEvent
+				&& ((SignClickEvent) e).isTribuPlayer() && plugin.isRunning();
 	}
 
 	/*
