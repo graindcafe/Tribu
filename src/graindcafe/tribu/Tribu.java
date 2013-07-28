@@ -63,6 +63,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
@@ -489,11 +490,13 @@ public class Tribu extends JavaPlugin {
 		Player minPlayer = null;
 		double minVal = Double.MAX_VALUE;
 		double d;
-		for (final Player p : players.keySet()) {
-			d = location.distanceSquared(p.getLocation());
-			if (minVal > d) {
-				minVal = d;
-				minPlayer = p;
+		for (final Entry<Player, PlayerStats> p : players.entrySet()) {
+			if (p.getValue().isAlive()) {
+				d = location.distanceSquared(p.getKey().getLocation());
+				if (minVal > d) {
+					minVal = d;
+					minPlayer = p.getKey();
+				}
 			}
 		}
 		return minPlayer;
@@ -508,7 +511,13 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public Player getRandomPlayer() {
-		return sortedStats.get(rnd.nextInt(sortedStats.size())).getPlayer();
+		PlayerStats stat;
+		if (aliveCount == 0)
+			return null;
+		do {
+			stat = sortedStats.get(rnd.nextInt(sortedStats.size()));
+		} while (!stat.isAlive());
+		return stat.getPlayer();
 	}
 
 	public LinkedList<PlayerStats> getSortedStats() {
