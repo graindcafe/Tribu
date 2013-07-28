@@ -144,43 +144,44 @@ public class EntityTribuZombie extends EntityMonster {
 		getNavigation().b(true);
 		goalSelector.a(0, new PathfinderGoalFloat(this));
 		goalSelector.a(1, new PathfinderGoalBreakDoor(this));
+		goalSelector.a(2, new PathfinderGoalBreakBlock(this));
 		if (plugin.config().ZombiesFocusNPC
 				&& plugin.config().ZombiesFocusPlayerFirst) {
-			goalSelector.a(2, new PathfinderGoalMeleeAttack(this,
+			goalSelector.a(3, new PathfinderGoalMeleeAttack(this,
 					EntityPlayer.class, rushSpeedCoef, false));
 		}
 
-		goalSelector.a(2, new PathfinderGoalMeleeAttack(this,
+		goalSelector.a(3, new PathfinderGoalMeleeAttack(this,
 				plugin.config().ZombiesFocusNPC ? EntityHuman.class
 						: EntityPlayer.class, rushSpeedCoef, false));
 
 		if (plugin.config().ZombiesFocusVillager) {
-			goalSelector.a(3, new PathfinderGoalMeleeAttack(this,
+			goalSelector.a(4, new PathfinderGoalMeleeAttack(this,
 					EntityVillager.class, rushSpeedCoef, true));
 		}
-		goalSelector.a(4, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
+		goalSelector.a(5, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
 		final FocusType focus = plugin.config().ZombiesFocus;
 		if (focus.equals(FocusType.None)) {
 
-			goalSelector.a(5, new PathfinderGoalRandomStroll(this, 1d));
+			goalSelector.a(6, new PathfinderGoalRandomStroll(this, 1d));
 		} else if (focus.equals(FocusType.NearestPlayer)
 				|| focus.equals(FocusType.RandomPlayer)) {
 			goalSelector.a(
-					5,
+					6,
 					new PathfinderGoalTrackPlayer(plugin, focus
 							.equals(FocusType.RandomPlayer), this, 1d, 20));
 		} else if (focus.equals(FocusType.InitialSpawn)
 				|| focus.equals(FocusType.DeathSpawn))
 			goalSelector.a(
-					5,
+					6,
 					new PathfinderGoalMoveTo(this, focus
 							.equals(FocusType.InitialSpawn) ? plugin.getLevel()
 							.getInitialSpawn() : plugin.getLevel()
 							.getDeathSpawn(), 1f, 4f));
-		this.goalSelector.a(6, new PathfinderGoalRandomStroll(this, 1.0D));
-		this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this,
+		this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
+		this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this,
 				EntityHuman.class, 8.0F));
-		this.goalSelector.a(7, new PathfinderGoalRandomLookaround(this));
+		this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
 
 		targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true));
 
