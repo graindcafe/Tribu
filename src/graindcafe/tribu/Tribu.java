@@ -191,9 +191,7 @@ public class Tribu extends JavaPlugin {
 			players.put(player, stats);
 			sortedStats.add(stats);
 			messagePlayer(player, getLocale("Message.YouJoined"));
-			if (waitingPlayers == -1
-					&& !isRunning
-					&& !(config().PluginModeServerExclusive || config().PluginModeWorldExclusive)) {
+			if (waitingPlayers == -1) {
 				waitingPlayers = config().LevelMinPlayers;
 			}
 			if (waitingPlayers != 0) {
@@ -1058,7 +1056,8 @@ public class Tribu extends JavaPlugin {
 					final byte[] buf = new byte[1024];
 					int i = 0;
 
-					if (f.canWrite() && fis.available() > 0)
+					if (f != null && fis != null && f.canWrite()
+							&& fis.available() > 0)
 						while ((i = fis.read(buf)) > 0)
 							fos.write(buf, 0, i);
 				} catch (final Exception e) {
@@ -1099,8 +1098,7 @@ public class Tribu extends JavaPlugin {
 		levelLoader = new LevelFileLoader(this);
 		levelSelector = new LevelSelector(this);
 		// The level loader & selector have to be ready
-		reloadConf();
-		isRunning = false;
+
 		tempInventories = new HashMap<Player, TribuTempInventory>();
 		beforeStates = new HashMap<Player, BeforeGamePlayerState>();
 		sortedStats = new LinkedList<PlayerStats>();
@@ -1136,6 +1134,8 @@ public class Tribu extends JavaPlugin {
 		} catch (IOException e) {
 			// Failed to submit the stats :-(
 		}
+		reloadConf();
+		isRunning = false;
 		LogInfo(language.get("Info.Enable"));
 		if (config.PluginModeAutoStart)
 			startRunning();
