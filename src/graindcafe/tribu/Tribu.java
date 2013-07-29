@@ -758,8 +758,8 @@ public class Tribu extends JavaPlugin {
 						+ " Zombies @ " + ChatColor.DARK_RED + "%s"
 						+ ChatColor.GRAY + " health");
 				put("Broadcast.WaitingPlayers", ChatColor.GRAY
-						+ "We are still waiting " + ChatColor.RED
-						+ " players to start.");
+						+ "We are still waiting " + ChatColor.RED + "%s"
+						+ ChatColor.GRAY + " players to start.");
 				put("Broadcast.Wave", ChatColor.DARK_GRAY + "Wave "
 						+ ChatColor.DARK_RED + "%s" + ChatColor.DARK_GRAY
 						+ " starting in " + ChatColor.DARK_RED + "%s"
