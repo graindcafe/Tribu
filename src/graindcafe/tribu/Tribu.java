@@ -182,6 +182,10 @@ public class Tribu extends JavaPlugin {
 				messagePlayer(player, getLocale("Message.GameFull"));
 				return;
 			}
+			if (!config.LevelAllowJoinDuringGame && isRunning) {
+				messagePlayer(player, getLocale("Message.CannotJoinDuringGame"));
+				return;
+			}
 
 			final PlayerStats stats = new PlayerStats(player);
 			players.put(player, stats);
@@ -733,6 +737,9 @@ public class Tribu extends JavaPlugin {
 				put("Message.Died", ChatColor.GRAY + "%s died.");
 				put("Message.GameFull", ChatColor.YELLOW
 						+ "Sorry, the game is full.");
+				put("Message.CannotJoinDuringGame",
+						ChatColor.YELLOW
+								+ "Sorry, you cannot join this level while game is in progress.");
 				put("Message.GameFull",
 						ChatColor.YELLOW
 								+ "Sorry you have been randomly kicked beacause the game is full.");

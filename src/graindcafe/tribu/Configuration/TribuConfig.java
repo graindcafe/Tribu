@@ -235,6 +235,9 @@ public class TribuConfig extends TribuDefaultConfiguration {
 				} else if (keyNode[1].equalsIgnoreCase("KickIfZeroPoint")) {
 					LevelKickIfZeroPoint = config.getBoolean(key);
 				}
+				 else if (keyNode[1].equalsIgnoreCase("AllowJoinDuringGame")) {
+						LevelAllowJoinDuringGame = config.getBoolean(key);
+					}
 			} else if (keyNode[0].equalsIgnoreCase("WaveStart")) {
 				if (keyNode[1].equalsIgnoreCase("SetTime"))
 					WaveStartSetTime = config.getBoolean(key);
