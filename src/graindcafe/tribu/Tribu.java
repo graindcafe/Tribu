@@ -267,7 +267,8 @@ public class Tribu extends JavaPlugin {
 	 *            The arguments to pass to the language node
 	 */
 	public void broadcast(final String languageNode, final Object... params) {
-		broadcast(String.format(getLocale(languageNode), params));
+		if (languageNode != null)
+			broadcast(String.format(getLocale(languageNode), params));
 	}
 
 	/**
@@ -281,6 +282,8 @@ public class Tribu extends JavaPlugin {
 	 */
 	public String formatLocale(final String languageNode,
 			final Object... params) {
+		if (languageNode == null)
+			return "(null)";
 		return String.format(getLocale(languageNode), params);
 	}
 
@@ -308,7 +311,9 @@ public class Tribu extends JavaPlugin {
 	 */
 	public void broadcast(final String languageNode, final String permission,
 			final Object... params) {
-		broadcast(String.format(getLocale(languageNode), params), permission);
+		if (languageNode != null)
+			broadcast(String.format(getLocale(languageNode), params),
+					permission);
 	}
 
 	public void checkAliveCount() {
