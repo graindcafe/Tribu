@@ -62,7 +62,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
@@ -152,7 +151,7 @@ public class Tribu extends JavaPlugin {
 	private TribuWorldListener worldListener;
 	private boolean forceStop = false;
 	private Metrics metrics;
-	private int maxPlayers;
+	private int statMaxPlayers;
 
 	public void setForceStop(boolean state) {
 		forceStop = state;
@@ -196,7 +195,7 @@ public class Tribu extends JavaPlugin {
 			if (waitingPlayers != 0) {
 				waitingPlayers--;
 				if (waitingPlayers == 0) {
-					maxPlayers = players.size();
+					statMaxPlayers = players.size();
 					// No need to delay if everyone is
 					// playing
 					if (config.PluginModeServerExclusive
@@ -212,8 +211,8 @@ public class Tribu extends JavaPlugin {
 				} else
 					broadcast("Broadcast.WaitingPlayers", waitingPlayers);
 			} else if (getLevel() != null && isRunning) {
-				if (players.size() > maxPlayers)
-					maxPlayers = players.size();
+				if (players.size() > statMaxPlayers)
+					statMaxPlayers = players.size();
 				beforeStates.put(player, new BeforeGamePlayerState(player,
 						config.PlayersStoreInventory));
 				addStaringMoneyPoints(player);
@@ -326,7 +325,7 @@ public class Tribu extends JavaPlugin {
 					String.valueOf(getWaveStarter().getWaveNumber())));
 			stat("Reached Wave", getWaveStarter().getWaveNumber());
 			stat("Players at end", getPlayersCount());
-			stat("Max Players", maxPlayers);
+			stat("Max Players", statMaxPlayers);
 			if (getPlayersCount() != 0) {
 				stopRunning(true);
 				getLevelSelector().startVote(Constants.VoteDelay);
@@ -353,13 +352,16 @@ public class Tribu extends JavaPlugin {
 		if (getLevel() == null)
 			return false;
 		if (config.LevelMaxPlayers < players.size()) {
-			ListIterator<PlayerStats> li = sortedStats
-					.listIterator(config.LevelMaxPlayers);
+			Iterator<Player> i = beforeStates.keySet().iterator();
+			int n = 0;
 			Player p;
-			while (li.hasNext()) {
-				p = li.next().getPlayer();
-				removePlayer(p);
-				messagePlayer(p, getLocale("Message.KickedGameFull"));
+			while (i.hasNext()) {
+				p = i.next();
+				if (n > config.LevelMaxPlayers) {
+					removePlayer(p);
+					messagePlayer(p, getLocale("Message.KickedGameFull"));
+					n++;
+				}
 			}
 		}
 		// Before (next instruction) it will saves current default
@@ -1192,7 +1194,7 @@ public class Tribu extends JavaPlugin {
 	public boolean revivePlayer(final Player player) {
 		PlayerStats stat = players.get(player);
 		if (config.LevelKickIfZeroPoint && !stat.isAlive()
-				&& stat.getPoints() == 0) {
+				&& stat.getPoints() <= 0) {
 			return false;
 		}
 		stat.revive();
