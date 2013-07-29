@@ -357,7 +357,7 @@ public class Tribu extends JavaPlugin {
 			Player p;
 			while (i.hasNext()) {
 				p = i.next();
-				if (n > config.LevelMaxPlayers) {
+				if (n >= config.LevelMaxPlayers) {
 					removePlayer(p);
 					messagePlayer(p, getLocale("Message.KickedGameFull"));
 					n++;
