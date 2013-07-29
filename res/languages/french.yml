@@ -96,7 +96,7 @@ Broadcast:
   WaveComplete: '&6Vague terminée'
   GameStartingSoon: '&8Le jeu va commencer dans %.0f secondes !'
   GameStarting: '&4Le jeu commence maintenant !'
-  WaitingPlayers: '§7Encore §c%s$7 joueurs avant de démarrer.'
+  WaitingPlayers: '§7Encore §c%s§7 joueurs avant de démarrer.'
 Info:
   LevelFound: '%s niveaux trouvés'
   Enable: 'Activation de Tribu par Graindcafe, auteur original : samp20'
