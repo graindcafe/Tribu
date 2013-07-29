@@ -357,21 +357,24 @@ public class TribuSpawner {
 				public void run() {
 					traveled += step;
 					if (!done
-							&& target.getLocation().distanceSquared(initLoc) <= ((distanceToPlayer + traveled) * (distanceToPlayer + traveled))) {
+							&& (target == null || target.getLocation()
+									.distanceSquared(initLoc) <= ((distanceToPlayer + traveled) * (distanceToPlayer + traveled)))) {
 						done = true;
-						Location newLoc = generatePointBetween(
-								target.getLocation(), initLoc, 50);
-						pendingSpawn--;
-						if (newLoc != null) {
-							try {
-								CraftTribuZombie zomb;
-								zomb = (CraftTribuZombie) CraftTribuZombie
-										.spawn(plugin, newLoc);
-								alreadySpawned++;
-								zomb.setTarget(target);
-								zombies.add(zomb);
-							} catch (CannotSpawnException e) {
+						if (target != null) {
+							Location newLoc = generatePointBetween(
+									target.getLocation(), initLoc, 50);
+							pendingSpawn--;
+							if (newLoc != null) {
+								try {
+									CraftTribuZombie zomb;
+									zomb = (CraftTribuZombie) CraftTribuZombie
+											.spawn(plugin, newLoc);
+									alreadySpawned++;
+									zomb.setTarget(target);
+									zombies.add(zomb);
+								} catch (CannotSpawnException e) {
 
+								}
 							}
 						}
 						Bukkit.getScheduler().cancelTask(
