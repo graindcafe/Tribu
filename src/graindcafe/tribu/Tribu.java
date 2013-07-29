@@ -1178,9 +1178,10 @@ public class Tribu extends JavaPlugin {
 		if (isAlive(player))
 			aliveCount--;
 		if (!isRunning && waitingPlayers != -1
-				&& waitingPlayers < config.LevelMinPlayers)
+				&& waitingPlayers < config.LevelMinPlayers) {
 			waitingPlayers++;
-		broadcast("Broadcast.WaitingPlayers", waitingPlayers);
+			broadcast("Broadcast.WaitingPlayers", waitingPlayers);
+		}
 		sortedStats.remove(players.get(player));
 		restorePlayerState(player);
 		Tribu.messagePlayer(player, getLocale("Message.YouLeft"));
