@@ -109,7 +109,7 @@ public class Tribu extends JavaPlugin {
 	 */
 	public static void messagePlayer(final CommandSender sender,
 			final String message) {
-		if (!message.isEmpty())
+		if (message != null && !message.isEmpty())
 			if (sender == null)
 				Logger.getLogger("Minecraft").info(
 						ChatColor.stripColor(message));
@@ -478,7 +478,12 @@ public class Tribu extends JavaPlugin {
 	}
 
 	public String getLocale(final String key) {
-		return language.get(key);
+		if (key != null) {
+			String locale = language.get(key);
+			if (locale != null)
+				return locale;
+		}
+		return "(null)";
 	}
 
 	public Player getNearestPlayer(final double x, final double y,
@@ -1223,8 +1228,7 @@ public class Tribu extends JavaPlugin {
 			if (!revivePlayer(player)) {
 				// If the game stopped he already received this message
 				if (isRunning)
-					messagePlayer(player,
-							language.get("Message.YouHaveReachedWave"),
+					messagePlayer(player, "Message.YouHaveReachedWave",
 							String.valueOf(getWaveStarter().getWaveNumber()));
 				removePlayer(player);
 				it.remove();
