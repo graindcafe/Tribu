@@ -253,7 +253,7 @@ public class Tribu extends JavaPlugin {
 	 *            Message to broadcast
 	 */
 	public void broadcast(final String msg) {
-		if (msg.isEmpty())
+		if (!msg.isEmpty())
 			getServer().broadcastMessage(msg);
 	}
 
@@ -1167,6 +1167,10 @@ public class Tribu extends JavaPlugin {
 		if (player != null && players.containsKey(player)) {
 			uncheckedRemovePlayer(player);
 			players.remove(player);
+			// check alive AFTER player remove
+			checkAliveCount();
+			// remove vote AFTER player remove
+			levelSelector.removeVote(player);
 		}
 	}
 
@@ -1180,11 +1184,6 @@ public class Tribu extends JavaPlugin {
 		sortedStats.remove(players.get(player));
 		restorePlayerState(player);
 		Tribu.messagePlayer(player, getLocale("Message.YouLeft"));
-		// check alive AFTER player remove
-		checkAliveCount();
-		// remove vote AFTER player remove
-		levelSelector.removeVote(player);
-
 	}
 
 	public void restoreTempInv(final Player p) {
@@ -1331,9 +1330,9 @@ public class Tribu extends JavaPlugin {
 						if (counter <= 0f)
 							startRunning();
 						else if (broadcastTime.isEmpty())
-							messagePlayers(getLocale("Broadcast.GameStarting"));
+							broadcast(getLocale("Broadcast.GameStarting"));
 						else if (broadcastTime.peek() >= counter)
-							messagePlayers("Broadcast.GameStartingSoon",
+							broadcast("Broadcast.GameStartingSoon",
 									broadcastTime.pop());
 						counter -= step;
 					}
