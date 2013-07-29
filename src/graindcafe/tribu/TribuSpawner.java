@@ -497,10 +497,11 @@ public class TribuSpawner {
 	}
 
 	public void removeTarget(Player p) {
-		for (CraftTribuZombie z : zombies) {
-			if (z.getTarget().equals(p))
-				z.setTarget(null);
-		}
+		if (p != null)
+			for (CraftTribuZombie z : zombies) {
+				if (z != null && z.getTarget().equals(p))
+					z.setTarget(null);
+			}
 	}
 
 }
