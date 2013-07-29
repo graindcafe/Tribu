@@ -58,12 +58,12 @@ public class CraftTribuZombie extends CraftMonster implements Zombie {
 		Double i;
 		if (playerDamage.containsKey(p)) {
 
-			i = playerDamage.get(p);
+			i = playerDamage.remove(p);
 			i += damage;
 		} else {
 			i = new Double(damage);
-			playerDamage.put(p, i);
 		}
+		playerDamage.put(p, i);
 		if (maxAccrued < i) {
 			maxAccrued = i;
 			bestAttacker = p;
@@ -153,7 +153,10 @@ public class CraftTribuZombie extends CraftMonster implements Zombie {
 
 	@Override
 	public void setTarget(final LivingEntity target) {
-		getHandle().setTarget(((CraftLivingEntity) target).getHandle());
+		if (target == null)
+			getHandle().setTarget(null);
+		else
+			getHandle().setTarget(((CraftLivingEntity) target).getHandle());
 	}
 
 	public void setTotalAttack(final double t) {

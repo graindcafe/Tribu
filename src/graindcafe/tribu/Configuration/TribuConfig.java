@@ -234,17 +234,14 @@ public class TribuConfig extends TribuDefaultConfiguration {
 						LevelStartingPoints = 0;
 				} else if (keyNode[1].equalsIgnoreCase("KickIfZeroPoint")) {
 					LevelKickIfZeroPoint = config.getBoolean(key);
+				} else if (keyNode[1].equalsIgnoreCase("AllowJoinDuringGame")) {
+					LevelAllowJoinDuringGame = config.getBoolean(key);
 				}
-				 else if (keyNode[1].equalsIgnoreCase("AllowJoinDuringGame")) {
-						LevelAllowJoinDuringGame = config.getBoolean(key);
-					}
 			} else if (keyNode[0].equalsIgnoreCase("WaveStart")) {
 				if (keyNode[1].equalsIgnoreCase("SetTime"))
 					WaveStartSetTime = config.getBoolean(key);
 				else if (keyNode[1].equalsIgnoreCase("SetTimeTo")) {
-					debugMsg("WaveStartSetTimeTo < " + WaveStartSetTimeTo);
 					WaveStartSetTimeTo = config.getInt(key);
-					debugMsg("WaveStartSetTimeTo > " + WaveStartSetTimeTo);
 				} else if (keyNode[1].equalsIgnoreCase("Delay"))
 					WaveStartDelay = config.getInt(key);
 				else if (keyNode[1].equalsIgnoreCase("TeleportPlayers"))
@@ -287,7 +284,7 @@ public class TribuConfig extends TribuDefaultConfiguration {
 						ZombiesSpeedRush = (float) config.getDouble(key);
 				}
 			} else if (keyNode[0].equalsIgnoreCase("Stats")) {
-				if (nodeCount > 2)
+				if (nodeCount > 2) {
 					if (keyNode[1].equalsIgnoreCase("OnZombieKill")) {
 						if (keyNode[2].equalsIgnoreCase("Points"))
 							StatsOnZombieKillPoints = config.getInt(key);
@@ -298,10 +295,12 @@ public class TribuConfig extends TribuDefaultConfiguration {
 							StatsOnPlayerDeathPoints = config.getInt(key);
 						else if (keyNode[2].equalsIgnoreCase("Money"))
 							StatsOnPlayerDeathMoney = config.getInt(key);
-					} else if (keyNode[1].equalsIgnoreCase("RewardMethod"))
-						StatsRewardMethod = config.getString(key);
-					else if (keyNode[1].equalsIgnoreCase("RewardOnlyAlive"))
-						StatsRewardOnlyAlive = config.getBoolean(key);
+					}
+				} else if (keyNode[1].equalsIgnoreCase("RewardMethod")) {
+					StatsRewardMethod = config.getString(key);
+					System.out.println(StatsRewardMethod);
+				} else if (keyNode[1].equalsIgnoreCase("RewardOnlyAlive"))
+					StatsRewardOnlyAlive = config.getBoolean(key);
 			} else if (keyNode[0].equalsIgnoreCase("Players")) {
 				if (keyNode[1].equalsIgnoreCase("DontLooseItem"))
 					PlayersDontLooseItem = config.getBoolean(key);

@@ -158,11 +158,11 @@ public class TribuEntityListener implements Listener {
 					rewards.put(zombie.getLastAttacker(), 1d);
 				else if (rewardMethod.equalsIgnoreCase("First"))
 					rewards.put(zombie.getFirstAttacker(), 1d);
-				else if (rewardMethod.equalsIgnoreCase("Best"))
+				else if (rewardMethod.equalsIgnoreCase("Best")) {
 					rewards.put(zombie.getBestAttacker(), 1d);
-				else if (rewardMethod.equalsIgnoreCase("Percentage"))
+				} else if (rewardMethod.equalsIgnoreCase("Percentage")) {
 					rewards.putAll(zombie.getAttackersPercentage());
-				else if (rewardMethod.equalsIgnoreCase("All"))
+				} else if (rewardMethod.equalsIgnoreCase("All"))
 					for (final Player p : plugin.getPlayers())
 						rewards.put(p, 1d);
 
@@ -182,11 +182,11 @@ public class TribuEntityListener implements Listener {
 							stats.addPoints((int) Math.round(basePoint
 									* percentage));
 							stats.msgStats();
-							// Removed 24/06 : why is it here ?
-							plugin.getLevel().onStatUpdate();
+
 						}
 					}
 				}
+				plugin.getLevel().onStatUpdate();
 
 				plugin.getSpawner().despawnZombie(zombie, event.getDrops());
 			}
