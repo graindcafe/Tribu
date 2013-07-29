@@ -52,9 +52,11 @@ public class CraftTribuZombie extends CraftMonster implements Zombie {
 		maxDamage = 0d;
 	}
 
-	public void addAttack(final Player p, final double damage) {
+	public void addAttack(final Player p, double damage) {
 		if (maxDamage < damage)
 			maxDamage = damage;
+		if (getHealth() < damage)
+			damage = getHealth();
 		Double i;
 		if (playerDamage.containsKey(p)) {
 
