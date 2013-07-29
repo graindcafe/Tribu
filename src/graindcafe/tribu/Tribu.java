@@ -1233,7 +1233,7 @@ public class Tribu extends JavaPlugin {
 				if (isRunning)
 					messagePlayer(player, "Message.YouHaveReachedWave",
 							String.valueOf(getWaveStarter().getWaveNumber()));
-				removePlayer(player);
+				uncheckedRemovePlayer(player);
 				it.remove();
 			}
 		}
