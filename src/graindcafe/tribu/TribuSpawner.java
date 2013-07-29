@@ -449,7 +449,9 @@ public class TribuSpawner {
 					justspawned = true;
 					CraftTribuZombie zombie;
 					try {
-						pos.setY(findSuitableY(pos));
+						Double y = findSuitableY(pos);
+						if (y != null)
+							pos.setY(y);
 						zombie = (CraftTribuZombie) CraftTribuZombie.spawn(
 								plugin, pos);
 						zombies.add(zombie);
