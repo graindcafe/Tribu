@@ -344,7 +344,8 @@ public class TribuSpawner {
 		zombies.remove(e);
 		alreadySpawned--;
 		if (plugin.config().ZombiesFocus == FocusType.NearestPlayer
-				|| plugin.config().ZombiesFocus == FocusType.RandomPlayer) {
+				|| plugin.config().ZombiesFocus == FocusType.RandomPlayer
+				&& e.getTarget() != null) {
 			pendingSpawn++;
 			Runnable runner = new Runnable() {
 				boolean done = false;
