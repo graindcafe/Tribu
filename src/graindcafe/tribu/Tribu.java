@@ -214,7 +214,8 @@ public class Tribu extends JavaPlugin {
 				if (players.size() > statMaxPlayers)
 					statMaxPlayers = players.size();
 				beforeStates.put(player, new BeforeGamePlayerState(player,
-						config.PlayersStoreInventory));
+						config.PlayersStoreInventory, !config.PlayersAllowBreak
+								&& !config.PlayersAllowPlace));
 				addStaringMoneyPoints(player);
 				if (getWaveStarter().hasStarted()) {
 					player.teleport(level.getDeathSpawn());
@@ -427,13 +428,15 @@ public class Tribu extends JavaPlugin {
 
 	public void storePlayerState(Player player) {
 		beforeStates.put(player, new BeforeGamePlayerState(player,
-				config.PlayersStoreInventory));
+				config.PlayersStoreInventory, !config.PlayersAllowBreak
+						&& !config.PlayersAllowPlace));
 	}
 
 	public void storePlayerStates() {
 		for (Player player : players.keySet())
 			beforeStates.put(player, new BeforeGamePlayerState(player,
-					config.PlayersStoreInventory));
+					config.PlayersStoreInventory, !config.PlayersAllowBreak
+							&& !config.PlayersAllowPlace));
 	}
 
 	private void restorePlayerState(Player player) {
