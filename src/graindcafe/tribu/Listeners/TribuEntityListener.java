@@ -78,11 +78,6 @@ public class TribuEntityListener implements Listener {
 				if (plugin.isPlaying(p)) {
 					if (p.getHealth() - dam.getDamage() <= 0) {
 						dam.setCancelled(true);
-						p.setNoDamageTicks(20 + p.getFireTicks());
-						p.setFireTicks(1);
-						p.setFallDistance(0f);
-						p.teleport(plugin.getLevel().getDeathSpawn());
-						p.setHealth(1);
 						if (plugin.isAlive(p)) {
 							if (!plugin.config().PlayersDontLooseItem) {
 								for (final ItemStack is : p.getInventory())
@@ -99,6 +94,11 @@ public class TribuEntityListener implements Listener {
 							plugin.setDead(p);
 							plugin.getSpawner().removeTarget(p);
 						}
+						p.setNoDamageTicks(20 + p.getFireTicks());
+						p.setFireTicks(1);
+						p.setFallDistance(0f);
+						p.teleport(plugin.getLevel().getDeathSpawn());
+						p.setHealth(1);
 
 					} else if (!plugin.isAlive(p)) {
 						dam.setCancelled(true);
