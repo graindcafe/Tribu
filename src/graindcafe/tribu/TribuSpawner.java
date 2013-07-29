@@ -341,7 +341,6 @@ public class TribuSpawner {
 	 */
 	public void removedZombieCallback(final CraftTribuZombie e,
 			final boolean removeReward) {
-		System.out.println("Zombie removed!");
 		if (e != null) {
 			if (removeReward)
 				e.setNoAttacker();
@@ -351,7 +350,6 @@ public class TribuSpawner {
 		alreadySpawned--;
 		if (plugin.config().ZombiesFocus == FocusType.NearestPlayer
 				|| plugin.config().ZombiesFocus == FocusType.RandomPlayer) {
-			System.out.println("Trying to spawn it again");
 			pendingSpawn++;
 			Runnable runner = new Runnable() {
 				boolean done = false;
@@ -365,7 +363,6 @@ public class TribuSpawner {
 					traveled += step;
 					if (!done
 							&& target.getLocation().distanceSquared(initLoc) <= ((distanceToPlayer + traveled) * (distanceToPlayer + traveled))) {
-						// System.out.println("Spawning");
 						done = true;
 						Location newLoc = generatePointBetween(
 								target.getLocation(), initLoc, 50);
@@ -388,8 +385,6 @@ public class TribuSpawner {
 						Bukkit.getScheduler().cancelTask(
 								runnerTaskIds.remove(this));
 					}
-					// System.out.println("Waiting " +
-					// distanceD);
 				}
 			};
 			int taskId = plugin
