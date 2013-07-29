@@ -62,10 +62,6 @@ public class TribuSpawner {
 	 */
 	private float health;
 	/**
-	 * A zombie just spawned
-	 */
-	private boolean justspawned;
-	/**
 	 * number of zombies to spawn
 	 */
 	private int totalToSpawn;
@@ -175,15 +171,22 @@ public class TribuSpawner {
 	public Location getFirstZombieLocation() {
 		if (alreadySpawned > 0)
 			if (!zombies.isEmpty()) {
-				plugin.LogInfo("Health : " + zombies.get(0).getHealth());
-				plugin.LogInfo("LastDamage : " + zombies.get(0).getLastDamage());
-				plugin.LogInfo("isDead : " + zombies.get(0).isDead());
-				return zombies.get(0).getLocation();
+				int i = plugin.getRandom().nextInt(zombies.size());
+				plugin.LogInfo("Health : " + zombies.get(i).getHealth());
+				plugin.LogInfo("LastDamage : " + zombies.get(i).getLastDamage());
+				plugin.LogInfo("isDead : " + zombies.get(i).isDead());
+				plugin.LogInfo("There is " + zombies.size()
+						+ " zombie alive of " + alreadySpawned + "/"
+						+ totalToSpawn + " spawned  +" + pendingSpawn
+						+ " pending spawn. The wave is "
+						+ (finished ? "finished" : "in progress"));
+				return zombies.get(i).getLocation();
 			} else {
 				plugin.getSpawnTimer().getState();
-				plugin.LogSevere("There is " + zombies.size()
+				plugin.LogInfo("There is " + zombies.size()
 						+ " zombie alive of " + alreadySpawned + "/"
-						+ totalToSpawn + " spawned . The wave is "
+						+ totalToSpawn + " spawned  +" + pendingSpawn
+						+ " pending spawn. The wave is "
 						+ (finished ? "finished" : "in progress"));
 				return null;
 			}
@@ -251,15 +254,6 @@ public class TribuSpawner {
 	 */
 	public boolean isWaveCompleted() {
 		return !haveZombieToSpawn() && zombies.isEmpty();
-	}
-
-	/**
-	 * Is currently spawning a zombie ?
-	 * 
-	 * @return
-	 */
-	public boolean justSpawned() {
-		return justspawned;
 	}
 
 	public static Location generatePointBetween(Location loc1, Location loc2,
@@ -369,13 +363,10 @@ public class TribuSpawner {
 						pendingSpawn--;
 						if (newLoc != null) {
 							try {
-								justspawned = true;
 								CraftTribuZombie zomb;
 								zomb = (CraftTribuZombie) CraftTribuZombie
 										.spawn(plugin, newLoc);
-
 								alreadySpawned++;
-								justspawned = false;
 								zomb.setTarget(target);
 								zombies.add(zomb);
 							} catch (CannotSpawnException e) {
@@ -439,9 +430,6 @@ public class TribuSpawner {
 					pos = getValidSpawn();
 				}
 				if (pos != null) {
-					// Surrounded with justspawned so that the zombie isn't
-					// removed in the entity spawn listener
-					justspawned = true;
 					CraftTribuZombie zombie;
 					try {
 						Double y = findSuitableY(pos);
@@ -457,7 +445,6 @@ public class TribuSpawner {
 						// of
 						// space
 					}
-					justspawned = false;
 				}
 			}
 		} else

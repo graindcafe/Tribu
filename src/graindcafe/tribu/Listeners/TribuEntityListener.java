@@ -37,6 +37,7 @@ package graindcafe.tribu.Listeners;
 import graindcafe.tribu.Tribu;
 import graindcafe.tribu.Player.PlayerStats;
 import graindcafe.tribu.TribuZombie.CraftTribuZombie;
+import graindcafe.tribu.TribuZombie.EntityTribuZombie;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -64,7 +65,7 @@ public class TribuEntityListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onCreatureSpawn(final CreatureSpawnEvent event) {
 		if (plugin.isInsideLevel(event.getLocation())
-				&& !plugin.getSpawner().justSpawned())
+				&& !(event.getEntity() instanceof EntityTribuZombie))
 			event.setCancelled(true);
 
 	}
