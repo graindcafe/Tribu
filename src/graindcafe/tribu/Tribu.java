@@ -191,9 +191,9 @@ public class Tribu extends JavaPlugin {
 			players.put(player, stats);
 			sortedStats.add(stats);
 			messagePlayer(player, getLocale("Message.YouJoined"));
-			if (waitingPlayers == 0
+			if (waitingPlayers == -1
 					&& !isRunning
-					&& (config().PluginModeServerExclusive || config().PluginModeWorldExclusive)) {
+					&& !(config().PluginModeServerExclusive || config().PluginModeWorldExclusive)) {
 				waitingPlayers = config().LevelMinPlayers;
 			}
 			if (waitingPlayers != 0) {
