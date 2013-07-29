@@ -12,7 +12,7 @@ Sign:
   Leave: 'Quitter'
   Each: 'pour chaque'
 Message:
-  GameFull: '&EDésolé, la partie est pleine."
+  GameFull: '&EDésolé, la partie est pleine.'
   CannotJoinDuringGame: '&EDésolé vous ne pouvez pas rejoindre cette partie pendant que le jeu est en cours."
   UnknownItem: '&EObjet inconnu, désolé'
   ZombieSpawnList: '&A%s'
