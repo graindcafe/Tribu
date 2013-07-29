@@ -182,7 +182,7 @@ public class TribuEntityListener implements Listener {
 									* percentage));
 							stats.msgStats();
 							// Removed 24/06 : why is it here ?
-							// plugin.getLevel().onWaveStart();
+							plugin.getLevel().onStatUpdate();
 						}
 					}
 				}
