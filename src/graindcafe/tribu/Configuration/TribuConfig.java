@@ -298,7 +298,6 @@ public class TribuConfig extends TribuDefaultConfiguration {
 					}
 				} else if (keyNode[1].equalsIgnoreCase("RewardMethod")) {
 					StatsRewardMethod = config.getString(key);
-					System.out.println(StatsRewardMethod);
 				} else if (keyNode[1].equalsIgnoreCase("RewardOnlyAlive"))
 					StatsRewardOnlyAlive = config.getBoolean(key);
 			} else if (keyNode[0].equalsIgnoreCase("Players")) {
