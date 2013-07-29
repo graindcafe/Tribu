@@ -97,6 +97,7 @@ public class TribuEntityListener implements Listener {
 								p.updateInventory();
 							}
 							plugin.setDead(p);
+							plugin.getSpawner().removeTarget(p);
 						}
 
 					} else if (!plugin.isAlive(p)) {

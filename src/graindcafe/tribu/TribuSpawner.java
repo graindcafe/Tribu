@@ -49,6 +49,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_6_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class TribuSpawner {
@@ -489,6 +490,13 @@ public class TribuSpawner {
 					Constants.TicksBySecond * plugin.config().WaveStartDelay);
 		}
 		return starting;
+	}
+
+	public void removeTarget(Player p) {
+		for (CraftTribuZombie z : zombies) {
+			if (z.getTarget().equals(p))
+				z.setTarget(null);
+		}
 	}
 
 }
