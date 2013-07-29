@@ -210,7 +210,7 @@ public class Tribu extends JavaPlugin {
 						startRunning();
 					else
 						startRunning(config.LevelStartDelay);
-				} else
+				} else if (!forceStop)
 					broadcast("Broadcast.WaitingPlayers", waitingPlayers);
 			} else if (getLevel() != null && isRunning) {
 				if (players.size() > statMaxPlayers)
@@ -1185,7 +1185,7 @@ public class Tribu extends JavaPlugin {
 		if (isAlive(player))
 			aliveCount--;
 		if (!isRunning && waitingPlayers != -1
-				&& waitingPlayers < config.LevelMinPlayers) {
+				&& waitingPlayers < config.LevelMinPlayers && !forceStop) {
 			waitingPlayers++;
 			broadcast("Broadcast.WaitingPlayers", waitingPlayers);
 		}
