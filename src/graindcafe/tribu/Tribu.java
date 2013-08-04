@@ -36,6 +36,7 @@ package graindcafe.tribu;
 
 import graindcafe.tribu.Configuration.Constants;
 import graindcafe.tribu.Configuration.TribuConfig;
+import graindcafe.tribu.Configuration.TribuYaml;
 import graindcafe.tribu.Executors.CmdDspawn;
 import graindcafe.tribu.Executors.CmdIspawn;
 import graindcafe.tribu.Executors.CmdTribu;
@@ -1144,12 +1145,12 @@ public class Tribu extends JavaPlugin {
 	public void reloadConf() {
 		stopRunning();
 		// Reload the main config file from disk
-		reloadConfig();
 		// Parse again the file
-		config = new TribuConfig(getConfig());
+		config = new TribuConfig(TribuYaml.reload(
+				new File(Constants.configFile), getResource("config.yml")));
 		// Create the file if it doesn't exist
 		try {
-			getConfig().save(Constants.configFile);
+			config.getConfigFile().save(Constants.configFile);
 		} catch (final IOException e1) {
 			e1.printStackTrace();
 		}

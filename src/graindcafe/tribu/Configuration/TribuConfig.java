@@ -37,6 +37,7 @@ package graindcafe.tribu.Configuration;
 import graindcafe.tribu.Package;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,17 +46,17 @@ import java.util.Map.Entry;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 
 public class TribuConfig extends TribuDefaultConfiguration {
+	public TribuYaml configFile;
 
 	protected static void debugMsg(final String info) {
 		// Logger.getLogger("Minecraft").info("[Tribu] " + info);
 	}
 
 	protected static LinkedList<Package> getDefaultPackages(
-			final FileConfiguration config) {
+			final TribuYaml config) {
 		LinkedList<Package> DefaultPackages = null;
 		if (config.isConfigurationSection("DefaultPackages")) {
 			DefaultPackages = new LinkedList<Package>();
@@ -137,33 +138,37 @@ public class TribuConfig extends TribuDefaultConfiguration {
 
 	public TribuConfig(final File config,
 			final TribuDefaultConfiguration DefaultConfig) {
-		this(YamlConfiguration.loadConfiguration(config), DefaultConfig);
+		this(TribuYaml.loadConfiguration(config), DefaultConfig);
 
 	}
 
-	public TribuConfig(final FileConfiguration config) {
+	public TribuConfig(final TribuYaml config) {
 		this(config, new TribuDefaultConfiguration());
-
 	}
 
-	public TribuConfig(final FileConfiguration config,
+	public TribuConfig(final TribuYaml config,
 			final TribuDefaultConfiguration DefaultConfig) {
-		/*
-		 * try { config.load(config); } catch (FileNotFoundException e2) {
-		 * 
-		 * } catch (IOException e2) { e2.printStackTrace(); } catch
-		 * (InvalidConfigurationException e2) { e2.printStackTrace(); }
-		 */
-
+		configFile = config;
 		load(config, DefaultConfig);
 
+	}
+
+	public TribuYaml getConfigFile() {
+		return configFile;
+	}
+
+	public void save(File f) throws IOException {
+		for (Entry<String, Object> val : this.toMap().entrySet()) {
+			configFile.set(val.getKey(), val.getValue());
+		}
+		configFile.save(f);
 	}
 
 	public TribuConfig(final String config) {
 		this(new File(config));
 	}
 
-	private void load(final FileConfiguration config,
+	private void load(final TribuYaml config,
 			final TribuDefaultConfiguration DefaultConfig) {
 		config.options().header(
 				"# Tribu Config File Version " + Constants.ConfigFileVersion
@@ -188,7 +193,7 @@ public class TribuConfig extends TribuDefaultConfiguration {
 	 * protected void LogSevere(String string) {
 	 * Logger.getLogger("Minecraft").severe("[Tribu] " + string); }
 	 */
-	public void load(final String key, final FileConfiguration config) {
+	public void load(final String key, final ValueReader config) {
 		final String[] keyNode = key.split("\\.");
 		final byte nodeCount = (byte) keyNode.length;
 		debugMsg(key);
@@ -327,16 +332,20 @@ public class TribuConfig extends TribuDefaultConfiguration {
 				}
 
 			}
-		} else if (key.equalsIgnoreCase("DefaultPackages"))
-			DefaultPackages = TribuConfig.getDefaultPackages(config);
-		else if (key.equalsIgnoreCase("MysteriesPackages"))
-			MysteriesPackages = TribuConfig.getMysteriesPackages(config);
+		} else if (key.equalsIgnoreCase("DefaultPackages")
+				&& config instanceof TribuYaml)
+			DefaultPackages = TribuConfig
+					.getDefaultPackages((TribuYaml) config);
+		else if (key.equalsIgnoreCase("MysteriesPackages")
+				&& config instanceof TribuYaml)
+			MysteriesPackages = TribuConfig
+					.getMysteriesPackages((FileConfiguration) config);
 		else
 			debugMsg("Section : " + key);
 		return;
 	}
 
-	public void reload(final FileConfiguration config) {
+	public void reload(final TribuYaml config) {
 		this.load(config, this);
 	}
 

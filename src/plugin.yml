@@ -52,6 +52,7 @@ permissions:
             tribu.level.unload: true
             tribu.level.save: true
             tribu.level.list: true
+            tribu.level.set: true
             tribu.level.zspawn: true
             tribu.level.dspawn: true
             tribu.level.ispawn: true
@@ -63,6 +64,9 @@ permissions:
         default: op
     tribu.level.delete:
         description: Delete a level
+        default: op
+    tribu.level.set:
+        description: Set a configuration node
         default: op
     tribu.level.load:
         description: Load a level

@@ -36,9 +36,13 @@ package graindcafe.tribu.Executors;
 
 import graindcafe.tribu.Package;
 import graindcafe.tribu.Tribu;
+import graindcafe.tribu.Configuration.CLIReader;
+import graindcafe.tribu.Configuration.Constants;
 import graindcafe.tribu.Player.PlayerStats;
 import graindcafe.tribu.Signs.TribuSign;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
@@ -526,6 +530,28 @@ public class CmdTribu implements CommandExecutor {
 						plugin.getLocale("Message.ConfigFileReloaded"));
 			}
 			return true;
+		} else if (args[0].equals("set")) {
+			if (!sender.hasPermission("tribu.level.set")) {
+				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
+				return true;
+			}
+			if (args.length < 3)
+				return usage(sender);
+			if (plugin.getLevel() == null) {
+				Tribu.messagePlayer(sender,
+						plugin.getLocale("Message.NoLevelLoaded"));
+				Tribu.messagePlayer(sender,
+						plugin.getLocale("Message.NoLevelLoaded2"));
+				return true;
+			}
+			plugin.config().load(args[1], new CLIReader(args[2]));
+			try {
+				plugin.config().save(
+						new File(Constants.perLevelFolder
+								+ plugin.getLevel().getName() + ".yml"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 
 		} else if (args[0].equals("help") || args[0].equals("?")
 				|| args[0].equals("aide")) {
@@ -551,7 +577,9 @@ public class CmdTribu implements CommandExecutor {
 			Tribu.messagePlayer(
 					sender,
 					ChatColor.YELLOW
-							+ "/tribu ((create | load | delete) <name>) | save | list | start [<name>] | stop");
+							+ "/tribu ((create | load | delete) <name>) | save | list | set <configNode> <value>");
+			Tribu.messagePlayer(sender, ChatColor.YELLOW
+					+ "/tribu start [<name>] | stop");
 			Tribu.messagePlayer(
 					sender,
 					ChatColor.YELLOW
