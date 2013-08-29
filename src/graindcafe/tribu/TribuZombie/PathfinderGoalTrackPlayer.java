@@ -87,7 +87,7 @@ public class PathfinderGoalTrackPlayer extends PathfinderGoal {
 			entityliving = (getRandomPlayer ? ((CraftPlayer) plugin
 					.getRandomPlayer()) : ((CraftPlayer) plugin
 					.getNearestPlayer(x, y, z))).getHandle();
-		else if (creature instanceof EntityLiving)
+		else if (creature.target instanceof EntityLiving)
 			entityliving = (EntityLiving) creature.target;
 		if (entityliving == null) {
 			// System.out.println("Impossible happens sometime");

@@ -22,7 +22,8 @@ public class BeforeGamePlayerState {
 	List<ItemStack> armors = null;
 	GameMode mode;
 
-	public BeforeGamePlayerState(Player p, boolean inventory) {
+	public BeforeGamePlayerState(Player p, boolean inventory,
+			boolean gameModeAdventure) {
 		this.p = p;
 		health = p.getHealth();
 		maxHealth = p.getMaxHealth();
@@ -34,15 +35,16 @@ public class BeforeGamePlayerState {
 		mode = p.getGameMode();
 		if (inventory)
 			addInventory();
-		clear(inventory);
+		clear(inventory, gameModeAdventure);
 	}
 
-	public void clear(boolean inventory) {
+	public void clear(boolean inventory, boolean gameModeAdventure) {
 		p.setLevel(0);
 		p.setExp(0);
 		p.setFoodLevel(20);
 		p.setHealth(p.getMaxHealth());
-		p.setGameMode(GameMode.SURVIVAL);
+		p.setGameMode(gameModeAdventure ? GameMode.ADVENTURE
+				: GameMode.SURVIVAL);
 		if (inventory)
 			p.getInventory().clear();
 	}

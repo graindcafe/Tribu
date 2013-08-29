@@ -37,6 +37,7 @@ package graindcafe.tribu.Level;
 import graindcafe.tribu.Package;
 import graindcafe.tribu.Tribu;
 import graindcafe.tribu.Configuration.Constants;
+import graindcafe.tribu.Events.StatUpdateEvent;
 import graindcafe.tribu.Events.WaveStartEvent;
 import graindcafe.tribu.Signs.TribuSign;
 
@@ -383,6 +384,13 @@ public class TribuLevel {
 
 	public void setMysteriesPackages(Map<String, List<String>> mysteriesPackages) {
 		this.mysteriesPackages = mysteriesPackages;
+	}
+
+	public void onStatUpdate() {
+		Event e = new StatUpdateEvent();
+		for (final TribuSign s : Signs.values())
+			if (s.isUsedEvent(e))
+				s.raiseEvent(e);
 	}
 
 }

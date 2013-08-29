@@ -64,7 +64,7 @@ public class TribuEntityListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onCreatureSpawn(final CreatureSpawnEvent event) {
 		if (plugin.isInsideLevel(event.getLocation())
-				&& !plugin.getSpawner().justSpawned())
+				&& !(event.getEntity() instanceof CraftTribuZombie))
 			event.setCancelled(true);
 
 	}
@@ -97,6 +97,7 @@ public class TribuEntityListener implements Listener {
 								p.updateInventory();
 							}
 							plugin.setDead(p);
+							plugin.getSpawner().removeTarget(p);
 						}
 
 					} else if (!plugin.isAlive(p)) {
@@ -122,7 +123,9 @@ public class TribuEntityListener implements Listener {
 						p = (Player) event.getDamager();
 					else if (zomb.getTarget() instanceof Player)
 						p = (Player) zomb.getTarget();
-					if (p != null)
+					if (!plugin.isAlive(p))
+						dam.setCancelled(true);
+					else if (p != null)
 						zomb.addAttack(p, event.getDamage());
 				} else if (plugin.config().ZombiesFireProof
 						&& (dam.getCause() == DamageCause.FIRE || dam
@@ -157,11 +160,11 @@ public class TribuEntityListener implements Listener {
 					rewards.put(zombie.getLastAttacker(), 1d);
 				else if (rewardMethod.equalsIgnoreCase("First"))
 					rewards.put(zombie.getFirstAttacker(), 1d);
-				else if (rewardMethod.equalsIgnoreCase("Best"))
+				else if (rewardMethod.equalsIgnoreCase("Best")) {
 					rewards.put(zombie.getBestAttacker(), 1d);
-				else if (rewardMethod.equalsIgnoreCase("Percentage"))
+				} else if (rewardMethod.equalsIgnoreCase("Percentage")) {
 					rewards.putAll(zombie.getAttackersPercentage());
-				else if (rewardMethod.equalsIgnoreCase("All"))
+				} else if (rewardMethod.equalsIgnoreCase("All"))
 					for (final Player p : plugin.getPlayers())
 						rewards.put(p, 1d);
 
@@ -181,11 +184,11 @@ public class TribuEntityListener implements Listener {
 							stats.addPoints((int) Math.round(basePoint
 									* percentage));
 							stats.msgStats();
-							// Removed 24/06 : why is it here ?
-							// plugin.getLevel().onWaveStart();
+
 						}
 					}
 				}
+				plugin.getLevel().onStatUpdate();
 
 				plugin.getSpawner().despawnZombie(zombie, event.getDrops());
 			}

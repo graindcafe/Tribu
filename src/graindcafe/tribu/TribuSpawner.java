@@ -49,6 +49,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_6_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class TribuSpawner {
@@ -61,10 +62,6 @@ public class TribuSpawner {
 	 * Health of zombie to spawn
 	 */
 	private float health;
-	/**
-	 * A zombie just spawned
-	 */
-	private boolean justspawned;
 	/**
 	 * number of zombies to spawn
 	 */
@@ -175,15 +172,22 @@ public class TribuSpawner {
 	public Location getFirstZombieLocation() {
 		if (alreadySpawned > 0)
 			if (!zombies.isEmpty()) {
-				plugin.LogInfo("Health : " + zombies.get(0).getHealth());
-				plugin.LogInfo("LastDamage : " + zombies.get(0).getLastDamage());
-				plugin.LogInfo("isDead : " + zombies.get(0).isDead());
-				return zombies.get(0).getLocation();
+				int i = plugin.getRandom().nextInt(zombies.size());
+				plugin.LogInfo("Health : " + zombies.get(i).getHealth());
+				plugin.LogInfo("LastDamage : " + zombies.get(i).getLastDamage());
+				plugin.LogInfo("isDead : " + zombies.get(i).isDead());
+				plugin.LogInfo("There is " + zombies.size()
+						+ " zombie alive of " + alreadySpawned + "/"
+						+ totalToSpawn + " spawned  +" + pendingSpawn
+						+ " pending spawn. The wave is "
+						+ (finished ? "finished" : "in progress"));
+				return zombies.get(i).getLocation();
 			} else {
 				plugin.getSpawnTimer().getState();
-				plugin.LogSevere("There is " + zombies.size()
+				plugin.LogInfo("There is " + zombies.size()
 						+ " zombie alive of " + alreadySpawned + "/"
-						+ totalToSpawn + " spawned . The wave is "
+						+ totalToSpawn + " spawned  +" + pendingSpawn
+						+ " pending spawn. The wave is "
 						+ (finished ? "finished" : "in progress"));
 				return null;
 			}
@@ -251,15 +255,6 @@ public class TribuSpawner {
 	 */
 	public boolean isWaveCompleted() {
 		return !haveZombieToSpawn() && zombies.isEmpty();
-	}
-
-	/**
-	 * Is currently spawning a zombie ?
-	 * 
-	 * @return
-	 */
-	public boolean justSpawned() {
-		return justspawned;
 	}
 
 	public static Location generatePointBetween(Location loc1, Location loc2,
@@ -341,7 +336,6 @@ public class TribuSpawner {
 	 */
 	public void removedZombieCallback(final CraftTribuZombie e,
 			final boolean removeReward) {
-		System.out.println("Zombie removed!");
 		if (e != null) {
 			if (removeReward)
 				e.setNoAttacker();
@@ -350,8 +344,8 @@ public class TribuSpawner {
 		zombies.remove(e);
 		alreadySpawned--;
 		if (plugin.config().ZombiesFocus == FocusType.NearestPlayer
-				|| plugin.config().ZombiesFocus == FocusType.RandomPlayer) {
-			System.out.println("Trying to spawn it again");
+				|| plugin.config().ZombiesFocus == FocusType.RandomPlayer
+				&& e.getTarget() != null) {
 			pendingSpawn++;
 			Runnable runner = new Runnable() {
 				boolean done = false;
@@ -364,32 +358,29 @@ public class TribuSpawner {
 				public void run() {
 					traveled += step;
 					if (!done
-							&& target.getLocation().distanceSquared(initLoc) <= ((distanceToPlayer + traveled) * (distanceToPlayer + traveled))) {
-						// System.out.println("Spawning");
+							&& (target == null || target.getLocation()
+									.distanceSquared(initLoc) <= ((distanceToPlayer + traveled) * (distanceToPlayer + traveled)))) {
 						done = true;
-						Location newLoc = generatePointBetween(
-								target.getLocation(), initLoc, 50);
-						pendingSpawn--;
-						if (newLoc != null) {
-							try {
-								justspawned = true;
-								CraftTribuZombie zomb;
-								zomb = (CraftTribuZombie) CraftTribuZombie
-										.spawn(plugin, newLoc);
+						if (target != null) {
+							Location newLoc = generatePointBetween(
+									target.getLocation(), initLoc, 50);
+							pendingSpawn--;
+							if (newLoc != null) {
+								try {
+									CraftTribuZombie zomb;
+									zomb = (CraftTribuZombie) CraftTribuZombie
+											.spawn(plugin, newLoc);
+									alreadySpawned++;
+									zomb.setTarget(target);
+									zombies.add(zomb);
+								} catch (CannotSpawnException e) {
 
-								alreadySpawned++;
-								justspawned = false;
-								zomb.setTarget(target);
-								zombies.add(zomb);
-							} catch (CannotSpawnException e) {
-
+								}
 							}
 						}
 						Bukkit.getScheduler().cancelTask(
 								runnerTaskIds.remove(this));
 					}
-					// System.out.println("Waiting " +
-					// distanceD);
 				}
 			};
 			int taskId = plugin
@@ -444,12 +435,11 @@ public class TribuSpawner {
 					pos = getValidSpawn();
 				}
 				if (pos != null) {
-					// Surrounded with justspawned so that the zombie isn't
-					// removed in the entity spawn listener
-					justspawned = true;
 					CraftTribuZombie zombie;
 					try {
-						pos.setY(findSuitableY(pos));
+						Double y = findSuitableY(pos);
+						if (y != null)
+							pos.setY(y);
 						zombie = (CraftTribuZombie) CraftTribuZombie.spawn(
 								plugin, pos);
 						zombies.add(zombie);
@@ -460,7 +450,6 @@ public class TribuSpawner {
 						// of
 						// space
 					}
-					justspawned = false;
 				}
 			}
 		} else
@@ -505,6 +494,14 @@ public class TribuSpawner {
 					Constants.TicksBySecond * plugin.config().WaveStartDelay);
 		}
 		return starting;
+	}
+
+	public void removeTarget(Player p) {
+		if (p != null && zombies != null)
+			for (CraftTribuZombie z : zombies) {
+				if (z != null && z.getTarget().equals(p))
+					z.setTarget(null);
+			}
 	}
 
 }

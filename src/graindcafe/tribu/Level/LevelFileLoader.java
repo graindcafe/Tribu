@@ -135,6 +135,7 @@ public class LevelFileLoader {
 
 	public TribuLevel loadLevel(final String name) {
 		TribuLevel level = null;
+
 		try {
 
 			File file = new File(Constants.levelFolder + name + ".lvl");
@@ -252,7 +253,8 @@ public class LevelFileLoader {
 
 			final Location spawn = new Location(world, sx, sy, sz, sYaw, 0.0f);
 			final Location death = new Location(world, dx, dy, dz, dYaw, 0.0f);
-
+			plugin.loadCustomConf(name + ".yml", spawn.getWorld().getName()
+					+ ".yml");
 			level = new TribuLevel(name, spawn);
 			level.setDeathSpawn(death);
 			final int spawncount = in.readInt();
@@ -348,6 +350,7 @@ public class LevelFileLoader {
 	}
 
 	public TribuLevel newLevel(final String name, final Location spawn) {
+		plugin.loadCustomConf(name, spawn.getWorld().getName());
 		TribuLevel level = new TribuLevel(name, spawn);
 		return level;
 	}

@@ -85,7 +85,8 @@ public class JoinSign extends TribuSign {
 
 	@Override
 	public boolean isUsedEvent(final Event e) {
-		return (e instanceof SignClickEvent) || (e instanceof WaveStartEvent);
+		return (pos.getBlock().getState() instanceof Sign)
+				&& ((e instanceof SignClickEvent) || (e instanceof WaveStartEvent));
 	}
 
 	@Override
