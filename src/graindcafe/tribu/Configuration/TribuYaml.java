@@ -31,13 +31,15 @@ public class TribuYaml extends YamlConfiguration implements ValueReader {
 	}
 
 	public static TribuYaml reload(File configFile, InputStream defConfigStream) {
-		TribuYaml newConfig = TribuYaml.loadConfiguration(configFile);
+		TribuYaml newConfig;
 		if (defConfigStream != null) {
 			YamlConfiguration defConfig = YamlConfiguration
 					.loadConfiguration(defConfigStream);
-
+			newConfig = TribuYaml.loadConfiguration(configFile);
 			newConfig.setDefaults(defConfig);
-		}
+		} else
+			newConfig = TribuYaml.loadConfiguration(configFile);
+
 		return newConfig;
 	}
 }
