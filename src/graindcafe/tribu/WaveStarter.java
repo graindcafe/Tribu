@@ -42,7 +42,7 @@ import org.bukkit.entity.Player;
 import org.mcstats.Metrics;
 
 public class WaveStarter implements Runnable {
-	private final Tribu plugin;
+	private final Tribu game;
 	private boolean scheduled;
 	private int taskID;
 	private int waveNumber;
@@ -53,16 +53,14 @@ public class WaveStarter implements Runnable {
 	private Metrics.Graph zombieDamageGraph;
 
 	public WaveStarter(final Tribu instance) {
-		plugin = instance;
+		game = instance;
 		waveNumber = 1;
 		scheduled = false;
-		if (plugin.getMetrics() != null) {
-			survivorGraph = plugin.getMetrics().createGraph(
+		if (game.getMetrics() != null) {
+			survivorGraph = game.getMetrics().createGraph(
 					"Percentage of survivors");
-			zombieHealthGraph = plugin.getMetrics()
-					.createGraph("Zombie Health");
-			zombieDamageGraph = plugin.getMetrics()
-					.createGraph("Zombie Damage");
+			zombieHealthGraph = game.getMetrics().createGraph("Zombie Health");
+			zombieDamageGraph = game.getMetrics().createGraph("Zombie Damage");
 
 		}
 	}
@@ -85,7 +83,7 @@ public class WaveStarter implements Runnable {
 
 	public void cancelWave() {
 		if (scheduled) {
-			plugin.getServer().getScheduler().cancelTask(taskID);
+			game.getPlugin().getServer().getScheduler().cancelTask(taskID);
 			scheduled = false;
 		}
 	}
@@ -121,7 +119,7 @@ public class WaveStarter implements Runnable {
 			survivorGraph.addPlotter(new Metrics.Plotter("Wave " + waveNumber) {
 				@Override
 				public int getValue() {
-					return plugin.getAliveCount();
+					return game.getAliveCount();
 				}
 			});
 		if (zombieHealthGraph != null)
@@ -143,42 +141,42 @@ public class WaveStarter implements Runnable {
 	}
 
 	public void run() {
-		if (plugin.isRunning()) {
-			if (plugin.config().WaveStartTeleportPlayers)
-				for (final Player p : plugin.getPlayers())
-					p.teleport(plugin.getLevel().getInitialSpawn());
-			if (plugin.config().WaveStartSetTime)
-				plugin.getLevel().getInitialSpawn().getWorld()
-						.setTime(plugin.config().WaveStartSetTimeTo);
+		if (game.isRunning()) {
+			if (game.config().WaveStartTeleportPlayers)
+				for (final Player p : game.getPlayers())
+					p.teleport(game.getLevel().getInitialSpawn());
+			if (game.config().WaveStartSetTime)
+				game.getLevel().getInitialSpawn().getWorld()
+						.setTime(game.config().WaveStartSetTimeTo);
 			final int max = (int) Math.ceil(calcPolynomialFunction(waveNumber,
-					plugin.config().ZombiesQuantity));
+					game.config().ZombiesQuantity));
 			health = calcPolynomialFunction(waveNumber,
-					plugin.config().ZombiesHealth);
+					game.config().ZombiesHealth);
 			zombieDamage = calcPolynomialFunction(waveNumber,
-					plugin.config().ZombiesDamage);
+					game.config().ZombiesDamage);
 			final int timeToSpawn = Math.round(Constants.TicksBySecond
 					* (calcPolynomialFunction(waveNumber,
-							plugin.config().ZombiesTimeToSpawn) / max));
+							game.config().ZombiesTimeToSpawn) / max));
 
 			scheduled = false;
 			stat();
-			plugin.revivePlayers(false);
-			plugin.getLevel().onWaveStart(waveNumber);
-			plugin.getSpawnTimer().StartWave(max, health, timeToSpawn);
-			plugin.messagePlayers("Broadcast.StartingWave",
+			game.revivePlayers(false);
+			game.getLevel().onWaveStart(waveNumber);
+			game.getSpawnTimer().StartWave(max, health, timeToSpawn);
+			game.messagePlayers("Broadcast.StartingWave",
 					String.valueOf(waveNumber), String.valueOf(max),
 					String.valueOf(health));
-			plugin.getSpawner().startingCallback();
+			game.getSpawner().startingCallback();
 		}
 	}
 
 	public void scheduleWave(final int delay) {
-		if (!scheduled && plugin.isRunning()) {
-			taskID = plugin.getServer().getScheduler()
-					.scheduleSyncDelayedTask(plugin, this, delay);
+		if (!scheduled && game.isRunning()) {
+			taskID = game.getPlugin().getServer().getScheduler()
+					.scheduleSyncDelayedTask(game.getPlugin(), this, delay);
 			scheduled = true;
-			plugin.messagePlayers("Broadcast.Wave",
-					String.valueOf(plugin.getWaveStarter().getWaveNumber()),
+			game.messagePlayers("Broadcast.Wave",
+					String.valueOf(game.getWaveStarter().getWaveNumber()),
 					String.valueOf(delay / Constants.TicksBySecond));
 		}
 	}

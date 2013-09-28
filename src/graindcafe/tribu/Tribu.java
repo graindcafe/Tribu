@@ -37,10 +37,6 @@ package graindcafe.tribu;
 import graindcafe.tribu.Configuration.Constants;
 import graindcafe.tribu.Configuration.TribuConfig;
 import graindcafe.tribu.Configuration.TribuYaml;
-import graindcafe.tribu.Executors.CmdDspawn;
-import graindcafe.tribu.Executors.CmdIspawn;
-import graindcafe.tribu.Executors.CmdTribu;
-import graindcafe.tribu.Executors.CmdZspawn;
 import graindcafe.tribu.Level.LevelFileLoader;
 import graindcafe.tribu.Level.LevelSelector;
 import graindcafe.tribu.Level.TribuLevel;
@@ -52,13 +48,9 @@ import graindcafe.tribu.Player.BeforeGamePlayerState;
 import graindcafe.tribu.Player.PlayerStats;
 import graindcafe.tribu.Player.TribuTempInventory;
 import graindcafe.tribu.Rollback.ChunkMemory;
-import graindcafe.tribu.TribuZombie.EntityTribuZombie;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -71,8 +63,6 @@ import java.util.logging.Logger;
 
 import me.graindcafe.gls.DefaultLanguage;
 import me.graindcafe.gls.Language;
-import net.minecraft.server.v1_6_R2.EntityTypes;
-import net.minecraft.server.v1_6_R2.EntityZombie;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -84,13 +74,12 @@ import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.Wolf;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 
 /**
  * @author Graindcafe
  */
-public class Tribu extends JavaPlugin {
+public class Tribu {
 
 	public static String getExceptionMessage(final Exception e) {
 		String message = e.getLocalizedMessage() + "\n";
@@ -153,6 +142,7 @@ public class Tribu extends JavaPlugin {
 	private boolean forceStop = false;
 	private Metrics metrics;
 	private int statMaxPlayers;
+	private TribuPlugin plugin;
 
 	public void setForceStop(boolean state) {
 		forceStop = state;
@@ -206,7 +196,7 @@ public class Tribu extends JavaPlugin {
 									&& getLevel() != null && getLevel()
 									.getInitialSpawn().getWorld().getPlayers()
 									.size() <= players.size())
-							|| getServer().getOnlinePlayers().length == players
+							|| plugin.getServer().getOnlinePlayers().length == players
 									.size())
 						startRunning();
 					else
@@ -241,8 +231,8 @@ public class Tribu extends JavaPlugin {
 	 *            Time to wait in seconds
 	 */
 	public void addPlayer(final Player player, final double timeout) {
-		getServer().getScheduler().scheduleSyncDelayedTask(this,
-				new Runnable() {
+		plugin.getServer().getScheduler()
+				.scheduleSyncDelayedTask(plugin, new Runnable() {
 					public void run() {
 						addPlayer(player);
 					}
@@ -257,7 +247,7 @@ public class Tribu extends JavaPlugin {
 	 */
 	public void broadcast(final String msg) {
 		if (!msg.isEmpty())
-			getServer().broadcastMessage(msg);
+			plugin.getServer().broadcastMessage(msg);
 	}
 
 	/**
@@ -300,7 +290,7 @@ public class Tribu extends JavaPlugin {
 	 */
 	public void broadcast(final String message, final String permission) {
 		if (message.isEmpty())
-			getServer().broadcast(message, permission);
+			plugin.getServer().broadcast(message, permission);
 	}
 
 	/**
@@ -964,7 +954,7 @@ public class Tribu extends JavaPlugin {
 			config = new TribuConfig();
 		initLanguage();
 		if (config.PluginModeServerExclusive)
-			for (final Player p : getServer().getOnlinePlayers())
+			for (final Player p : plugin.getServer().getOnlinePlayers())
 				this.addPlayer(p);
 		if (config.PluginModeWorldExclusive && level != null)
 			for (final Player d : level.getInitialSpawn().getWorld()
@@ -1030,7 +1020,7 @@ public class Tribu extends JavaPlugin {
 	}
 
 	@Override
-	public void onDisable() {
+	public void finalize() {
 		// Before stopRunning
 		memory.restoreAll();
 		stopRunning();
@@ -1039,55 +1029,10 @@ public class Tribu extends JavaPlugin {
 		LogInfo(language.get("Info.Disable"));
 	}
 
-	@Override
-	public void onEnable() {
+	public void Tribu() {
 		log = Logger.getLogger("Minecraft");
 		rnd = new Random();
-		final boolean mkdirs = Constants.rebuildPath(getDataFolder().getPath()
-				+ File.separatorChar);
-		boolean langCopy = true;
-		for (final String name : Constants.languages) {
-			final InputStream fis = this.getClass().getResourceAsStream(
-					"/res/languages/" + name + ".yml");
-			FileOutputStream fos = null;
-			final File f = new File(Constants.languagesFolder + name + ".yml");
-			{
-				try {
-					fos = new FileOutputStream(f);
-					final byte[] buf = new byte[1024];
-					int i = 0;
 
-					if (f != null && fis != null && f.canWrite()
-							&& fis.available() > 0)
-						while ((i = fis.read(buf)) > 0)
-							fos.write(buf, 0, i);
-				} catch (final Exception e) {
-					e.printStackTrace();
-					langCopy = false;
-				} finally {
-					try {
-						if (fis != null)
-							fis.close();
-						if (fos != null)
-							fos.close();
-					} catch (final Exception e) {
-					}
-				}
-			}
-		}
-		try {
-			final Method a = EntityTypes.class.getDeclaredMethod("a",
-					Class.class, String.class, Integer.TYPE);
-			a.setAccessible(true);
-
-			a.invoke(a, EntityTribuZombie.class, "Zombie", 54);
-			a.invoke(a, EntityZombie.class, "Zombie", 54);
-
-		} catch (final Exception e) {
-			setEnabled(false);
-			e.printStackTrace();
-			return;
-		}
 		// Before loading conf
 		players = new HashMap<Player, PlayerStats>();
 		// isRunning set to true to prevent start running at "loadCustomConf"
@@ -1116,25 +1061,16 @@ public class Tribu extends JavaPlugin {
 
 		memory = new ChunkMemory();
 
-		getServer().getPluginManager().registerEvents(playerListener, this);
-		getServer().getPluginManager().registerEvents(entityListener, this);
-		getServer().getPluginManager().registerEvents(blockListener, this);
-		getServer().getPluginManager().registerEvents(worldListener, this);
+		plugin.getServer().getPluginManager()
+				.registerEvents(playerListener, plugin);
+		plugin.getServer().getPluginManager()
+				.registerEvents(entityListener, plugin);
+		plugin.getServer().getPluginManager()
+				.registerEvents(blockListener, plugin);
+		plugin.getServer().getPluginManager()
+				.registerEvents(worldListener, plugin);
 
-		getCommand("dspawn").setExecutor(new CmdDspawn(this));
-		getCommand("zspawn").setExecutor(new CmdZspawn(this));
-		getCommand("ispawn").setExecutor(new CmdIspawn(this));
-		getCommand("tribu").setExecutor(new CmdTribu(this));
-		if (!mkdirs)
-			LogSevere(getLocale("Severe.TribuCantMkdir"));
-		if (!langCopy)
-			LogSevere(getLocale("Severe.CannotCopyLanguages"));
-		try {
-			metrics = new Metrics(this);
-			metrics.start();
-		} catch (IOException e) {
-			// Failed to submit the stats :-(
-		}
+		// TODO:check that
 		reloadConf();
 		isRunning = false;
 		LogInfo(language.get("Info.Enable"));
@@ -1147,7 +1083,8 @@ public class Tribu extends JavaPlugin {
 		// Reload the main config file from disk
 		// Parse again the file
 		config = new TribuConfig(TribuYaml.reload(
-				new File(Constants.configFile), getResource("config.yml")));
+				new File(Constants.configFile),
+				plugin.getResource("config.yml")));
 		// Create the file if it doesn't exist
 		try {
 			config.getConfigFile().save(Constants.configFile);
@@ -1331,8 +1268,8 @@ public class Tribu extends JavaPlugin {
 			i += 5f;
 		}
 		broadcastTime.push(timeout);
-		final int taskId = getServer().getScheduler()
-				.scheduleSyncRepeatingTask(this, new Runnable() {
+		final int taskId = plugin.getServer().getScheduler()
+				.scheduleSyncRepeatingTask(plugin, new Runnable() {
 					private float counter = timeout;
 
 					public void run() {
@@ -1346,12 +1283,13 @@ public class Tribu extends JavaPlugin {
 						counter -= step;
 					}
 				}, 0, Math.round(step * Constants.TicksBySecond));
-		getServer().getScheduler()
-				.scheduleSyncDelayedTask(
-						this,
+		plugin.getServer()
+				.getScheduler()
+				.scheduleSyncDelayedTask(plugin,
 						new Runnable() {
 							public void run() {
-								getServer().getScheduler().cancelTask(taskId);
+								plugin.getServer().getScheduler()
+										.cancelTask(taskId);
 							}
 						},
 						(long) (Math.ceil((timeout + 1)
@@ -1427,5 +1365,9 @@ public class Tribu extends JavaPlugin {
 
 	public Random getRandom() {
 		return rnd;
+	}
+
+	public TribuPlugin getPlugin() {
+		return plugin;
 	}
 }

@@ -69,7 +69,7 @@ public class TribuSpawner {
 	/**
 	 * Tribu
 	 */
-	private final Tribu plugin;
+	private final Tribu game;
 	/**
 	 * Gonna start
 	 */
@@ -96,7 +96,7 @@ public class TribuSpawner {
 	 *            of Tribu
 	 */
 	public TribuSpawner(final Tribu instance) {
-		plugin = instance;
+		game = instance;
 		alreadySpawned = 0;
 		pendingSpawn = 0;
 		totalToSpawn = 5;
@@ -172,22 +172,20 @@ public class TribuSpawner {
 	public Location getFirstZombieLocation() {
 		if (alreadySpawned > 0)
 			if (!zombies.isEmpty()) {
-				int i = plugin.getRandom().nextInt(zombies.size());
-				plugin.LogInfo("Health : " + zombies.get(i).getHealth());
-				plugin.LogInfo("LastDamage : " + zombies.get(i).getLastDamage());
-				plugin.LogInfo("isDead : " + zombies.get(i).isDead());
-				plugin.LogInfo("There is " + zombies.size()
-						+ " zombie alive of " + alreadySpawned + "/"
-						+ totalToSpawn + " spawned  +" + pendingSpawn
-						+ " pending spawn. The wave is "
+				int i = game.getRandom().nextInt(zombies.size());
+				game.LogInfo("Health : " + zombies.get(i).getHealth());
+				game.LogInfo("LastDamage : " + zombies.get(i).getLastDamage());
+				game.LogInfo("isDead : " + zombies.get(i).isDead());
+				game.LogInfo("There is " + zombies.size() + " zombie alive of "
+						+ alreadySpawned + "/" + totalToSpawn + " spawned  +"
+						+ pendingSpawn + " pending spawn. The wave is "
 						+ (finished ? "finished" : "in progress"));
 				return zombies.get(i).getLocation();
 			} else {
-				plugin.getSpawnTimer().getState();
-				plugin.LogInfo("There is " + zombies.size()
-						+ " zombie alive of " + alreadySpawned + "/"
-						+ totalToSpawn + " spawned  +" + pendingSpawn
-						+ " pending spawn. The wave is "
+				game.getSpawnTimer().getState();
+				game.LogInfo("There is " + zombies.size() + " zombie alive of "
+						+ alreadySpawned + "/" + totalToSpawn + " spawned  +"
+						+ pendingSpawn + " pending spawn. The wave is "
 						+ (finished ? "finished" : "in progress"));
 				return null;
 			}
@@ -219,11 +217,11 @@ public class TribuSpawner {
 	 * @return
 	 */
 	public Location getValidSpawn() {
-		for (final Location curPos : plugin.getLevel().getActiveSpawns())
+		for (final Location curPos : game.getLevel().getActiveSpawns())
 			if (curPos.getWorld().isChunkLoaded(
 					curPos.getWorld().getChunkAt(curPos)))
 				return curPos;
-		plugin.LogInfo(plugin.getLocale("Warning.AllSpawnsCurrentlyUnloaded"));
+		game.LogInfo(game.getLocale("Warning.AllSpawnsCurrentlyUnloaded"));
 		return null;
 
 	}
@@ -343,8 +341,8 @@ public class TribuSpawner {
 		}
 		zombies.remove(e);
 		alreadySpawned--;
-		if (plugin.config().ZombiesFocus == FocusType.NearestPlayer
-				|| plugin.config().ZombiesFocus == FocusType.RandomPlayer
+		if (game.config().ZombiesFocus == FocusType.NearestPlayer
+				|| game.config().ZombiesFocus == FocusType.RandomPlayer
 				&& e.getTarget() != null) {
 			pendingSpawn++;
 			Runnable runner = new Runnable() {
@@ -369,7 +367,7 @@ public class TribuSpawner {
 								try {
 									CraftTribuZombie zomb;
 									zomb = (CraftTribuZombie) CraftTribuZombie
-											.spawn(plugin, newLoc);
+											.spawn(game, newLoc);
 									alreadySpawned++;
 									zomb.setTarget(target);
 									zombies.add(zomb);
@@ -383,10 +381,11 @@ public class TribuSpawner {
 					}
 				}
 			};
-			int taskId = plugin
+			int taskId = game
+					.getPlugin()
 					.getServer()
 					.getScheduler()
-					.scheduleSyncRepeatingTask(plugin, runner, 5,
+					.scheduleSyncRepeatingTask(game.getPlugin(), runner, 5,
 							Constants.TicksBySecond);
 			runnerTaskIds.put(runner, taskId);
 		}
@@ -427,7 +426,7 @@ public class TribuSpawner {
 	 */
 	public boolean spawnZombie() {
 		if ((pendingSpawn + alreadySpawned) < totalToSpawn && !finished) {
-			Location pos = plugin.getLevel().getRandomZombieSpawn();
+			Location pos = game.getLevel().getRandomZombieSpawn();
 			if (pos != null) {
 				if (!pos.getWorld().isChunkLoaded(
 						pos.getWorld().getChunkAt(pos))) {
@@ -441,7 +440,7 @@ public class TribuSpawner {
 						if (y != null)
 							pos.setY(y);
 						zombie = (CraftTribuZombie) CraftTribuZombie.spawn(
-								plugin, pos);
+								game, pos);
 						zombies.add(zombie);
 						zombie.setHealth(health);
 						alreadySpawned++;
@@ -488,10 +487,10 @@ public class TribuSpawner {
 	public boolean tryStartNextWave() {
 		if (zombies.isEmpty() && finished && !starting) {
 			starting = true;
-			plugin.messagePlayers(plugin.getLocale("Broadcast.WaveComplete"));
-			plugin.getWaveStarter().incrementWave();
-			plugin.getWaveStarter().scheduleWave(
-					Constants.TicksBySecond * plugin.config().WaveStartDelay);
+			game.messagePlayers(game.getLocale("Broadcast.WaveComplete"));
+			game.getWaveStarter().incrementWave();
+			game.getWaveStarter().scheduleWave(
+					Constants.TicksBySecond * game.config().WaveStartDelay);
 		}
 		return starting;
 	}

@@ -57,10 +57,10 @@ import org.bukkit.inventory.ItemStack;
 public class LevelFileLoader {
 
 	private final Set<String> levels;
-	private final Tribu plugin;
+	private final Tribu game;
 
 	public LevelFileLoader(final Tribu instance) {
-		plugin = instance;
+		game = instance;
 		levels = new HashSet<String>();
 		levels.clear();
 		final File dir = new File(Constants.levelFolder);
@@ -74,12 +74,13 @@ public class LevelFileLoader {
 		 * plugin.LogSevere(plugin.getLocale("Severe.TribuCantMkdir")); } }
 		 */
 		final File[] files = dir.listFiles();
-		plugin.LogInfo(String.format(plugin.getLocale("Info.LevelFound"),
+		game.LogInfo(String.format(game.getLocale("Info.LevelFound"),
 				String.valueOf(files == null ? 0 : files.length)));
 		if (files != null)
 			for (final File file : files)
-				levels.add(file.getName().substring(0,
-						file.getName().lastIndexOf(".")));
+				if (file.isFile())
+					levels.add(file.getName().substring(0,
+							file.getName().lastIndexOf(".")));
 
 	}
 
@@ -88,8 +89,7 @@ public class LevelFileLoader {
 		if (file.exists()) {
 			final boolean result = file.delete();
 			if (!result)
-				plugin.LogWarning(plugin
-						.getLocale("Warning.IOErrorOnFileDelete"));
+				game.LogWarning(game.getLocale("Warning.IOErrorOnFileDelete"));
 			else
 				levels.remove(name);
 			return result;
@@ -121,7 +121,7 @@ public class LevelFileLoader {
 			if (in.available() < 2) {
 				fstream.close();
 				in.close();
-				plugin.LogSevere("Something wrong happened ... Level is empty");
+				game.LogSevere("Something wrong happened ... Level is empty");
 				return null;
 			}
 			final String worldName = in.readUTF();
@@ -221,21 +221,21 @@ public class LevelFileLoader {
 			if (version != Constants.LevelFileVersion) {
 				fstream.close();
 				in.close();
-				plugin.LogSevere(plugin
-						.getLocale("Severe.WorldInvalidFileVersion"));
+				game.LogSevere(game.getLocale("Severe.WorldInvalidFileVersion"));
 				return null;
 			}
 			if (in.available() < 2) {
 				fstream.close();
 				in.close();
-				plugin.LogSevere("Something wrong happened ... Level is empty");
+				game.LogSevere("Something wrong happened ... Level is empty");
 				return null;
 			}
-			final World world = plugin.getServer().getWorld(in.readUTF());
+			final World world = game.getPlugin().getServer()
+					.getWorld(in.readUTF());
 			if (world == null) {
 				fstream.close();
 				in.close();
-				plugin.LogSevere(plugin.getLocale("Severe.WorldDoesntExist"));
+				game.LogSevere(game.getLocale("Severe.WorldDoesntExist"));
 				return null;
 			}
 			double sx, sy, sz; // spawn coords
@@ -253,7 +253,7 @@ public class LevelFileLoader {
 
 			final Location spawn = new Location(world, sx, sy, sz, sYaw, 0.0f);
 			final Location death = new Location(world, dx, dy, dz, dYaw, 0.0f);
-			plugin.loadCustomConf(name + ".yml", spawn.getWorld().getName()
+			game.loadCustomConf(name + ".yml", spawn.getWorld().getName()
 					+ ".yml");
 			level = new TribuLevel(name, spawn);
 			level.setDeathSpawn(death);
@@ -273,9 +273,8 @@ public class LevelFileLoader {
 			}
 			int count = in.readInt();
 			for (int i = 0; i < count; i++)
-				if (!level.addSign(TribuSign.LoadFromStream(plugin, world, in)))
-					plugin.LogWarning(plugin
-							.getLocale("Warning.UnableToAddSign"));
+				if (!level.addSign(TribuSign.LoadFromStream(game, world, in)))
+					game.LogWarning(game.getLocale("Warning.UnableToAddSign"));
 
 			byte iCount;
 			Package n;
@@ -333,8 +332,8 @@ public class LevelFileLoader {
 			}
 
 		} catch (final Exception e) {
-			plugin.LogSevere(String.format(
-					plugin.getLocale("Severe.ErrorDuringLevelLoading"),
+			game.LogSevere(String.format(
+					game.getLocale("Severe.ErrorDuringLevelLoading"),
 					Tribu.getExceptionMessage(e)));
 			level = null;
 		}
@@ -350,7 +349,7 @@ public class LevelFileLoader {
 	}
 
 	public TribuLevel newLevel(final String name, final Location spawn) {
-		plugin.loadCustomConf(name, spawn.getWorld().getName());
+		game.loadCustomConf(name, spawn.getWorld().getName());
 		TribuLevel level = new TribuLevel(name, spawn);
 		return level;
 	}
@@ -441,8 +440,8 @@ public class LevelFileLoader {
 			o.close();
 			out.close();
 		} catch (final Exception e) {
-			plugin.LogSevere(String.format(
-					plugin.getLocale("Severe.ErrorDuringLevelSaving"),
+			game.LogSevere(String.format(
+					game.getLocale("Severe.ErrorDuringLevelSaving"),
 					Tribu.getExceptionMessage(e)));
 			return false;
 		}

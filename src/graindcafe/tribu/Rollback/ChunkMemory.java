@@ -3,6 +3,8 @@
  */
 package graindcafe.tribu.Rollback;
 
+import graindcafe.tribu.Tribu;
+
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -23,7 +25,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.material.Directional;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class ChunkMemory implements Runnable {
 	/**
@@ -216,12 +217,12 @@ public class ChunkMemory implements Runnable {
 	/**
 	 * Start the delayed restoring of chunks
 	 * 
-	 * @param plugin
+	 * @param game
 	 *            a Java Plugin (for scheluding)
 	 * @param speed
 	 *            The speed of restoring
 	 */
-	public void startRestoring(final JavaPlugin plugin, int speed) {
+	public void startRestoring(final Tribu game, int speed) {
 		if (!restoring) {
 			stopCapturing();
 			if (snapMemory.isEmpty())
@@ -234,8 +235,8 @@ public class ChunkMemory implements Runnable {
 			final Iterator<CraftWorld> wIterator = worlds.iterator();
 			while (wIterator.hasNext())
 				wIterator.next().getHandle().isStatic = true;
-			taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin,
-					this, 0, speed);
+			taskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(
+					game.getPlugin(), this, 0, speed);
 		}
 	}
 

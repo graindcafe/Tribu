@@ -58,10 +58,10 @@ public class CmdTribu implements CommandExecutor {
 	// use to confirm deletion of a level
 	private String deletedLevel = "";
 	private Package pck = null;
-	private final Tribu plugin;
+	private final Tribu game;
 
 	public CmdTribu(final Tribu instance) {
-		plugin = instance;
+		game = instance;
 	}
 
 	// usage: /tribu ((create | load | delete) <name>) | enter | leave | package
@@ -79,38 +79,36 @@ public class CmdTribu implements CommandExecutor {
 
 		if (args[0].equalsIgnoreCase("enter")
 				|| args[0].equalsIgnoreCase("join")) {
-			if (!plugin.config().PluginModeServerExclusive || sender.isOp())
+			if (!game.config().PluginModeServerExclusive || sender.isOp())
 				if (!sender.hasPermission("tribu.use.enter"))
-					Tribu.messagePlayer(sender,
-							plugin.getLocale("Message.Deny"));
+					Tribu.messagePlayer(sender, game.getLocale("Message.Deny"));
 				else if (!(sender instanceof Player))
-					plugin.LogWarning(plugin
+					game.LogWarning(game
 							.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
-				else if (!plugin.isPlaying((Player) sender))
-					plugin.addPlayer((Player) sender);
+				else if (!game.isPlaying((Player) sender))
+					game.addPlayer((Player) sender);
 				else
 					Tribu.messagePlayer(sender,
-							plugin.getLocale("Message.AlreadyIn"));
+							game.getLocale("Message.AlreadyIn"));
 			return true;
 		} else if (args[0].equals("leave")) {
-			if (!plugin.config().PluginModeServerExclusive || sender.isOp())
+			if (!game.config().PluginModeServerExclusive || sender.isOp())
 				if (!sender.hasPermission("tribu.use.leave"))
-					Tribu.messagePlayer(sender,
-							plugin.getLocale("Message.Deny"));
+					Tribu.messagePlayer(sender, game.getLocale("Message.Deny"));
 				else if (!(sender instanceof Player))
-					plugin.LogWarning(plugin
+					game.LogWarning(game
 							.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 				else
-					plugin.removePlayer((Player) sender);
+					game.removePlayer((Player) sender);
 			// add in them to change to main world (world when they leave the
 			// game);
 			return true;
 		} else if (args[0].equals("stats")) {
 			if (!sender.hasPermission("tribu.use.stats"))
-				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender, game.getLocale("Message.Deny"));
 			else {
-				final LinkedList<PlayerStats> stats = plugin.getSortedStats();
-				Tribu.messagePlayer(sender, plugin.getLocale("Message.Stats"));
+				final LinkedList<PlayerStats> stats = game.getSortedStats();
+				Tribu.messagePlayer(sender, game.getLocale("Message.Stats"));
 				final Iterator<PlayerStats> i = stats.iterator();
 				String s;
 				PlayerStats cur;
@@ -128,50 +126,50 @@ public class CmdTribu implements CommandExecutor {
 			return true;
 		} else if (args[0].equals("vote")) {
 			if (!sender.hasPermission("tribu.use.vote"))
-				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender, game.getLocale("Message.Deny"));
 			else {
 				if (!(sender instanceof Player)) {
-					plugin.LogWarning(plugin
+					game.LogWarning(game
 							.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 					return true;
 				}
 
 				if (args.length == 2) {
 					try {
-						plugin.getLevelSelector().castVote((Player) sender,
+						game.getLevelSelector().castVote((Player) sender,
 								Integer.parseInt(args[1]));
 					} catch (final NumberFormatException e) {
 						Tribu.messagePlayer(sender,
-								plugin.getLocale("Message.InvalidVote"));
+								game.getLocale("Message.InvalidVote"));
 					}
 					return true;
 				}
 			}
 		} else if (args[0].equals("vote1")) {
 			if (!sender.hasPermission("tribu.use.vote"))
-				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender, game.getLocale("Message.Deny"));
 			else {
 				if (!(sender instanceof Player)) {
-					plugin.LogWarning(plugin
+					game.LogWarning(game
 							.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 					return true;
 				}
 
-				plugin.getLevelSelector().castVote((Player) sender, 1);
+				game.getLevelSelector().castVote((Player) sender, 1);
 			}
 			return true;
 
 		} else if (args[0].equals("vote2")) {
 			if (!sender.hasPermission("tribu.use.vote"))
-				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender, game.getLocale("Message.Deny"));
 			else {
 				if (!(sender instanceof Player)) {
-					plugin.LogWarning(plugin
+					game.LogWarning(game
 							.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 					return true;
 				}
 
-				plugin.getLevelSelector().castVote((Player) sender, 2);
+				game.getLevelSelector().castVote((Player) sender, 2);
 			}
 			return true;
 
@@ -182,15 +180,15 @@ public class CmdTribu implements CommandExecutor {
 		/* Package management */
 		else if (args[0].equals("package") || args[0].equals("pck")) {
 			if (!sender.hasPermission("tribu.level.package")) {
-				sender.sendMessage(plugin.getLocale("Message.Deny"));
+				sender.sendMessage(game.getLocale("Message.Deny"));
 				return true;
 			} else if (args.length == 1)
 				return usage(sender);
-			if (plugin.getLevel() == null) {
+			if (game.getLevel() == null) {
 				Tribu.messagePlayer(sender,
-						plugin.getLocale("Message.NoLevelLoaded"));
+						game.getLocale("Message.NoLevelLoaded"));
 				Tribu.messagePlayer(sender,
-						plugin.getLocale("Message.NoLevelLoaded2"));
+						game.getLocale("Message.NoLevelLoaded2"));
 				return true;
 			}
 			args[1] = args[1].toLowerCase();
@@ -198,38 +196,36 @@ public class CmdTribu implements CommandExecutor {
 			if (args[1].equals("new") || args[1].equals("create")) {
 				if (args.length == 2)
 					Tribu.messagePlayer(sender,
-							plugin.getLocale("Message.PckNeedName"));
+							game.getLocale("Message.PckNeedName"));
 				else {
 					pck = new Package(args[2]);
 					Tribu.messagePlayer(sender, String.format(
-							plugin.getLocale("Message.PckCreated"), args[2]));
+							game.getLocale("Message.PckCreated"), args[2]));
 				}
 
 			} else if (args[1].equals("open")) {
 				if (args.length == 2)
 					Tribu.messagePlayer(sender,
-							plugin.getLocale("Message.PckNeedName"));
+							game.getLocale("Message.PckNeedName"));
 				else {
-					pck = plugin.getLevel().getPackage(args[2]);
+					pck = game.getLevel().getPackage(args[2]);
 					if (pck != null)
 						Tribu.messagePlayer(sender, String.format(
-								plugin.getLocale("Message.PckOpened"), args[2]));
+								game.getLocale("Message.PckOpened"), args[2]));
 					else
 						Tribu.messagePlayer(sender, String.format(
-								plugin.getLocale("Message.PckNotFound"),
-								args[2]));
+								game.getLocale("Message.PckNotFound"), args[2]));
 				}
 
 			} else if (args[1].equals("close") || args[1].equals("save")) {
 				if (pck == null)
 					Tribu.messagePlayer(sender,
-							plugin.getLocale("Message.PckNeedOpen"));
+							game.getLocale("Message.PckNeedOpen"));
 				else {
-					plugin.getLevel().addPackage(pck);
-					plugin.getLevel().setChanged();
-					Tribu.messagePlayer(sender,
-							String.format(plugin.getLocale("Message.PckSaved"),
-									pck.getName()));
+					game.getLevel().addPackage(pck);
+					game.getLevel().setChanged();
+					Tribu.messagePlayer(sender, String.format(
+							game.getLocale("Message.PckSaved"), pck.getName()));
 					pck = null;
 				}
 
@@ -238,15 +234,15 @@ public class CmdTribu implements CommandExecutor {
 
 				if (pck == null)
 					Tribu.messagePlayer(sender,
-							plugin.getLocale("Message.PckNeedOpen"));
+							game.getLocale("Message.PckNeedOpen"));
 				else if (args.length == 2)
 					Tribu.messagePlayer(sender,
-							plugin.getLocale("Message.PckNeedId"));
+							game.getLocale("Message.PckNeedId"));
 				else {
 					if (args.length == 3)
 						if (args[2].equalsIgnoreCase("this"))
 							if (!(sender instanceof Player)) {
-								plugin.LogWarning(plugin
+								game.LogWarning(game
 										.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 								return true;
 							} else
@@ -257,7 +253,7 @@ public class CmdTribu implements CommandExecutor {
 					else if (args.length == 4)
 						if (args[2].equalsIgnoreCase("this"))
 							if (!(sender instanceof Player)) {
-								plugin.LogWarning(plugin
+								game.LogWarning(game
 										.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 								return true;
 							} else
@@ -273,26 +269,26 @@ public class CmdTribu implements CommandExecutor {
 								(short) TribuSign.parseInt(args[4]));
 					if (success)
 						Tribu.messagePlayer(sender, String.format(
-								plugin.getLocale("Message.PckItemAdded"),
+								game.getLocale("Message.PckItemAdded"),
 								pck.getLastItemName()));
 					else
 						Tribu.messagePlayer(sender, String.format(
-								plugin.getLocale("Message.PckItemAddFailed"),
+								game.getLocale("Message.PckItemAddFailed"),
 								args[2]));
 				}
 			} else if (args[1].equals("del") || args[1].equals("delete")) {
 				if (pck == null)
 					Tribu.messagePlayer(sender,
-							plugin.getLocale("Message.PckNeedOpen"));
+							game.getLocale("Message.PckNeedOpen"));
 				else if (args.length == 4
 						&& pck.deleteItem(TribuSign.parseInt(args[2]),
 								(short) TribuSign.parseInt(args[3])))
 					Tribu.messagePlayer(sender,
-							plugin.getLocale("Message.PckItemDeleted"));
+							game.getLocale("Message.PckItemDeleted"));
 				else if (args.length == 3) {
 					if (args[2].equals("this")) {
 						if (!(sender instanceof Player)) {
-							plugin.LogWarning(plugin
+							game.LogWarning(game
 									.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 							return true;
 						} else if (pck.deleteItem(((Player) sender)
@@ -301,52 +297,52 @@ public class CmdTribu implements CommandExecutor {
 								|| pck.deleteItem(((Player) sender)
 										.getItemInHand().getTypeId()))
 							Tribu.messagePlayer(sender,
-									plugin.getLocale("Message.PckItemDeleted"));
+									game.getLocale("Message.PckItemDeleted"));
 						else
 							Tribu.messagePlayer(sender,
-									plugin.getLocale("Message.PckNeedSubId"));
+									game.getLocale("Message.PckNeedSubId"));
 					} else if (pck.deleteItem(TribuSign.parseInt(args[2])))
 						Tribu.messagePlayer(sender,
-								plugin.getLocale("Message.PckItemDeleted"));
+								game.getLocale("Message.PckItemDeleted"));
 					else
 						Tribu.messagePlayer(sender,
-								plugin.getLocale("Message.PckNeedSubId"));
+								game.getLocale("Message.PckNeedSubId"));
 
 				} else
 					Tribu.messagePlayer(sender,
-							plugin.getLocale("Message.PckNeedSubId"));
+							game.getLocale("Message.PckNeedSubId"));
 
 			} else if (args[1].equals("remove")) {
 				if (args.length < 3)
 					Tribu.messagePlayer(sender,
-							plugin.getLocale("Message.PckNeedName"));
+							game.getLocale("Message.PckNeedName"));
 				else {
-					plugin.getLevel().removePackage(args[2]);
+					game.getLevel().removePackage(args[2]);
 					Tribu.messagePlayer(sender,
-							plugin.getLocale("Message.PckRemoved"));
+							game.getLocale("Message.PckRemoved"));
 					pck = null;
 				}
 			} else if (args[1].equals("list"))
-				Tribu.messagePlayer(sender, String.format(plugin
-						.getLocale("Message.PckList"), plugin.getLevel()
+				Tribu.messagePlayer(sender, String.format(game
+						.getLocale("Message.PckList"), game.getLevel()
 						.listPackages()));
 			else if (args[1].equals("show") || args[1].equals("describe")) {
-				if (plugin.getLevel() == null) {
+				if (game.getLevel() == null) {
 					Tribu.messagePlayer(sender,
-							plugin.getLocale("Message.NoLevelLoaded"));
+							game.getLocale("Message.NoLevelLoaded"));
 					Tribu.messagePlayer(sender,
-							plugin.getLocale("Message.NoLevelLoaded2"));
+							game.getLocale("Message.NoLevelLoaded2"));
 					return true;
 				}
 				Package p = pck;
 				if (args.length > 2)
-					p = plugin.getLevel().getPackage(args[2]);
+					p = game.getLevel().getPackage(args[2]);
 				if (p != null)
 					Tribu.messagePlayer(sender, p.toString());
 				else
 					Tribu.messagePlayer(sender, String.format(
-							plugin.getLocale("Message.PckNotFound"),
-							args.length > 2 ? args[2] : plugin
+							game.getLocale("Message.PckNotFound"),
+							args.length > 2 ? args[2] : game
 									.getLocale("Message.PckNoneOpened")));
 			} else
 				return usage(sender);
@@ -357,105 +353,104 @@ public class CmdTribu implements CommandExecutor {
 		 */
 		else if (args[0].equals("new") || args[0].equals("create")) {
 			if (!sender.hasPermission("tribu.level.create")) {
-				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender, game.getLocale("Message.Deny"));
 				return true;
 			}
 			if (args.length == 1)
 				return usage(sender);
 
 			if (!(sender instanceof Player)) {
-				plugin.LogWarning(plugin
+				game.LogWarning(game
 						.getLocale("Warning.ThisCommandCannotBeUsedFromTheConsole"));
 				return true;
 			}
 			final Player player = (Player) sender;
-			if (!plugin.getLevelLoader().saveLevel(plugin.getLevel())) {
+			if (!game.getLevelLoader().saveLevel(game.getLevel())) {
 				Tribu.messagePlayer(sender,
-						plugin.getLocale("Message.UnableToSaveCurrentLevely"));
+						game.getLocale("Message.UnableToSaveCurrentLevely"));
 				return true;
 			}
 
-			plugin.setLevel(plugin.getLevelLoader().newLevel(args[1],
+			game.setLevel(game.getLevelLoader().newLevel(args[1],
 					player.getLocation()));
 			player.sendMessage(String.format(
-					plugin.getLocale("Message.LevelCreated"), args[1]));
+					game.getLocale("Message.LevelCreated"), args[1]));
 
 			return true;
 		} else if (args[0].equals("delete") || args[0].equals("remove")) {
 			if (!sender.hasPermission("tribu.level.delete")) {
-				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender, game.getLocale("Message.Deny"));
 				return true;
 			}
 			if (args.length == 1)
 				return usage(sender);
-			else if (!plugin.getLevelLoader().exists(args[1])) {
+			else if (!game.getLevelLoader().exists(args[1])) {
 				Tribu.messagePlayer(sender, String.format(
-						plugin.getLocale("Message.UnknownLevel"), args[1]));
+						game.getLocale("Message.UnknownLevel"), args[1]));
 				Tribu.messagePlayer(sender,
-						plugin.getLocale("Message.MaybeNotSaved"));
+						game.getLocale("Message.MaybeNotSaved"));
 				return true;
 			} else if (!deletedLevel.equals(args[1])) {
 				deletedLevel = args[1];
 				Tribu.messagePlayer(sender, String.format(
-						plugin.getLocale("Message.ConfirmDeletion"), args[1]));
-				Tribu.messagePlayer(sender, plugin
-						.getLocale("Message.ThisOperationIsNotCancellable"));
+						game.getLocale("Message.ConfirmDeletion"), args[1]));
+				Tribu.messagePlayer(sender,
+						game.getLocale("Message.ThisOperationIsNotCancellable"));
 				return true;
 			} else {
-				if (!plugin.getLevelLoader().deleteLevel(args[1]))
+				if (!game.getLevelLoader().deleteLevel(args[1]))
 					Tribu.messagePlayer(sender,
-							plugin.getLocale("Message.UnableToDeleteLevel"));
+							game.getLocale("Message.UnableToDeleteLevel"));
 				else
 					Tribu.messagePlayer(sender,
-							plugin.getLocale("Message.LevelDeleted"));
+							game.getLocale("Message.LevelDeleted"));
 				return true;
 			}
 		} else if (args[0].equals("save") || args[0].equals("close")) {
 			if (!sender.hasPermission("tribu.level.save")) {
-				sender.sendMessage(plugin.getLocale("Message.Deny"));
+				sender.sendMessage(game.getLocale("Message.Deny"));
 				return true;
 			}
-			if (plugin.getLevel() != null)
-				plugin.getLevel().addPackage(pck);
-			if (!plugin.getLevelLoader().saveLevel(plugin.getLevel()))
+			if (game.getLevel() != null)
+				game.getLevel().addPackage(pck);
+			if (!game.getLevelLoader().saveLevel(game.getLevel()))
 				Tribu.messagePlayer(sender,
-						plugin.getLocale("Message.UnableToSaveCurrentLevel"));
+						game.getLocale("Message.UnableToSaveCurrentLevel"));
 			else
 				Tribu.messagePlayer(sender,
-						plugin.getLocale("Message.LevelSaveSuccessful"));
+						game.getLocale("Message.LevelSaveSuccessful"));
 			return true;
 
 		} else if (args[0].equals("load") || args[0].equals("open")) {
 			if (!sender.hasPermission("tribu.level.load")) {
-				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender, game.getLocale("Message.Deny"));
 				return true;
 			}
 			if (args.length == 1)
 				return usage(sender);
 			else {
-				plugin.getLevelSelector().ChangeLevel(args[1],
+				game.getLevelSelector().ChangeLevel(args[1],
 						sender instanceof Player ? (Player) sender : null);
 				return true;
 			}
 		} else if (args[0].equals("unload")) {
 			if (!sender.hasPermission("tribu.level.unload")) {
-				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender, game.getLocale("Message.Deny"));
 				return true;
 			}
-			plugin.setLevel(null);
-			Tribu.messagePlayer(sender,
-					plugin.getLocale("Message.LevelUnloaded"));
+			game.setLevel(null);
+			Tribu.messagePlayer(sender, game.getLocale("Message.LevelUnloaded"));
 			return true;
 
 		} else if (args[0].equals("list")) {
-			final Set<String> levels = plugin.getLevelLoader().getLevelList();
+			final Set<String> levels = game.getLevelLoader().getLevelList();
 			String msg = "";
 			for (final String level : levels)
 				msg += ", " + level;
 			if (msg != "")
 				Tribu.messagePlayer(
 						sender,
-						String.format(plugin.getLocale("Message.Levels"),
+						String.format(game.getLocale("Message.Levels"),
 								msg.substring(2)));
 			return true;
 		}
@@ -464,91 +459,91 @@ public class CmdTribu implements CommandExecutor {
 		 */
 		else if (args[0].equals("start")) {
 			if (!sender.hasPermission("tribu.game.start")) {
-				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender, game.getLocale("Message.Deny"));
 				return true;
 			}
 			// if a level is given, load it before start
-			if (args.length > 1 && plugin.getLevelLoader().exists(args[1]))
-				plugin.getLevelSelector().ChangeLevel(args[1],
+			if (args.length > 1 && game.getLevelLoader().exists(args[1]))
+				game.getLevelSelector().ChangeLevel(args[1],
 						sender instanceof Player ? (Player) sender : null);
-			else if (plugin.getLevel() == null) {
+			else if (game.getLevel() == null) {
 				Tribu.messagePlayer(sender,
-						plugin.getLocale("Message.NoLevelLoaded"));
+						game.getLocale("Message.NoLevelLoaded"));
 				Tribu.messagePlayer(sender,
-						plugin.getLocale("Message.NoLevelLoaded2"));
+						game.getLocale("Message.NoLevelLoaded2"));
 				return true;
 			}
-			plugin.getLevelSelector().cancelVote();
-			plugin.setForceStop(false);
-			if (plugin.startRunning())
+			game.getLevelSelector().cancelVote();
+			game.setForceStop(false);
+			if (game.startRunning())
 				Tribu.messagePlayer(sender,
-						plugin.getLocale("Message.ZombieModeEnabled"));
+						game.getLocale("Message.ZombieModeEnabled"));
 			else
 				Tribu.messagePlayer(sender,
-						plugin.getLocale("Message.LevelNotReady"));
+						game.getLocale("Message.LevelNotReady"));
 			return true;
 		} else if (args[0].equals("stop")) {
 			if (!sender.hasPermission("tribu.game.stop")) {
-				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender, game.getLocale("Message.Deny"));
 				return true;
 			}
-			plugin.setForceStop(true);
-			plugin.stopRunning();
+			game.setForceStop(true);
+			game.stopRunning();
 			Tribu.messagePlayer(sender,
-					plugin.getLocale("Message.ZombieModeDisabled"));
+					game.getLocale("Message.ZombieModeDisabled"));
 			return true;
 		} else if (args[0].equals("forcestart")) {
 			if (!sender.hasPermission("tribu.debug.forcestart")) {
-				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender, game.getLocale("Message.Deny"));
 				return true;
 			}
 
-			for (final String msg : plugin.whyNotStarting())
+			for (final String msg : game.whyNotStarting())
 				Tribu.messagePlayer(sender, msg);
-			if (plugin.forceStart())
+			if (game.forceStart())
 				Tribu.messagePlayer(sender,
-						plugin.getLocale("Message.ZombieModeEnabled"));
+						game.getLocale("Message.ZombieModeEnabled"));
 			return true;
 		} else if (args[0].equals("tpfz")) {
 			if (!sender.hasPermission("tribu.debug.tpfz"))
-				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender, game.getLocale("Message.Deny"));
 			else {
-				final Location loc = plugin.getSpawner()
-						.getFirstZombieLocation();
+				final Location loc = game.getSpawner().getFirstZombieLocation();
 				if (loc != null)
 					if (sender instanceof Player)
 						((Player) sender).teleport(loc);
 					else if (args.length > 1)
-						plugin.getServer().getPlayer(args[1]).teleport(loc);
+						game.getPlugin().getServer().getPlayer(args[1])
+								.teleport(loc);
 			}
 			return true;
 
 		} else if (args[0].equals("reload")) {
 			if (sender.hasPermission("tribu.plugin.reload")) {
-				plugin.reloadConf();
+				game.reloadConf();
 				Tribu.messagePlayer(sender,
-						plugin.getLocale("Message.ConfigFileReloaded"));
+						game.getLocale("Message.ConfigFileReloaded"));
 			}
 			return true;
 		} else if (args[0].equals("set")) {
 			if (!sender.hasPermission("tribu.level.set")) {
-				Tribu.messagePlayer(sender, plugin.getLocale("Message.Deny"));
+				Tribu.messagePlayer(sender, game.getLocale("Message.Deny"));
 				return true;
 			}
 			if (args.length < 3)
 				return usage(sender);
-			if (plugin.getLevel() == null) {
+			if (game.getLevel() == null) {
 				Tribu.messagePlayer(sender,
-						plugin.getLocale("Message.NoLevelLoaded"));
+						game.getLocale("Message.NoLevelLoaded"));
 				Tribu.messagePlayer(sender,
-						plugin.getLocale("Message.NoLevelLoaded2"));
+						game.getLocale("Message.NoLevelLoaded2"));
 				return true;
 			}
-			plugin.config().load(args[1], new CLIReader(args[2]));
+			game.config().load(args[1], new CLIReader(args[2]));
 			try {
-				plugin.config().save(
+				game.config().save(
 						new File(Constants.perLevelFolder
-								+ plugin.getLevel().getName() + ".yml"));
+								+ game.getLevel().getName() + ".yml"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

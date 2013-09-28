@@ -44,7 +44,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class LevelSelector implements Runnable {
-	private final Tribu plugin;
+	private final Tribu game;
 	private String randomLevel1;
 	private String randomLevel2;
 	private final Random rnd;
@@ -53,7 +53,7 @@ public class LevelSelector implements Runnable {
 	private boolean votingEnabled;
 
 	public LevelSelector(final Tribu instance) {
-		plugin = instance;
+		game = instance;
 		taskID = -1;
 		rnd = new Random();
 		votes = new HashMap<Player, Integer>();
@@ -62,57 +62,58 @@ public class LevelSelector implements Runnable {
 
 	public void cancelVote() {
 		if (taskID >= 0)
-			plugin.getServer().getScheduler().cancelTask(taskID);
+			game.getPlugin().getServer().getScheduler().cancelTask(taskID);
 		votingEnabled = false;
 	}
 
 	public void castVote(final Player player, final int v) {
-		if (votingEnabled && plugin.isPlaying(player)) {
+		if (votingEnabled && game.isPlaying(player)) {
 
 			if (v > 2 || v < 1) {
 				Tribu.messagePlayer(player,
-						plugin.getLocale("Message.InvalidVote"));
+						game.getLocale("Message.InvalidVote"));
 				return;
 			}
 
 			votes.put(player, v);
 			Tribu.messagePlayer(player,
-					plugin.getLocale("Message.ThankyouForYourVote"));
+					game.getLocale("Message.ThankyouForYourVote"));
 			// if all players have voted
-			if (votes.size() == plugin.getPlayersCount()) {
+			if (votes.size() == game.getPlayersCount()) {
 				cancelVote();
 				run();
 			}
 		} else
 			Tribu.messagePlayer(player,
-					plugin.getLocale("Message.YouCannotVoteAtThisTime"));
+					game.getLocale("Message.YouCannotVoteAtThisTime"));
 	}
 
 	public void ChangeLevel(final String name, final Player player) {
-		if (plugin.getLevel() != null)
-			if (plugin.getLevel().getName().equalsIgnoreCase(name)) {
-				Tribu.messagePlayer(player, String.format(plugin
-						.getLocale("Message.LevelIsAlreadyTheCurrentLevel"),
-						name));
+		if (game.getLevel() != null)
+			if (game.getLevel().getName().equalsIgnoreCase(name)) {
+				Tribu.messagePlayer(
+						player,
+						String.format(
+								game.getLocale("Message.LevelIsAlreadyTheCurrentLevel"),
+								name));
 				return;
 			}
 
 		cancelVote();
 		boolean restart = false;
-		if (plugin.isRunning()) {
+		if (game.isRunning()) {
 			restart = true;
-			plugin.stopRunning(true);
+			game.stopRunning(true);
 		}
 
-		final TribuLevel temp = plugin.getLevelLoader().loadLevelIgnoreCase(
-				name);
+		final TribuLevel temp = game.getLevelLoader().loadLevelIgnoreCase(name);
 
-		if (!plugin.getLevelLoader().saveLevel(plugin.getLevel())) {
+		if (!game.getLevelLoader().saveLevel(game.getLevel())) {
 			if (player != null)
 				Tribu.messagePlayer(player,
-						plugin.getLocale("Message.UnableToSaveLevel"));
+						game.getLocale("Message.UnableToSaveLevel"));
 			else
-				plugin.LogWarning(ChatColor.stripColor(plugin
+				game.LogWarning(ChatColor.stripColor(game
 						.getLocale("Message.UnableToSaveLevel")));
 			return;
 		}
@@ -120,28 +121,28 @@ public class LevelSelector implements Runnable {
 		if (temp == null) {
 			if (player != null)
 				Tribu.messagePlayer(player,
-						plugin.getLocale("Message.UnableToLoadLevel"));
+						game.getLocale("Message.UnableToLoadLevel"));
 			else
-				plugin.LogWarning(ChatColor.stripColor(plugin
+				game.LogWarning(ChatColor.stripColor(game
 						.getLocale("Message.UnableToLoadLevel")));
 			return;
 		} else if (player != null)
 			Tribu.messagePlayer(player,
-					plugin.getLocale("Message.LevelLoadedSuccessfully"));
+					game.getLocale("Message.LevelLoadedSuccessfully"));
 		else
-			plugin.LogInfo(ChatColor.stripColor(plugin
+			game.LogInfo(ChatColor.stripColor(game
 					.getLocale("Message.LevelLoadedSuccessfully")));
 
-		plugin.setLevel(temp);
+		game.setLevel(temp);
 		if (restart)
-			plugin.startRunning();
+			game.startRunning();
 
 	}
 
 	public void removeVote(final Player p) {
 		if (votingEnabled) {
 			votes.remove(p);
-			if (votes.size() == plugin.getPlayersCount()) {
+			if (votes.size() == game.getPlayersCount()) {
 				cancelVote();
 				run();
 			}
@@ -158,49 +159,47 @@ public class LevelSelector implements Runnable {
 		votes.clear();
 		if (voteCounts[0] >= voteCounts[1]) {
 			ChangeLevel(randomLevel1, null);
-			plugin.messagePlayers(String.format(
-					plugin.getLocale("Broadcast.MapChosen"), randomLevel1));
+			game.messagePlayers(String.format(
+					game.getLocale("Broadcast.MapChosen"), randomLevel1));
 		} else {
 			ChangeLevel(randomLevel2, null);
-			plugin.messagePlayers(String.format(
-					plugin.getLocale("Broadcast.MapChosen"), randomLevel2));
+			game.messagePlayers(String.format(
+					game.getLocale("Broadcast.MapChosen"), randomLevel2));
 		}
-		plugin.startRunning();
+		game.startRunning();
 	}
 
 	public void startVote(final int duration) {
-		final String[] levels = plugin.getLevelLoader().getLevelList()
+		final String[] levels = game.getLevelLoader().getLevelList()
 				.toArray(new String[0]);
 
 		if (levels.length < 2) { // Skip voting since there's only one option
-			plugin.startRunning();
+			game.startRunning();
 			return;
 		}
-		taskID = plugin.getServer().getScheduler()
-				.scheduleSyncDelayedTask(plugin, this, duration);
+		taskID = game.getPlugin().getServer().getScheduler()
+				.scheduleSyncDelayedTask(game.getPlugin(), this, duration);
 		votingEnabled = true;
 
 		do
 			randomLevel1 = levels[rnd.nextInt(levels.length)];
-		while (randomLevel1 == plugin.getLevel().getName());
+		while (randomLevel1 == game.getLevel().getName());
 
 		if (levels.length >= 3)
 			do
 				randomLevel2 = levels[rnd.nextInt(levels.length)];
-			while (randomLevel2 == plugin.getLevel().getName()
+			while (randomLevel2 == game.getLevel().getName()
 					|| randomLevel2 == randomLevel1);
 		else
-			randomLevel2 = plugin.getLevel().getName();
-		plugin.messagePlayers(plugin.getLocale("Broadcast.MapVoteStarting"));
-		plugin.messagePlayers(plugin.getLocale("Broadcast.Type"));
-		plugin.messagePlayers(String.format(
-				plugin.getLocale("Broadcast.SlashVoteForMap"), '1',
-				randomLevel1));
-		plugin.messagePlayers(String.format(
-				plugin.getLocale("Broadcast.SlashVoteForMap"), '2',
-				randomLevel2));
-		plugin.messagePlayers(String.format(
-				plugin.getLocale("Broadcast.VoteClosingInSeconds"),
+			randomLevel2 = game.getLevel().getName();
+		game.messagePlayers(game.getLocale("Broadcast.MapVoteStarting"));
+		game.messagePlayers(game.getLocale("Broadcast.Type"));
+		game.messagePlayers(String.format(
+				game.getLocale("Broadcast.SlashVoteForMap"), '1', randomLevel1));
+		game.messagePlayers(String.format(
+				game.getLocale("Broadcast.SlashVoteForMap"), '2', randomLevel2));
+		game.messagePlayers(String.format(
+				game.getLocale("Broadcast.VoteClosingInSeconds"),
 				String.valueOf(duration / 20)));
 	}
 

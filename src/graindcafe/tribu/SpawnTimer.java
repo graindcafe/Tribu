@@ -36,44 +36,45 @@ package graindcafe.tribu;
 
 public class SpawnTimer implements Runnable {
 
-	private final Tribu plugin;
+	private final Tribu game;
 	private int taskID;
 
 	// ?? maxSpawn ?
 	// private int totalSpawn;
 
 	SpawnTimer(final Tribu instance) {
-		plugin = instance;
+		game = instance;
 		taskID = -1;
 	}
 
 	public void getState() {
-		if (plugin.isRunning() && plugin.getAliveCount() > 0
-				&& !plugin.getSpawner().isWaveCompleted())
-			plugin.LogInfo("Should spawn zombie");
+		if (game.isRunning() && game.getAliveCount() > 0
+				&& !game.getSpawner().isWaveCompleted())
+			game.LogInfo("Should spawn zombie");
 		else
-			plugin.LogInfo("Should NOT spawn zombie");
+			game.LogInfo("Should NOT spawn zombie");
 		if (taskID > 0)
-			plugin.LogInfo("is started ");
+			game.LogInfo("is started ");
 		else
-			plugin.LogInfo("is stopped !");
-		if (plugin.getServer().getScheduler().isCurrentlyRunning(taskID))
-			plugin.LogInfo("is currently running");
-		else if (plugin.getServer().getScheduler().isQueued(taskID))
-			plugin.LogInfo("is queued");
+			game.LogInfo("is stopped !");
+		if (game.getPlugin().getServer().getScheduler()
+				.isCurrentlyRunning(taskID))
+			game.LogInfo("is currently running");
+		else if (game.getPlugin().getServer().getScheduler().isQueued(taskID))
+			game.LogInfo("is queued");
 		else
-			plugin.LogInfo("is NOT queued and is NOT running !");
+			game.LogInfo("is NOT queued and is NOT running !");
 
 	}
 
 	public void run() {
-		if (plugin.isRunning() && plugin.getAliveCount() > 0
-				&& !plugin.getSpawner().isWaveCompleted()) {
-			if (!plugin.getSpawner().spawnZombie())
-				plugin.getSpawner().checkZombies();
+		if (game.isRunning() && game.getAliveCount() > 0
+				&& !game.getSpawner().isWaveCompleted()) {
+			if (!game.getSpawner().spawnZombie())
+				game.getSpawner().checkZombies();
 		} else {
-			plugin.getSpawner().finishCallback();
-			if (plugin.getSpawner().tryStartNextWave())
+			game.getSpawner().finishCallback();
+			if (game.getSpawner().tryStartNextWave())
 				stop();
 		}
 
@@ -81,12 +82,16 @@ public class SpawnTimer implements Runnable {
 
 	public void StartWave(final int max, final float health,
 			final int timeToSpawn) {
-		if (plugin.isRunning()) {
-			plugin.getSpawner().setMaxSpawn(max);
-			plugin.getSpawner().resetTotal();
-			plugin.getSpawner().setHealth(health);
-			taskID = plugin.getServer().getScheduler()
-					.scheduleSyncRepeatingTask(plugin, this, 0, timeToSpawn);
+		if (game.isRunning()) {
+			game.getSpawner().setMaxSpawn(max);
+			game.getSpawner().resetTotal();
+			game.getSpawner().setHealth(health);
+			taskID = game
+					.getPlugin()
+					.getServer()
+					.getScheduler()
+					.scheduleSyncRepeatingTask(game.getPlugin(), this, 0,
+							timeToSpawn);
 		}
 	}/*
 	 * public void StartWave(int total, int max, int health) { if
@@ -97,7 +102,7 @@ public class SpawnTimer implements Runnable {
 
 	public void stop() {
 		if (taskID > 0) {
-			plugin.getServer().getScheduler().cancelTask(taskID);
+			game.getPlugin().getServer().getScheduler().cancelTask(taskID);
 			taskID = -1;
 		}
 	}

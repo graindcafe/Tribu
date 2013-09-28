@@ -47,32 +47,31 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockRedstoneEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.PluginManager;
 
 public class TribuBlockListener implements Listener {
-	private final Tribu plugin;
+	private final Tribu game;
 
 	public TribuBlockListener(final Tribu instance) {
-		plugin = instance;
+		game = instance;
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onBlockBreak(final BlockBreakEvent event) {
 		if (!event.isCancelled())
-			if (TribuSign.isIt(plugin, event.getBlock())) {
+			if (TribuSign.isIt(game, event.getBlock())) {
 				if (event.getPlayer().hasPermission("tribu.signs.break"))
-					plugin.getLevel()
+					game.getLevel()
 							.removeSign(event.getBlock().getLocation());
 				else {
 					if (event.getPlayer() != null)
 						Tribu.messagePlayer(event.getPlayer(),
-								plugin.getLocale("Message.ProtectedBlock"));
+								game.getLocale("Message.ProtectedBlock"));
 					TribuSign.update((Sign) event.getBlock().getState());
 					event.setCancelled(true);
 				}
-			} else if (plugin.isRunning()
-					&& plugin.isPlaying(event.getPlayer())
-					&& !(event.getPlayer().hasPermission("tribu.super.break") || plugin
+			} else if (game.isRunning()
+					&& game.isPlaying(event.getPlayer())
+					&& !(event.getPlayer().hasPermission("tribu.super.break") || game
 							.config().PlayersAllowBreak))
 				event.setCancelled(true);
 		// else
@@ -84,36 +83,36 @@ public class TribuBlockListener implements Listener {
 	@EventHandler
 	public void onBlockPlace(final BlockPlaceEvent event) {
 		if (!event.isCancelled())
-			if (plugin.isRunning()
-					&& plugin.isPlaying(event.getPlayer())
-					&& !(event.getPlayer().hasPermission("tribu.super.place") || plugin
+			if (game.isRunning()
+					&& game.isPlaying(event.getPlayer())
+					&& !(event.getPlayer().hasPermission("tribu.super.place") || game
 							.config().PlayersAllowPlace))
 				event.setCancelled(true);
 	}
 
 	@EventHandler
 	public void onBlockRedstoneChange(final BlockRedstoneEvent event) {
-		if (plugin.isRunning()) // plugin.getBlockTrace().pushRedstoneChanged(event.getBlock());
-			if (plugin.getLevel() != null)
-				plugin.getLevel().onRedstoneChange(event);
+		if (game.isRunning()) // plugin.getBlockTrace().pushRedstoneChanged(event.getBlock());
+			if (game.getLevel() != null)
+				game.getLevel().onRedstoneChange(event);
 	}
 
 	@EventHandler
 	public void onSignChange(final SignChangeEvent event) {
-		if (TribuSign.isIt(plugin, event.getLines()))
+		if (TribuSign.isIt(game, event.getLines()))
 			if (event.getPlayer().hasPermission("tribu.signs.place")) {
-				final TribuSign sign = TribuSign.getObject(plugin, event
+				final TribuSign sign = TribuSign.getObject(game, event
 						.getBlock().getLocation(), event.getLines());
 				if (sign != null)
-					if (plugin.getLevel() != null) {
-						if (plugin.getLevel().addSign(sign))
+					if (game.getLevel() != null) {
+						if (game.getLevel().addSign(sign))
 							Tribu.messagePlayer(event.getPlayer(),
-									plugin.getLocale("Message.TribuSignAdded"));
+									game.getLocale("Message.TribuSignAdded"));
 					} else {
 						Tribu.messagePlayer(event.getPlayer(),
-								plugin.getLocale("Message.NoLevelLoaded"));
+								game.getLocale("Message.NoLevelLoaded"));
 						Tribu.messagePlayer(event.getPlayer(),
-								plugin.getLocale("Message.NoLevelLoaded2"));
+								game.getLocale("Message.NoLevelLoaded2"));
 						event.getBlock().setTypeId(0);
 						event.getBlock()
 								.getLocation()
@@ -124,7 +123,7 @@ public class TribuBlockListener implements Listener {
 					}
 			} else {
 				Tribu.messagePlayer(event.getPlayer(),
-						plugin.getLocale("Message.CannotPlaceASpecialSign"));
+						game.getLocale("Message.CannotPlaceASpecialSign"));
 				event.getBlock().setTypeId(0);
 				event.getBlock()
 						.getLocation()
@@ -135,7 +134,4 @@ public class TribuBlockListener implements Listener {
 			}
 	}
 
-	public void registerEvents(final PluginManager pm) {
-		pm.registerEvents(this, plugin);
-	}
 }
